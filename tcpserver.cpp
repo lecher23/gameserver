@@ -6,7 +6,9 @@
 #include <iostream>
 
 namespace cgserver {
-    TcpServer::TcpServer():_stop(false) {}
+    TcpServer::TcpServer():_stop(false) {
+	_buf.ensureFree(MAX_BUFF_SIZE);
+    }
 
 TcpServer::~TcpServer() {}
 
@@ -45,13 +47,19 @@ void TcpServer::stopServer() {
 }
 
 void TcpServer::processConnection(int fd){
-    int bytes_recv;
-    if((bytes_recv = recv(fd, _buf, MAX_BUFF_SIZE, 0)) <= 0) {
-	::close(fd);
-	return;
+    int bytes_recv = -1;
+    int count = 0;
+    _buf.clear();
+    while(bytes_recv < 0) {
+	bytes_recv = recv(fd, _buf.getFree(), _buf.getFreeLen(), 0);
+	if (bytes_recv >= 0) {
+	    _buf.pourData(bytes_recv);
+	    break;
+	}
+	if (count++ > 10) break;
     }
-    _buf[bytes_recv] = '\0';
-    std::cout << _buf << std::endl;
+    *(_buf.getFree()) = '\0';
+    std::cout << _buf.getData() << std::endl;
     ::close(fd);
 }
 }
