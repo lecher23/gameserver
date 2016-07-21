@@ -6,7 +6,7 @@
 #include <arpa/inet.h>
 #include <error.h>
 #include <sstream>
-#include "addrspec.h"
+#include "socket/addrspec.h"
 #include "tcpserver.h"
 
 namespace cgserver{

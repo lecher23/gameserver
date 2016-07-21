@@ -1,6 +1,6 @@
-#include "addrspec.h"
-#include "databuffer.h"
-#include "socketprocessor.h"
+#include "socket/addrspec.h"
+#include "util/databuffer.h"
+#include "socket/socketprocessor.h"
 
 namespace cgserver{
     class TcpServer{

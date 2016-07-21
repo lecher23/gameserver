@@ -1,10 +1,10 @@
 #ifndef SOCKET_PROCESSOR_H
 #define SOCKET_PROCESSOR_H
-#include "runnable.h"
-#include "thread.h"
-#include "databuffer.h"
-#include "httpresponsepacket.h"
-#include "ihandler.h"
+#include "../util/runnable.h"
+#include "../util/thread.h"
+#include "../util/databuffer.h"
+#include "../http/httpresponsepacket.h"
+#include "../handlers/ihandler.h"
 
 namespace cgserver{
 #define MAX_BUFF_SIZE 4096    

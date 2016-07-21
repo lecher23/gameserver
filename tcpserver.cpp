@@ -4,8 +4,8 @@
 #include <unistd.h>
 #include <netinet/in.h>
 #include <iostream>
-#include "packethandler.h"
-#include "thread.h"
+#include "handlers/packethandler.h"
+#include "util/thread.h"
 
 namespace cgserver {
     TcpServer::TcpServer():_stop(false) {

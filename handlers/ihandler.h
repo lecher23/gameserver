@@ -1,8 +1,8 @@
 #ifndef I_HANDLER_H
 #define I_HANDLER_H
 
-#include "httppacket.h"
-#include "httpresponsepacket.h"
+#include "../http/httppacket.h"
+#include "../http/httpresponsepacket.h"
 
 namespace cgserver{
     class IHandler{

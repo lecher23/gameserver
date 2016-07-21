@@ -1,7 +1,7 @@
 #ifndef PACKET_HANDLER_H
 #define PACKET_HANDLER_H
-#include "httppacket.h"
-#include "httpresponsepacket.h"
+#include "../http/httppacket.h"
+#include "../http/httpresponsepacket.h"
 #include "ihandler.h"
 #include <string>
 #include <map>

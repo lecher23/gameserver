@@ -1,6 +1,6 @@
 #include "httppacketparser.h"
-#include "databuffer.h"
-#include "common_define.h"
+#include "../util/databuffer.h"
+#include "../util/common_define.h"
 #include <stdio.h>
 
 namespace cgserver {
