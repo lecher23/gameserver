@@ -6,7 +6,11 @@ namespace cglogic{
     using namespace cgserver;
     const std::string PacketHandler::acceptURI = "/getUserSetting";
     const std::string PacketHandler::User_ID = "user_id";
+
+    PacketHandler::~PacketHandler(){}
+    
     void PacketHandler::init(){
+	std::cout << "**init packet handler**" << std::endl;
 	cfg["010"] = "YES";
     }
 
@@ -27,10 +31,10 @@ namespace cglogic{
 	if (!exist)
 	    resp.setBody("NO");
 	else {
-	    std::map<std::string, std::string>::const_iterator citr = cfg.find(uid);
-	    if (citr != cfg.end())
-		resp.setBody((citr->second).c_str());
-	    else
+	    std::map<std::string, std::string>::const_iterator it = cfg.find(uid);
+	    if (it != cfg.end()){
+		resp.setBody((it->second).c_str());
+	    }else
 		resp.setBody("NO");
 	}
 	return true;

@@ -4,25 +4,32 @@
 #include <unistd.h>
 #include <netinet/in.h>
 #include <iostream>
+#include "packethandler.h"
+#include "thread.h"
 
 namespace cgserver {
     TcpServer::TcpServer():_stop(false) {
-	_buf.ensureFree(MAX_BUFF_SIZE);
     }
 
 TcpServer::~TcpServer() {}
 
 bool TcpServer::initServer(AddrSpec *addr) {
+    cglogic::PacketHandler *handler = new cglogic::PacketHandler();
+    _processor.initResource((IHandler *)handler);
+    
     _fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (_fd < 0) {
+	std::cout << "create socket failed" << std::endl;
 	return false;
     }
     int bind_res = bind(_fd, addr->getAddr(), addr->getAddrSize());
     if (bind_res < 0) {
+	std::cout << "bind socket failed" << std::endl;	
 	return false;
     }
     int listen_res = listen(_fd, 256);
     if (listen_res < 0) {
+	std::cout << "listen failed" << std::endl;		
 	return false;
     }
     return true;
@@ -47,18 +54,7 @@ void TcpServer::stopServer() {
 }
 
 void TcpServer::processConnection(int fd){
-    int bytes_recv = -1;
-    int count = 0;
-    while(bytes_recv < 0) {
-	bytes_recv = recv(fd, _buf.getFree(), _buf.getFreeLen(), 0);
-	if (bytes_recv >= 0) {
-	    _buf.pourData(bytes_recv);
-	    break;
-	}
-	if (count++ > 10) break;
-    }
-    *(_buf.getFree()) = '\0';
-    std::cout << _buf.getData() << std::endl;
-    _handler.handle(_buf, fd);
+    Thread thread;
+    thread.start((Runnable *)&_processor, (void *) &fd);
 }
 }

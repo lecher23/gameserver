@@ -1,5 +1,5 @@
-#ifndef ANET_RUNNABLE_H_
-#define ANET_RUNNABLE_H_
+#ifndef RUNNABLE_H_
+#define RUNNABLE_H_
 
 namespace cgserver {
   class Thread;

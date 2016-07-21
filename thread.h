@@ -1,11 +1,9 @@
-#ifndef ANET_THREAD_H_
-#define ANET_THREAD_H_
+#ifndef THREAD_H_
+#define THREAD_H_
 #include <pthread.h>
 #include "runnable.h"
 
-//#include <anet/log.h>
-namespace anet {
-    //class Runnable;
+namespace cgserver {
   class Thread {
 
   public:

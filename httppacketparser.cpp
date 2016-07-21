@@ -38,7 +38,6 @@ void HTTPPacketParser::reset(){
 bool HTTPPacketParser::processData(DataBuffer *dataBuffer, HTTPPacket *packet) 
 {
     std::cout << "Begin process Data" << std::endl;
-    _LOG(dataBuffer->getData());
     switch (_step) {
     case PS_START_LINE:
         _LOG("HTTPStreamingContext::HSS_START_LINE");
@@ -149,7 +148,8 @@ bool HTTPPacketParser::processStartLine(DataBuffer *databuffer, HTTPPacket *pack
 	    _LOG("pkg too large");
             //context->setErrorNo(AnetError::PKG_TOO_LARGE);
         } else {
-            _LOG("start line not completed");
+            //_LOG("start line not completed");
+	    ;
         }
         return false;
     }
@@ -486,7 +486,7 @@ bool HTTPPacketParser::processHeadersOrTrailers(DataBuffer *databuffer,
             //context->setErrorNo(AnetError::PKG_TOO_LARGE);
             return false;
         }
-        _LOG("a header line completed");
+        //_LOG("a header line completed");
         *cr = '\0';
         if (cr == pstart) { //a empty line
             databuffer->drainData(drainLength);

@@ -1,9 +1,8 @@
 #include "addrspec.h"
 #include "databuffer.h"
-#include "handler.h"
+#include "socketprocessor.h"
 
 namespace cgserver{
-#define MAX_BUFF_SIZE 4096
     class TcpServer{
     public:
 	TcpServer();
@@ -15,7 +14,6 @@ namespace cgserver{
     private:
 	int _fd;
 	bool _stop;
-	DataBuffer _buf;
-	Handler _handler;
+	SocketProcessor _processor;
     };
 }

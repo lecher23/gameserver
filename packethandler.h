@@ -2,21 +2,24 @@
 #define PACKET_HANDLER_H
 #include "httppacket.h"
 #include "httpresponsepacket.h"
+#include "ihandler.h"
 #include <string>
 #include <map>
 
 namespace cglogic{
-    class PacketHandler{
+    class PacketHandler:cgserver::IHandler{
     public:
-	typedef std::map<std::string, std::string> KVMap;
-	typedef KVMap::iterator KVMapItr;	
-	bool process(cgserver::HTTPPacket &packet, cgserver::HttpResponsePacket &resp) const;
-	void init();
+	virtual ~PacketHandler();
+	virtual bool process(cgserver::HTTPPacket &packet,
+			     cgserver::HttpResponsePacket &resp) const;
+	virtual void init();
 	void debug();
 
 	static const std::string acceptURI;
 	const static std::string User_ID;
     private:
+	typedef std::map<std::string, std::string> KVMap;	
+	typedef KVMap::iterator KVMapItr;	
 	KVMap cfg;
     };
 }
