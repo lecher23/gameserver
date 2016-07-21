@@ -10,20 +10,14 @@ namespace cglogic{
     public:
 	typedef std::map<std::string, std::string> KVMap;
 	typedef KVMap::iterator KVMapItr;	
-	bool process(cgserver::HTTPPacket &packet, cgserver::HttpResponsePacket &resp) ;
-	bool parseURI(const char *uri);
-	int findChar(const char *dest, char tar);
-	bool parseParam(const char *paramStr);
-	void parseKV(const char *begin, int kvLen);	
+	bool process(cgserver::HTTPPacket &packet, cgserver::HttpResponsePacket &resp) const;
 	void init();
 	void debug();
 
-	const static std::string acceptURI;
+	static const std::string acceptURI;
+	const static std::string User_ID;
     private:
 	KVMap cfg;
-	KVMap params;
-	std::string _uri;
-	std::string _errorStr;
     };
 }
 #endif

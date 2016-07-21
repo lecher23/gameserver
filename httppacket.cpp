@@ -483,4 +483,29 @@ size_t HTTPPacket::getCapacity() {
     return _capacity;
 }
 
+void HTTPPacket::setPath(const char *src, int len) {
+    _path.assign(src, len);
+}
+
+const std::string &HTTPPacket::getPath() {
+    return _path;
+}
+
+void HTTPPacket::addParam(const std::string &key, const std::string &value) {
+    _params[key] = value;
+}
+
+const HTTPPacket::KVMap &HTTPPacket::getParams(){
+    return _params;
+}
+
+const std::string &HTTPPacket::getParamValue(const std::string &key, bool &exist) {
+    exist = true;
+    KVMapItr it = _params.find(key);
+    if (it != _params.end())
+	return it->second;
+    exist = false;
+    return common::EMPTY_STR;
+}
+    
 }/*end namespace anet*/

@@ -17,11 +17,13 @@ public:
     static const size_t URI_LIMIT;
     static const size_t PKG_LIMIT;
     static const size_t HEADERS_LIMIT;
+    static const std::string EMPTY_STR;
 protected:
     static const char _table[256];
     enum ParseStep {
 	PS_START_LINE = 0,
 	PS_MESSAGE_HEADER,
+	PS_MESSAGE_URI,
 	PS_MESSAGE_BODY
     };
 private:
@@ -50,6 +52,14 @@ private:
     bool processEOFBody(DataBuffer *databuffer, HTTPPacket *packet);
 
     bool processChunkSize(DataBuffer *databuffer, HTTPPacket *packet);
+
+    // *--Function for parse uri(like /a/b?x=1)--*
+    bool processURI(HTTPPacket *packet);
+    bool parseURI(const char *uri, HTTPPacket *packet);
+    int findChar(const char *dest, char tar);
+    bool parseParam(const char *paramStr, HTTPPacket *packet);
+    void parseKV(const char *begin, int kvLen, HTTPPacket *packet);
+    
     bool getCRLF(DataBuffer *databuffer);
 
     char* findNextWhiteSpace(char *begin, char *end);

@@ -48,6 +48,8 @@ public:
         HM_CONNECT,
         HM_UNSUPPORTED
     };
+    typedef std::map<std::string, std::string> KVMap;
+    typedef KVMap::iterator KVMapItr;	    
 
     void setPacketType(HTTPPacketType type);
     HTTPPacketType getPacketType();
@@ -78,6 +80,13 @@ public:
     void setKeepAlive(bool keepalive);
     bool isKeepAlive();
 
+    void setPath(const char *path, int len);
+    const std::string &getPath();
+    
+    void addParam(const std::string &key, const std::string &value);
+    const KVMap &getParams();
+    const std::string &getParamValue(const std::string &key, bool &exist);
+    
     virtual ~HTTPPacket();
 
     bool encode(DataBuffer *output);
@@ -129,6 +138,9 @@ protected:
     char *_body;
     size_t _bodyLength;
     size_t _capacity;
+
+    std::string _path;
+    KVMap _params;
 };
 
 }/*end namespace anet*/

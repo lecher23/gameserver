@@ -12,13 +12,11 @@ namespace cgserver{
 	_parser.reset();
 	HTTPPacket packet;
 	_parser.processData(&buf, &packet);
-	_parser.debug();
 
 	cglogic::PacketHandler phandler;
 	phandler.init();
 	HttpResponsePacket resp;
 	phandler.process(packet, resp);
-	phandler.debug();
 	// do not use private attribute. notice multi thread problem.
 	cgserver::DataBuffer output; 
 	if (resp.encode(&output)) {

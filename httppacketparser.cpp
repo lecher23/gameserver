@@ -8,6 +8,7 @@ namespace cgserver {
 const size_t HTTPPacketParser::URI_LIMIT = 1024 * 64;
 const size_t HTTPPacketParser::PKG_LIMIT = 67108864;
 const size_t HTTPPacketParser::HEADERS_LIMIT = 128;
+    const std::string HTTPPacketParser::EMPTY_STR = "";
 const char HTTPPacketParser::_table[256] = {
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     0,1,0,1,1,1,1,1,0,0,1,1,0,1,1,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,
@@ -61,9 +62,18 @@ bool HTTPPacketParser::processData(DataBuffer *dataBuffer, HTTPPacket *packet)
         _LOG("HTTPStreamingContext::HSS_MESSAGE_BODY");
         if (processBody(dataBuffer, packet)) {
             _LOG("processBody finished!");
+            _step = PS_MESSAGE_URI;	    
+        } else {
+            _LOG("processBody() not finished.");	    
+	    break;
+	}
+    case PS_MESSAGE_URI:
+        _LOG("HTTPStreamingContext::HSS_MESSAGE_URI");
+	if (processURI(packet)) {
+            _LOG("processURI finish!");
 	    _parseFinish = true;
-        }
-        break;
+	}
+	break;
     default:
         _LOG("SHOULD NOT come here: DEFAULT");
         break;
@@ -71,6 +81,62 @@ bool HTTPPacketParser::processData(DataBuffer *dataBuffer, HTTPPacket *packet)
 
     return _parseFinish;
 }
+
+bool HTTPPacketParser::processURI(HTTPPacket *packet) {
+    const char *uri = packet->getURI();
+    if (uri == NULL)
+	return true;
+    return parseURI(uri, packet);
+}
+
+bool HTTPPacketParser::parseURI(const char *uri, HTTPPacket *packet) {
+    int uriLen = strlen(uri);
+    int qFlag = findChar(uri, '?');
+    if (qFlag <= 0)
+	return true;
+    packet->setPath(uri, qFlag);
+    if(!parseParam(uri + qFlag + 1, packet))
+	return false;
+    return true;
+}
+
+int HTTPPacketParser::findChar(const char *dest, char tar) {
+    int ret = 0;
+    while(*dest != '\0') {
+	if (*dest == tar) return ret;
+	++dest;
+	++ret;
+    }
+    return -1;
+}
+
+    // x=1&y=3
+bool HTTPPacketParser::parseParam(const char *paramStr, HTTPPacket *packet){
+    int prev = 0;
+    int pos;
+    while((pos = findChar(paramStr, '&')) >= 0){
+	parseKV(paramStr, pos, packet);
+	paramStr += pos + 1;
+    }
+    if (*paramStr != '\0') {
+	parseKV(paramStr, strlen(paramStr), packet);
+    }
+    return true;
+}
+
+    //x=1, 3
+void HTTPPacketParser::parseKV(const char *begin, int kvLen, HTTPPacket *packet) {
+    if (kvLen <= 0)
+	return;
+    int pos = findChar(begin, '=');
+    if (pos == kvLen -1)
+	packet->addParam(std::string(begin, pos), EMPTY_STR);
+    else if (pos < 0)
+	packet->addParam(std::string(begin, kvLen), EMPTY_STR);
+    else
+	packet->addParam(std::string(begin, pos), std::string(begin + pos + 1, kvLen - pos -1));
+}
+    
 
 bool HTTPPacketParser::processStartLine(DataBuffer *databuffer, HTTPPacket *packet) 
 {
