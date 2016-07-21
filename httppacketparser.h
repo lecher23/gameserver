@@ -1,7 +1,7 @@
 #ifndef HTTPSTREAMER_H_
 #define HTTPSTREAMER_H_
 #include "databuffer.h"
-#include "packet.h"
+#include "httppacket.h"
 
 namespace cgserver {
 
@@ -11,6 +11,7 @@ public:
     HTTPPacketParser();
     bool processData(DataBuffer *dataBuffer, HTTPPacket *packet);
     void debug();
+    void reset();
     //StreamingContext* createContext();
 
     static const size_t URI_LIMIT;
@@ -67,7 +68,7 @@ private:
             return _table[c];
     }
     ParseStep _step;
-    bool _parse_finish;
+    bool _parseFinish;
     size_t _drainedLength;
     size_t _dataLength;
 };

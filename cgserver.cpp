@@ -8,7 +8,7 @@ namespace cgserver{
     ;
   }
   void CgServer::test(){
-      std::cout << "test begin" << std::endl;
+      std::cout << "server start." << std::endl;
       _addr.setInetAddr(IPPROTO_TCP, NULL, 9876);
       _server.startServer(&_addr);
   }

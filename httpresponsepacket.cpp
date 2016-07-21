@@ -99,6 +99,12 @@ void HttpResponsePacket::setBody(const char *body, int len) {
     }
 }
 
+
+void HttpResponsePacket::setBody(const char *body) {
+    int len = strlen(body);
+    setBody(body, len);
+}
+
 /*
  * 是否keepalive
  */

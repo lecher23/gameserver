@@ -1,5 +1,5 @@
 #include <assert.h>
-#include "packet.h"
+#include "httppacket.h"
 #include <ctype.h>
 #include <memory>
 #include <string>

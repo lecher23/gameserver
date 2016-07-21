@@ -10,7 +10,7 @@ namespace cgserver{
     
     const size_t  MAX_PACKET_LEN = 8192;
     const std::string HTTP_GET = "GET";
-    const std::string HTTP_POST = "POST";    
+    const std::string HTTP_POST = "POST";
 }
 
 #endif

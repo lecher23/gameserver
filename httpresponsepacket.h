@@ -56,6 +56,7 @@ public:
      * 设置内容
      */
     void setBody(const char *body, int len);
+    void setBody(const char *body);
 
     /*
      * 是否keepalive

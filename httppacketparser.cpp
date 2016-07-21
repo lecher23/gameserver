@@ -20,11 +20,18 @@ const char HTTPPacketParser::_table[256] = {
 };
 
 HTTPPacketParser::HTTPPacketParser():
-    _step(PS_START_LINE),_parse_finish(false),_drainedLength(0),_dataLength(0){}
+    _step(PS_START_LINE),_parseFinish(false),_drainedLength(0),_dataLength(0){}
 
 void HTTPPacketParser::debug(){
     _LOG(_drainedLength);
     _LOG(_dataLength);
+}
+
+void HTTPPacketParser::reset(){
+    _step = PS_START_LINE;
+    _parseFinish = false;
+    _drainedLength = 0;
+    _dataLength = 0;
 }
     
 bool HTTPPacketParser::processData(DataBuffer *dataBuffer, HTTPPacket *packet) 
@@ -54,7 +61,7 @@ bool HTTPPacketParser::processData(DataBuffer *dataBuffer, HTTPPacket *packet)
         _LOG("HTTPStreamingContext::HSS_MESSAGE_BODY");
         if (processBody(dataBuffer, packet)) {
             _LOG("processBody finished!");
-	    _parse_finish = true;
+	    _parseFinish = true;
         }
         break;
     default:
@@ -62,7 +69,7 @@ bool HTTPPacketParser::processData(DataBuffer *dataBuffer, HTTPPacket *packet)
         break;
     }
 
-    return _parse_finish;
+    return _parseFinish;
 }
 
 bool HTTPPacketParser::processStartLine(DataBuffer *databuffer, HTTPPacket *packet) 

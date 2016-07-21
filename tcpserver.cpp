@@ -49,7 +49,6 @@ void TcpServer::stopServer() {
 void TcpServer::processConnection(int fd){
     int bytes_recv = -1;
     int count = 0;
-    _buf.clear();
     while(bytes_recv < 0) {
 	bytes_recv = recv(fd, _buf.getFree(), _buf.getFreeLen(), 0);
 	if (bytes_recv >= 0) {
@@ -60,6 +59,6 @@ void TcpServer::processConnection(int fd){
     }
     *(_buf.getFree()) = '\0';
     std::cout << _buf.getData() << std::endl;
-    ::close(fd);
+    _handler.handle(_buf, fd);
 }
 }

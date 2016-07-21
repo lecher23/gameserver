@@ -1,5 +1,6 @@
 #include "addrspec.h"
 #include "databuffer.h"
+#include "handler.h"
 
 namespace cgserver{
 #define MAX_BUFF_SIZE 4096
@@ -15,5 +16,6 @@ namespace cgserver{
 	int _fd;
 	bool _stop;
 	DataBuffer _buf;
+	Handler _handler;
     };
 }
