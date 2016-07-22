@@ -9,25 +9,27 @@
 #include "util/config.h"
 
 namespace cgserver{
-  CgServer::CgServer(){
-  }
-  CgServer::~CgServer(){
-    ;
-  }
-  void CgServer::start(){
-      std::cout << "init config." << std::endl;
-      //Config::getInstance().flag = 1999;
-      Config &cfg = Config::getInstance();
-      //cfg.flag = 2000;
-      int port;
-      //std::cout<<Config::getInstance().flag<<cfg.flag<<std::endl;
-      if (!cfg.initConfig() || (port = cfg.getListenPort()) < 0) {
-	  std::cout << "Init config failed." << std::endl;
-	  return;
-      }
-      std::cout << "Server on port["<< port <<"] start." << std::endl;
-      _server.startServer(port);
-  }
+    const std::string CgServer::ConfigFilePath = "server.cfg";
+    
+    CgServer::CgServer(){
+    }
+    CgServer::~CgServer(){
+	;
+    }
+    void CgServer::start(){
+	std::cout << "init config." << std::endl;
+	//Config::getInstance().flag = 1999;
+	Config &cfg = Config::getInstance();
+	//cfg.flag = 2000;
+	int port;
+	//std::cout<<Config::getInstance().flag<<cfg.flag<<std::endl;
+	if (!cfg.initConfig(ConfigFilePath) || (port = cfg.getListenPort()) < 0) {
+	    std::cout << "Init config failed." << std::endl;
+	    return;
+	}
+	std::cout << "Server on port["<< port <<"] start." << std::endl;
+	_server.startServer(port);
+    }
 }
 
 void err_quit(const std::string &str) {

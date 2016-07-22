@@ -15,6 +15,7 @@ namespace cgserver{
 	~CgServer();
 	void start();
     private:
+	static const std::string ConfigFilePath;
 	TcpServer _server;
   };
 }

@@ -2,7 +2,6 @@
 #include <stdlib.h>
 
 namespace cgserver{
-    const std::string Config::ConfigFilePath = "server.cfg";
     const std::string Config::EmptyStr = "";
     
     Config::~Config() {
@@ -16,21 +15,22 @@ namespace cgserver{
 	return config;
     }
 
-    bool Config::initConfig() {
-	config_t *tmp = parseConfigFile(ConfigFilePath.c_str());
+    bool Config::initConfig(const std::string &configFilePath) {
+	config_t *tmp = parseConfigFile(configFilePath.c_str());
 	// only parse config success can change _cfg
 	if (tmp != NULL) {
 	    // free previous config
 	    destroyConfig(_cfg);
 	    _cfg = tmp;
-	    displayConfig(_cfg);	    
+	    displayConfig(_cfg);
+	    _configFilePath = configFilePath;
 	    return true;
 	}
 	return false;
     }
 
     bool Config::refreshConfig() {
-	if (!initConfig()) {
+	if (!initConfig(_configFilePath)) {
 	    std::cout << "Refresh config failed. Will not change previous config." << std::endl;
 	    return false;
 	}
@@ -47,17 +47,26 @@ namespace cgserver{
     }
 
     int Config::getListenPort(){
-	std::string s_port = getConfigValue("server", "port");
-	if (s_port.size() == 0) {
-	    std::cout << "Port not set." << std::endl;
+	int i_port;
+	if (!Config::getIntValue("server", "port", i_port)) {
 	    return -1;
 	}
-	for (int i = 0; i < s_port.size(); ++i) {
-	    if (s_port[i] < '0' || s_port[i] > '9') {
-		std::cout << "Invalid port." << std::endl;
-		return -1;
+	return i_port;
+    }
+
+    bool Config::getIntValue(const std::string &grp, const std::string &key, int &out) {
+	std::string intValue = getConfigValue(grp, key);
+	if (intValue.size() == 0) {
+	    std::cout << "Value not set." << std::endl;
+	    return false;
+	}
+	for (int i = 0; i < intValue.size(); ++i) {
+	    if (intValue[i] < '0' || intValue[i] > '9') {
+		std::cout << "Invalid value:" << intValue << std::endl;
+		return false;
 	    }
 	}
-	return atoi(s_port.c_str());
+	out = atoi(intValue.c_str());
+	return true;
     }
 }
