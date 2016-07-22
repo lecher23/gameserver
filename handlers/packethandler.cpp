@@ -53,7 +53,10 @@ namespace cglogic{
 	    return true;
 	}
 	if (packet.getPath() != _acceptPrefix) {
-	    resp.setBody("Invalid PATH.\n");
+	    std::string msg = "Invalid PATH:";
+	    msg.append(packet.getPath());
+	    msg.append(1, '\n');
+	    resp.setBody(msg.c_str());
 	    resp.setStatus(false);	    
 	    return false;	    
 	}
