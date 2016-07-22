@@ -1,10 +1,12 @@
 #include "cgserver.h"
 #include <iostream>
+#include <string>
 #include <fcntl.h>
 #include <sys/resource.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include "util/config.h"
 
 namespace cgserver{
   CgServer::CgServer(){
@@ -12,10 +14,19 @@ namespace cgserver{
   CgServer::~CgServer(){
     ;
   }
-  void CgServer::test(){
-      std::cout << "server start." << std::endl;
-      //_addr.setInetAddr(IPPROTO_TCP, NULL, 9876);
-      _server.startServer(9876);
+  void CgServer::start(){
+      std::cout << "init config." << std::endl;
+      //Config::getInstance().flag = 1999;
+      Config &cfg = Config::getInstance();
+      //cfg.flag = 2000;
+      int port;
+      //std::cout<<Config::getInstance().flag<<cfg.flag<<std::endl;
+      if (!cfg.initConfig() || (port = cfg.getListenPort()) < 0) {
+	  std::cout << "Init config failed." << std::endl;
+	  return;
+      }
+      std::cout << "Server on port["<< port <<"] start." << std::endl;
+      _server.startServer(port);
   }
 }
 
@@ -77,6 +88,6 @@ void daemonize(){
 int main(int len, char ** args) {
     //daemonize();
     cgserver::CgServer server;
-    server.test();
+    server.start();
     return 1;
 }

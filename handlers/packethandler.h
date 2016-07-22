@@ -11,16 +11,24 @@ namespace cglogic{
     public:
 	virtual ~PacketHandler();
 	virtual bool process(cgserver::HTTPPacket &packet,
-			     cgserver::HttpResponsePacket &resp) const;
+			     cgserver::HttpResponsePacket &resp);
 	virtual void init();
 	void debug();
 
-	static const std::string acceptURI;
-	const static std::string User_ID;
+	static const std::string AppName;
+	static const std::string AcceptPrefix;
+	static const std::string TargetParam;
+	static const std::string RefreshTrigger;
+	static const std::string DefaultCode;
+	static const std::string SpecialSetting;
     private:
 	typedef std::map<std::string, std::string> KVMap;	
-	typedef KVMap::iterator KVMapItr;	
-	KVMap cfg;
+	typedef KVMap::iterator KVMapItr;
+	std::string _acceptPrefix;
+	std::string _triggerPath;
+	std::string _targetParam;
+	std::string _defaultResponse;
+	KVMap _cfg;
     };
 }
 #endif

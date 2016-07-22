@@ -6,7 +6,6 @@
 #include <arpa/inet.h>
 #include <error.h>
 #include <sstream>
-#include "socket/addrspec.h"
 #include "tcpserver.h"
 
 namespace cgserver{
@@ -14,9 +13,8 @@ namespace cgserver{
     public:
 	CgServer();
 	~CgServer();
-	void test();
+	void start();
     private:
-	AddrSpec _addr;
 	TcpServer _server;
   };
 }

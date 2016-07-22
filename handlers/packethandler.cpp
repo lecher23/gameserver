@@ -1,41 +1,72 @@
 #include "packethandler.h"
 #include <string.h>
 #include <iostream>
+#include "../util/stringutil.h"
+#include "../util/config.h"
 
 namespace cglogic{
     using namespace cgserver;
-    const std::string PacketHandler::acceptURI = "/getUserSetting";
-    const std::string PacketHandler::User_ID = "user_id";
+
+    const std::string PacketHandler::AppName = "app1";
+    const std::string PacketHandler::AcceptPrefix = "prefix";
+    const std::string PacketHandler::TargetParam = "target_param";
+    const std::string PacketHandler::RefreshTrigger = "refresh_trigger";
+    const std::string PacketHandler::DefaultCode = "default_code";
+    const std::string PacketHandler::SpecialSetting = "special_setting";
 
     PacketHandler::~PacketHandler(){}
     
     void PacketHandler::init(){
 	std::cout << "**init packet handler**" << std::endl;
-	cfg["C0C1W"] = "NO";
+	Config &cfg = Config::getInstance();
+	_acceptPrefix = cfg.getConfigValue(AppName, AcceptPrefix);
+	_triggerPath = cfg.getConfigValue(AppName, RefreshTrigger);
+	_targetParam = cfg.getConfigValue(AppName, TargetParam);
+	_defaultResponse = cfg.getConfigValue(AppName, DefaultCode);
+	std::string sc = cfg.getConfigValue(AppName, SpecialSetting);
+	cgserver::strs_t pairs;
+	cgserver::strs_t kv;
+	cgserver::splitString(sc, ';', pairs);
+	for (strs_t::iterator it = pairs.begin(); it != pairs.end(); ++it) {
+	    cgserver::splitString(*it, ':', kv);
+	    if (kv.size() != 2) {
+		std::cout << "Invalid setting [" << *it << "], ignore." << std::endl;
+		continue;
+	    }
+	    std::cout << "Read setting [" << kv[0] << "] = [" << kv[1] << "]." << std::endl;	    
+	    _cfg[kv[0]] = kv[1];
+	    kv.clear();
+	}
     }
 
-    bool PacketHandler::process(HTTPPacket &packet, HttpResponsePacket &resp) const{
-	resp.setStatus(true);	    	
+    bool PacketHandler::process(HTTPPacket &packet, HttpResponsePacket &resp) {
+	resp.setStatus(true);
 	if (packet.getMethod() != HTTPPacket::HM_POST) {
-	    resp.setBody("Only support POST method.");
+	    resp.setBody("Only support POST method.\n");
 	    resp.setStatus(false);
 	    return false;
 	}
-	if (packet.getPath() != acceptURI) {
-	    resp.setBody("Invalid PATH.");
+	if (packet.getPath() == _triggerPath) {
+	    Config::getInstance().refreshConfig();
+	    init();// here we can use singleton to storage config detail
+	    resp.setBody("Refresh config done.\n");
+	    return true;
+	}
+	if (packet.getPath() != _acceptPrefix) {
+	    resp.setBody("Invalid PATH.\n");
 	    resp.setStatus(false);	    
 	    return false;	    
 	}
 	bool exist;
-	const std::string &uid = packet.getParamValue(User_ID, exist);
+	const std::string &uid = packet.getParamValue(_targetParam, exist);
 	if (!exist)
-	    resp.setBody("YES");
+	    resp.setBody(_defaultResponse.c_str());
 	else {
-	    std::map<std::string, std::string>::const_iterator it = cfg.find(uid);
-	    if (it != cfg.end()){
+	    std::map<std::string, std::string>::const_iterator it = _cfg.find(uid);
+	    if (it != _cfg.end()){
 		resp.setBody((it->second).c_str());
 	    }else
-		resp.setBody("YES");
+		resp.setBody(_defaultResponse.c_str());
 	}
 	return true;
     }

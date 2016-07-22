@@ -9,7 +9,7 @@ namespace cgserver{
     public:
 	IHandler(){}
 	virtual ~IHandler(){}
-	virtual bool process(HTTPPacket &packet, HttpResponsePacket &resp) const = 0;
+	virtual bool process(HTTPPacket &packet, HttpResponsePacket &resp) = 0; // we should add const later
 	virtual void init() {}
     };
 }
