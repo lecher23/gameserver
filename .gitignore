@@ -7,3 +7,4 @@ unittest.cpp
 dev
 .#*
 build
+*.pyc
