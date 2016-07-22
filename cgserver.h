@@ -10,7 +10,6 @@
 #include "tcpserver.h"
 
 namespace cgserver{
-    const int LISTEN_BACKLOG = 256;
     class CgServer{
     public:
 	CgServer();

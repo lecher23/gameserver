@@ -11,7 +11,7 @@ namespace cglogic{
     
     void PacketHandler::init(){
 	std::cout << "**init packet handler**" << std::endl;
-	cfg["010"] = "YES";
+	cfg["C0C1W"] = "NO";
     }
 
     bool PacketHandler::process(HTTPPacket &packet, HttpResponsePacket &resp) const{
@@ -29,13 +29,13 @@ namespace cglogic{
 	bool exist;
 	const std::string &uid = packet.getParamValue(User_ID, exist);
 	if (!exist)
-	    resp.setBody("NO");
+	    resp.setBody("YES");
 	else {
 	    std::map<std::string, std::string>::const_iterator it = cfg.find(uid);
 	    if (it != cfg.end()){
 		resp.setBody((it->second).c_str());
 	    }else
-		resp.setBody("NO");
+		resp.setBody("YES");
 	}
 	return true;
     }

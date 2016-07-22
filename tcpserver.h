@@ -1,18 +1,19 @@
 #include "socket/addrspec.h"
 #include "util/databuffer.h"
 #include "socket/socketprocessor.h"
+#include "socket/socket.h"
+
 
 namespace cgserver{
     class TcpServer{
     public:
 	TcpServer();
 	~TcpServer();
-	void startServer(AddrSpec *addr);
-	bool initServer(AddrSpec *addr);
-	void processConnection(int fd);
+	void startServer(int port);
+	bool initServer(int port);
 	void stopServer();
     private:
-	int _fd;
+	Socket _socket;
 	bool _stop;
 	SocketProcessor _processor;
     };

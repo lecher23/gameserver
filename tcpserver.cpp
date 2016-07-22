@@ -13,39 +13,31 @@ namespace cgserver {
 
 TcpServer::~TcpServer() {}
 
-bool TcpServer::initServer(AddrSpec *addr) {
+bool TcpServer::initServer(int port) {
     cglogic::PacketHandler *handler = new cglogic::PacketHandler();
     _processor.initResource((IHandler *)handler);
+
+    if (!_socket.setAddress(NULL, 9876))
+	return false;
     
-    _fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    if (_fd < 0) {
-	std::cout << "create socket failed" << std::endl;
+    if (!_socket.listen(256)) {
 	return false;
     }
-    int bind_res = bind(_fd, addr->getAddr(), addr->getAddrSize());
-    if (bind_res < 0) {
-	std::cout << "bind socket failed" << std::endl;	
-	return false;
-    }
-    int listen_res = listen(_fd, 256);
-    if (listen_res < 0) {
-	std::cout << "listen failed" << std::endl;		
-	return false;
-    }
+
     return true;
 }
 
-void TcpServer::startServer(AddrSpec *addr) {
-    if (!initServer(addr)) {return;}
-    int conn_fd;
-    struct sockaddr addr_in;
-    socklen_t addr_in_len;
+void TcpServer::startServer(int port) {
+    if (!initServer(port))
+	return;
+    Socket *clientSocket;
     while(!_stop) {
-	if ((conn_fd = accept(_fd, &addr_in, &addr_in_len)) < 0) {
+	if ((clientSocket = _socket.accept()) == NULL) {
 	    //accept failed.
 	    continue;
 	}
-	processConnection(conn_fd);
+	Thread thread;
+	thread.start((Runnable *)&_processor, (void *) clientSocket);
     }
 }
 
@@ -53,8 +45,4 @@ void TcpServer::stopServer() {
     _stop = true;
 }
 
-void TcpServer::processConnection(int fd){
-    Thread thread;
-    thread.start((Runnable *)&_processor, (void *) &fd);
-}
 }
