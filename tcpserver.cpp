@@ -5,17 +5,21 @@
 #include <netinet/in.h>
 #include <iostream>
 #include "handlers/packethandler.h"
-#include "util/thread.h"
+#include "socket/socketprocessor.h"
+#include "util/task.h"
 
 namespace cgserver {
-    TcpServer::TcpServer():_stop(false) {
-    }
+    
+TcpServer::TcpServer():_stop(false), _processor(NULL) {
+}
 
-TcpServer::~TcpServer() {}
+TcpServer::~TcpServer() {
+    TcpServer::free();
+}
 
 bool TcpServer::initServer(int port) {
     cglogic::PacketHandler *handler = new cglogic::PacketHandler();
-    _processor.initResource((IHandler *)handler);
+    _processor = (IProcessor *)(new SocketProcessor((IHandler *)handler));
 
     if (!_socket.setAddress(NULL, port)){
 	std::cout << "Set socket address failed." << std::endl;
@@ -27,6 +31,12 @@ bool TcpServer::initServer(int port) {
 	return false;
     }
 
+    // Init thread pool, default 8 threads and queue size is 512
+    _pool.reset(new ThreadPool(8));
+    if (!_pool->start()) {
+	std::cout << "Create thread poll failed." << std::endl;
+	return false;
+    }
     return true;
 }
 
@@ -41,8 +51,20 @@ void TcpServer::startServer(int port) {
 	    //accept failed.
 	    continue;
 	}
-	Thread thread;
-	thread.start((Runnable *)&_processor, (void *) clientSocket);
+	Task *task = new Task(clientSocket, _processor);
+	if (_pool->pushTask((Runnable *)task) != ThreadPool::ERROR_NONE) {
+	    // response failed msg to user.
+	    // release mem
+	    delete task;
+	}
+    }
+    TcpServer::free();
+}
+
+void TcpServer::free() {
+    if (_processor) {
+	delete _processor;
+	_processor = NULL;
     }
 }
 

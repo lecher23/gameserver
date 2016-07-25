@@ -90,6 +90,8 @@ public:
     bool _enable_busy_check;
 };
 
+ typedef std::shared_ptr<ThreadPool> ThreadPoolPtr;
+ 
 }
 
 #endif //AUTIL_THREADPOOL_H

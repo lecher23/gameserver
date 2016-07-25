@@ -1,8 +1,7 @@
 #include "socket/addrspec.h"
-#include "util/databuffer.h"
-#include "socket/socketprocessor.h"
+#include "util/threadpool.h"
+#include "util/iprocessor.h"
 #include "socket/socket.h"
-
 
 namespace cgserver{
     class TcpServer{
@@ -13,8 +12,11 @@ namespace cgserver{
 	bool initServer(int port);
 	void stopServer();
     private:
+	void free();
+	
 	Socket _socket;
 	bool _stop;
-	SocketProcessor _processor;
+	IProcessor *_processor;
+	ThreadPoolPtr _pool;
     };
 }

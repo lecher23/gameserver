@@ -5,18 +5,24 @@
 #include <netinet/in.h>
 
 namespace cgserver{
-    SocketProcessor::SocketProcessor():_handler(NULL){}
-
-    SocketProcessor::~SocketProcessor(){
-	if (_handler != NULL)
-	    delete _handler;
-	_handler = NULL;
+    SocketProcessor::SocketProcessor(IHandler *handler):_handler(handler){
+	if (_handler == NULL)
+	    return;
+	_handler->init();
     }
 
-    void SocketProcessor::run(Thread *thread, void *arg) {
-	if (_handler == NULL || arg == NULL)
+    SocketProcessor::~SocketProcessor(){
+	if (_handler != NULL) {
+	    delete _handler;
+	    _handler = NULL;
+	}
+    }
+
+    void SocketProcessor::process(Socket *sk) const{
+	if (sk == NULL || _handler == NULL) {
+	    std::cout << "NULL socket or handler." << std::endl;
 	    return;
-	Socket *sk = (Socket *) arg;
+	}
 	DataBuffer buff;
 	buff.ensureFree(MAX_BUFF_SIZE);
 	do {
@@ -34,12 +40,11 @@ namespace cgserver{
 		std::cout << "Send response failed." << std::endl;
 		break;
 	    }
-	    std::cout << "Send response success." << std::endl;
+	    std::cout << "**Send response success**" << std::endl;
 	} while(0);
-	delete sk;
     }
 
-    bool SocketProcessor::readData(Socket *sk, DataBuffer &buf) {
+    bool SocketProcessor::readData(Socket *sk, DataBuffer &buf) const{
 	int bytes_recv = -1;
 	int count = 0;
 	bytes_recv = sk->read(buf.getFree(), buf.getFreeLen());
@@ -52,7 +57,7 @@ namespace cgserver{
 	return true;
     }
 
-    bool SocketProcessor::writeData(Socket *sk, HttpResponsePacket &resp) {
+    bool SocketProcessor::writeData(Socket *sk, HttpResponsePacket &resp) const{
 	cgserver::DataBuffer output; 
 	if (!resp.encode(&output)) {
 	    return false;
@@ -60,9 +65,4 @@ namespace cgserver{
 	return sk->write(output.getData(), output.getDataLen()) >= 0;
     }
 
-    void SocketProcessor::initResource(IHandler *handler){
-	if (handler == NULL) return;
-	_handler = handler;
-	_handler->init();
-    }
 }
