@@ -7,7 +7,26 @@ namespace common{
 #define _LOG(x) std::cout<<(x)<<std::endl;    
 #define CONNECTION_CLOSE "close"
 #define CONNECTION_KEEP_ALIVE "Keep-Alive"
-    
+
+    enum ret_t
+    {   
+	r_succeed = 0,
+	r_failed = 1,
+	r_nullpoint,
+	r_enomem,
+	r_outofbounds,
+	r_einval,
+	r_epthread,
+	r_uninitialized,
+	r_eintr,
+	r_eio,
+	r_eaccess,
+	r_eagain,
+	r_eof,
+	r_timeout,
+	r_yield_thread,
+	r_ignore
+    };
     const size_t  MAX_PACKET_LEN = 8192;
     const std::string HTTP_GET = "GET";
     const std::string HTTP_POST = "POST";

@@ -22,7 +22,7 @@ namespace cgserver{
 	    // free previous config
 	    destroyConfig(_cfg);
 	    _cfg = tmp;
-	    displayConfig(_cfg);
+	    //displayConfig(_cfg);
 	    _configFilePath = configFilePath;
 	    return true;
 	}

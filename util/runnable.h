@@ -13,6 +13,7 @@ namespace cgserver {
      * 运行入口函数
      */
     virtual void run(Thread *thread, void *arg) = 0;
+    virtual void free() {}
   };
 }
 

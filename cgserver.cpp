@@ -18,11 +18,8 @@ namespace cgserver{
     }
     void CgServer::start(){
 	std::cout << "init config." << std::endl;
-	//Config::getInstance().flag = 1999;
 	Config &cfg = Config::getInstance();
-	//cfg.flag = 2000;
 	int port;
-	//std::cout<<Config::getInstance().flag<<cfg.flag<<std::endl;
 	if (!cfg.initConfig(ConfigFilePath) || (port = cfg.getListenPort()) < 0) {
 	    std::cout << "Init config failed." << std::endl;
 	    return;

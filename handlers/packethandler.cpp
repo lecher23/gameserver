@@ -17,7 +17,7 @@ namespace cglogic{
     PacketHandler::~PacketHandler(){}
     
     void PacketHandler::init(){
-	std::cout << "**init packet handler**" << std::endl;
+	std::cout << "**Init packet handler**" << std::endl;
 	Config &cfg = Config::getInstance();
 	_acceptPrefix = cfg.getConfigValue(AppName, AcceptPrefix);
 	_triggerPath = cfg.getConfigValue(AppName, RefreshTrigger);
@@ -33,10 +33,10 @@ namespace cglogic{
 		std::cout << "Invalid setting [" << *it << "], ignore." << std::endl;
 		continue;
 	    }
-	    std::cout << "Read setting [" << kv[0] << "] = [" << kv[1] << "]." << std::endl;	    
 	    _cfg[kv[0]] = kv[1];
 	    kv.clear();
 	}
+	std::cout << "**Init packet handler success**" << std::endl;	
     }
 
     bool PacketHandler::process(HTTPPacket &packet, HttpResponsePacket &resp) {

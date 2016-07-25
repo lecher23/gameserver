@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import sys
 import os
+import time
 
 def createFile(fname, content):
     f = open(fname, "w")
@@ -62,8 +63,20 @@ if __name__ == "__main__":
     elif param == "test":
         objs = [os.path.join(DEST, 'obj', f) for f in os.listdir(os.path.join(DEST, 'obj'))]
         obj_str = " ".join(objs)
-        cmd = "cd %s && g++ -g -o test_main main.cpp %s -l pthread" % (DEST, obj_str)
+        cmd = "cd %s && g++ -std=c++11 -g -o test_main main.cpp %s -l pthread" % (DEST, obj_str)
         os.system(cmd)
         # exe test
         cmd = "cd %s && ./test_main" % DEST
         os.system(cmd)
+    elif param == "bk":
+        bk_name = "main_%d.cpp" % int(time.time())
+        cmd = "cd %s && mv main.cpp %s" % (DEST, os.path.join(DEST, '../tcode', bk_name))
+        print cmd
+        os.system(cmd)
+    elif param == "task1":
+        src = os.path.join(ROOT, 'tools/tcode', os.path.basename(sys.argv[2]))
+        dest = os.path.join(DEST, 'main.cpp')
+        cmd = "cp %s %s" % (src, dest)
+        print cmd
+        os.system(cmd)
+

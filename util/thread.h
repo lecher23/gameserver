@@ -1,6 +1,7 @@
 #ifndef THREAD_H_
 #define THREAD_H_
 #include <pthread.h>
+#include <memory>
 #include "runnable.h"
 
 namespace cgserver {
@@ -91,6 +92,7 @@ namespace cgserver {
     	Runnable *runnable;
     	void *args;
   };
+  typedef std::shared_ptr<Thread> ThreadPtr;
 
 }
 
