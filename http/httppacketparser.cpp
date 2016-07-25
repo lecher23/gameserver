@@ -37,39 +37,38 @@ void HTTPPacketParser::reset(){
     
 bool HTTPPacketParser::processData(DataBuffer *dataBuffer, HTTPPacket *packet) 
 {
-    std::cout << "Begin process Data" << std::endl;
     switch (_step) {
     case PS_START_LINE:
-        _LOG("HTTPStreamingContext::HSS_START_LINE");
+        //_LOG("HTTPStreamingContext::HSS_START_LINE");
         if (processStartLine(dataBuffer, packet)) {
-            _LOG("processStartLine finished!");
+            //_LOG("processStartLine finished!");
             _step = PS_MESSAGE_HEADER;
         } else {
             _LOG("processStartLine() not finished.");
             break;
         }
     case PS_MESSAGE_HEADER:
-        _LOG("HTTPStreamingContext::HSS_MESSAGE_HEADER");
+        //_LOG("HTTPStreamingContext::HSS_MESSAGE_HEADER");
         if (processHeaders(dataBuffer, packet)) {
-            _LOG("processHeaders finished!");
+            //_LOG("processHeaders finished!");
             _step = PS_MESSAGE_BODY;
         } else {
             _LOG("processHeaders() not finished.");
             break;
         }
     case PS_MESSAGE_BODY:
-        _LOG("HTTPStreamingContext::HSS_MESSAGE_BODY");
+        //_LOG("HTTPStreamingContext::HSS_MESSAGE_BODY");
         if (processBody(dataBuffer, packet)) {
-            _LOG("processBody finished!");
+            //_LOG("processBody finished!");
             _step = PS_MESSAGE_URI;	    
         } else {
             _LOG("processBody() not finished.");	    
 	    break;
 	}
     case PS_MESSAGE_URI:
-        _LOG("HTTPStreamingContext::HSS_MESSAGE_URI");
+        //_LOG("HTTPStreamingContext::HSS_MESSAGE_URI");
 	if (processURI(packet)) {
-            _LOG("processURI finish!");
+            //_LOG("processURI finish!");
 	    _parseFinish = true;
 	}
 	break;

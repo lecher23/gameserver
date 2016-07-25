@@ -16,6 +16,7 @@ namespace cgserver{
 	std::string getConfigValue(const std::string &grp, const std::string &key);
     private:
 	Config();
+	Config(Config &cfg);
 	Config & operator = (const Config &);
 	config_t *_cfg;
 	std::string _configFilePath;

@@ -8,7 +8,7 @@ def createFile(fname, content):
     f.close()
 
 ROOT = "/home/licheng/workspace/CgServerPlus"
-DEST = os.path.join(ROOT, "tools/tmp")
+DEST = os.path.join(ROOT, "tools/test")
 
 def cp(fpath):
     prefix = fpath[len(ROOT):]
@@ -56,7 +56,7 @@ if __name__ == "__main__":
         # copy depend *.o file to ./tmp/obj    
         stealObj(["cgserver.o"])
         # make main entrance
-        cmd = "cp %s %s" % (os.path.join(DEST, '../test_template.cpp'),
+        cmd = "cp %s %s" % (os.path.join(DEST, '../tcode/test_template.cpp'),
                             os.path.join(DEST, 'main.cpp'))
         os.system(cmd)
     elif param == "test":
