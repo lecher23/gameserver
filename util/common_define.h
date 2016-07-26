@@ -2,12 +2,15 @@
 #define COMMON_DEFINE_H
 #include <string>
 #include <iostream>
+#include <memory>
+
+#define DF_SHARED_PTR(T) typedef std::shared_ptr<T> T##Ptr;
 
 namespace common{
 #define _LOG(x) std::cout<<(x)<<std::endl;    
 #define CONNECTION_CLOSE "close"
 #define CONNECTION_KEEP_ALIVE "Keep-Alive"
-
+    
     enum ret_t
     {   
 	r_succeed = 0,

@@ -3,12 +3,10 @@
 #include <iostream>
 #include <unistd.h>
 #include <netinet/in.h>
+#include "../handlers/ihandler.h"
 
 namespace cgserver{
-    SocketProcessor::SocketProcessor(IHandler *handler):_handler(handler){
-	if (_handler == NULL)
-	    return;
-	_handler->init();
+    SocketProcessor::SocketProcessor():_handler(NULL){
     }
 
     SocketProcessor::~SocketProcessor(){
@@ -18,7 +16,18 @@ namespace cgserver{
 	}
     }
 
-    void SocketProcessor::process(Socket *sk) const{
+    void SocketProcessor::init(void *resource) {
+	if (resource == NULL){
+	    return;
+	}
+	if (_handler != NULL) {
+	    delete _handler;
+	}
+	_handler = (IHandler *)resource;
+	_handler->init();
+    }
+
+    void SocketProcessor::process(SocketPtr sk) const{
 	if (sk == NULL || _handler == NULL) {
 	    std::cout << "NULL socket or handler." << std::endl;
 	    return;
@@ -44,7 +53,7 @@ namespace cgserver{
 	} while(0);
     }
 
-    bool SocketProcessor::readData(Socket *sk, DataBuffer &buf) const{
+    bool SocketProcessor::readData(SocketPtr &sk, DataBuffer &buf) const{
 	int bytes_recv = -1;
 	int count = 0;
 	bytes_recv = sk->read(buf.getFree(), buf.getFreeLen());
@@ -57,7 +66,7 @@ namespace cgserver{
 	return true;
     }
 
-    bool SocketProcessor::writeData(Socket *sk, HttpResponsePacket &resp) const{
+    bool SocketProcessor::writeData(SocketPtr &sk, HttpResponsePacket &resp) const{
 	cgserver::DataBuffer output; 
 	if (!resp.encode(&output)) {
 	    return false;

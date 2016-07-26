@@ -4,8 +4,9 @@
 #include <netinet/tcp.h>
 #include <arpa/inet.h>
 #include <errno.h>
-#include "addrspec.h"
 #include <sstream>
+#include "addrspec.h"
+#include "../util/common_define.h"
 
 namespace cgserver {
 const int LISTEN_BACKLOG = 256;
@@ -146,7 +147,7 @@ private:
     /* void listernErrInc(){atomic_inc(&_listenErrCnt);} */
 };
 
-
+ DF_SHARED_PTR(Socket);
 }
 
 #endif /*SOCKET_H_*/

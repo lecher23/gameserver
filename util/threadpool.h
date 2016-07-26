@@ -90,7 +90,7 @@ public:
     bool _enable_busy_check;
 };
 
- typedef std::shared_ptr<ThreadPool> ThreadPoolPtr;
+ DF_SHARED_PTR(ThreadPool);
  
 }
 

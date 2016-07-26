@@ -12,11 +12,10 @@ namespace cgserver{
 	bool initServer(int port);
 	void stopServer();
     private:
-	void free();
 	
 	Socket _socket;
 	bool _stop;
-	IProcessor *_processor;
+	IProcessorPtr _processor;
 	ThreadPoolPtr _pool;
     };
 }

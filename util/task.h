@@ -8,14 +8,14 @@
 namespace cgserver{
     class Task:Runnable{
     public:
-        Task(Socket *socket, IProcessor *processor);
+        Task(SocketPtr socket, IProcessorPtr processor);
         virtual ~Task();
 	virtual void run(Thread *thread, void *arg);
 	virtual void free();
 
     private :
-	Socket *_socket;
-	IProcessor *_processor;
+	SocketPtr _socket;
+	IProcessorPtr _processor;
     };
 }
 #endif

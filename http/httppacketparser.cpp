@@ -76,7 +76,6 @@ bool HTTPPacketParser::processData(DataBuffer *dataBuffer, HTTPPacket *packet)
         _LOG("SHOULD NOT come here: DEFAULT");
         break;
     }
-
     return _parseFinish;
 }
 

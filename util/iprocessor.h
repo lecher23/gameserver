@@ -9,7 +9,10 @@ namespace cgserver{
         IProcessor() {}
         virtual ~IProcessor() {};
 
-	virtual void process(Socket *sk) const = 0;
+	virtual void process(SocketPtr sk) const = 0;
+	virtual void init(void *resource) = 0;
     };
+
+    DF_SHARED_PTR(IProcessor);
 }
 #endif

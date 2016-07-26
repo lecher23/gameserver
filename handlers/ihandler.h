@@ -3,6 +3,7 @@
 
 #include "../http/httppacket.h"
 #include "../http/httpresponsepacket.h"
+#include "../util/common_define.h"
 
 namespace cgserver{
     class IHandler{
@@ -12,5 +13,7 @@ namespace cgserver{
 	virtual bool process(HTTPPacket &packet, HttpResponsePacket &resp) = 0; // we should add const later
 	virtual void init() {}
     };
+
+    DF_SHARED_PTR(IHandler);
 }
 #endif

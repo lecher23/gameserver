@@ -2,20 +2,16 @@
 #include <iostream>
 
 namespace cgserver{
-    Task::Task(Socket *socket, IProcessor *processor):
+    Task::Task(SocketPtr socket, IProcessorPtr processor):
 	_socket(socket), _processor(processor)
     {
     }
     
     Task::~Task(){
-	if (_socket != NULL) {
-	    delete _socket;
-	    _socket = NULL;
-	}
     }
 
     void Task::run(Thread *t, void *args) {
-	if (_processor == NULL || socket == NULL) {
+	if (_processor.get() == NULL || _socket.get() == NULL) {
 	    return;
 	}
 	// processor will do left.
@@ -25,6 +21,5 @@ namespace cgserver{
     void Task::free() {
 	// release it self
 	delete this;
-	// _processor should delete outside.
     }
 }
