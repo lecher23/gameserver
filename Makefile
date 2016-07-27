@@ -1,13 +1,16 @@
 CC=g++ -std=c++11 -g 
-SUBDIRS=$(shell ls -l | grep ^d | grep -v tools |awk '{if($$9 != "build") print $$9}')
+SUBDIRS=$(shell ls -l | grep ^d | grep -v tools|grep -v depend |awk '{if($$9 != "build") print $$9}')
 ROOT_DIR=$(shell pwd)
 BIN=server
 OBJS_DIR=build/obj
 BIN_DIR=build/bin
 CUR_SOURCE=${wildcard *.cpp}
 CUR_OBJS=${patsubst %.cpp, %.o, $(CUR_SOURCE)}
+EXTRA_H_DIR=${ROOT_DIR}/depend/headers
+EXTRA_LIB_DIR=${ROOT_DIR}/depend/libs
+
 #将以下变量导出到子shell中，本次相当于导出到子目录下的makefile中
-export CC BIN OBJS_DIR BIN_DIR ROOT_DIR
+export CC BIN OBJS_DIR BIN_DIR ROOT_DIR EXTRA_H_DIR EXTRA_LIB_DIR
 #需要先执行SUBDIRS最后才能是DEBUG
 all:$(SUBDIRS) $(CUR_OBJS) DEBUG
 #递归执行子目录下的makefile文件，这是递归执行的关键
