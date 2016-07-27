@@ -308,11 +308,8 @@ bool HTTPPacketParser::processLengthBody(DataBuffer *databuffer,
                                      HTTPPacket *packet) 
 {
     size_t bufferLength = databuffer->getDataLen();
-    std::cout << "data len:" << _dataLength << std::endl;
-    std::cout << "buffer len:" << bufferLength << std::endl;    
     if (bufferLength >= _dataLength) {//we have enough data
         packet->appendBody(databuffer->getData(), _dataLength);
-	std::cout << "appen body finish" << std::endl;
         databuffer->drainData(_dataLength);
         _drainedLength += _dataLength;
         return true;

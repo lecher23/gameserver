@@ -7,7 +7,7 @@
 #define DF_SHARED_PTR(T) typedef std::shared_ptr<T> T##Ptr;
 
 namespace common{
-#define _LOG(x) std::cout<<(x)<<std::endl;    
+#define _LOG(x) std::cout<<(x)<<std::endl;
 #define CONNECTION_CLOSE "close"
 #define CONNECTION_KEEP_ALIVE "Keep-Alive"
     

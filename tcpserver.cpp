@@ -11,6 +11,7 @@
 #include "util/processorfactory.h"
 #include "util/luatoolfactory.h"
 #include "util/config.h"
+#include "mysql/mysqlclient.h"
 
 namespace cgserver {
     
@@ -24,6 +25,9 @@ bool TcpServer::initServer(int port) {
     IHandler *handler = HandlerFactory::getHandler();
     _processor = ProcessorFactory::getProcessor();
     _processor->init((void *)handler);
+    if (!MysqlClient::getInstance().initClient("localhost", "root", "111222", "SLOTS")) {
+	std::cout << "Init mysql client failed." << std::endl;
+    }
 
     std::string file = Config::getInstance().getConfigValue("lua", "path");
     int poolSize;

@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <netinet/in.h>
 #include "../handlers/ihandler.h"
+#include "../mysql/mysqlclient.h"
 
 namespace cgserver{
     SocketProcessor::SocketProcessor():_handler(NULL){
@@ -62,7 +63,7 @@ namespace cgserver{
 	}
 	buf.pourData(bytes_recv);
 	*(buf.getFree()) = '\0';
-	std::cout <<"recv data:"<<buf.getData() << std::endl;
+	MysqlClient::getInstance().log(std::string(buf.getData()));
 	return true;
     }
 
