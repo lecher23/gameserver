@@ -9,7 +9,8 @@
 #include "socket/socketprocessor.h"
 #include "util/task.h"
 #include "util/processorfactory.h"
-
+#include "util/luatoolfactory.h"
+#include "util/config.h"
 
 namespace cgserver {
     
@@ -24,6 +25,19 @@ bool TcpServer::initServer(int port) {
     _processor = ProcessorFactory::getProcessor();
     _processor->init((void *)handler);
 
+    std::string file = Config::getInstance().getConfigValue("lua", "path");
+    int poolSize;
+    if (!Config::getInstance().getIntValue("server", "threadpool_size", poolSize) ||
+	poolSize < 0)
+    {
+	std::cout << "Invalid threadpoll size:" << poolSize << std::endl;
+	return false;
+    }
+    if (!file.empty() && !LuaToolFactory::getInstance().init(poolSize + 2, file)) {
+	std::cout << "Init lua factory failed." << std::endl;
+	return false;
+    }
+
     if (!_socket.setAddress(NULL, port)){
 	std::cout << "Set socket address failed." << std::endl;
 	return false;
@@ -35,7 +49,7 @@ bool TcpServer::initServer(int port) {
     }
 
     // Init thread pool, default 8 threads and queue size is 512
-    _pool.reset(new ThreadPool(8));
+    _pool.reset(new ThreadPool(poolSize));
     if (!_pool->start()) {
 	std::cout << "Create thread poll failed." << std::endl;
 	return false;

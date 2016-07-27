@@ -35,11 +35,13 @@ namespace cgserver{
 	    return false;
 	}
 	ret = lua_tonumber(_L, -1);
+	popValue();
 	return true;
     }
 
     bool LuaTool::getValue(long int &ret) {
 	ret = lua_tointeger(_L, -1);
+	popValue();	
 	return true;
     }    
     
@@ -47,6 +49,7 @@ namespace cgserver{
 	size_t len;
 	const char *src = lua_tolstring(_L, -1, &len);
 	str.assign(src);
+	popValue();	
 	return true;
     }
 
@@ -92,6 +95,15 @@ namespace cgserver{
 	debug();
 	lua_getglobal(_L, funcName.c_str());
 	return exeFunc(0,0);
+    }
+
+    void LuaTool::popValue(int wanted) {
+	lua_pop(_L, wanted);
+    }
+
+    void LuaTool::clearLuaStack() {
+	int stack_size = lua_gettop(_L);
+	lua_pop(_L, stack_size);
     }
 
     bool LuaTool::debug() {

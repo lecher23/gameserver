@@ -8,6 +8,7 @@ extern "C"
 #include "lauxlib.h"
 }
 
+#include "common_define.h"
 #include <iostream>
 
 namespace cgserver{
@@ -28,6 +29,9 @@ namespace cgserver{
 	void pushValue(double in);	
 	void pushValue(const std::string &in);
 	void pushValue(const char *in);
+
+	void popValue(int wanted = 1);
+	void clearLuaStack();	
 
 	bool exeFunc(int iCount, int oCount);
 	//void funcName(void)
@@ -55,5 +59,7 @@ namespace cgserver{
     private:
 	lua_State *_L;
     };
+
+    DF_SHARED_PTR(LuaTool);
 }
 #endif

@@ -24,7 +24,7 @@ namespace cgserver{
 	    std::cout << "Init config failed." << std::endl;
 	    return;
 	}
-	std::cout << "Server on port["<< port <<"] start." << std::endl;
+	std::cout << "Start server on port["<< port <<"]" << std::endl;
 	_server.startServer(port);
     }
 }
