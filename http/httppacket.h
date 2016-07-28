@@ -86,6 +86,7 @@ public:
     void addParam(const std::string &key, const std::string &value);
     const KVMap &getParams();
     const std::string &getParamValue(const std::string &key, bool &exist);
+    bool getParamValue(const std::string &key, std::string &dest);
     
     virtual ~HTTPPacket();
 

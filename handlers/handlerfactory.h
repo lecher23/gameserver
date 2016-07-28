@@ -3,7 +3,7 @@
 
 #include "ihandler.h"
 #include "packethandler.h"
-#include "slotshandler.h"
+#include "../slots/slotshandler.h"
 
 namespace cgserver{
     class HandlerFactory{
@@ -12,7 +12,7 @@ namespace cgserver{
         ~HandlerFactory();
 
 	static IHandler* getHandler() {
-	    return (IHandler *)new cglogic::SlotsHandler;
+	    return (IHandler *)new slots::SlotsHandler;
 	}
     };
 }

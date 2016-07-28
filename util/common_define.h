@@ -6,6 +6,19 @@
 
 #define DF_SHARED_PTR(T) typedef std::shared_ptr<T> T##Ptr;
 
+#ifndef LIKELY
+#if __GNUC__ > 2 || __GNUC_MINOR__ >= 96
+    #define LIKELY(x)       __builtin_expect(!!(x),1)
+    #define UNLIKELY(x)     __builtin_expect(!!(x),0)
+    #define EXPECTED(x,y)   __builtin_expect((x),(y))
+#else
+    #define LIKELY(x)       (x)
+    #define UNLIKELY(x)     (x)
+    #define EXPECTED(x,y)   (x)
+#endif
+#endif
+
+
 namespace common{
 #define _LOG(x) std::cout<<(x)<<std::endl;
 #define CONNECTION_CLOSE "close"
@@ -34,6 +47,12 @@ namespace common{
     const std::string HTTP_GET = "GET";
     const std::string HTTP_POST = "POST";
     const std::string EMPTY_STR = "";
+
+    const std::string ERR_LOAD_LUA = "Load lua file failed.";
+    const std::string ERR_HTTP_METHOD = "Only support POST.";
+    const std::string ERR_HTTP_URI = "Bad URI.";
+    const std::string ERR_HTTP_PARAM = "Wrong parameter in URI.";
+    const std::string ERR_CALL_LUA = "Call lua script failed.";
 }
 
 #endif

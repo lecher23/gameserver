@@ -56,7 +56,7 @@ private:
     // *--Function for parse uri(like /a/b?x=1)--*
     bool processURI(HTTPPacket *packet);
     bool parseURI(const char *uri, HTTPPacket *packet);
-    int findChar(const char *dest, char tar);
+    int locateChar(const char *dest, char tar);
     bool parseParam(const char *paramStr, HTTPPacket *packet);
     void parseKV(const char *begin, int kvLen, HTTPPacket *packet);
     

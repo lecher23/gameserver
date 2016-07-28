@@ -507,5 +507,14 @@ const std::string &HTTPPacket::getParamValue(const std::string &key, bool &exist
     exist = false;
     return common::EMPTY_STR;
 }
+
+bool HTTPPacket::getParamValue(const std::string &key, std::string &dest){
+    KVMapItr it = _params.find(key);
+    if (it == _params.end())
+	return false;
+    dest.clear();
+    dest.assign(it->second);
+    return true;
+}    
     
 }/*end namespace anet*/

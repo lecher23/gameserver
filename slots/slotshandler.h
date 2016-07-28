@@ -1,10 +1,9 @@
 #ifndef SLOTSHANDLER_H
 #define SLOTSHANDLER_H
 
-#include "ihandler.h"
-#include "../util/luatoolfactory.h"
+#include "../handlers/ihandler.h"
 
-namespace cglogic{
+namespace slots{
     class SlotsHandler:cgserver::IHandler{
     public:
         SlotsHandler();

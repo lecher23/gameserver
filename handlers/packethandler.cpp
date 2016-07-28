@@ -26,9 +26,9 @@ namespace cglogic{
 	std::string sc = cfg.getConfigValue(AppName, SpecialSetting);
 	cgserver::strs_t pairs;
 	cgserver::strs_t kv;
-	cgserver::splitString(sc, ';', pairs);
+	cgserver::StringUtil::splitString(sc, ';', pairs);
 	for (strs_t::iterator it = pairs.begin(); it != pairs.end(); ++it) {
-	    cgserver::splitString(*it, ':', kv);
+	    cgserver::StringUtil::splitString(*it, ':', kv);
 	    if (kv.size() != 2) {
 		std::cout << "Invalid setting [" << *it << "], ignore." << std::endl;
 		continue;

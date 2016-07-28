@@ -88,7 +88,7 @@ bool HTTPPacketParser::processURI(HTTPPacket *packet) {
 
 bool HTTPPacketParser::parseURI(const char *uri, HTTPPacket *packet) {
     int uriLen = strlen(uri);
-    int qFlag = HTTPPacketParser::findChar(uri, '?');
+    int qFlag = locateChar(uri, '?');
     if (qFlag <= 0) {
 	packet->setPath(uri, uriLen);
 	return true;
@@ -99,7 +99,7 @@ bool HTTPPacketParser::parseURI(const char *uri, HTTPPacket *packet) {
     return true;
 }
 
-int HTTPPacketParser::findChar(const char *dest, char tar) {
+int HTTPPacketParser::locateChar(const char *dest, char tar) {
     int ret = 0;
     while(*dest != '\0') {
 	if (*dest == tar) return ret;
@@ -113,7 +113,7 @@ int HTTPPacketParser::findChar(const char *dest, char tar) {
 bool HTTPPacketParser::parseParam(const char *paramStr, HTTPPacket *packet){
     int prev = 0;
     int pos;
-    while((pos = HTTPPacketParser::findChar(paramStr, '&')) >= 0){
+    while((pos = locateChar(paramStr, '&')) >= 0){
 	parseKV(paramStr, pos, packet);
 	paramStr += pos + 1;
     }
@@ -127,7 +127,7 @@ bool HTTPPacketParser::parseParam(const char *paramStr, HTTPPacket *packet){
 void HTTPPacketParser::parseKV(const char *begin, int kvLen, HTTPPacket *packet) {
     if (kvLen <= 0)
 	return;
-    int pos = HTTPPacketParser::findChar(begin, '=');
+    int pos = locateChar(begin, '=');
     if (pos == kvLen -1)
 	packet->addParam(std::string(begin, pos), EMPTY_STR);
     else if (pos < 0)
