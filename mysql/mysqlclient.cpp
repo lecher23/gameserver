@@ -31,19 +31,21 @@ namespace cgserver{
 				   db.c_str(), port, NULL, 0) != NULL);
     }
 
-    void MysqlClient::log(const std::string &lg){
-	std::string q = "";
-	q.assign("insert into server_log(msg) values (\"");
-	for (size_t i = 0; i < lg.size(); ++i) {
-	    if (lg[i] == '"') {
-		q.append(1, '\\');
-		q.append(1, lg[i]);
-	    }
-	    q.append(1, lg[i]);
-	}
-	q.append("\")");
-	exeQuery(q);
-    }
+    // void MysqlClient::log(const std::string &lg){
+    // 	std::string q = "";
+    // 	q.assign("insert into server_log(msg) values (\"");
+    // 	for (size_t i = 0; i < lg.size(); ++i) {
+    // 	    if (lg[i] == '"') {
+    // 		q.append(1, '\\');
+    // 		q.append(1, lg[i]);
+    // 	    }
+    // 	    q.append(1, lg[i]);
+    // 	}
+    // 	q.append("\")");
+    // 	_lock.lock();
+    // 	exeQuery(q);
+    // 	_lock.unlock();
+    // }
 
     bool MysqlClient::addRow(const std::string &tableName, const RowValues &rv) {
 	std::string q;
@@ -72,7 +74,9 @@ namespace cgserver{
 	    q.append(S_Values);
 	    q.append(values);
 	}
-	return exeQuery(q);
+	_lock.lock();
+	bool ret = exeQuery(q);
+	_lock.unlock();
     }
 
     void MysqlClient::appendValue(const std::string &sVal, std::string sDest) {
@@ -87,9 +91,7 @@ namespace cgserver{
 
     bool MysqlClient::exeQuery(const std::string &q) {
 	std::cout << "run query:"<< q << std::endl;
-	_lock.lock();
 	int ret = mysql_query(&_client, q.c_str());
-	_lock.unlock();
 	if (ret != 0) {
 	    switch(ret) {
 	    case CR_COMMANDS_OUT_OF_SYNC:
@@ -110,16 +112,71 @@ namespace cgserver{
     }
 
     bool MysqlClient::query(const std::string &q) {
-	int ret = mysql_query(&_client, q.c_str());
-	if (ret != 0) {
-	    std::cout << "Run query [" << q << "] failed. Error code:" << ret << std::endl;
+	_lock.lock();
+	bool ret = exeQuery(q);
+	_lock.unlock();
+	return ret;
+    }
+
+    /*Get single result from mysql db*/
+    bool MysqlClient::queryWithResult(const std::string &q, MysqlRow &out) {
+	out.clear();
+	_lock.lock();
+	bool ret = false;
+	do {
+	    if (!exeQuery(q)) {
+		break;
+	    }
+	    if (!getSingleResult(out)) {
+		break;
+	    }
+	    ret = true;
+	}while(0);
+	_lock.unlock();
+	return ret;
+    }
+
+    bool MysqlClient::insertWithReturn(
+	MysqlStr &insertQuery, MysqlStr &selectQuery, MysqlRow &out)
+    {
+	bool ret = false;
+	do {
+	    if (!query(insertQuery)) {
+		break;
+	    }
+	    if (!queryWithResult(selectQuery, out)) {
+		break;
+	    }
+	    ret = true;
+	}while(0);
+	return ret;
+    }
+
+    /*Get first result from mysql db.*/
+    bool MysqlClient::getSingleResult(MysqlRow &out){
+	MYSQL_RES *res = mysql_store_result(&_client);
+	// no result.
+	if (res == NULL ) {
+	    std::cout << "Store result from mysql failed.\n";
 	    return false;
 	}
-	MYSQL_RES *result = mysql_store_result(&_client);
-	if (result) {
-	    uint64_t numRes = mysql_num_rows(result);
-	    std::cout << "Result number:"<< numRes << std::endl;
-	    mysql_free_result(result);
+	// char **
+	MYSQL_ROW row = mysql_fetch_row(res);
+	while(row != NULL) {
+	    unsigned long *lens = mysql_fetch_lengths(res);
+	    int fieldNum = mysql_num_fields(res);
+	    for (size_t i = 0; i < fieldNum; ++i) {
+		if (row[i] == NULL) {
+		    out.push_back("");
+		}else {
+		    out.push_back(std::string(row[i], lens[i]));
+		}
+	    }
+	    // just one result
+	    break;
 	}
+	// release result.
+	mysql_free_result(res);
+	return true;
     }
 }

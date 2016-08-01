@@ -3,6 +3,7 @@
 #include <string>
 #include <iostream>
 #include <memory>
+#include "glog/logging.h"
 
 #define DF_SHARED_PTR(T) typedef std::shared_ptr<T> T##Ptr;
 
@@ -18,6 +19,8 @@
 #endif
 #endif
 
+
+#define CLOG(x) LOG(x)
 
 namespace common{
 #define _LOG(x) std::cout<<(x)<<std::endl;

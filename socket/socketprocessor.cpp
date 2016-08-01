@@ -63,7 +63,7 @@ namespace cgserver{
 	}
 	buf.pourData(bytes_recv);
 	*(buf.getFree()) = '\0';
-	MysqlClient::getInstance().log(std::string(buf.getData()));
+	//MysqlClient::getInstance().log(std::string(buf.getData()));
 	return true;
     }
 

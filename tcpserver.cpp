@@ -21,12 +21,16 @@ TcpServer::TcpServer():_stop(false){
 TcpServer::~TcpServer() {
 }
 
+/* Init Google Logger.*/    
+void TcpServer::initLogger(){
+}   
+
 bool TcpServer::initServer(int port) {
     IHandler *handler = HandlerFactory::getHandler();
     _processor = ProcessorFactory::getProcessor();
     _processor->init((void *)handler);
     if (!MysqlClient::getInstance().initClient("localhost", "root", "111222", "SLOTS")) {
-	std::cout << "Init mysql client failed." << std::endl;
+	CLOG(INFO) << "Init mysql client failed.";
     }
 
     std::string file = Config::getInstance().getConfigValue("lua", "path");
@@ -34,40 +38,43 @@ bool TcpServer::initServer(int port) {
     if (!Config::getInstance().getIntValue("server", "threadpool_size", poolSize) ||
 	poolSize < 0)
     {
-	std::cout << "Invalid threadpoll size:" << poolSize << std::endl;
+	CLOG(ERROR) << "Invalid threadpoll size:" << poolSize;
 	return false;
     }
     if (!file.empty() && !LuaToolFactory::getInstance().init(poolSize + 2, file)) {
-	std::cout << "Init lua factory failed." << std::endl;
+	CLOG(ERROR) << "Init lua factory failed.";
 	return false;
     }
 
     if (!_socket.setAddress(NULL, port)){
-	std::cout << "Set socket address failed." << std::endl;
+	CLOG(ERROR) << "Set socket address failed.";
 	return false;
     }
     
     if (!_socket.listen(256)) {
-	std::cout << "Listen failed." << std::endl;
+	CLOG(ERROR) << "Listen failed.";
 	return false;
     }
 
     // Init thread pool, default 8 threads and queue size is 512
     _pool.reset(new ThreadPool(poolSize));
     if (!_pool->start()) {
-	std::cout << "Create thread poll failed." << std::endl;
+	CLOG(ERROR) << "Create thread poll failed.";
 	return false;
     }
+    CLOG(INFO) << "Init server success.";
     return true;
 }
 
 void TcpServer::startServer(int port) {
     if (!initServer(port)){
-	std::cout << "Init Server failed.!" << std::endl;
+	LOG(ERROR) << "Init Server failed.!";
 	return;
     }
     Socket *clientSocket;
     while(!_stop) {
+	CLOG(INFO) << "Accept.";
+	CLOG(ERROR) << "Accept.";
 	if ((clientSocket = _socket.accept()) == NULL) {
 	    //accept failed.
 	    continue;

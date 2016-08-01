@@ -11,8 +11,8 @@ namespace slots{
         virtual ~LoginService();
 
 	virtual bool doJob(CPacket &packet, CResponse &resp);
-
     private:
+	void formatResult(bool success, UserInfo &ui, std::string &out);
 	bool getUserInfo(CPacket &packet, UserInfo &uinfo);
     };
 }

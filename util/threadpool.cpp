@@ -122,6 +122,7 @@ void ThreadPool::pushRestartTask(Runnable *runner)
 
 bool ThreadPool::start() 
 {
+    CLOG(INFO) << "Start thread poll";
     if (_run)
     {
         //("Already started!");

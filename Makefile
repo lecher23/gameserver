@@ -7,7 +7,7 @@ CUR_SOURCE=${wildcard *.cpp}
 CUR_OBJS=${patsubst %.cpp, %.o, $(CUR_SOURCE)}
 EXTRA_H_DIR=${ROOT_DIR}/depend/headers
 EXTRA_LIB_DIR=${ROOT_DIR}/depend/libs
-CC=g++ -std=c++11 -g -I ${EXTRA_H_DIR}
+CC=g++ -std=c++11 -I ${EXTRA_H_DIR}
 
 #将以下变量导出到子shell中，本次相当于导出到子目录下的makefile中
 export CC BIN OBJS_DIR BIN_DIR ROOT_DIR EXTRA_H_DIR EXTRA_LIB_DIR

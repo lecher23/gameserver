@@ -7,6 +7,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include "util/config.h"
+#include "util/common_define.h"
 
 namespace cgserver{
     const std::string CgServer::ConfigFilePath = "server.cfg";
@@ -17,20 +18,52 @@ namespace cgserver{
 	;
     }
     void CgServer::start(){
-	std::cout << "init config." << std::endl;
+	/*Read config file.*/
 	Config &cfg = Config::getInstance();
 	int port;
 	if (!cfg.initConfig(ConfigFilePath) || (port = cfg.getListenPort()) < 0) {
 	    std::cout << "Init config failed." << std::endl;
 	    return;
 	}
-	std::cout << "Start server on port["<< port <<"]" << std::endl;
+	
+	/*Init Logger*/
+	google::InitGoogleLogging("CgServer");
+	/*Level can be INFO(0)/WARNNING(1)/ERROR(2)/FATAL(3).*/
+	const std::string logLevel =
+	    Config::getInstance().getConfigValue("server", "log_level");
+	const std::string logDir =
+	    Config::getInstance().getConfigValue("server", "log_dir");
+	int level = 0;
+	if (logLevel == "WARNNING") {
+	    level = 1;
+	}else if (logLevel == "ERROR") {
+	    level = 2;
+	}else if (logLevel == "FATAL") {
+	    level = 3;
+	}
+	//for (int i = 0; i < 4; ++i) {
+	    // close link function
+	    //google::SetLogSymlink(i, "");
+	//}
+	// error will flush to file
+	//google::FlushLogFiles(3);
+	if (!logDir.empty()) {
+	    std::string logFilePrefix = logDir;
+	    // set log min level.
+	    if (logDir[logDir.size() - 1] == '/') {
+		logFilePrefix.append("log");
+	    }else {
+		logFilePrefix.append("/log");
+	    }
+	    google::SetLogDestination(level, logFilePrefix.c_str());
+	}
+	CLOG(INFO) << "Starting server on port["<< port <<"]" ;
 	_server.startServer(port);
     }
 }
 
 void err_quit(const std::string &str) {
-    std::cout << str << std::endl;
+    CLOG(INFO) << str ;
     exit(1);
 }
 
