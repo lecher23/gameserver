@@ -90,21 +90,21 @@ namespace cgserver{
     }
 
     bool MysqlClient::exeQuery(const std::string &q) {
-	std::cout << "run query:"<< q << std::endl;
+	CLOG(INFO) << "run query:"<< q ;
 	int ret = mysql_query(&_client, q.c_str());
 	if (ret != 0) {
 	    switch(ret) {
 	    case CR_COMMANDS_OUT_OF_SYNC:
-		std::cout << "ERROR:CR_COMMANDS_OUT_OF_SYNC" << std::endl;
+		CLOG(ERROR) << "ERROR:CR_COMMANDS_OUT_OF_SYNC" ;
 		break;
 	    case CR_SERVER_GONE_ERROR:
-		std::cout << "ERROR:CR_SERVER_GONE_ERROR" << std::endl;
+		CLOG(ERROR) << "ERROR:CR_SERVER_GONE_ERROR" ;
 		break;
 	    case CR_SERVER_LOST:
-		std::cout << "ERROR:CR_SERVER_LOST" << std::endl;
+		CLOG(ERROR) << "ERROR:CR_SERVER_LOST" ;
 		break;
 	    default:
-		std::cout << "Unknow error." << std::endl;
+		CLOG(ERROR) << "Unknow error." ;
 	    }
 	    return false;
 	}
@@ -157,7 +157,7 @@ namespace cgserver{
 	MYSQL_RES *res = mysql_store_result(&_client);
 	// no result.
 	if (res == NULL ) {
-	    std::cout << "Store result from mysql failed.\n";
+	    CLOG(ERROR) << "Store result from mysql failed.\n";
 	    return false;
 	}
 	// char **

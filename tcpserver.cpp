@@ -29,6 +29,7 @@ bool TcpServer::initServer(int port) {
     IHandler *handler = HandlerFactory::getHandler();
     _processor = ProcessorFactory::getProcessor();
     _processor->init((void *)handler);
+
     if (!MysqlClient::getInstance().initClient("localhost", "root", "111222", "SLOTS")) {
 	CLOG(INFO) << "Init mysql client failed.";
     }
@@ -73,12 +74,11 @@ void TcpServer::startServer(int port) {
     }
     Socket *clientSocket;
     while(!_stop) {
-	CLOG(INFO) << "Accept.";
-	CLOG(ERROR) << "Accept.";
 	if ((clientSocket = _socket.accept()) == NULL) {
 	    //accept failed.
 	    continue;
 	}
+	CLOG(INFO) << "Accept Connect.";	
 	SocketPtr tmp(clientSocket);
 	Task *task = new Task(tmp, _processor);
 	if (_pool->pushTask((Runnable *)task) != ThreadPool::ERROR_NONE) {

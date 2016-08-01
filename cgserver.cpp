@@ -41,12 +41,13 @@ namespace cgserver{
 	}else if (logLevel == "FATAL") {
 	    level = 3;
 	}
-	//for (int i = 0; i < 4; ++i) {
+	for (int i = 0; i < 4; ++i) {
 	    // close link function
-	    //google::SetLogSymlink(i, "");
-	//}
-	// error will flush to file
-	//google::FlushLogFiles(3);
+	    google::SetLogSymlink(i, "");
+	}
+	google::SetStderrLogging(4); 
+	//error will flush to file
+	google::FlushLogFiles(3);
 	if (!logDir.empty()) {
 	    std::string logFilePrefix = logDir;
 	    // set log min level.

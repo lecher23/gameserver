@@ -29,25 +29,25 @@ namespace slots{
     bool SlotsDB::getUserInfo(
 	const std::string &mid, UserInfo &ui, std::string &errMsg) const
     {
-	std::cout << "Get user info\n";
+	CLOG(INFO) << "Get user info\n";
 	// get logic
 	std::string sQuery = "select * from user_info as A inner join user_resource as B on A.uid = B.uid and A.mid = ";
 	APPEND_VALUE(s, ui.mid);
 	MysqlClient::MysqlRow res;
 	if (!_client.queryWithResult(sQuery, res)) {
-	    std::cout << "Run query [" << sQuery << "] failed.\n";
+	    CLOG(ERROR) << "Run query [" << sQuery << "] failed.\n";
 	    errMsg = "Run query failed.Code 110001.";
 	    return false;
 	}
 	if (res.size() == 0) {
-	    std::cout << "New user. Record.\n";
+	    CLOG(INFO) << "New user. Record.\n";
 	    std::string uid;
 	    if (!addUser(mid, uid, errMsg)) {
-		std::cout << "Set raw user info failed.\n";
+		CLOG(ERROR) << "Set raw user info failed.\n";
 		return false;
 	    }
 	    if (!_client.queryWithResult(sQuery, res)) {
-		std::cout << "Run query [" << sQuery << "] failed.\n";
+		CLOG(ERROR) << "Run query [" << sQuery << "] failed.\n";
 		return false;
 	    }
 	    if (res.size() == 0) {
@@ -84,7 +84,7 @@ namespace slots{
 
 	MysqlClient::MysqlRow out;
 	if (!_client.insertWithReturn(insertQuery, selectQuery, out) || out.empty()) {
-	    std::cout << "Add new user failed.\n";
+	    CLOG(ERROR) << "Add new user failed.\n";
 	    return false;
 	}
 	uid = out[0];
