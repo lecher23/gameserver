@@ -68,9 +68,8 @@ bool Socket::connect() {
 
         rc = ::bind(_fd,(struct sockaddr *)&un, sizeof(un));
         if (rc < 0){
-            //bindErrInc();
-            //_LOG("Bind domain socket failed in connect. path:%s, err: %d\n",
-	    //addr.getUnixPath(), rc);
+            CLOG(ERROR)<< "Bind domain socket failed in connect. path:"<<
+		addr.getUnixPath() << ", err:" << rc;
             return false;
         }
     }
@@ -80,8 +79,7 @@ bool Socket::connect() {
      * return EINPROGRESS. This error is not beyond our expectation so
      * we only log the errors other than that. */
     if (rc < 0 && errno != EINPROGRESS) {
-        //connectErrInc();
-        //_LOG("connect socket failed, err: %d\n",errno);
+        CLOG(ERROR) << "connect socket failed, err: " << errno;
     }
 
     return (0 == rc);
@@ -96,7 +94,7 @@ void Socket::close() {
     if (_fd != -1) {
         char tmp[256];
         getAddr(tmp, 256);
-        //_LOG("Closing socket, fd=%d, addr=%s", _socketHandle, tmp);
+        CLOG(INFO) << "Closing socket, fd=" << _fd << ", addr="<< tmp;
         ::close(_fd);
         _fd = -1;
     }
@@ -104,6 +102,7 @@ void Socket::close() {
 
 void Socket::shutdown() {
     if (_fd != -1) {
+	CLOG(INFO) << "Shutdown socket, fd=" << _fd;
         ::shutdown(_fd, SHUT_RDWR);
 	::close(_fd);
     }
@@ -136,14 +135,11 @@ int Socket::write(const void *data, int len) {
     int res = -1;
     do {
         res = ::write(_fd, data, len);
-        // if (res > 0)
-        // {
-        //     ANET_COUNT_DATA_WRITE(res);
-        // }
-        // else if (-1 == res && (errno != EINTR && errno != EAGAIN))
-        // {
-        //     writeErrInc();
-        // }
+        if (-1 == res && (errno != EINTR && errno != EAGAIN))
+        {
+	    std::string em = std::string((char *)data, len);
+            CLOG(ERROR) << "Write [" << em << "] failed.";
+        }
     } while (res < 0 && errno == EINTR);
     return res;
 }
@@ -159,14 +155,10 @@ int Socket::read (void *data, int len) {
     int res = -1;
     do {
         res = ::read(_fd, data, len);
-        // if (res > 0)
-        // {
-        //     ANET_COUNT_DATA_READ(res);
-        // }
-        // else if (-1 == res && (errno != EINTR && errno != EAGAIN))
-        // {
-        //     readErrInc();
-        // }
+        if (-1 == res && (errno != EINTR && errno != EAGAIN))
+        {
+            CLOG(ERROR) << "Read data from socket " << _fd << " failed.";
+        }
     } while (-1 == res && errno == EINTR);
     return res;
 }
@@ -176,22 +168,22 @@ bool Socket::setKeepAliveParameter(int idleTime, int keepInterval, int cnt) {
         int rc = setsockopt(_fd, SOL_TCP, TCP_KEEPIDLE, &idleTime, sizeof(idleTime));
         if (rc != 0)
         {
-            // ANET_LOG(WARN, "Can not set keep alive idle time for the socket: %d, err %d", 
-            //                  _socketHandle, rc);
+            CLOG(ERROR) << "Can not set keep alive idle time for the socket:" <<
+		_fd << ", err: " << rc;
             return false;
         }
         rc = setsockopt(_fd, SOL_TCP, TCP_KEEPINTVL, &keepInterval, sizeof(keepInterval));
         if (rc != 0)
         {
-            // ANET_LOG(WARN, "Can not set keep alive interval for the socket: %d, err %d", 
-            //                  _socketHandle, rc);
+            CLOG(ERROR) << "Can not set keep alive interval for the socket: " <<
+		_fd << ", err:" << rc;
             return false;
         }
         rc = setsockopt(_fd, SOL_TCP, TCP_KEEPCNT, &cnt, sizeof(cnt));
         if (rc != 0)
         {
-            // ANET_LOG(WARN, "Can not set keep alive cnt for the socket: %d, err %d", 
-            //                  _socketHandle, rc);
+            CLOG(ERROR) << "Can not set keep alive cnt for the socket: "<<
+		_fd << ", err:" << rc;
             return false;
         }
         return true;
@@ -299,9 +291,8 @@ bool Socket::getSockAddr(sockaddr_in &address, bool active) {
     if (active) {
         int ret = getsockname(_fd, (sockaddr*)&address, &addrLen);
         if (ret != 0 || addrLen != sizeof(address) ) {
-            //ERRSTR(errno);
-            //_LOG("getsockname() fail! [ret, len, fd]: [%d, %d, %d]."
-	    //  "%s!", ret, addrLen, _socketHandle, errStr);
+            CLOG(ERROR) << "getsockname() fail! [ret, len, fd]: [" <<
+		ret << ", " << addrLen << "," << _fd << "].";
             return false;
         }
     } else {
@@ -343,15 +334,12 @@ Socket *Socket::accept() {
         /* special processing for domain socket. */
         if (addr.getProtocolFamily() == AF_UNIX){
             unlink(address.un.sun_path);
-            //_LOG("In accept, unlink domain socket file %s\n", address.un.sun_path);
+            CLOG(INFO) << "In accept, unlink domain socket file: " << address.un.sun_path;
         }
     } else {
         int error = getLastError();
         if (error != EAGAIN) {
-            //acceptErrInc();
-            //ERRSTR(error);
-            //_LOG(ERROR, "%s(%d)", errStr, error);
-	    ;
+            CLOG(ERROR) << "Accept return bad fd. error:" << error;
         }
     }
 
@@ -378,17 +366,13 @@ bool Socket::listen(int backlog) {
     if (::bind(_fd, addr.getAddr(), addr.getAddrSize()) < 0)
     {
         int error = getLastError();
-        //ERRSTR(error);
-        //ANET_LOG(ERROR, "%s(%d)", errStr, error);
-        //bindErrInc();
+        CLOG(ERROR) << "bind() failed when start listen. error:" << error;
         return false;
     }
 
     if (::listen(_fd, backlog) < 0) {
         int error = getLastError();
-        //ERRSTR(error);
-        //_LOG(ERROR, "%s(%d)", errStr, error);
-        //listernErrInc();
+        CLOG(ERROR) << "listen() failed after bind. error:" << error;	
         return false;
     }
 
@@ -422,7 +406,6 @@ bool Socket::bindLocalAddress(const char *localIp, uint16_t localPort) {
     if (::bind(_fd, (struct sockaddr *)&localAddr,
                sizeof(localAddr)) < 0) 
     {
-        //int error = getLastError();
         return false;
     }
     return true;
