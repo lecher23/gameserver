@@ -39,41 +39,37 @@ bool HTTPPacketParser::processData(DataBuffer *dataBuffer, HTTPPacket *packet)
 {
     switch (_step) {
     case PS_START_LINE:
-        //_LOG("HTTPStreamingContext::HSS_START_LINE");
         if (processStartLine(dataBuffer, packet)) {
-            //_LOG("processStartLine finished!");
+            CLOG(WARNING) << "processStartLine finished!";
             _step = PS_MESSAGE_HEADER;
         } else {
-            _LOG("processStartLine() not finished.");
+            CLOG(WARNING) << "processStartLine() not finished.";
             break;
         }
     case PS_MESSAGE_HEADER:
-        //_LOG("HTTPStreamingContext::HSS_MESSAGE_HEADER");
         if (processHeaders(dataBuffer, packet)) {
-            //_LOG("processHeaders finished!");
+            CLOG(WARNING) << "processHeaders finished!";
             _step = PS_MESSAGE_BODY;
         } else {
-            _LOG("processHeaders() not finished.");
+            CLOG(WARNING) << "processHeaders() not finished.";
             break;
         }
     case PS_MESSAGE_BODY:
-        //_LOG("HTTPStreamingContext::HSS_MESSAGE_BODY");
         if (processBody(dataBuffer, packet)) {
-            //_LOG("processBody finished!");
+            CLOG(WARNING) << "processBody finished!";
             _step = PS_MESSAGE_URI;	    
         } else {
-            _LOG("processBody() not finished.");	    
+            CLOG(WARNING) << "processBody() not finished.";	    
 	    break;
 	}
     case PS_MESSAGE_URI:
-        //_LOG("HTTPStreamingContext::HSS_MESSAGE_URI");
 	if (processURI(packet)) {
-            //_LOG("processURI finish!");
+            CLOG(WARNING) << "processURI finish!";
 	    _parseFinish = true;
 	}
 	break;
     default:
-        _LOG("SHOULD NOT come here: DEFAULT");
+        CLOG(WARNING) << "SHOULD NOT come here: DEFAULT";
         break;
     }
     return _parseFinish;
@@ -94,8 +90,10 @@ bool HTTPPacketParser::parseURI(const char *uri, HTTPPacket *packet) {
 	return true;
     }
     packet->setPath(uri, qFlag);
-    if(!parseParam(uri + qFlag + 1, packet))
+    if(!parseParam(uri + qFlag + 1, packet)){
+	CLOG(WARNING) << "parse param from uri [" << uri << "] failed.";
 	return false;
+    }
     return true;
 }
 
@@ -145,17 +143,15 @@ bool HTTPPacketParser::processStartLine(DataBuffer *databuffer, HTTPPacket *pack
     size_t length = 0;
     if (!findCRLF(pdata, pend, cr,  length)) {
         if ((size_t)databuffer->getDataLen() > PKG_LIMIT) {
-	    _LOG("pkg too large");
-            //context->setErrorNo(AnetError::PKG_TOO_LARGE);
+	    CLOG(WARNING) << "Pkg too large";
         } else {
-            //_LOG("start line not completed");
-	    ;
+            CLOG(WARNING) << "start line not completed";
         }
         return false;
     }
     *cr = '\0';
     if (length > PKG_LIMIT) {
-	_LOG("length exceed pkg_limit.")
+	CLOG(WARNING) << "length exceed pkg_limit.";
         return false;
     }
 
@@ -174,36 +170,31 @@ bool HTTPPacketParser::processRequestLine(HTTPPacket *packet,
                                       char *start, char *end) {
     char *p  = findNextWhiteSpace(start, end);
     if (p == end) {
-        //context->setErrorNo(AnetError::INVALID_DATA);
-        _LOG("Broken stream! Only one token in start line!");
+        CLOG(WARNING) << "Broken stream! Only one token in start line!";
         return false;
     }
     *p = '\0';
     assert(packet);
     if (!isValidToken(start, p)) {
-        //context->setErrorNo(AnetError::INVALID_DATA);
-        _LOG("Broken stream! invalid method!");
+        CLOG(WARNING) << "Broken stream! invalid method:" << start;
         return false;
     }
     packet->setPacketType(HTTPPacket::PT_REQUEST);
     packet->setMethod(start);
     start = skipWhiteSpaces(p + 1, end);
     if ( start == end) {
-        //context->setErrorNo(AnetError::INVALID_DATA);
-        _LOG("Broken stream! Only one token in request line!");
+        CLOG(WARNING) << ("Broken stream! Only one token in request line!");
         return false;
     }
     //now processing URI
     p = findNextWhiteSpaceAndReplaceZero(start, end);
     if (p == end) {
-        //context->setErrorNo(AnetError::INVALID_DATA);
-        _LOG("Broken stream! Only two tokens in request line!");
+        CLOG(WARNING) << ("Broken stream! Only two tokens in request line!");
         return false;
     }
     *p = '\0';
     if ((size_t)(p - start) > URI_LIMIT) {
-        //context->setErrorNo(AnetError::URI_TOO_LARGE);
-	_LOG("uri too large.")
+	CLOG(WARNING) << ("uri too large.");
         return false;
     }
     packet->setURI(start);
@@ -215,8 +206,7 @@ bool HTTPPacketParser::processRequestLine(HTTPPacket *packet,
         packet->setVersion(HTTPPacket::HTTP_1_1);
     } else {
         packet->setVersion(HTTPPacket::HTTP_UNSUPPORTED);
-        //context->setErrorNo(AnetError::VERSION_NOT_SUPPORT);
-        _LOG("Broken stream? Unsupported HTTP version!");
+        CLOG(WARNING) << ("Broken stream? Unsupported HTTP version!");
         return false;
     }
     return true;
@@ -225,13 +215,11 @@ bool HTTPPacketParser::processRequestLine(HTTPPacket *packet,
 bool HTTPPacketParser::processStatusLine(HTTPPacket *packet, char *start, char *end) 
 {
     if (end - start < 128) {
-        //_LOG("Status Line: |%s|", start);
-	;
+        CLOG(INFO) << "Status Line: " << start;
     }
     char *p  = findNextWhiteSpace(start, end);
     if (p == end) {
-        //context->setErrorNo(AnetError::INVALID_DATA);
-        _LOG("Broken stream! Only one token in start line!");
+        CLOG(WARNING) << ("Broken stream! Only one token in start line!");
         return false;
     }
     *p = '\0';
@@ -242,14 +230,12 @@ bool HTTPPacketParser::processStatusLine(HTTPPacket *packet, char *start, char *
         packet->setVersion(HTTPPacket::HTTP_1_1);
     } else {
         packet->setVersion(HTTPPacket::HTTP_UNSUPPORTED);
-        //context->setErrorNo(AnetError::VERSION_NOT_SUPPORT);
-        _LOG("Broken stream? Unsupported HTTP version!");
+        CLOG(WARNING) << ("Broken stream? Unsupported HTTP version!");
         return false;
     }
     start = skipWhiteSpaces(p + 1, end);
     if ( start == end) {
-        //context->setErrorNo(AnetError::INVALID_DATA);
-        _LOG("Broken stream! Only one token in status line!");
+        CLOG(WARNING) << ("Broken stream! Only one token in status line!");
         return false;
     }
 
@@ -259,13 +245,11 @@ bool HTTPPacketParser::processStatusLine(HTTPPacket *packet, char *start, char *
         *p = '\0';
     }
     if (!isValidStatusCode(start)) {
-        //context->setErrorNo(AnetError::INVALID_DATA);
-        //_LOG("Broken stream! invalid status code|%s|!", start);
+        CLOG(WARNING) << "Broken stream! invalid status code:" << start;
         return false;
     }
     int statusCode = atoi(start);
     packet->setStatusCode(statusCode);
-    //ANET_LOG(SPAM,"status code(%d),start(%p),end(%p)", statusCode, p, end);
     if (p == end) {
         return true;
     }
@@ -338,35 +322,35 @@ bool HTTPPacketParser::processChunkedBody(DataBuffer *databuffer,
     // do {
     //     switch (context->_chunkState) {
     //     case HTTPStreamingContext::CHUNK_SIZE:
-    //         _LOG(SPAM, "Process Chunk Size");
+    //         CLOG(WARNING)(SPAM, "Process Chunk Size");
     //         if (!processChunkSize(databuffer, context)) {
     //             return false;
     //         } 
     //         //use switch() to determinate whether this is the lastChunk;
     //         break;
     //     case HTTPStreamingContext::CHUNK_DATA:
-    //         _LOG(SPAM, "Process Chunk Data");
+    //         CLOG(WARNING)(SPAM, "Process Chunk Data");
     //         if (!processLengthBody(databuffer,context)) {
-    //             _LOG(SPAM, "Process Chunk Data NOT finished");
+    //             CLOG(WARNING)(SPAM, "Process Chunk Data NOT finished");
     //             return false;
     //         }
     //         context->_chunkState = HTTPStreamingContext::CHUNK_DATA_CRLF;
-    //         _LOG(SPAM, "Process Chunk Data FINISHED");
+    //         CLOG(WARNING)(SPAM, "Process Chunk Data FINISHED");
     //         break;
     //     case HTTPStreamingContext::CHUNK_DATA_CRLF:
-    //         _LOG(SPAM, "Process CRLF");
+    //         CLOG(WARNING)(SPAM, "Process CRLF");
     //         if (!getCRLF(databuffer, context)) {
-    //             _LOG(SPAM, "Process CRLF not finished");
+    //             CLOG(WARNING)(SPAM, "Process CRLF not finished");
     //             return false;
     //         }
-    //         _LOG(SPAM, "Process CRLF FINISHED");
+    //         CLOG(WARNING)(SPAM, "Process CRLF FINISHED");
     //         context->_chunkState = HTTPStreamingContext::CHUNK_SIZE;
     //         break;
     //     case HTTPStreamingContext::TRAILER:
-    //         _LOG(SPAM, "Process TRAILER");
+    //         CLOG(WARNING)(SPAM, "Process TRAILER");
     //         return processHeadersOrTrailers(databuffer, context);
     //     default:
-    //         _LOG(ERROR, "We SHOULD NOT get here!");
+    //         CLOG(WARNING)(ERROR, "We SHOULD NOT get here!");
     //         return false;
     //     }
     // } while(true);
@@ -381,16 +365,15 @@ bool HTTPPacketParser::processChunkSize(DataBuffer *databuffer,
     size_t drainLength = 0;
     if (!findCRLF(pstart, pend, cr, drainLength)) {
         if (databuffer->getDataLen() + _drainedLength > PKG_LIMIT) {
-            //context->setErrorNo(AnetError::PKG_TOO_LARGE);
+            CLOG(WARNING) << ("Pkg too large");
         } else {
-            _LOG("chunk size not completed");
+            CLOG(WARNING) << ("chunk size not completed");
         }
         return false;
     }
     *cr = '\0';
-    //_LOG(SPAM, "Chunk Size Line:|%s|", pstart);
     if (_drainedLength + drainLength > PKG_LIMIT) {
-        //context->setErrorNo(AnetError::PKG_TOO_LARGE);
+	CLOG(WARNING) << ("Pkg too large");
         return false;
     }
     
@@ -399,26 +382,24 @@ bool HTTPPacketParser::processChunkSize(DataBuffer *databuffer,
     char c = 0;
     sscanf(pstart, "%x%c", &chunkSize, &c); 
     if(chunkSize < 0 || (0 != c && ';' != c)) {
-	//context->setErrorNo(AnetError::INVALID_DATA);
-	//_LOG(WARN,"Invalid data in chunk size, %d,%c", chunkSize, c);
-      return false;
+	CLOG(WARNING) << "Invalid data in chunk size, " << chunkSize << ", " << c;
+	return false;
     }
 
     _dataLength = chunkSize;
     databuffer->drainData(drainLength);
     _drainedLength += drainLength;
-    //_LOG(SPAM, "Chunk size:%lu", context->_dataLength);
     if (_dataLength == 0) {
-        _LOG("Last Chunk Found!");
+        CLOG(INFO) << ("Last Chunk Found!");
         // TODO: _chunkState = HTTPStreamingContext::TRAILER;        
         return true;
     }
 
     if (_drainedLength + _dataLength > PKG_LIMIT) {
-        //context->setErrorNo(AnetError::PKG_TOO_LARGE);
+	CLOG(WARNING) << ("Pkg too large");
         return false;
     }
-    _LOG("Chunk Size processing finished!");
+    CLOG(INFO) << ("Chunk Size processing finished!");
     // TODO: _chunkState = HTTPStreamingContext::CHUNK_DATA;
     return true;
 }
@@ -437,7 +418,6 @@ bool HTTPPacketParser::getCRLF(DataBuffer *databuffer)
 	    _drainedLength += 1;
 	    return true;
         } else if ('\r' != *pdata) {
-            //context->setErrorNo(AnetError::INVALID_DATA);
             return false;
         } else { // *pdata == '\r'
             databuffer->clear();
@@ -457,7 +437,6 @@ bool HTTPPacketParser::getCRLF(DataBuffer *databuffer)
         _drainedLength += 2;
         return true;        
     }        
-    //context->setErrorNo(AnetError::INVALID_DATA);
     return false;
 }
 
@@ -472,18 +451,15 @@ bool HTTPPacketParser::processHeadersOrTrailers(DataBuffer *databuffer,
         size_t drainLength = 0;
         if (!findCRLF(pstart, pend, cr, drainLength)) {
             if (databuffer->getDataLen() + _drainedLength > PKG_LIMIT) {
-                //context->setErrorNo(AnetError::PKG_TOO_LARGE);
-		_LOG("pkg too large");
+		CLOG(WARNING) << ("pkg too large");
             } else {
-                _LOG("header not completed");
+                CLOG(WARNING) << ("header not completed");
             }
             return false;
         }
         if (_drainedLength + drainLength > PKG_LIMIT) {
-            //context->setErrorNo(AnetError::PKG_TOO_LARGE);
             return false;
         }
-        //_LOG("a header line completed");
         *cr = '\0';
         if (cr == pstart) { //a empty line
             databuffer->drainData(drainLength);
@@ -492,47 +468,36 @@ bool HTTPPacketParser::processHeadersOrTrailers(DataBuffer *databuffer,
         }
         processPerHeaderLine(pstart, cr, packet);
         databuffer->drainData(drainLength);
-        // context->_headersCount ++;
-        // if(context->_headersCount > HTTPPacketParser::HEADERS_LIMIT) {
-        //     context->setErrorNo(AnetError::TOO_MANY_HEADERS);
-        // }
         _drainedLength += drainLength;
     }
     return false;
 }
 
 bool HTTPPacketParser::messageHeadersEnd(HTTPPacket *packet) {
-    _LOG("Message-Headers END");
     assert(packet);
     const char *encodingType = packet->getHeader("Transfer-Encoding");
     if (NULL == encodingType) {
         const char *contentLength = packet->getHeader("Content-Length");
         if (NULL == contentLength) {
             if (HTTPPacket::PT_RESPONSE  == packet->getPacketType()) {
-                _LOG("Set HTTPStreamingContext::HET_EOF");
                 packet->_encodingType = HTTPPacket::ET_EOF;
             } else { //fix ticket #146
-                _LOG("Set HTTPStreamingContext::HET_NO_BODY");
                 packet->_encodingType = HTTPPacket::ET_NO_BODY;
             }
             return true;
         } else {
             if (!isValidDigits(contentLength) ) {
-                //_LOG("error content length! %s", contentLength);
-                //context->setErrorNo(AnetError::INVALID_DATA);
+                CLOG(WARNING) << "error content length: " << contentLength;
                 return false;
             }
             int  length = atoi(contentLength);
             if (length > 0) {
-                _LOG("Set HTTPStreamingContext::HET_LENGTH");
                 packet->_encodingType = HTTPPacket::ET_LENGTH;
                 _dataLength = length;
                 if (length + _drainedLength > PKG_LIMIT) {
-                    //context->setErrorNo(AnetError::PKG_TOO_LARGE);
                     return false;
                 }
             } else {
-                _LOG("Set HTTPStreamingContext::HET_NO_BODY");
                 packet->_encodingType = HTTPPacket::ET_NO_BODY;
             }            
             return true;
@@ -542,8 +507,7 @@ bool HTTPPacketParser::messageHeadersEnd(HTTPPacket *packet) {
             packet->_encodingType = HTTPPacket::ET_CHUNKED;
             return true;
         } else {
-            _LOG("error transfer encoding type!");
-            //context->setErrorNo(AnetError::INVALID_DATA);
+            CLOG(WARNING) << ("error transfer encoding type!");
             return false;
         }
     }
@@ -588,7 +552,7 @@ bool HTTPPacketParser::processPerHeaderLine(char *pstart, char *pend,
         pstart ++;
     }
     if (pstart >= pend) {
-        _LOG("lack \":\" in header");
+        CLOG(WARNING) << ("lack \":\" in header");
         return false;
     }
     *pstart = 0;

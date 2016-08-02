@@ -32,6 +32,8 @@ namespace slots{
 	UserInfo uInfo;
 	UserResource uRes;
     };
+
+    DF_SHARED_PTR(SlotsUser);
     
     class SlotsDB{
     public:
