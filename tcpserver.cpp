@@ -91,7 +91,6 @@ void TcpServer::startServer(int port) {
 	    //accept failed.
 	    continue;
 	}
-	CLOG(INFO) << "Accept Connect.";	
 	SocketPtr tmp(clientSocket);
 	Task *task = new Task(tmp, _processor);
 	if (_pool->pushTask((Runnable *)task) != ThreadPool::ERROR_NONE) {

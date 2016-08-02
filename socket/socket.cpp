@@ -17,7 +17,8 @@ Socket::Socket(int family) {
 }
 
 Socket::~Socket() {
-    close();
+    //close(); associate with reference count
+    shutdown();
 }
 
 bool Socket::setAddress (const char *address, const int port) {
@@ -103,7 +104,8 @@ void Socket::close() {
 
 void Socket::shutdown() {
     if (_fd != -1) {
-        ::shutdown(_fd, SHUT_WR);
+        ::shutdown(_fd, SHUT_RDWR);
+	::close(_fd);
     }
 }
 
