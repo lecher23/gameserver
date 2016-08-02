@@ -4,7 +4,7 @@ SERVER_PID="`netstat -apn | grep ${PORT} | grep LISTEN | awk '{print $7}'|sed 's
 LOG_DIR="/root/logs"
 TAG="`date +%Y-%m-%d`"
 EXT_LIB_PATH="${BASE_PATH}/depend/libs"
-SERVER_BIN="${BASE_PATH}/build/bin/server"
+SERVER_BIN="${BASE_PATH}/build/release/server"
 echo $SERVER_PID
 echo $TAG
 
@@ -23,6 +23,7 @@ then
     echo "help: get help information."
     echo "stop: stop current server."
     echo "start: start server."
+    echo "status: get server status."
 elif [ $1 = "stop" ];
 then
     echo "Stop server."
@@ -47,4 +48,14 @@ then
     else
 	echo "Server is running."
     fi
+elif [ $1 = "status" ];
+then
+    if [ -z ${SERVER_PID} ];
+    then
+	echo "Server not runnig."
+    else
+	echo "Server runnig on port ${PORT}."
+    fi
+else
+    echo "Invalid param. Use help to get usage."
 fi
