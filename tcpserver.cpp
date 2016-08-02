@@ -91,6 +91,7 @@ void TcpServer::startServer(int port) {
 
 void TcpServer::stopServer() {
     _stop = true;
+    _pool->stop(ThreadPool::STOP_THREAD_ONLY);
 }
 
 }

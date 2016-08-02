@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <signal.h>
 #include "util/config.h"
 #include "util/common_define.h"
 
@@ -17,6 +18,13 @@ namespace cgserver{
     CgServer::~CgServer(){
 	;
     }
+
+    void CgServer::stop() {
+	_server.stopServer();
+	// close logger
+	google::ShutdownGoogleLogging();
+    }
+    
     void CgServer::start(){
 	/*Read config file.*/
 	Config &cfg = Config::getInstance();
@@ -118,9 +126,29 @@ void daemonize(){
     }
 }
 
+cgserver::CgServer g_server;
+
+static void sig_func(int signo) {
+    if (signo == SIGUSR1) {
+	// 10
+	std::cout << "Stop server.\n";
+	g_server.stop();
+	exit(0);
+    }
+}
+
 int main(int len, char ** args) {
-    //daemonize();
-    cgserver::CgServer server;
-    server.start();
-    return 1;
+    //daemonize(); 
+    /*regester signal SIGQUIT*/
+    if (signal(SIGUSR1, sig_func) == SIG_ERR) {
+	std::cout << "Can not catch SIGKILL.\n";
+	return 1;
+    }
+    if (signal(SIGQUIT, sig_func) == SIG_ERR) {
+	std::cout << "Can not catch SIGKILL.\n";
+	return 1;
+    }
+    
+    g_server.start();
+    return 0;
 }
