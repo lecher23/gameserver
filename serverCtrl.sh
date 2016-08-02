@@ -37,7 +37,9 @@ then
 elif [ $1 = "compile" ];
 then
     echo "Recompile code."
-    cmd="make clean && make"
+    cmd="cd ${BASE_PATH} && make clean && make"
+    exe_cmd
+    cmd="mv ${BASE_PATH}/build/bin/server ${SERVER_BIN}"
     exe_cmd
 elif [ $1 = "start" ];
 then
