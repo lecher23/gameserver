@@ -17,13 +17,16 @@ namespace slots{
     prefix##Query.append(1,'"');		\
     prefix##Query.append(val);			\
     prefix##Query.append(1,'"');
-    
+
+// only value not empty will be set.
 #define SET_VALUE(prefix, key, val, seq)	\
-    prefix##Query.append(key);			\
-    prefix##Query.append(1,'=');		\
-    APPEND_VALUE(prefix, val);			\
-    if (seq) {					\
-	prefix##Query.append(1, ',');		\
+    if (!val.empty()){				\
+	prefix##Query.append(key);		\
+	prefix##Query.append(1,'=');		\
+	APPEND_VALUE(prefix, val);		\
+	if (seq) {				\
+	    prefix##Query.append(1, ',');	\
+	}					\
     }
 
     bool SlotsDB::getUserInfo(
@@ -102,11 +105,13 @@ namespace slots{
     bool SlotsDB::updateUserInfo(const UserInfo &ui, std::string &errMsg) const {
 	// we should use transaction to make sure data ACID.
 	// first we should forbid autocommit by using mysql_autocommit(&sql, false);
-	std::string updateQuery = "UPDATE user_info SET";
+	std::string updateQuery = "UPDATE user_info SET ";
 	SET_VALUE(update, "fname", ui.fname, true);
 	SET_VALUE(update, "lname", ui.lname, true);
 	SET_VALUE(update, "avatar", ui.avatar, true);
-	SET_VALUE(update, "male", ui.male, false);
+	SET_VALUE(update, "male", ui.male, true);
+	SET_VALUE(update, "country", ui.country, true);
+	SET_VALUE(update, "uid", ui.uid, false);
 	updateQuery.append(" where uid = ");
 	APPEND_VALUE(update, ui.uid);
 	

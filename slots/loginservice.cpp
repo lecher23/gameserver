@@ -48,7 +48,7 @@ namespace slots{
 	str.append(1, ',');			\
     }
 
-    void LoginService::formatResult(bool success, UserInfo &ui, std::string &out) {
+    void LoginService::formatResult(bool success, UserInfo &ui, std::string &out) const {
 	out.clear();
 	out.append(1,'{');
 	if (!success) {
@@ -72,7 +72,7 @@ namespace slots{
     }
 #undef JSON_VALUE
     
-    bool LoginService::getUserInfo(CPacket &packet, UserInfo &uinfo) {
+    bool LoginService::getUserInfo(CPacket &packet, UserInfo &uinfo) const{
 	if (!packet.getParamValue("mid", uinfo.mid)) {
 	    return false;
 	}

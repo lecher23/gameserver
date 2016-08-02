@@ -12,8 +12,8 @@ namespace slots{
 
 	virtual bool doJob(CPacket &packet, CResponse &resp);
     private:
-	void formatResult(bool success, UserInfo &ui, std::string &out);
-	bool getUserInfo(CPacket &packet, UserInfo &uinfo);
+	void formatResult(bool success, UserInfo &ui, std::string &out) const;
+	bool getUserInfo(CPacket &packet, UserInfo &uinfo) const;
     };
 }
 #endif
