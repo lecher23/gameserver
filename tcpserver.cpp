@@ -30,8 +30,21 @@ bool TcpServer::initServer(int port) {
     _processor = ProcessorFactory::getProcessor();
     _processor->init((void *)handler);
 
-    if (!MysqlClient::getInstance().initClient("localhost", "root", "111222", "SLOTS")) {
-	CLOG(INFO) << "Init mysql client failed.";
+    /*Init db*/
+    std::string dbAddr = Config::getInstance().getConfigValue("db", "addr");
+    std::string dbUName = Config::getInstance().getConfigValue("db", "user_name");
+    std::string dbUPwd = Config::getInstance().getConfigValue("db", "user_pwd");
+    std::string dbDb = Config::getInstance().getConfigValue("db", "db_name");
+
+    if (dbAddr.empty() || dbUName.empty() || dbDb.empty()) {
+	CLOG(ERROR) << "Mysql connection info not set under section [db]";
+	return false;
+    }
+
+    CLOG(INFO) << "Init mysql client on " << dbAddr;
+    if (!MysqlClient::getInstance().initClient(dbAddr, dbUName, dbUPwd, dbDb)) {
+	CLOG(ERROR) << "Init mysql client failed.";
+	return false;
     }
 
     std::string file = Config::getInstance().getConfigValue("lua", "path");

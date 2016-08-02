@@ -31,22 +31,6 @@ namespace cgserver{
 				   db.c_str(), port, NULL, 0) != NULL);
     }
 
-    // void MysqlClient::log(const std::string &lg){
-    // 	std::string q = "";
-    // 	q.assign("insert into server_log(msg) values (\"");
-    // 	for (size_t i = 0; i < lg.size(); ++i) {
-    // 	    if (lg[i] == '"') {
-    // 		q.append(1, '\\');
-    // 		q.append(1, lg[i]);
-    // 	    }
-    // 	    q.append(1, lg[i]);
-    // 	}
-    // 	q.append("\")");
-    // 	_lock.lock();
-    // 	exeQuery(q);
-    // 	_lock.unlock();
-    // }
-
     bool MysqlClient::addRow(const std::string &tableName, const RowValues &rv) {
 	std::string q;
 	q.assign("insert into ");
