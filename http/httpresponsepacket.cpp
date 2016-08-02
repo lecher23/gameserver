@@ -3,9 +3,6 @@
 #include "../util/databuffer.h"
 namespace cgserver {
 
-/*
- * 构造函数
- */
 HttpResponsePacket::HttpResponsePacket() {
     _status = true;
     _body = NULL;
@@ -13,18 +10,12 @@ HttpResponsePacket::HttpResponsePacket() {
     _isKeepAlive = false;
 }
 
-/*
- * 析构函数
- */
 HttpResponsePacket::~HttpResponsePacket() {
     if (_body) {
         ::free(_body);
     }
 }
 
-/*
- * 组装
- */
 bool HttpResponsePacket::encode(DataBuffer *output) {
     if (_status) { //HTTP/1.1 200 OK
         output->writeBytes(HTTP_STATUS_OK, strlen(HTTP_STATUS_OK));
@@ -61,16 +52,10 @@ bool HttpResponsePacket::encode(DataBuffer *output) {
     return true;
 }
 
-/*
- * 解开
- */
 bool HttpResponsePacket::decode(DataBuffer *input) {
     return true;
 }
 
-/*
- * 设置header
- */
 void HttpResponsePacket::setHeader(const char *name, const char *value) {
     if (name[0] == 'C') {
         if (strcmp(name, "Connection") == 0 || strcmp(name, "Content-Length") == 0) {
@@ -80,16 +65,10 @@ void HttpResponsePacket::setHeader(const char *name, const char *value) {
     _headerMap[name] = value;
 }
 
-/*
- * 设置状态
- */
 void HttpResponsePacket::setStatus(bool status) {
     _status = status;
 }
 
-/*
- * 设置内容
- */
 void HttpResponsePacket::setBody(const char *body, int len) {
     if (body && (len > 0)) {
         _body = (char *) malloc(len);
@@ -103,6 +82,14 @@ void HttpResponsePacket::setBody(const char *body, int len) {
 void HttpResponsePacket::setBody(const char *body) {
     int len = strlen(body);
     setBody(body, len);
+}
+
+char * HttpResponsePacket::getBody() {
+    return _body;
+}
+
+void HttpResponsePacket::setBodyLen(int len){
+    _bodyLen = len;
 }
 
 /*

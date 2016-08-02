@@ -10,12 +10,12 @@ namespace slots{
     bool SlotsHandler::process(CPacket &packet, CResponse &resp)
     {
 	if (CPacket::HM_POST != packet.getMethod()) {
-	    resp.setBody(common::ERR_HTTP_METHOD.c_str());
+	    CLOG(WARNING) << "Bad method: " << packet.getMethod();
 	    return false;
 	}
 	IServicePtr service = ServiceProvider::getService(packet.getPath());
 	if (service.get() == NULL) {
-	    resp.setBody(common::ERR_HTTP_URI.c_str());
+	    CLOG(WARNING) << "Invalid path: " << packet.getPath();
 	    return false;
 	}
 	return service->doJob(packet, resp);

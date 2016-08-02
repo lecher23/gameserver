@@ -58,6 +58,9 @@ public:
     void setBody(const char *body, int len);
     void setBody(const char *body);
 
+    char *getBody();
+    void setBodyLen(int len);
+
     /*
      * 是否keepalive
      */

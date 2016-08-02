@@ -32,7 +32,7 @@ namespace slots{
 	}while(0);
 	std::string ret;
 	formatResult(pOk, sUser, ret);
-	resp.setBody(ret.c_str());
+	resp.setBody(ret.c_str(), ret.size());
 	// lua tool must return!
 	//cgserver::LuaToolFactory::getInstance().returnTool(lua);
 	return pOk;

@@ -25,12 +25,12 @@ namespace slots{
 	    CLOG(ERROR) << "Param type required.";
 	    errMsg = "Code 003";
 	    formatResult(false, errMsg, out);
-	    resp.setBody(out.c_str());
+	    resp.setBody(out.c_str(), out.size());
 	    return true;
 	}
 	if (type == "0" ) {
 	    formatResult(updateUserInfo(packet, errMsg), errMsg, out);
-	    resp.setBody(out.c_str());	    
+	    resp.setBody(out.c_str(), out.size());	    
 	}
 	return true;
     }
