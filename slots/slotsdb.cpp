@@ -38,19 +38,19 @@ namespace slots{
 	APPEND_VALUE(s, ui.mid);
 	MysqlClient::MysqlRow res;
 	if (!_client.queryWithResult(sQuery, res)) {
-	    CLOG(ERROR) << "Run query [" << sQuery << "] failed.\n";
+	    CLOG(WARNING) << "Run query [" << sQuery << "] failed.\n";
 	    errMsg = "Run query failed.Code 110001.";
 	    return false;
 	}
 	if (res.size() == 0) {
-	    CLOG(INFO) << "New user. Record.\n";
+	    CLOG(INFO) << "New user[" << mid << "].\n";
 	    std::string uid;
 	    if (!addUser(mid, uid, errMsg)) {
-		CLOG(ERROR) << "Set raw user info failed.\n";
+		CLOG(WARNING) << "Set raw user info failed.\n";
 		return false;
 	    }
 	    if (!_client.queryWithResult(sQuery, res)) {
-		CLOG(ERROR) << "Run query [" << sQuery << "] failed.\n";
+		CLOG(WARNING) << "Run query [" << sQuery << "] failed.\n";
 		return false;
 	    }
 	    if (res.size() == 0) {
@@ -96,6 +96,7 @@ namespace slots{
 	APPEND_VALUE(insert, uid);
 	insertQuery.append(1, ')');
 	if (!_client.query(insertQuery)) {
+	    CLOG(WARNING) << "Add new user ["<< mid << "] failed.";
 	    return false;
 	}
 	// set logic
