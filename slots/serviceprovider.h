@@ -12,6 +12,7 @@ namespace slots{
         ~ServiceProvider();
 
 	static IServicePtr getService(const std::string &path) {
+	    /* TODO: Use map instead of choice.*/
 	    IServicePtr ret;
 	    if (path == "/slots/login"){
 		ret.reset((IService *)new LoginService);

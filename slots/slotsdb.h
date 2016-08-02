@@ -10,21 +10,34 @@ namespace slots{
 	std::string uid;
 	std::string mid;
 	std::string fname;
-	std::string lname;
+	//std::string lname;
 	std::string avatar;
 	std::string male; // 0 or 1
 	std::string country;
+	/* std::string level; */
+	/* std::string exp; */
+	/* std::string fortune; */
+	/* std::string vip_level; */
+    };
+
+    struct UserResource {
+	std::string uid;
 	std::string level;
 	std::string exp;
 	std::string fortune;
-	std::string vip_level;
+	std::string vipLevel;
+    };
+
+    struct SlotsUser{
+	UserInfo uInfo;
+	UserResource uRes;
     };
     
     class SlotsDB{
     public:
         ~SlotsDB();
 
-	bool getUserInfo(const std::string &mid, UserInfo &ui, std::string &errMsg) const ;
+	bool getUserInfo(const std::string &mid, SlotsUser &su, std::string &errMsg) const ;
 	bool addUser(const std::string &mid, std::string &uid, std::string &errMsg)const ;
 	/* Only update table user_info. */
 	bool updateUserInfo(const UserInfo &ui, std::string &errMsg) const;

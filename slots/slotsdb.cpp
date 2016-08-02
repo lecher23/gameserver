@@ -30,12 +30,14 @@ namespace slots{
     }
 
     bool SlotsDB::getUserInfo(
-	const std::string &mid, UserInfo &ui, std::string &errMsg) const
+	const std::string &mid, SlotsUser &su, std::string &errMsg) const
     {
 	CLOG(INFO) << "Get user info\n";
+	UserInfo &ui = su.uInfo;
+	UserResource &ur = su.uRes;
 	// get logic
 	std::string sQuery = "select * from user_info as A inner join user_resource as B on A.uid = B.uid and A.mid = ";
-	APPEND_VALUE(s, ui.mid);
+	APPEND_VALUE(s, su.uInfo.mid);
 	MysqlClient::MysqlRow res;
 	if (!_client.queryWithResult(sQuery, res)) {
 	    CLOG(WARNING) << "Run query [" << sQuery << "] failed.\n";
@@ -61,15 +63,15 @@ namespace slots{
 	ui.uid = res[0];
 	ui.mid = res[1];
 	ui.fname = res[2];
-	ui.lname = res[3];
+	//ui.lname = res[3];
 	ui.avatar = res[4];
 	ui.male = res[5];
 	ui.country = res[6];
 	//user_resource:uid, level, exp, fortune, vip_level
-	ui.level = res[8];
-	ui.exp = res[9];
-	ui.fortune = res[10];
-	ui.vip_level = res[11];
+	ur.level = res[8];
+	ur.exp = res[9];
+	ur.fortune = res[10];
+	ur.vipLevel = res[11];
 	return true;
     }
 
@@ -108,7 +110,7 @@ namespace slots{
 	// first we should forbid autocommit by using mysql_autocommit(&sql, false);
 	std::string updateQuery = "UPDATE user_info SET ";
 	SET_VALUE(update, "fname", ui.fname, true);
-	SET_VALUE(update, "lname", ui.lname, true);
+	//SET_VALUE(update, "lname", ui.lname, true);
 	SET_VALUE(update, "avatar", ui.avatar, true);
 	SET_VALUE(update, "male", ui.male, true);
 	SET_VALUE(update, "country", ui.country, true);

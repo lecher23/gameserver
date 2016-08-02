@@ -15,9 +15,9 @@ namespace slots{
 	//     resp.setBody(common::ERR_LOAD_LUA.c_str());
 	//     return false;
 	// }
-	UserInfo userInfo;	
+	SlotsUser sUser;	
 	do {
-	    if (!getUserInfo(packet, userInfo)){
+	    if (!getUserInfo(packet, sUser)){
 		resp.setBody("Get user info failed.");
 		break;
 	    }
@@ -31,7 +31,7 @@ namespace slots{
 	    pOk = true;
 	}while(0);
 	std::string ret;
-	formatResult(pOk, userInfo, ret);
+	formatResult(pOk, sUser, ret);
 	resp.setBody(ret.c_str());
 	// lua tool must return!
 	//cgserver::LuaToolFactory::getInstance().returnTool(lua);
@@ -48,7 +48,7 @@ namespace slots{
 	str.append(1, ',');			\
     }
 
-    void LoginService::formatResult(bool success, UserInfo &ui, std::string &out) const {
+    void LoginService::formatResult(bool success, SlotsUser &su, std::string &out) const {
 	out.clear();
 	out.append(1,'{');
 	if (!success) {
@@ -57,29 +57,25 @@ namespace slots{
 	    return;
 	}
 	JSON_VALUE(out, "status", "OK", true);	
-	JSON_VALUE(out, "uid", ui.uid, true);	
-	JSON_VALUE(out, "mid", ui.mid, true);
-	if (ui.fname.empty()) {
-	    JSON_VALUE(out, "new-user", "1", true);
-	}else {
-	    JSON_VALUE(out, "new-user", "0", true);
-	}
-	JSON_VALUE(out, "fname", ui.fname, true);
-	JSON_VALUE(out, "lname", ui.lname, true);
-	JSON_VALUE(out, "level", ui.level, true);
-	JSON_VALUE(out, "exp", ui.exp, false);
+	JSON_VALUE(out, "uid", su.uInfo.uid, true);	
+	JSON_VALUE(out, "mid", su.uInfo.mid, true);
+	JSON_VALUE(out, "fname", su.uInfo.fname, true);
+	JSON_VALUE(out, "country", su.uInfo.country, true);
+	//JSON_VALUE(out, "lname", ui.lname, true);
+	JSON_VALUE(out, "level", su.uRes.level, true);
+	JSON_VALUE(out, "exp", su.uRes.exp, false);
 	out.append(1, '}');
     }
 #undef JSON_VALUE
     
-    bool LoginService::getUserInfo(CPacket &packet, UserInfo &uinfo) const{
-	if (!packet.getParamValue("mid", uinfo.mid)) {
+    bool LoginService::getUserInfo(CPacket &packet, SlotsUser &su) const{
+	if (!packet.getParamValue("mid", su.uInfo.mid)) {
 	    return false;
 	}
 	//get user info from db.
 	SlotsDB &db = SlotsDB::getInstance();
 	std::string errMsg;
-	if (db.getUserInfo(uinfo.mid, uinfo, errMsg)) {
+	if (db.getUserInfo(su.uInfo.mid, su, errMsg)) {
 	    return true;
 	} 
 	return false;

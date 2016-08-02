@@ -41,7 +41,6 @@ namespace slots{
 	GET_PARAM("male", ui.male, false);
 	GET_PARAM("country", ui.country, false);
 	GET_PARAM("fname", ui.fname, false);
-	GET_PARAM("lname", ui.lname, false);
 	GET_PARAM("avatar", ui.avatar, false);
 	SlotsDB &db = SlotsDB::getInstance();
 	if (!db.updateUserInfo(ui, errMsg)) {
