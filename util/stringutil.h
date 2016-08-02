@@ -72,6 +72,11 @@ namespace cgserver{
 	static void split(const char *src, const char delimiter, strs_t &out);
 	static void splitString(const std::string &src, const char delimiter, strs_t &out);
 
+	unsigned char toHex(const unsigned char &x);
+	unsigned char fromHex(const unsigned char &x);
+	bool URLEncode(const std::string &sIn, std::string &sOut);
+	bool URLDecode(const std::string &sIn, std::string &sOut);
+	
     private:
     };
     
