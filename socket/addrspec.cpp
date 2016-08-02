@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+#include "../util/common_define.h"
 
 #define UNIX_PATH_MAX 108
 
@@ -43,10 +44,8 @@ int AddrSpec::getIpByHost(const char *address, struct sockaddr_in *in)
         freeaddrinfo(res);
     }
     else {
-        /* error processing */
-        //ANET_LOG(ERROR, "getaddrinfo failed for host:%s ,error code:%d, "
-      //"err str:%s\n", address, rc, gai_strerror(rc));
-      std::cout << "getaddrinfo failed for host" << std::endl;
+	//"err str:%s\n", address, rc, gai_strerror(rc));
+	CLOG(ERROR) << "getaddrinfo failed for host:"<< address << ". Ecode:" << rc << ". Estr:" << gai_strerror(rc) << std::endl;
     }
     return rc;
 }
@@ -131,9 +130,7 @@ int AddrSpec::setAddrSpec(const char *spec)
         return setUnixAddr(SOCK_DGRAM, unixPath); 
     }
     else {
-        /* invalid spec string */
-        //ANET_LOG(ERROR, "Invalid spec string: %s", spec);
-	std::cout << "Invalid spec string: " << spec << std::endl;
+	CLOG(ERROR) << "Invalid spec string: " << spec << std::endl;
         return -2;
     }
 

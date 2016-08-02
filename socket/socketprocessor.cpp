@@ -30,7 +30,7 @@ namespace cgserver{
 
     void SocketProcessor::process(SocketPtr sk) const{
 	if (sk == NULL || _handler == NULL) {
-	    std::cout << "NULL socket or handler." << std::endl;
+	    CLOG(ERROR) << "NULL socket or handler.";
 	    return;
 	}
 	DataBuffer buff;
@@ -47,10 +47,10 @@ namespace cgserver{
 	    HttpResponsePacket resp;
 	    _handler->process(packet, resp);
 	    if (!writeData(sk, resp)) {
-		std::cout << "Send response failed." << std::endl;
+		CLOG(ERROR) << "Send response failed.";
 		break;
 	    }
-	    std::cout << "**Send response success**" << std::endl;
+	    CLOG(INFO) << "Send response success.";
 	} while(0);
     }
 
@@ -63,7 +63,7 @@ namespace cgserver{
 	}
 	buf.pourData(bytes_recv);
 	*(buf.getFree()) = '\0';
-	//MysqlClient::getInstance().log(std::string(buf.getData()));
+	CLOG(INFO) << "Recieve packet:" << buf.getData();
 	return true;
     }
 

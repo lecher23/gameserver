@@ -131,7 +131,7 @@ cgserver::CgServer g_server;
 static void sig_func(int signo) {
     if (signo == SIGUSR1) {
 	// 10
-	std::cout << "Stop server.\n";
+	CLOG(INFO) << "Stoping server.\n";
 	g_server.stop();
 	exit(0);
     }

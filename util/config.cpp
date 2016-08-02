@@ -31,7 +31,7 @@ namespace cgserver{
 
     bool Config::refreshConfig() {
 	if (!initConfig(_configFilePath)) {
-	    std::cout << "Refresh config failed. Will not change previous config." << std::endl;
+	    CLOG(ERROR) << "Refresh config failed. Will not change previous config.";
 	    return false;
 	}
 	return true;
@@ -57,12 +57,12 @@ namespace cgserver{
     bool Config::getIntValue(const std::string &grp, const std::string &key, int &out) {
 	std::string intValue = getConfigValue(grp, key);
 	if (intValue.size() == 0) {
-	    std::cout << "Value not set." << std::endl;
+	    CLOG(ERROR) << "Value ["<< grp << "." << key << "] not set.";
 	    return false;
 	}
 	for (int i = 0; i < intValue.size(); ++i) {
 	    if (intValue[i] < '0' || intValue[i] > '9') {
-		std::cout << "Invalid value:" << intValue << std::endl;
+		CLOG(ERROR) << "Invalid value ["<< grp << "." << key <<"]=[" << intValue << "]";
 		return false;
 	    }
 	}

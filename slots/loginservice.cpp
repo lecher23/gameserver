@@ -67,7 +67,7 @@ namespace slots{
 	JSON_VALUE(out, "fname", ui.fname, true);
 	JSON_VALUE(out, "lname", ui.lname, true);
 	JSON_VALUE(out, "level", ui.level, true);
-	JSON_VALUE(out, "exp", ui.exp, true);
+	JSON_VALUE(out, "exp", ui.exp, false);
 	out.append(1, '}');
     }
 #undef JSON_VALUE

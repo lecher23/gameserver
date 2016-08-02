@@ -4,7 +4,7 @@ namespace cgserver{
     LuaTool::LuaTool(){
 	_L = luaL_newstate();
 	if (_L == NULL) {
-	    std::cout << "NULL lua state" << std::endl;
+	    CLOG(ERROR) << "NULL lua state";
 	    return;
 	}
 	luaL_openlibs(_L);
@@ -23,10 +23,10 @@ namespace cgserver{
 	}
 	int bRet = luaL_dofile(_L, f.c_str());// do not use lua_loadfile!
 	if(bRet) {
-	    std::cout << "Load file error:"<< bRet<< std::endl;
+	    CLOG(ERROR) << "Load file error:"<< bRet;
 	    return false;
 	}
-	std::cout << "Load success" << std::endl;
+	CLOG(INFO) << "Load success" << std::endl;
 	return true;
     }
     
@@ -75,16 +75,16 @@ namespace cgserver{
 	    std::string pErrorMsg;
 	    getValue(pErrorMsg);
 	    if (ret == LUA_ERRRUN) {
-		std::cout << "Runtime error.";
+		CLOG(ERROR) << "Runtime error.";
 	    }else if(ret == LUA_ERRMEM) {
-		std::cout << "Memory allocation error.";
+		CLOG(ERROR) << "Memory allocation error.";
 	    }else if(ret == LUA_ERRERR) {
-		std::cout << "Error while running the error handler function.";
+		CLOG(ERROR) << "Error while running the error handler function.";
 	    }else{
-		std::cout << "Unknow error." << std::endl;
+		CLOG(ERROR) << "Unknow error.";
 	    }
 	    //const char *pErrorMsg;// = lua_tostring(ls, -1);
-	    std::cout << "[" << pErrorMsg << "]" << std::endl;
+	    CLOG(ERROR) << "Execute lua script failed.Msg [" << pErrorMsg << "]";
 	    return false;
 	}
 	return true;
@@ -108,7 +108,7 @@ namespace cgserver{
 
     bool LuaTool::debug() {
 	int stack_size = lua_gettop(_L);
-	std::cout << "Stack size is:" << stack_size << std::endl;
+	CLOG(ERROR) << "Stack size is:" << stack_size;
 	std::string str;
     }
     

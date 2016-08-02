@@ -17,7 +17,7 @@ namespace cgserver{
 	for (size_t i = 0; i < _wanted; ++i) {
 	    LuaToolPtr luaPtr(new LuaTool);
 	    if (!luaPtr->load(_file)) {
-		std::cout << "Load lua file:" << _file << " failed." << std::endl;
+		CLOG(ERROR) << "Load lua file:" << _file << " failed.";
 		return false;
 	    }
 	    tmp.push_back(luaPtr);
