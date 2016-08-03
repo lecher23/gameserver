@@ -5,18 +5,7 @@ namespace slots{
     
     UpdateService::~UpdateService(){
     }
-
-#define GET_PARAM(key, dest, required)					\
-    if (!packet.getParamValue(key, dest)) {				\
-	if (required) {							\
-	    CLOG(ERROR) << "Get [" << key << "] from url failed.";	\
-	    errMsg = "Code:001";					\
-	    return false;						\
-	}else {								\
-	    dest.clear();						\
-	}								\
-    }
-
+    
     bool UpdateService::doJob(CPacket &packet, CResponse &resp){
 	std::string type;
 	std::string errMsg;

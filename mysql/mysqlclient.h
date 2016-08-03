@@ -7,14 +7,14 @@
 #include "../util/threadlock.h"
 
 namespace cgserver{
+    // Notice: we use key-value to indicate field-field_value in mysql.
+    typedef std::map<std::string, std::string> RowValues;
+    typedef std::vector<std::string> MysqlRow;
+    typedef std::vector<MysqlRow> MysqlRows;
+    typedef std::string MysqlStr;
+    
     class MysqlClient{
     public:
-	// Notice: we use key-value to indicate field-field_value in mysql.
-	typedef std::map<std::string, std::string> RowValues;
-	typedef std::vector<std::string> MysqlRow;
-	typedef std::vector<MysqlRow> MysqlRows;
-	typedef std::string MysqlStr;
-	
 	static const std::string S_ItemSep;
 	static const std::string S_LeftBracket;
 	static const std::string S_RightBracket;
@@ -30,6 +30,8 @@ namespace cgserver{
 	bool query(const std::string &q);
 
 	bool queryWithResult(const std::string &q, MysqlRow &out);
+	bool queryWithResult(const std::string &q, MysqlRows &out);
+	
 	bool insertWithReturn(MysqlStr &insertQuery, MysqlStr &selectQuery, MysqlRow &out);
 	
 	uint64_t affectRows();	
@@ -42,6 +44,7 @@ namespace cgserver{
 	bool exeQuery(const std::string &q);
 	void appendValue(const std::string &sVal, std::string sDest);
 	bool getSingleResult(MysqlRow &out);
+	bool getAllResult(MysqlRows &out);	
 	
 	MYSQL _client;
 	ThreadMutex _lock; //we should use "ke chong ru suo"

@@ -21,6 +21,7 @@
 
 
 #define CLOG(x) LOG(x)
+#define MyString std::string
 
 namespace common{
 #define _LOG(x) std::cout<<(x)<<std::endl;

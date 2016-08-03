@@ -1,6 +1,7 @@
 #include "slotsdb.h"
 
 using namespace cgserver;
+
 namespace slots{
     SlotsDB::SlotsDB():_client(cgserver::MysqlClient::getInstance()){
     }
@@ -38,7 +39,7 @@ namespace slots{
 	// get logic
 	std::string sQuery = "select * from user_info as A inner join user_resource as B on A.uid = B.uid and A.mid = ";
 	APPEND_VALUE(s, su.uInfo.mid);
-	MysqlClient::MysqlRow res;
+	MysqlRow res;
 	if (!_client.queryWithResult(sQuery, res)) {
 	    CLOG(WARNING) << "Run query [" << sQuery << "] failed.\n";
 	    errMsg = "Run query failed.Code 110001.";
@@ -87,7 +88,7 @@ namespace slots{
 	std::string selectQuery = "select uid from user_info where mid=";
 	APPEND_VALUE(select, mid);
 
-	MysqlClient::MysqlRow out;
+	MysqlRow out;
 	if (!_client.insertWithReturn(insertQuery, selectQuery, out) || out.empty()) {
 	    CLOG(ERROR) << "Add new user failed.\n";
 	    return false;
@@ -123,6 +124,56 @@ namespace slots{
 	}
 	return true;
     }
+
+    bool SlotsDB::getUserMails(
+	const MyString &uid, MyString &offset, MyString &count, UserMails &out)
+    {
+	out.clear();
+	std::string sQuery = "SELECT * from mail_info as A INNER JOIN mails"
+	    " as B on A.mail_id = B.mail_id WHERE A.uid=";
+	APPEND_VALUE(s, uid);
+	sQuery.append(" order by ctime desc limit ");
+	sQuery.append(offset);
+	sQuery.append(1, ',');
+	sQuery.append(count);
+
+	MysqlRows result;
+	if (!_client.queryWithResult(sQuery, result)) {
+	    CLOG(WARNING) << "Get user [" << uid << "] mails from db failed.";
+	    return false;
+	}
+
+	if(!getMailInfo(result, out)) {
+	    CLOG(WARNING) << "Transform user [" << uid << "] mails failed.";
+	    return false;
+	}
+
+	return true;
+    }
+
+    bool SlotsDB::getMailInfo(const MysqlRows &mails, UserMails &out){
+	for (auto itr = mails.begin(); itr != mails.end(); ++itr) {
+	    if ((*itr).size() < 12) {
+		CLOG(WARNING) << "Invalid fields num from db. Cur:" <<
+		    (*itr).size() << ", E:" << 12;
+		return false;
+	    }
+	    UserMailPtr tmp(new UserMail);
+	    tmp->mailInfo.mailId = (*itr)[5];
+	    tmp->mailInfo.title = (*itr)[7];
+	    tmp->mailInfo.content = (*itr)[8];
+	    tmp->mailInfo.attachment = (*itr)[9];
+	    tmp->mailInfo.createTime = (*itr)[10];
+	    tmp->mailInfo.keepDays = (*itr)[11];
+
+	    tmp->bRead = (*itr)[2] == "0" ? false:true;
+	    tmp->bGet = (*itr)[3] == "0" ? false:true;
+	    tmp->bDel = (*itr)[4] == "0" ? false:true;
+	    out.push_back(tmp);
+	}
+	return true;
+    }
+    
 #undef APPEND_VALUE
 #undef SET_VALUE    
 }

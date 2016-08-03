@@ -120,6 +120,24 @@ namespace cgserver{
 	return ret;
     }
 
+    /*Get lots result from mysql db*/
+    bool MysqlClient::queryWithResult(const std::string &q, MysqlRows &out) {
+	out.clear();
+	_lock.lock();
+	bool ret = false;
+	do {
+	    if (!exeQuery(q)) {
+		break;
+	    }
+	    if (!getAllResult(out)) {
+		break;
+	    }
+	    ret = true;
+	}while(0);
+	_lock.unlock();
+	return ret;
+    }
+
     bool MysqlClient::insertWithReturn(
 	MysqlStr &insertQuery, MysqlStr &selectQuery, MysqlRow &out)
     {
@@ -163,4 +181,33 @@ namespace cgserver{
 	mysql_free_result(res);
 	return true;
     }
+
+    bool MysqlClient::getAllResult(MysqlRows &out){
+	MYSQL_RES *res = mysql_store_result(&_client);
+	// no result.
+	if (res == NULL ) {
+	    CLOG(ERROR) << "Store result from mysql failed.\n";
+	    return false;
+	}
+	// char **
+	MYSQL_ROW row;
+	unsigned long *lens;
+	int fieldNum = mysql_num_fields(res);
+	while((row = mysql_fetch_row(res))) {
+	    lens = mysql_fetch_lengths(res);
+	    MysqlRow singleRow;
+	    for (size_t i = 0; i < fieldNum; ++i) {
+		if (row[i] == NULL) {
+		    singleRow.push_back("");
+		}else {
+		    singleRow.push_back(std::string(row[i], lens[i]));
+		}
+	    }
+	    out.push_back(singleRow);
+	}
+	// release result.
+	mysql_free_result(res);
+	return true;
+    }
+    
 }
