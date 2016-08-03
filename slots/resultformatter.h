@@ -16,7 +16,7 @@ namespace slots{
         ~ResultFormatter();
 
 	void formatResult(const UserMails &uMails, SBuf &buffer);
-	void formatFailed(SBuf &buffer);
+	void formatSimpleResult(SBuf &buffer, bool ok, const std::string &err);
 	
     private:
 	void formatStatus(JsonWriter &writer, bool bOk);

@@ -1,4 +1,5 @@
 #include "slotsdb.h"
+#include "../mysql/sqlupdate.h"
 
 using namespace cgserver;
 
@@ -151,6 +152,23 @@ namespace slots{
 	return true;
     }
 
+    //user read mail. record to db
+    bool SlotsDB::readMail(const std::string &uid, const std::string &mailId) {
+	std::string query;
+	SqlUpdate su(query);
+	su.setTable("mail_info");
+	su.updateValue("b_read", "1");
+	su.hasCondition();
+	su.addEqualCondition("uid", uid);
+	su.setConditionJoin(true);
+	su.addEqualCondition("mail_id", mailId);
+	if (!_client.query(query)) {
+	    CLOG(WARNING) << "Set read mail for user [" << uid << "] failed.";
+	    return false;
+	}
+    	return true;
+    }
+    
     bool SlotsDB::getMailInfo(const MysqlRows &mails, UserMails &out){
 	for (auto itr = mails.begin(); itr != mails.end(); ++itr) {
 	    if ((*itr).size() < 12) {
@@ -173,7 +191,7 @@ namespace slots{
 	}
 	return true;
     }
-    
+
 #undef APPEND_VALUE
 #undef SET_VALUE    
 }

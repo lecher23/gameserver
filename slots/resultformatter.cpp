@@ -15,10 +15,13 @@ namespace slots{
 	writer.EndObject();
     }
 
-    void ResultFormatter::formatFailed(SBuf &buffer){
+    void ResultFormatter::formatSimpleResult(SBuf &buffer, bool success, const std::string &err)
+    {
 	JsonWriter writer(buffer);	
 	writer.StartObject();
-	formatStatus(writer, false);
+	formatStatus(writer, success);
+	writer.Key("msg");
+	writer.String(err.c_str());
 	writer.EndObject();
     }
 
