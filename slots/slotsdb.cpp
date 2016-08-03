@@ -131,7 +131,7 @@ namespace slots{
     {
 	out.clear();
 	std::string sQuery = "SELECT * from mail_info as A INNER JOIN mails"
-	    " as B on A.mail_id = B.mail_id WHERE A.uid=";
+	    " as B on A.mail_id = B.mail_id WHERE A.b_delete = false and A.uid=";
 	APPEND_VALUE(s, uid);
 	sQuery.append(" order by ctime desc limit ");
 	sQuery.append(offset);
@@ -164,6 +164,22 @@ namespace slots{
 	su.addEqualCondition("mail_id", mailId);
 	if (!_client.query(query)) {
 	    CLOG(WARNING) << "Set read mail for user [" << uid << "] failed.";
+	    return false;
+	}
+    	return true;
+    }
+
+    bool SlotsDB::delMail(const std::string &uid, const std::string &mailId) {
+	std::string query;
+	SqlUpdate su(query);
+	su.setTable("mail_info");
+	su.updateValue("b_delete", "1");
+	su.hasCondition();
+	su.addEqualCondition("uid", uid);
+	su.setConditionJoin(true);
+	su.addEqualCondition("mail_id", mailId);
+	if (!_client.query(query)) {
+	    CLOG(WARNING) << "Del mail for user [" << uid << "] failed.";
 	    return false;
 	}
     	return true;

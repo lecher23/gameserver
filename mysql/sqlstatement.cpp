@@ -37,5 +37,17 @@ namespace cgserver{
     void SqlStatement::setConditionJoin(bool isAnd) {
 	_str += (isAnd?" and ":" or ");
     }
+
+    void SqlStatement::setOrderField(const std::string &of, bool asc) {
+	_str += " order by ";
+	_str += of;
+	_str += (asc ? " asc " : " desc ");
+    }
     
+    void SqlStatement::setLimit(std::string &offset, std::string &size) {
+	_str += " limit ";
+	_str += offset;
+	_str += ",";
+	_str += size;	
+    }
 }

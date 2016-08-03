@@ -16,7 +16,9 @@ namespace cgserver{
 	void addEqualCondition(const std::string &left, const std::string &right);
 	void setCondition(const std::string &cd);
 	void setConditionJoin(bool isAnd);
-
+	void setOrderField(const std::string &of, bool asc);
+	void setLimit(std::string &offset, std::string &size);	
+	
     protected:
 	std::string &_str;
 	bool _fieldSetted;

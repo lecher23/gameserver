@@ -63,7 +63,10 @@ namespace slots{
 	/* Only update table user_info. */
 	bool updateUserInfo(const UserInfo &ui, std::string &errMsg) const;
 	bool getUserMails(const MyString &uid, MyString &offset, MyString &count, UserMails &out);
-	bool readMail(const std::string &uid, const std::string &mailId);	
+	bool readMail(const std::string &uid, const std::string &mailId);
+	bool delMail(const std::string &uid, const std::string &mailId);
+	
+	bool getMailAttachment(const std::string &uid, const std::string &mailId);
 
 	static SlotsDB &getInstance();
     private:
