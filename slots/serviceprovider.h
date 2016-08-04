@@ -5,6 +5,7 @@
 #include "loginservice.h"
 #include "updateservice.h"
 #include "mailservice.h"
+#include "gameservice.h"
 
 namespace slots{
     class ServiceProvider{
@@ -21,6 +22,8 @@ namespace slots{
 		ret.reset((IService *)new UpdateService);
 	    } else if (path == "/slots/mail") {
 		ret.reset((IService *)new MailService);
+	    } else if (path == "/slots/game") {
+		ret.reset((IService *)new GameService);
 	    }
 
 	    return ret;

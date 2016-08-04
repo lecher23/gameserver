@@ -12,7 +12,7 @@ namespace slots{
 
 	virtual bool doJob(CPacket &packet, CResponse &resp);
     private:
-	bool updateUserInfo(CPacket &packet, std::string &errMsg);
+	bool updateUserInfo(CPacket &packet);
 	void formatResult(bool status, const std::string &msg, std::string &out);	
     };
 }

@@ -16,12 +16,15 @@ namespace slots{
         ~ResultFormatter();
 
 	void formatResult(const UserMails &uMails, SBuf &buffer);
+	void formatResult(const SlotsUser &su, SBuf &buffer);
 	void formatSimpleResult(SBuf &buffer, bool ok, const std::string &err);
 	
     private:
 	void formatStatus(JsonWriter &writer, bool bOk);
 	void formatMailsInfo(JsonWriter &writer, const UserMails &uMails);
-	void formatMail(JsonWriter &writer, const UserMail &uMail);	
+	void formatMail(JsonWriter &writer, const UserMail &uMail);
+	void formatUserInfo(JsonWriter &writer, const UserInfo &uInfo);
+	void formatUserResource(JsonWriter &writer, const UserResource &uRes);
     };
 }
 #endif

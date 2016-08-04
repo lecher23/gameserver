@@ -1,5 +1,4 @@
 #include "mailservice.h"
-#include "resultformatter.h"
 
 namespace slots{
     MailService::MailService(){

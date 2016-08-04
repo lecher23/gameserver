@@ -1,9 +1,11 @@
 #include "slotshandler.h"
 #include "serviceprovider.h"
+#include "slotslrucache.h"
 
 namespace slots{
     SlotsHandler::SlotsHandler(){
     }
+    
     SlotsHandler::~SlotsHandler(){
     }
 
@@ -22,6 +24,10 @@ namespace slots{
     }
 
     void SlotsHandler::init() {
-	;
+	if(!SlotsLruCache::instance().init()){
+	    CLOG(WARNING) << "Init slots cache failed.";
+	    return;
+	}
+	CLOG(INFO) << "Init slots cache success.";
     }
 }

@@ -18,13 +18,13 @@ namespace slots{
 	    return true;
 	}
 	if (type == "0" ) {
-	    formatResult(updateUserInfo(packet, errMsg), errMsg, out);
+	    formatResult(updateUserInfo(packet), errMsg, out);
 	    resp.setBody(out.c_str(), out.size());	    
 	}
 	return true;
     }
 
-    bool UpdateService::updateUserInfo(CPacket &packet, std::string &errMsg) {
+    bool UpdateService::updateUserInfo(CPacket &packet) {
 	UserInfo ui;
 	GET_PARAM("uid", ui.uid, true);
 	GET_PARAM("male", ui.male, false);
@@ -32,8 +32,8 @@ namespace slots{
 	GET_PARAM("fname", ui.fname, false);
 	GET_PARAM("avatar", ui.avatar, false);
 	SlotsDB &db = SlotsDB::getInstance();
-	if (!db.updateUserInfo(ui, errMsg)) {
-	    errMsg = "Code:002";
+	if (!db.updateUserInfo(ui)) {
+	    CLOG(WARNING) << "Update user[" << ui.uid << "] info failed.";
 	    return false;
 	}
 	return true;

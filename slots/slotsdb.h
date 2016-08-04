@@ -13,15 +13,17 @@ namespace slots{
 	std::string avatar;
 	std::string male; // 0 or 1
 	std::string country;
+	bool changed;
     };
     DF_SHARED_PTR(UserInfo);        
 
     struct UserResource {
 	std::string uid;
-	std::string level;
-	std::string exp;
-	std::string fortune;
-	std::string vipLevel;
+	uint32_t level;
+	uint64_t exp;
+	uint64_t fortune;
+	uint32_t vipLevel;
+	bool changed;
     };
     DF_SHARED_PTR(UserResource);    
 
@@ -53,15 +55,19 @@ namespace slots{
     
     /* user mails*/
     typedef std::vector<UserMailPtr> UserMails;
-    
+
     class SlotsDB{
     public:
         ~SlotsDB();
 
-	bool getUserInfo(const std::string &mid, SlotsUser &su, std::string &errMsg) const ;
-	bool addUser(const std::string &mid, std::string &uid, std::string &errMsg)const ;
+	bool getUserInfo(const std::string &query, SlotsUser &su) const ;
+	bool getUserInfoByMachineId(const std::string &mid, SlotsUser &su) const ;
+	bool getUserInfoByUserId(const std::string &uid, SlotsUser &su) const ;
+	
+	bool addUser(const std::string &mid, std::string &uid)const ;
 	/* Only update table user_info. */
-	bool updateUserInfo(const UserInfo &ui, std::string &errMsg) const;
+	bool updateUserInfo(const UserInfo &ui) const;
+	
 	bool getUserMails(const MyString &uid, MyString &offset, MyString &count, UserMails &out);
 	bool readMail(const std::string &uid, const std::string &mailId);
 	bool delMail(const std::string &uid, const std::string &mailId);

@@ -1,5 +1,6 @@
 #include "slotsdb.h"
 #include "../mysql/sqlupdate.h"
+#include "../util/stringutil.h"
 
 using namespace cgserver;
 
@@ -31,25 +32,19 @@ namespace slots{
 	}					\
     }
 
-    bool SlotsDB::getUserInfo(
-	const std::string &mid, SlotsUser &su, std::string &errMsg) const
-    {
-	CLOG(INFO) << "Get user info\n";
+    bool SlotsDB::getUserInfo(const std::string &sQuery, SlotsUser &su) const {
 	UserInfo &ui = su.uInfo;
 	UserResource &ur = su.uRes;
-	// get logic
-	std::string sQuery = "select * from user_info as A inner join user_resource as B on A.uid = B.uid and A.mid = ";
-	APPEND_VALUE(s, su.uInfo.mid);
 	MysqlRow res;
 	if (!_client.queryWithResult(sQuery, res)) {
 	    CLOG(WARNING) << "Run query [" << sQuery << "] failed.\n";
-	    errMsg = "Run query failed.Code 110001.";
+	    //errMsg = "Run query failed.Code 110001.";
 	    return false;
 	}
 	if (res.size() == 0) {
-	    CLOG(INFO) << "New user[" << mid << "].\n";
+	    CLOG(INFO) << "Init user[" << ui.mid << "] to db.\n";
 	    std::string uid;
-	    if (!addUser(mid, uid, errMsg)) {
+	    if (!addUser(ui.mid, ui.uid)) {
 		CLOG(WARNING) << "Set raw user info failed.\n";
 		return false;
 	    }
@@ -58,6 +53,7 @@ namespace slots{
 		return false;
 	    }
 	    if (res.size() == 0) {
+		CLOG(WARNING) << "Init user failed.";
 		return false;
 	    }
 	}
@@ -69,16 +65,33 @@ namespace slots{
 	ui.avatar = res[4];
 	ui.male = res[5];
 	ui.country = res[6];
-	//user_resource:uid, level, exp, fortune, vip_level
-	ur.level = res[8];
-	ur.exp = res[9];
-	ur.fortune = res[10];
-	ur.vipLevel = res[11];
+	// user_resource:uid, level, exp, fortune, vip_level
+	// we should makesure things right.
+	ur.uid = res[7];	
+	cgserver::StringUtil::StrToUInt32(res[8].c_str(), ur.level);
+	cgserver::StringUtil::StrToUInt64(res[9].c_str(), ur.exp);
+	cgserver::StringUtil::StrToUInt64(res[10].c_str(), ur.fortune);
+	cgserver::StringUtil::StrToUInt32(res[11].c_str(), ur.vipLevel);
 	return true;
     }
 
-    bool SlotsDB::addUser(
-	const std::string &mid, std::string &uid, std::string &errMsg) const 
+    bool SlotsDB::getUserInfoByMachineId(const std::string &mid, SlotsUser &su) const
+    {
+	// get logic
+	std::string sQuery = "select * from user_info as A inner join user_resource as B on A.uid = B.uid and A.mid = ";
+	APPEND_VALUE(s, su.uInfo.mid);
+	return getUserInfo(sQuery, su);
+    }
+
+    bool SlotsDB::getUserInfoByUserId(const std::string &uid, SlotsUser &su) const
+    {
+	// get logic
+	std::string sQuery = "select * from user_info as A inner join user_resource as B on A.uid = B.uid and A.uid = ";
+	APPEND_VALUE(s, uid);
+	return getUserInfo(sQuery, su);
+    }
+
+    bool SlotsDB::addUser(const std::string &mid, std::string &uid) const 
     {
 	// we should use transaction to make sure data ACID.
 	// first we should forbid autocommit by using mysql_autocommit(&sql, false);
@@ -107,7 +120,7 @@ namespace slots{
 	return true;
     }
 
-    bool SlotsDB::updateUserInfo(const UserInfo &ui, std::string &errMsg) const {
+    bool SlotsDB::updateUserInfo(const UserInfo &ui) const {
 	// we should use transaction to make sure data ACID.
 	// first we should forbid autocommit by using mysql_autocommit(&sql, false);
 	std::string updateQuery = "UPDATE user_info SET ";
