@@ -144,6 +144,8 @@ namespace slots{
 	if (!_client.query(query)) {
 	    return false;
 	}
+	// important: if update success, it must flag to unchanged.
+	su.changed = false;
 	return true;
     }
 
@@ -163,6 +165,7 @@ namespace slots{
 	if (!_client.query(updateQuery)) {
 	    return false;
 	}
+	ui.changed = false;
 	return true;
     }
 
