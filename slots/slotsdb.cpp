@@ -131,7 +131,7 @@ namespace slots{
 	return ret;
     }
 
-    bool SlotsDB::updateUserResource(const UserResource &ur) const {
+    bool SlotsDB::updateUserResource(UserResource &ur) const {
 	std::string query;
 	SqlUpdate su(query);
 	su.setTable("user_resource");
@@ -145,11 +145,11 @@ namespace slots{
 	    return false;
 	}
 	// important: if update success, it must flag to unchanged.
-	su.changed = false;
+	ur.changed = false;
 	return true;
     }
 
-    bool SlotsDB::updateUserInfo(const UserInfo &ui) const {
+    bool SlotsDB::updateUserInfo(UserInfo &ui) const {
 	// we should use transaction to make sure data ACID.
 	// first we should forbid autocommit by using mysql_autocommit(&sql, false);
 	std::string updateQuery = "UPDATE user_info SET ";
