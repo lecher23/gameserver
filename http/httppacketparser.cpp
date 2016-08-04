@@ -40,7 +40,6 @@ bool HTTPPacketParser::processData(DataBuffer *dataBuffer, HTTPPacket *packet)
     switch (_step) {
     case PS_START_LINE:
         if (processStartLine(dataBuffer, packet)) {
-            CLOG(WARNING) << "processStartLine finished!";
             _step = PS_MESSAGE_HEADER;
         } else {
             CLOG(WARNING) << "processStartLine() not finished.";
@@ -48,7 +47,6 @@ bool HTTPPacketParser::processData(DataBuffer *dataBuffer, HTTPPacket *packet)
         }
     case PS_MESSAGE_HEADER:
         if (processHeaders(dataBuffer, packet)) {
-            CLOG(WARNING) << "processHeaders finished!";
             _step = PS_MESSAGE_BODY;
         } else {
             CLOG(WARNING) << "processHeaders() not finished.";
@@ -56,7 +54,6 @@ bool HTTPPacketParser::processData(DataBuffer *dataBuffer, HTTPPacket *packet)
         }
     case PS_MESSAGE_BODY:
         if (processBody(dataBuffer, packet)) {
-            CLOG(WARNING) << "processBody finished!";
             _step = PS_MESSAGE_URI;	    
         } else {
             CLOG(WARNING) << "processBody() not finished.";	    
@@ -64,7 +61,6 @@ bool HTTPPacketParser::processData(DataBuffer *dataBuffer, HTTPPacket *packet)
 	}
     case PS_MESSAGE_URI:
 	if (processURI(packet)) {
-            CLOG(WARNING) << "processURI finish!";
 	    _parseFinish = true;
 	}
 	break;

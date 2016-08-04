@@ -21,8 +21,11 @@ namespace cgserver{
     private:
 	bool readData(SocketPtr &sk, DataBuffer &buff) const ;
 	bool writeData(SocketPtr &sk, HttpResponsePacket &resp) const ;
+	bool validatePacket(HTTPPacket &packet) const;	
 
-	IHandler *_handler;	
+	IHandler *_handler;
+	bool _needCheck;
+	std::string _secret;
     };
 }
 

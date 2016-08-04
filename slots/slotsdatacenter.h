@@ -1,23 +1,23 @@
-#ifndef SLOTSLRUCACHE_H
-#define SLOTSLRUCACHE_H
+#ifndef SLOTSDATACENTER_H
+#define SLOTSDATACENTER_H
 
-#include "../util/lrucache.h"
+#include "slotscache.h"
 #include "slotsdb.h"
 
 namespace slots{
     /*This lru cache will never expired*/
-    class SlotsLruCache{
+    class SlotsDataCenter{
     public:
 	
-	~SlotsLruCache(){
+	~SlotsDataCenter(){
 	}
 
 	bool init (){
-	    _suCache.init(300, false);
+	    _suCache.init(300, true, 60);
 	}
 
-	static SlotsLruCache &instance(){
-	    static SlotsLruCache cache;
+	static SlotsDataCenter &instance(){
+	    static SlotsDataCenter cache;
 	    return cache;
 	}
 
@@ -46,10 +46,10 @@ namespace slots{
 	}
 
     private:
-	SlotsLruCache(){}
-	SlotsLruCache(const SlotsLruCache &);
+	SlotsDataCenter(){}
+	SlotsDataCenter(const SlotsDataCenter &);
 	
-	cgserver::LruCache<std::string, SlotsUserPtr> _suCache;
+	SlotsCache<std::string, SlotsUserPtr> _suCache;
     };
 }
 #endif

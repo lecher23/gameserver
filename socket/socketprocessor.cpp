@@ -5,6 +5,7 @@
 #include <netinet/in.h>
 #include "../handlers/ihandler.h"
 #include "../mysql/mysqlclient.h"
+#include "../util/config.h"
 
 namespace cgserver{
     SocketProcessor::SocketProcessor():_handler(NULL){
@@ -24,6 +25,10 @@ namespace cgserver{
 	if (_handler != NULL) {
 	    delete _handler;
 	}
+	std::string secret = Config::getInstance().getConfigValue("server", "secret");	
+	std::string need_check = Config::getInstance().getConfigValue("server", "need_check");	
+	_secret = secret;
+	_needCheck = (need_check == "true");
 	_handler = (IHandler *)resource;
 	_handler->init();
     }
@@ -41,7 +46,14 @@ namespace cgserver{
 	    }
 	    HTTPPacketParser parser;
 	    HTTPPacket packet;
+	    /* Parser http packet from buffer.*/
 	    if (!parser.processData(&buff, &packet)) {
+		CLOG(WARNING) << "Parse http packet failed.";
+		break;
+	    }
+	    /* Check if it is valid http request.*/
+	    if (!validatePacket(packet)) {
+		CLOG(WARNING) << "Validate http packet failed.";		
 		break;
 	    }
 	    HttpResponsePacket resp;
@@ -52,6 +64,20 @@ namespace cgserver{
 	    }
 	    CLOG(INFO) << "Send response success.";
 	} while(0);
+    }
+
+    bool SocketProcessor::validatePacket(HTTPPacket &packet) const {
+	if (!_needCheck) {
+	    return true;
+	}
+	std::string sign;	
+	if (!packet.getParamValue("sign", sign)) {
+	    CLOG(WARNING) << "validate request failed.";
+	    return false;
+	}	
+	std::string strToSign(packet.getURI());
+	strToSign += _secret;
+	return true;
     }
 
     bool SocketProcessor::readData(SocketPtr &sk, DataBuffer &buf) const{

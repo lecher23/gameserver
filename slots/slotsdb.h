@@ -67,6 +67,8 @@ namespace slots{
 	bool addUser(const std::string &mid, std::string &uid)const ;
 	/* Only update table user_info. */
 	bool updateUserInfo(const UserInfo &ui) const;
+	bool updateUserResource(const UserResource &ur) const;	
+	bool update(SlotsUserPtr su) const;
 	
 	bool getUserMails(const MyString &uid, MyString &offset, MyString &count, UserMails &out);
 	bool readMail(const std::string &uid, const std::string &mailId);

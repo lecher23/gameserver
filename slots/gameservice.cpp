@@ -46,7 +46,7 @@ namespace slots{
 	}
 
 	SlotsUserPtr sup;
-	if (!SlotsLruCache::instance().get(uid, sup)) {
+	if (!SlotsDataCenter::instance().get(uid, sup)) {
 	    return false;
 	}
 

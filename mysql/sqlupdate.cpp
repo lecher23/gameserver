@@ -1,4 +1,5 @@
 #include "sqlupdate.h"
+
 namespace cgserver{
     SqlUpdate::SqlUpdate(std::string &str):SqlStatement(str), _hasKV(false){
     }
@@ -22,6 +23,6 @@ namespace cgserver{
 	_str += "\"";
 	_str += value;
 	_str += "\"";
+	_hasKV = true;
     }
-    
 }

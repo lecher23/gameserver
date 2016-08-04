@@ -120,6 +120,33 @@ namespace slots{
 	return true;
     }
 
+    bool SlotsDB::update(SlotsUserPtr su) const {
+	bool ret;
+	if (su->uInfo.changed) {
+	    ret = updateUserInfo(su->uInfo);
+	}
+	if (su->uRes.changed) {
+	    ret = (updateUserResource(su->uRes) && ret);
+	}
+	return ret;
+    }
+
+    bool SlotsDB::updateUserResource(const UserResource &ur) const {
+	std::string query;
+	SqlUpdate su(query);
+	su.setTable("user_resource");
+	su.updateVal("level", ur.level);
+	su.updateVal("exp", ur.exp);
+	su.updateVal("fortune", ur.fortune);
+	su.updateVal("vip_level", ur.vipLevel);
+	su.hasCondition();
+	su.addEqualCondition("uid", ur.uid);
+	if (!_client.query(query)) {
+	    return false;
+	}
+	return true;
+    }
+
     bool SlotsDB::updateUserInfo(const UserInfo &ui) const {
 	// we should use transaction to make sure data ACID.
 	// first we should forbid autocommit by using mysql_autocommit(&sql, false);
