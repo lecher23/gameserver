@@ -10,3 +10,5 @@
 # Glog
 ## make install infomation (under ubuntu 16.04):
 
+# Test
+## CxxTest 4.3 (https://github.com/CxxTest/cxxtest)
