@@ -1,5 +1,5 @@
-#ifndef ANET_HTTPPACKET_H_
-#define ANET_HTTPPACKET_H_
+#ifndef HTTPPACKET_H_
+#define HTTPPACKET_H_
 
 #include <map>
 #include <string>
@@ -145,4 +145,4 @@ protected:
 };
 
 }/*end namespace anet*/
-#endif /*ANET_HTTPPACKET_H_*/
+#endif

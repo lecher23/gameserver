@@ -1,3 +1,4 @@
+#include "../util/timeutil.h"
 #include "slotshandler.h"
 #include "serviceprovider.h"
 #include "slotsdatacenter.h"
@@ -11,6 +12,8 @@ namespace slots{
 
     bool SlotsHandler::process(CPacket &packet, CResponse &resp)
     {
+	auto beginTime = cgserver::CTimeUtil::getCurrentTime();
+
 	if (CPacket::HM_POST != packet.getMethod()) {
 	    CLOG(WARNING) << "Bad method: " << packet.getMethod();
 	    return false;
@@ -20,7 +23,10 @@ namespace slots{
 	    CLOG(WARNING) << "Invalid path: " << packet.getPath();
 	    return false;
 	}
-	return service->doJob(packet, resp);
+	bool ret = service->doJob(packet, resp);
+	auto endTime = cgserver::CTimeUtil::getCurrentTime();
+	CLOG(INFO) << "process [" << packet.getPath() << "] cost:" << endTime - beginTime << " us.";
+	return ret;
     }
 
     void SlotsHandler::init() {

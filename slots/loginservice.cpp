@@ -9,32 +9,20 @@ namespace slots{
 
     bool LoginService::doJob(CPacket &packet, CResponse &resp){
 	bool pOk = false;
-	//cgserver::LuaToolPtr lua = cgserver::LuaToolFactory::getInstance().borrowTool();
-	// borrow lua tool.
-	// if (lua.get() == NULL) {
-	//     resp.setBody(common::ERR_LOAD_LUA.c_str());
-	//     return false;
-	// }
 	SlotsUser sUser;	
 	do {
 	    if (!getUserInfo(packet, sUser)){
 		break;
 	    }
 	    pOk = true;	    
-	    // if (!lua->exeFunc("entrance", "123", 1)) {
-	    // 	resp.setBody(common::ERR_CALL_LUA.c_str());	    
-	    // 	break;
-	    // }
-	    // std::string ret;
-	    // lua->getValue(ret);
-	    // lua->debug();
 	}while(0);
-	ResultFormatter rf;
+	
 	SBuf buf;
+	ResultFormatter rf(buf);
 	if (pOk) {
-	    rf.formatResult(sUser, buf);
+	    rf.formatResult(sUser);
 	} else {
-	    rf.formatSimpleResult(buf, pOk, "");
+	    rf.formatSimpleResult(pOk, "");
 	}
 	
 	//formatResult(pOk, sUser, ret);

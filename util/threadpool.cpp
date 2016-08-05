@@ -279,7 +279,6 @@ void *ThreadPool::workerLoop(void *args)
         }
         if (runner)
         {
-	    CLOG(INFO) << "Process job." << std::endl;
             runner->run(NULL, NULL);
             runner->free();
         }

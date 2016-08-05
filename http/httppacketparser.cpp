@@ -62,6 +62,8 @@ bool HTTPPacketParser::processData(DataBuffer *dataBuffer, HTTPPacket *packet)
     case PS_MESSAGE_URI:
 	if (processURI(packet)) {
 	    _parseFinish = true;
+	} else {
+            CLOG(WARNING) << "processURI() not finished.";	    
 	}
 	break;
     default:

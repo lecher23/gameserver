@@ -1,5 +1,5 @@
 #ifndef __UTIL_TIME_UTIL_H_
-#define __util_TIME_UTIL_H_
+#define __UTIL_TIME_UTIL_H_
 
 #include <sys/time.h>
 #include <time.h>

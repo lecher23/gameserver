@@ -1,122 +1,134 @@
 #include "resultformatter.h"
 namespace slots{
-    ResultFormatter::ResultFormatter(){
-
+    ResultFormatter::ResultFormatter(SBuf &buffer):_writer(buffer){
     }
     
     ResultFormatter::~ResultFormatter(){
     }
 
-    void ResultFormatter::formatResult(const UserMails &uMails, SBuf &buffer)  {
-	JsonWriter writer(buffer);	
-	writer.StartObject();
-	formatStatus(writer, true);
-	formatMailsInfo(writer, uMails);
-	writer.EndObject();
+    void ResultFormatter::formatResult(const UserMails &uMails)  {
+	_writer.StartObject();
+	formatStatus(true);
+	formatMailsInfo(uMails);
+	_writer.EndObject();
     }
 
-    void ResultFormatter::formatResult(const SlotsUser &su, SBuf &buffer)  {
-	JsonWriter writer(buffer);	
-	writer.StartObject();
-	formatStatus(writer, true);
+    void ResultFormatter::formatResult(const SlotsUser &su)  {
+	_writer.StartObject();
+	formatStatus(true);
 	
-	writer.Key("user_info");
-	writer.StartObject();
-	formatUserInfo(writer, su.uInfo);
-	writer.EndObject();
+	_writer.Key("user_info");
+	formatUserInfo(su.uInfo);
 
-	writer.Key("user_resource");	
-	writer.StartObject();
-	formatUserResource(writer, su.uRes);	
-	writer.EndObject();
-	
-	writer.EndObject();
+	_writer.Key("user_resource");	
+	formatUserResource(su.uRes);	
+
+	_writer.EndObject();
     }
     
-    void ResultFormatter::formatSimpleResult(SBuf &buffer, bool success, const std::string &err)
+    void ResultFormatter::formatSimpleResult(bool success, const std::string &err)
     {
-	JsonWriter writer(buffer);	
-	writer.StartObject();
-	formatStatus(writer, success);
-	writer.Key("msg");
-	writer.String(err.c_str());
-	writer.EndObject();
+	_writer.StartObject();
+	formatStatus(success);
+	_writer.Key("msg");
+	_writer.String(err.c_str());
+	_writer.EndObject();
     }
 
-    void ResultFormatter::formatStatus(JsonWriter &writer, bool bOk) {
-	writer.Key("status");
-	writer.String( bOk ? "OK" : "ERROR" );	
+    void ResultFormatter::formatGameResult(
+	const UserResource &sr, int64_t earned, const std::string &detail)
+    {
+	_writer.StartObject();
+	formatStatus(true);
+	_writer.Key("uid");
+	_writer.String(sr.uid.c_str());
+	_writer.Key("user_resource");
+	formatUserResource(sr);
+	_writer.Key("earned");
+	_writer.Int64(earned);
+	_writer.Key("detail");
+	_writer.String(detail.c_str());
+	_writer.EndObject();
     }
 
-    void ResultFormatter::formatMailsInfo(
-	JsonWriter &writer, const UserMails &uMails)
+
+    void ResultFormatter::formatStatus(bool bOk) {
+	_writer.Key("status");
+	_writer.String( bOk ? "OK" : "ERROR" );	
+    }
+
+    /*"mails":[{..mail info },{}..]*/    
+    void ResultFormatter::formatMailsInfo(const UserMails &uMails)
     {
-	/*"mails":[{..mail info },{}..]*/
-	writer.Key("mails");
-	writer.StartArray();
+	_writer.Key("mails");
+	_writer.StartArray();
 	for (auto itr = uMails.begin(); itr != uMails.end(); ++itr) {
-	    formatMail(writer, *(*itr));
+	    formatMail(*(*itr));
 	}
-	writer.EndArray();
+	_writer.EndArray();
     }
 
-    void ResultFormatter::formatMail(JsonWriter &writer, const UserMail &uMail) {
-	/*{"id":xxx,...}*/
-	writer.StartObject();
-	writer.Key("id");
-	writer.String(uMail.mailInfo.mailId.c_str());
-	writer.Key("title");
-	writer.String(uMail.mailInfo.title.c_str());
-	writer.Key("content");
-	writer.String(uMail.mailInfo.content.c_str());
-	// writer.Key("attachment");
-	// writer.String(uMail.mailInfo.attachment);
-	writer.Key("create_time");
-	writer.String(uMail.mailInfo.createTime.c_str());
-	writer.Key("keey_days");
-	writer.String(uMail.mailInfo.keepDays.c_str());
-	writer.Key("is_read");
-	writer.Bool(uMail.bRead);
-	writer.Key("is_get");
-	writer.Bool(uMail.bGet);
-	writer.Key("is_del");
-	writer.Bool(uMail.bDel);
-	writer.EndObject();	
+    /*{"id":xxx,...}*/    
+    void ResultFormatter::formatMail(const UserMail &uMail) {
+	_writer.StartObject();
+	_writer.Key("id");
+	_writer.String(uMail.mailInfo.mailId.c_str());
+	_writer.Key("title");
+	_writer.String(uMail.mailInfo.title.c_str());
+	_writer.Key("content");
+	_writer.String(uMail.mailInfo.content.c_str());
+	// _writer.Key("attachment");
+	// _writer.String(uMail.mailInfo.attachment);
+	_writer.Key("create_time");
+	_writer.String(uMail.mailInfo.createTime.c_str());
+	_writer.Key("keey_days");
+	_writer.String(uMail.mailInfo.keepDays.c_str());
+	_writer.Key("is_read");
+	_writer.Bool(uMail.bRead);
+	_writer.Key("is_get");
+	_writer.Bool(uMail.bGet);
+	_writer.Key("is_del");
+	_writer.Bool(uMail.bDel);
+	_writer.EndObject();	
     }
 
-    /* without '{', '}' at begin and end
-      "uid": "uid",...
+    /* 
+      {"uid": "uid",...}
      */
-    void ResultFormatter::formatUserInfo(JsonWriter &writer, const UserInfo &uInfo) {
-	writer.Key("uid");
-	writer.String(uInfo.uid.c_str());
-	writer.Key("mid");
-	writer.String(uInfo.mid.c_str());
-	writer.Key("fname");
-	writer.String(uInfo.fname.c_str());
-	writer.Key("avatar");
-	writer.String(uInfo.avatar.c_str());
-	writer.Key("male");
-	writer.String(uInfo.male.c_str());
-	writer.Key("country");
-	writer.String(uInfo.country.c_str());
+    void ResultFormatter::formatUserInfo(const UserInfo &uInfo) {
+	_writer.StartObject();
+	_writer.Key("uid");
+	_writer.String(uInfo.uid.c_str());
+	_writer.Key("mid");
+	_writer.String(uInfo.mid.c_str());
+	_writer.Key("fname");
+	_writer.String(uInfo.fname.c_str());
+	_writer.Key("avatar");
+	_writer.String(uInfo.avatar.c_str());
+	_writer.Key("male");
+	_writer.String(uInfo.male.c_str());
+	_writer.Key("country");
+	_writer.String(uInfo.country.c_str());
+	_writer.EndObject();	
     }
 
-    /* without '{', '}' at begin and end
-      "uid": "uid",...
+    /* 
+      {"uid": "uid",...}
      */
-    void ResultFormatter::formatUserResource(JsonWriter &writer, const UserResource &uRes) {
-	writer.Key("uid");
-	writer.String(uRes.uid.c_str());
-	writer.Key("level");
-	writer.Uint(uRes.level);
-	writer.Key("exp");
-	writer.Uint64(uRes.exp);
-	writer.Key("fortune");
-	writer.Uint64(uRes.fortune);
-	writer.Key("vip_level");
-	writer.Uint(uRes.vipLevel);
-	// writer.Key("vip_point");
-	// writer.String(uRes.vipPoint);
+    void ResultFormatter::formatUserResource(const UserResource &uRes) {
+	_writer.StartObject();	
+	_writer.Key("uid");
+	_writer.String(uRes.uid.c_str());
+	_writer.Key("level");
+	_writer.Uint(uRes.level);
+	_writer.Key("exp");
+	_writer.Uint64(uRes.exp);
+	_writer.Key("fortune");
+	_writer.Uint64(uRes.fortune);
+	_writer.Key("vip_level");
+	_writer.Uint(uRes.vipLevel);
+	// _writer.Key("vip_point");
+	// _writer.String(uRes.vipPoint);
+	_writer.EndObject();
     }	
 }

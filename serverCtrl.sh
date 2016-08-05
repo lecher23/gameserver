@@ -57,7 +57,7 @@ then
     then
 	echo "Server not runnig."
     else
-	echo "Server runnig on port ${PORT}."
+	echo "Server runnig on port ${PORT} with PID[${SERVER_PID}]"
     fi
 else
     echo "Invalid param. Use help to get usage."

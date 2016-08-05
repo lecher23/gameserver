@@ -21,9 +21,27 @@ namespace slots{
 	std::string uid;
 	uint32_t level;
 	uint64_t exp;
-	uint64_t fortune;
+	int64_t fortune;
 	uint32_t vipLevel;
 	bool changed;
+	
+	void levelUp() {
+	    level ++;
+	    changed = true;
+	}
+
+	void vipLevelUp(){
+	    level ++;
+	    changed = true;
+	}
+
+	void mdfyFortune(int64_t earned) {
+	    if (earned == 0)
+		return;
+	    fortune += earned;
+	    if (fortune < 0) fortune = 0;
+	    changed = true;
+	}
     };
     DF_SHARED_PTR(UserResource);    
 

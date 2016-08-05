@@ -6,6 +6,8 @@
 #include "../util/common_define.h"
 
 namespace cgserver{
+    /*Each handler will used by serveral thread.
+      So it is import to note that do not add variable to IHandler.*/
     class IHandler{
     public:
 	IHandler(){}

@@ -12,8 +12,8 @@ namespace slots{
 	~SlotsDataCenter(){
 	}
 
-	bool init (){
-	    _suCache.init(300, true, 60);
+	bool init (bool needDump = true, int dumpInterval = 60){
+	    _suCache.init(300, needDump, 60);
 	}
 
 	static SlotsDataCenter &instance(){
@@ -33,6 +33,8 @@ namespace slots{
 		    out->uInfo.changed = false;
 		    out->uRes.changed = false;
 		    set(out);
+		} else {
+		    CLOG(WARNING) << "Get user[" << uid << "] info failed.";
 		}
 	    }else {
 		ret = (out.get() != NULL);

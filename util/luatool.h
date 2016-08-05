@@ -25,8 +25,8 @@ namespace cgserver{
 	bool getValue(std::string &str);
 
 	//Push value to top stack of lua
-	void pushValue(long int in);
-	void pushValue(double in);	
+	void pushValue(int64_t in);
+	void pushValue(double in);
 	void pushValue(const std::string &in);
 	void pushValue(const char *in);
 
@@ -35,7 +35,9 @@ namespace cgserver{
 
 	bool exeFunc(int iCount, int oCount);
 	//void funcName(void)
-	bool exeFunc(const std::string &funcName);
+	bool exeFunc(const std::string &funcName, int nParam = 0, int nResult = 0);
+
+	void chooseFunc(const std::string &funcName);
 
 	//<nResult> funcName(param1, param2)
 	template <typename T1, typename T2>
@@ -48,7 +50,7 @@ namespace cgserver{
 
 	//<nResult> funcName(param1)
 	template <typename T1>
-	bool exeFunc(const std::string &funcName, T1 &x, int nResult = 1) {
+	bool exeFunc(const std::string &funcName, T1 &x,  int nResult = 1) {
 	    lua_getglobal(_L, funcName.c_str());	
 	    pushValue(x);
 	    return exeFunc(1, nResult);

@@ -39,7 +39,7 @@ namespace cgserver{
 	return true;
     }
 
-    bool LuaTool::getValue(long int &ret) {
+    bool LuaTool::getValue(int64_t &ret) {
 	ret = lua_tointeger(_L, -1);
 	popValue();	
 	return true;
@@ -91,10 +91,13 @@ namespace cgserver{
     }
 
     // no input, no output
-    bool LuaTool::exeFunc(const std::string &funcName) {
-	debug();
+    bool LuaTool::exeFunc(const std::string &funcName, int nParam, int nResult) {
 	lua_getglobal(_L, funcName.c_str());
-	return exeFunc(0,0);
+	return exeFunc(nParam, nResult);
+    }
+
+    void LuaTool::chooseFunc(const std::string &funcName) {
+	lua_getglobal(_L, funcName.c_str());
     }
 
     void LuaTool::popValue(int wanted) {
@@ -111,5 +114,6 @@ namespace cgserver{
 	CLOG(ERROR) << "Stack size is:" << stack_size;
 	std::string str;
     }
+    
     
 }

@@ -70,7 +70,7 @@ namespace slots{
 	ur.uid = res[7];	
 	cgserver::StringUtil::StrToUInt32(res[8].c_str(), ur.level);
 	cgserver::StringUtil::StrToUInt64(res[9].c_str(), ur.exp);
-	cgserver::StringUtil::StrToUInt64(res[10].c_str(), ur.fortune);
+	cgserver::StringUtil::StrToInt64(res[10].c_str(), ur.fortune);
 	cgserver::StringUtil::StrToUInt32(res[11].c_str(), ur.vipLevel);
 	return true;
     }

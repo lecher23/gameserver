@@ -14,9 +14,10 @@ namespace slots{
 	std::string errMsg;
 	GET_PARAM("type", type, true);
 	GET_PARAM("uid", uid, true);
+	
 	SlotsDB &db = SlotsDB::getInstance();
-	ResultFormatter rf;
 	SBuf bf;
+	ResultFormatter rf(bf);
 	bool ret = false;
 	do {
 	    if (type == "0") {
@@ -29,19 +30,19 @@ namespace slots{
 		UserMails uMails;
 		if (!db.getUserMails(uid, page, pageSize, uMails)){
 		    CLOG(WARNING) << "process /slots/mail?type=0 failed on [mysql]";
-		    rf.formatSimpleResult(bf, false, "Internal error.");
+		    rf.formatSimpleResult(false, "Internal error.");
 		    break;
 		}
-		rf.formatResult(uMails, bf);
+		rf.formatResult(uMails);
 	    }else if (type == "2") {
 		std::string mailId;
 		GET_PARAM("mailid", mailId, true);
 		if (!db.readMail(uid, mailId)) {
 		    CLOG(WARNING) << "Process /slots/mail?type=2 failed on [mysql]";
-		    rf.formatSimpleResult(bf, false, "Internal error.");
+		    rf.formatSimpleResult(false, "Internal error.");
 		    break;
 		}
-		rf.formatSimpleResult(bf, true, "");
+		rf.formatSimpleResult(true, "");
 	    }
 	    
 	}while(false);

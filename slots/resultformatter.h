@@ -12,19 +12,23 @@ namespace slots{
     typedef rapidjson::Writer<SBuf> JsonWriter;
     class ResultFormatter{
     public:
-        ResultFormatter();
+        explicit ResultFormatter(SBuf &buffer);
         ~ResultFormatter();
 
-	void formatResult(const UserMails &uMails, SBuf &buffer);
-	void formatResult(const SlotsUser &su, SBuf &buffer);
-	void formatSimpleResult(SBuf &buffer, bool ok, const std::string &err);
+	void formatResult(const UserMails &uMails);
+	void formatResult(const SlotsUser &su);
+	void formatSimpleResult(bool ok, const std::string &err);
+
+	void formatGameResult(const UserResource &sr, int64_t earned, const std::string &detail);
 	
+	
+	void formatStatus(bool bOk);
+	void formatMailsInfo(const UserMails &uMails);
+	void formatMail(const UserMail &uMail);
+	void formatUserInfo(const UserInfo &uInfo);
+	void formatUserResource(const UserResource &uRes);
     private:
-	void formatStatus(JsonWriter &writer, bool bOk);
-	void formatMailsInfo(JsonWriter &writer, const UserMails &uMails);
-	void formatMail(JsonWriter &writer, const UserMail &uMail);
-	void formatUserInfo(JsonWriter &writer, const UserInfo &uInfo);
-	void formatUserResource(JsonWriter &writer, const UserResource &uRes);
+	JsonWriter _writer;
     };
 }
 #endif
