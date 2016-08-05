@@ -1,7 +1,7 @@
 #include "sqlstatement.h"
 namespace cgserver{
     SqlStatement::SqlStatement(std::string &str):
-	_str(str),_fieldSetted(false),_tableSetted(false)
+	_str(str),_condSetted(false),_fieldSetted(false),_tableSetted(false)
     {
     }
     
@@ -17,11 +17,15 @@ namespace cgserver{
     }
 
     void SqlStatement::hasCondition() {
-	_str += " where " ;
+	if (!_condSetted){
+	    _str += " where ";
+	    _condSetted = true;
+	}
     }
 
     // key="val" 
     void SqlStatement::addEqualCondition(const std::string &left, const std::string &right) {
+	hasCondition();
 	_str += "(";
 	_str += left;
 	_str += "=\"";
@@ -30,7 +34,7 @@ namespace cgserver{
     }
     
     void SqlStatement::setCondition(const std::string &cd) {
-	_str += " where ";
+	hasCondition();
 	_str += cd;
     }
 
@@ -44,7 +48,7 @@ namespace cgserver{
 	_str += (asc ? " asc " : " desc ");
     }
     
-    void SqlStatement::setLimit(std::string &offset, std::string &size) {
+    void SqlStatement::setLimit(const std::string &offset, const std::string &size) {
 	_str += " limit ";
 	_str += offset;
 	_str += ",";

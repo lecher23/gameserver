@@ -8,7 +8,7 @@ namespace cgserver{
 
     void SqlSelect::addField(const std::string &fd) {
 	if (!_fieldSetted) {
-	    _str += " select ";
+	    _str += "select ";
 	}else{
 	    _str += ",";
 	}
@@ -19,9 +19,11 @@ namespace cgserver{
     void SqlSelect::addTable(const std::string &tb) {
 	if (!_fieldSetted) {
 	    _str += "select * ";
+	    _fieldSetted = true;
 	}
-	_str += " from ";
-	if (_tableSetted) {
+	if (!_tableSetted) {
+	    _str += " from ";
+	}else{
 	    _str += ",";
 	}
 	_str += tb;

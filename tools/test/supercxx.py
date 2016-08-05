@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import commands
 import os
 import sys
@@ -13,8 +14,12 @@ class SuperCxx:
         self.cxx_root = "/home/licheng/workspace/cxxtest"
         self.test_root = "/home/licheng/workspace/simpletest"
         self.tmp_h_file = "/home/licheng/workspace/cxxtest/h.tpl"
+        self.workspace = ""
+        self.app_name = "test_main"
 
-    def do_test(self, test_name = None):
+    def do_test(self, test_name = None, compile = False):
+        if compile:
+            self.compile_project()
         os.system("rm -f main")
         if (test_name != None):
             cpp_fpath = self.create_cpp_file(test_name)
@@ -32,6 +37,7 @@ class SuperCxx:
     def create_cpp_file(self, h_file):
         cpp_file = os.path.basename(h_file)[:-2] + ".cpp"
         cpp_file_path = os.path.join(self.test_root, cpp_file)
+        os.system("rm " + cpp_file_path)
         cmd = "%s/bin/cxxtestgen --error-printer  %s -o %s" % \
               (self.cxx_root, h_file, cpp_file_path)
         os.system(cmd)
@@ -44,7 +50,8 @@ class SuperCxx:
         objs = " ".join(self.obj_path)
         links = "-l " + " -l ".join(self.libs_required) if self.libs_required else ""
         extra = " ".join(self.extra_option) if self.extra_option else ""
-        build_str = "g++ %s -o main %s %s %s %s %s" % (extra, cpp_file, libs, headers, objs, links)
+        build_str = "g++ %s -o %s %s %s %s %s %s" % \
+                    (extra, self.app_name, cpp_file, libs, headers, objs, links)
         #print build_str
         o, s = commands.getstatusoutput(build_str)
         if o != 0:
@@ -58,9 +65,20 @@ class SuperCxx:
         return "LD_LIBRARY_PATH = $LD_LIBRARY_PATH:%s" % extra
 
     def run_test(self):
-        cmd = "echo $LD_LIBRARY_PATH;./main" 
+        cmd = "echo $LD_LIBRARY_PATH;./%s" % self.app_name
         s, o = commands.getstatusoutput(cmd)
         print o
+
+    def compile_project(self):
+        print "Begin recompile project."
+        cmd = "cd %s && make clean && make" % (self.workspace)
+        s, o = commands.getstatusoutput(cmd)
+        if (s != 0):
+            print "Run cmd [%s] failed" % cmd
+            print o
+            exit(1)
+        
+    
 
 if __name__ == "__main__":
     sc = SuperCxx()
@@ -80,13 +98,15 @@ if __name__ == "__main__":
     sc.cxx_root = os.path.join(root, "tools/test/cxxtest-4.3")
     sc.test_root = os.path.join(root, "tools/test")
     sc.tmp_h_file = os.path.join(root, "tools/h.tpl")
+    sc.workspace = root
 
     arg_len = len(sys.argv)
     if arg_len == 1:
         print "Commands: "
         print "new [TestName] : create a new test header file."
-        print "run : run all test case."
-        print "run <casename> : run test case [casename]."
+        print "run -c: run all test case."
+        print "run <casename> -c: run test case [casename]."
+        print "-c: recompile project."
         exit(1)
     if sys.argv[1] == "new":
         if arg_len < 3:
@@ -95,9 +115,16 @@ if __name__ == "__main__":
         sc.create_h_file(sys.argv[2])
     elif sys.argv[1] == "run":
         if arg_len == 2:
-            sc.do_test()
-        else:
-            sc.do_test(sys.argv[2])
+            sc.do_test(compile = False)
+        elif arg_len == 3:
+            # run -c
+            if (sys.argv[2] == "-c"):
+                sc.do_test(compile = True)
+            else:
+                # run <casename>
+                sc.do_test(sys.argv[2])
+        elif arg_len == 4:
+            sc.do_test(sys.argv[2], compile = True)
     else:
         print "Invalid input."
             

@@ -9,3 +9,5 @@ dev
 build
 *.pyc
 tmp.*
+test_main
+test*.cpp

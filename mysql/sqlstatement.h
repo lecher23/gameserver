@@ -17,10 +17,11 @@ namespace cgserver{
 	void setCondition(const std::string &cd);
 	void setConditionJoin(bool isAnd);
 	void setOrderField(const std::string &of, bool asc);
-	void setLimit(std::string &offset, std::string &size);	
+	void setLimit(const std::string &offset, const std::string &size);	
 	
     protected:
 	std::string &_str;
+	bool _condSetted;
 	bool _fieldSetted;
 	bool _tableSetted;
     };
