@@ -90,13 +90,13 @@ if __name__ == "__main__":
         if f not in obj_exclude:
             sc.obj_path.append(os.path.join(obj_path, f))
     sc.header_path = [os.path.join(root, "depend/headers"),
-                      root,
-                      os.path.join(root, "tools/test/cxxtest-4.3")]
+                      os.path.join(root, "src"),
+                      os.path.join(root, "test/cxxtest-4.3")]
     sc.lib_path = [os.path.join(root, "depend/libs")]
     sc.libs_required = ["pthread", "lua5.1", "mysqlclient", "glog", "glfw"]
-    sc.root = os.path.join(root, "tools/test")
-    sc.cxx_root = os.path.join(root, "tools/test/cxxtest-4.3")
-    sc.test_root = os.path.join(root, "tools/test")
+    sc.root = os.path.join(root, "test")
+    sc.cxx_root = os.path.join(root, "test/cxxtest-4.3")
+    sc.test_root = os.path.join(root, "test")
     sc.tmp_h_file = os.path.join(root, "tools/h.tpl")
     sc.workspace = root
 

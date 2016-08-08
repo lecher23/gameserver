@@ -43,7 +43,7 @@ class TestGameService : public CxxTest::TestSuite
 	GameService gs;
 	CPacket p;
 	SBuf bf;
-	ResultFormatter rf;
+	ResultFormatter rf(bf);
 
 	SlotsUserPtr spSlotsUser;
 	std::string uid = "10";
@@ -54,7 +54,7 @@ class TestGameService : public CxxTest::TestSuite
 	p.addParam("uid", uid);
 	p.addParam("type", "0");
 	p.addParam("bet", "230");
-	bool ret = gs.doSlots1(p, bf, rf);
+	bool ret = gs.doSlots1(p, rf);
 	AST_TRUE(ret);
 
 	// bet cost 230, and user earned 230. equal
@@ -67,7 +67,7 @@ class TestGameService : public CxxTest::TestSuite
 	GameService gs;
 	CPacket p;
 	SBuf bf;
-	ResultFormatter rf;
+	ResultFormatter rf(bf);
 
 	SlotsUserPtr spSlotsUser;
 	std::string uid = "10";
@@ -90,7 +90,7 @@ class TestGameService : public CxxTest::TestSuite
 	GameService gs;
 	CPacket p;
 	SBuf bf;
-	ResultFormatter rf;
+	ResultFormatter rf(bf);
 
 	SlotsUserPtr spSlotsUser;
 	std::string uid = "10";
@@ -114,7 +114,7 @@ class TestGameService : public CxxTest::TestSuite
 	GameService gs;
 	CPacket p;
 	SBuf bf;
-	ResultFormatter rf;
+	ResultFormatter rf(bf);
 
 	SlotsUserPtr spSlotsUser;
 	std::string uid = "10";
@@ -138,7 +138,7 @@ class TestGameService : public CxxTest::TestSuite
 	GameService gs;
 	CPacket p;
 	SBuf bf;
-	ResultFormatter rf;
+	ResultFormatter rf(bf);
 
 	SlotsUserPtr spSlotsUser;
 	std::string uid = "10";
@@ -163,13 +163,13 @@ class TestGameService : public CxxTest::TestSuite
 	GameService gs;
 	CPacket p;
 	SBuf bf;
-	ResultFormatter rf;
+	ResultFormatter rf(bf);
 
 	std::string uid = "0";
 	p.addParam("uid", uid);
 	p.addParam("type", "0");
 	p.addParam("bet", "230");
-	bool ret = gs.doSlots1(p, bf, rf);
+	bool ret = gs.doSlots1(p, rf);
 	AST_TRUE(!ret);
     }
 
@@ -179,13 +179,13 @@ class TestGameService : public CxxTest::TestSuite
 	GameService gs;
 	CPacket p;
 	SBuf bf;
-	ResultFormatter rf;
+	ResultFormatter rf(bf);
 
 	std::string uid = "0";
 	p.addParam("uid", uid);
 	p.addParam("type", "0");
 	p.addParam("bet", "-230");
-	bool ret = gs.doSlots1(p, bf, rf);
+	bool ret = gs.doSlots1(p, rf);
 	AST_TRUE(!ret);
     }
     

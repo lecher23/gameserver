@@ -1,12 +1,15 @@
 SUBDIRS=$(shell ls -l | grep ^d | grep -v tools|grep -v depend |awk '{if($$9 != "build") print $$9}')
 ROOT_DIR=$(shell pwd)
 BIN=server
-OBJS_DIR=build/obj
-BIN_DIR=build/bin
+BUILD_DIR=$(ROOT_DIR)/../build
+#OBJS_DIR=$(ROOT_DIR)/../build/obj
+OBJS_DIR=$(BUILD_DIR)/obj
+#BIN_DIR=$(ROOT_DIR)/../build/bin
+BIN_DIR=$(BUILD_DIR)/bin
 CUR_SOURCE=${wildcard *.cpp}
 CUR_OBJS=${patsubst %.cpp, %.o, $(CUR_SOURCE)}
-EXTRA_H_DIR=${ROOT_DIR}/depend/headers
-EXTRA_LIB_DIR=${ROOT_DIR}/depend/libs
+EXTRA_H_DIR=${ROOT_DIR}/../depend/headers
+EXTRA_LIB_DIR=${ROOT_DIR}/../depend/libs
 CC=g++ -std=c++11 -g -I ${EXTRA_H_DIR}
 
 #将以下变量导出到子shell中，本次相当于导出到子目录下的makefile中
@@ -18,12 +21,12 @@ $(SUBDIRS):ECHO
 	make -C $@
 DEBUG:ECHO
     #直接去debug目录下执行makefile文件
-	make -C build
+	make -C $(BUILD_DIR)
 ECHO:
 	@echo $(SUBDIRS)
 $(CUR_OBJS):%.o:%.cpp
-	$(CC) -c $^ -o $(ROOT_DIR)/$(OBJS_DIR)/$@ 
+	$(CC) -c $^ -o $(OBJS_DIR)/$@ 
 clean:
 	@rm $(OBJS_DIR)/*.o
 install:
-	mv ${ROOT_DIR}/${BIN_DIR}/server ${ROOT_DIR}/build/release
+	mv ${BIN_DIR}/server ${ROOT_DIR}/../build/release
