@@ -48,5 +48,23 @@ public:
 	ss.setLimit("3", "9");
 	AST_EQ(" where (uid=\"3\") and mid=3 order by price asc  limit 3,9", out);
     }
+
+    void test_innerJoin(void)
+    {
+	std::string out;
+	SqlStatement ss(out);
+	ss.innerJoin("t1", "t2", "id1", "id2");
+	AST_EQ(" from t1 inner join t2 on t1.id1=t2.id2", out);
+    }
+
+    void test_innerJoinWithAnd(void)
+    {
+	std::string out;
+	SqlStatement ss(out);
+	ss.innerJoin("t1", "t2", "id1", "id2");
+	ss.setConditionJoin(true);
+	ss.addEqualCondition("t1.id1", "123");
+	AST_EQ(" from t1 inner join t2 on t1.id1=t2.id2 and (t1.id1=\"123\")", out);
+    }
     
 };

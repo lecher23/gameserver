@@ -11,6 +11,9 @@ namespace slots{
         virtual ~SocialityService();
 
 	virtual bool doJob(CPacket &packet, CResponse &resp);
+    private:
+	bool getFriendsList(CPacket &packet, ResultFormatter &rf);
+	bool getSearchResult(CPacket &packet, ResultFormatter &rf);	
     };
 }
 #endif

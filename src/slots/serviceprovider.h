@@ -6,6 +6,7 @@
 #include "updateservice.h"
 #include "mailservice.h"
 #include "gameservice.h"
+#include "socialityservice.h"
 
 namespace slots{
     class ServiceProvider{
@@ -24,10 +25,14 @@ namespace slots{
 		ret.reset((IService *)new MailService);
 	    } else if (path == "/slots/game") {
 		ret.reset((IService *)new GameService);
+	    } else if (path == "/slots/friends") {
+		ret.reset((IService *)new SocialityService);
 	    }
 
 	    return ret;
 	}
+    /* private: */
+    /* 	static const std::map<std::string, IServicePtr> _router; */
     };
 }
 #endif

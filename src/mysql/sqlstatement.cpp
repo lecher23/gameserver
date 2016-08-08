@@ -1,4 +1,5 @@
 #include "sqlstatement.h"
+
 namespace cgserver{
     SqlStatement::SqlStatement(std::string &str):
 	_str(str),_condSetted(false),_fieldSetted(false),_tableSetted(false)
@@ -54,4 +55,33 @@ namespace cgserver{
 	_str += ",";
 	_str += size;	
     }
+
+    void SqlStatement::setLimit(uint32_t offset, uint32_t size) {
+	_str += " limit ";
+	_str += StringUtil::toString(offset);
+	_str += ",";
+	_str += StringUtil::toString(size);
+    }
+    
+    void SqlStatement::innerJoin(const std::string &left, const std::string &right,
+				 const std::string &leftKey, const std::string &rightKey)
+    {
+	_str += " from ";
+	_str += left;
+	_str += " inner join ";
+	_str += right;
+	_str += " on ";
+	strJoin(left, leftKey, ".");
+	_str += "=";
+	strJoin(right, rightKey, ".");
+	_condSetted = true;
+    }
+
+    void SqlStatement::strJoin(
+	const std::string &left, const std::string &right, const std::string &seq)
+    {
+	_str += left;
+	_str += seq;
+	_str += right;
+    }    
 }

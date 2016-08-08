@@ -51,6 +51,26 @@ namespace slots{
 	_writer.EndObject();
     }
 
+    void ResultFormatter::formatFriendsInfo(const FriendsList &friends) {
+	_writer.StartObject();
+	formatStatus(true);
+	_writer.Key("friends");
+	_writer.StartArray();
+	for (auto itr = friends.begin(); itr != friends.end(); ++itr) {
+	    _writer.StartObject();
+	    _writer.Key("uid");
+	    _writer.String((*itr)->uInfo.uid.c_str());
+	    _writer.Key("avatar");
+	    _writer.String((*itr)->uInfo.uid.c_str());
+	    _writer.Key("name");
+	    _writer.String((*itr)->uInfo.fname.c_str());
+	    _writer.Key("golds");
+	    _writer.Int64((*itr)->uRes.fortune);
+	    _writer.EndObject();	    
+	}
+	_writer.EndArray();
+	_writer.EndObject();
+    }
 
     void ResultFormatter::formatStatus(bool bOk) {
 	_writer.Key("status");

@@ -1,4 +1,4 @@
-SUBDIRS=$(shell ls -l | grep ^d | grep -v tools|grep -v depend |awk '{if($$9 != "build") print $$9}')
+SUBDIRS=$(shell ls -l | grep ^d |awk '{if($$9 != "build") print $$9}')
 ROOT_DIR=$(shell pwd)
 BIN=server
 BUILD_DIR=$(ROOT_DIR)/../build

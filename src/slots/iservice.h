@@ -8,6 +8,8 @@
 
 #include "resultformatter.h"
 
+namespace slots{
+    
 #define GET_PARAM(key, dest, required)					\
     if (!packet.getParamValue(key, dest)) {				\
 	if (required) {							\
@@ -27,15 +29,41 @@
 	    dest.clear();						\
 	}								\
     }
-
-
-namespace slots{
+    
     typedef cgserver::HTTPPacket CPacket;
     typedef cgserver::HttpResponsePacket CResponse;
+
+#define MAX_PAGE_SIZE 30    
+    
     class IService{
     public:
         virtual ~IService() {}
 	virtual bool doJob(CPacket &packet,CResponse &resp) =0;
+
+	bool getIntVal(CPacket &packet, const std::string &key, uint32_t &val) {
+	    std::string strVal;
+	    GET_PARAM(key, strVal, true);
+	    return cgserver::StringUtil::StrToUInt32(strVal.c_str(), val);
+	}
+
+	bool getIntVal(CPacket &packet, const std::string &key, uint64_t &val) {
+	    std::string strVal;
+	    GET_PARAM(key, strVal, true);
+	    return cgserver::StringUtil::StrToUInt64(strVal.c_str(), val);
+	}
+
+	bool getIntVal(CPacket &packet, const std::string &key, int32_t &val) {
+	    std::string strVal;
+	    GET_PARAM(key, strVal, true);
+	    return cgserver::StringUtil::StrToInt32(strVal.c_str(), val);
+	}
+
+	bool getIntVal(CPacket &packet, const std::string &key, int64_t &val) {
+	    std::string strVal;
+	    GET_PARAM(key, strVal, true);
+	    return cgserver::StringUtil::StrToInt64(strVal.c_str(), val);
+	}
+	
     };
     DF_SHARED_PTR(IService);
 }

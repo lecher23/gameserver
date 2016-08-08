@@ -57,5 +57,16 @@ public:
         SqlSelect ss(out);
 	AST_EQ("", out)
     }
+
+    void test_with_join(void)
+    {
+	std::string out;
+	SqlSelect ss(out);
+	ss.addField("*");
+	ss.innerJoin("t1", "t2", "id1", "id2");
+	ss.setConditionJoin(true);
+	ss.addEqualCondition("key", "val");
+	AST_EQ("select * from t1 inner join t2 on t1.id1=t2.id2 and (key=\"val\")", out);
+    }
     
 };

@@ -2,6 +2,7 @@
 #define UTIL_STRINGUTIL_H
 
 #include <string>
+#include <sstream>
 #include <vector>
 #include "common_define.h"
 
@@ -76,6 +77,20 @@ namespace cgserver{
 	unsigned char fromHex(const unsigned char &x);
 	bool URLEncode(const std::string &sIn, std::string &sOut);
 	bool URLDecode(const std::string &sIn, std::string &sOut);
+
+	template<typename T>
+	    static void toString(T &input, std::string &out) {
+	    std::stringstream ss;
+	    ss << input;
+	    out = ss.str();
+	}
+
+	template<typename T>
+	    static std::string toString(T &input) {
+	    std::stringstream ss;
+	    ss << input;
+	    return ss.str();
+	}
 	
     private:
     };

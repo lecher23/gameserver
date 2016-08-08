@@ -1,5 +1,6 @@
 #include "slotsdb.h"
 #include "../mysql/sqlupdate.h"
+#include "../mysql/sqlselect.h"
 #include "../util/stringutil.h"
 
 using namespace cgserver;
@@ -57,22 +58,7 @@ namespace slots{
 		return false;
 	    }
 	}
-	//user_info:uid, mid, fname, lname, avatar, male, country
-	ui.uid = res[0];
-	ui.mid = res[1];
-	ui.fname = res[2];
-	//ui.lname = res[3];
-	ui.avatar = res[4];
-	ui.male = res[5];
-	ui.country = res[6];
-	// user_resource:uid, level, exp, fortune, vip_level
-	// we should makesure things right.
-	ur.uid = res[7];	
-	cgserver::StringUtil::StrToUInt32(res[8].c_str(), ur.level);
-	cgserver::StringUtil::StrToUInt64(res[9].c_str(), ur.exp);
-	cgserver::StringUtil::StrToInt64(res[10].c_str(), ur.fortune);
-	cgserver::StringUtil::StrToUInt32(res[11].c_str(), ur.vipLevel);
-	return true;
+	return collectSlotsUser(res, su);
     }
 
     bool SlotsDB::getUserInfoByMachineId(const std::string &mid, SlotsUser &su) const
@@ -108,15 +94,14 @@ namespace slots{
 	    return false;
 	}
 	uid = out[0];
-	insertQuery.clear();
-	insertQuery.append("insert into user_resource (uid) values(");
-	APPEND_VALUE(insert, uid);
-	insertQuery.append(1, ')');
-	if (!_client.query(insertQuery)) {
+	if (!_client.addRow("user_resource", "uid", uid)) {
 	    CLOG(WARNING) << "Add new user ["<< mid << "] failed.";
 	    return false;
 	}
-	// set logic
+	if (!_client.addRow("f_history", "uid", uid)) {
+	    CLOG(WARNING) << "Add new user ["<< mid << "] failed.";
+	    return false;
+	}
 	return true;
     }
 
@@ -167,6 +152,23 @@ namespace slots{
 	}
 	ui.changed = false;
 	return true;
+    }
+
+    bool SlotsDB::searchUser(const std::string &field, const std::string &keyword,
+			     uint32_t offset, uint32_t size, SlotsUsers &users)
+    {
+	MysqlRows result;
+	std::string q;
+	cgserver::SqlSelect ss(q);
+	ss.addField("*");
+	ss.innerJoin("user_info", "user_resource", "uid", "uid");
+	ss.setConditionJoin(true);
+	ss.addEqualCondition(field, keyword);
+	ss.setLimit(offset, size);
+	if (!_client.queryWithResult(q, result)) {
+	    return false;
+	}
+	return collectSlotsUsers(result, users);
     }
 
     bool SlotsDB::getUserMails(
@@ -248,6 +250,61 @@ namespace slots{
 	    tmp->bDel = (*itr)[4] == "0" ? false:true;
 	    out.push_back(tmp);
 	}
+	return true;
+    }
+
+    bool SlotsDB::getFriendsList(
+	const std::string &uid, uint32_t page,uint32_t pageSize, FriendsList &list)
+    {
+	std::string sQuery = "select * from user_info as A inner join user_resource as B on A.uid = B.uid and (A.uid in (select uid2 as uid from friends where uid1 = ";
+	sQuery += uid;
+	sQuery += ") or A.uid in (select uid1 as uid from friends where uid2  =";
+	sQuery += uid;
+	sQuery += ")) ";
+	sQuery += "limit ";
+	sQuery += cgserver::StringUtil::toString(page);
+	sQuery += ",";
+	sQuery += cgserver::StringUtil::toString(pageSize);
+
+	MysqlRows res;
+	if (!_client.queryWithResult(sQuery, res)) {
+	    return false;
+	}
+	collectSlotsUsers(res, list);
+	return true;
+    }
+
+    bool SlotsDB::collectSlotsUsers(const cgserver::MysqlRows &rows, SlotsUsers &out) const {
+	for (auto itr = rows.begin(); itr != rows.end(); ++itr){
+	    SlotsUserPtr su(new SlotsUser);
+	    if (collectSlotsUser(*itr, *su)) {
+		out.push_back(su);
+	    }
+	}
+	return true;
+    }
+
+    bool SlotsDB::collectSlotsUser(const cgserver::MysqlRow &row, SlotsUser &su) const{
+	if (row.size() < 12) {
+	    return false;
+	}
+	UserInfo &ui = su.uInfo;
+	UserResource &ur = su.uRes;
+	//user_info:uid, mid, fname, lname, avatar, male, country
+	ui.uid = row[0];
+	ui.mid = row[1];
+	ui.fname = row[2];
+	//ui.lname = row[3];
+	ui.avatar = row[4];
+	ui.male = row[5];
+	ui.country = row[6];
+	// user_resource:uid, level, exp, fortune, vip_level
+	// we should makesure things right.
+	ur.uid = row[7];	
+	cgserver::StringUtil::StrToUInt32(row[8].c_str(), ur.level);
+	cgserver::StringUtil::StrToUInt64(row[9].c_str(), ur.exp);
+	cgserver::StringUtil::StrToInt64(row[10].c_str(), ur.fortune);
+	cgserver::StringUtil::StrToUInt32(row[11].c_str(), ur.vipLevel);
 	return true;
     }
 

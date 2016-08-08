@@ -27,7 +27,12 @@ namespace cgserver{
 	bool initClient(const std::string &uri, const std::string &uname,
 			const std::string &pwd,const std::string &db, int port = 3306);
 	bool addRow(const std::string &tableName, const RowValues &rv);
+	bool addRow(const std::string &tableName, const std::string &field, const std::string &value);
+	
 	bool query(const std::string &q);
+	bool simpleSelect(const std::string &tb, const std::string &fd,
+			  const std::string &value, uint32_t offset,
+			  uint32_t size, MysqlRows &out);
 
 	bool queryWithResult(const std::string &q, MysqlRow &out);
 	bool queryWithResult(const std::string &q, MysqlRows &out);

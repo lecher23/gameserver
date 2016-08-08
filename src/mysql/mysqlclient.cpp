@@ -1,5 +1,7 @@
 #include "mysqlclient.h"
 #include "errmsg.h"
+#include "sqlselect.h"
+#include "../util/stringutil.h"
 
 namespace cgserver{
 
@@ -62,6 +64,33 @@ namespace cgserver{
 	bool ret = exeQuery(q);
 	_lock.unlock();
     }
+
+    bool MysqlClient::addRow(
+	const std::string &tableName, const std::string &field, const std::string &value)
+    {
+	std::string q = "insert into ";
+	q += tableName;
+	q += " (";
+	q += field;
+	q += ") values (\"";
+	q += value;
+	q += "\")";
+	return query(q);
+    }
+
+    bool MysqlClient::simpleSelect(const std::string &tb, const std::string &fd,
+				   const std::string &value, uint32_t offset,
+				   uint32_t size, MysqlRows &out)
+    {
+	std::string q;
+	SqlSelect ss(q);
+	ss.addTable(tb);
+	ss.hasCondition();
+	ss.addEqualCondition(fd, value);
+	ss.setLimit(StringUtil::toString(offset), StringUtil::toString(size));
+	return queryWithResult(q, out);
+    }
+    
 
     void MysqlClient::appendValue(const std::string &sVal, std::string sDest) {
 	sDest.append(S_DQuote);
