@@ -2,6 +2,7 @@
 #define RESULTFORMATTER_H
 
 #include "slotsdb.h"
+#include "giftsdata.h"
 #include "rapidjson/writer.h"
 #include "rapidjson/stringbuffer.h"
 #include <string>
@@ -20,6 +21,7 @@ namespace slots{
 	void formatSimpleResult(bool ok, const std::string &err);
 	void formatGameResult(const UserResource &sr, int64_t earned, const std::string &detail);
 	void formatFriendsInfo(const FriendsList &friends);
+	void formatGiftsInfo(const Gifts &gifts, int64_t giftsVal);
 	
 	void formatStatus(bool bOk);
 	void formatMailsInfo(const UserMails &uMails);

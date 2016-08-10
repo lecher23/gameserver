@@ -3,6 +3,7 @@
 #include <string>
 #include <iostream>
 #include <memory>
+#include <mutex>
 #include "glog/logging.h"
 
 #define DF_SHARED_PTR(T) typedef std::shared_ptr<T> T##Ptr;
@@ -22,6 +23,8 @@
 
 #define CLOG(x) LOG(x)
 #define MyString std::string
+
+#define MUTEX_GUARD(x) std::lock_guard<std::mutex> mutex_guard(x);
 
 namespace common{
 #define _LOG(x) std::cout<<(x)<<std::endl;

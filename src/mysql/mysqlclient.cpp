@@ -66,15 +66,18 @@ namespace cgserver{
     }
 
     bool MysqlClient::addRow(
-	const std::string &tableName, const std::string &field, const std::string &value)
+	const std::string &tableName, const std::string &field,
+	const std::string &value, bool quoteValue)
     {
 	std::string q = "insert into ";
 	q += tableName;
 	q += " (";
 	q += field;
-	q += ") values (\"";
+	q += ") values (";
+	q += (quoteValue ? "\"":"");
 	q += value;
-	q += "\")";
+	q += (quoteValue ? "\"":"");
+	q += ")";
 	return query(q);
     }
 

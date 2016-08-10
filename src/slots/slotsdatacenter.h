@@ -3,6 +3,7 @@
 
 #include "slotscache.h"
 #include "slotsdb.h"
+#include "giftsdata.h"
 
 namespace slots{
     /*This lru cache will never expired*/
@@ -14,6 +15,8 @@ namespace slots{
 
 	bool init (bool needDump = true, int dumpInterval = 60){
 	    _suCache.init(300, needDump, 60);
+	    _gifts.reset(new GiftsData(100));
+	    return _gifts->init();
 	}
 
 	static SlotsDataCenter &instance(){
@@ -47,7 +50,13 @@ namespace slots{
 	    return _suCache.set(input->uInfo.uid, input);
 	}
 
+	GiftsDataPtr getGiftsData() {
+	    return _gifts;
+	}
+
     private:
+	GiftsDataPtr _gifts;
+	
 	SlotsDataCenter(){}
 	SlotsDataCenter(const SlotsDataCenter &);
 	

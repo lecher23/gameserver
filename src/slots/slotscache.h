@@ -204,7 +204,7 @@ namespace slots{
 		    p_instance->write_to_db();  
 		}  
             return NULL;  
-        }  
+        }
   
     protected:  
         int m_max_size;  

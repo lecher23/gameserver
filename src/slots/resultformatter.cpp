@@ -72,6 +72,27 @@ namespace slots{
 	_writer.EndObject();
     }
 
+    void ResultFormatter::formatGiftsInfo(const Gifts &gifts, int64_t giftsVal) {
+	_writer.StartObject();
+	formatStatus(true);
+	_writer.Key("gifts");
+	_writer.StartArray();
+	for (auto itr = gifts.begin(); itr != gifts.end(); ++itr) {
+	    _writer.StartObject();
+	    _writer.Key("uid");
+	    _writer.Int64((int64_t)(*itr)->master);
+	    _writer.Key("received");
+	    _writer.Bool((int64_t)(*itr)->received);
+	    _writer.Key("timestamp");
+	    _writer.Int64((*itr)->timestamp);
+	    _writer.EndObject();
+	}
+	_writer.EndArray();
+	_writer.Key("value");
+	_writer.Int64(giftsVal);
+	_writer.EndObject();
+    }    
+
     void ResultFormatter::formatStatus(bool bOk) {
 	_writer.Key("status");
 	_writer.String( bOk ? "OK" : "ERROR" );	

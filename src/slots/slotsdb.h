@@ -70,6 +70,14 @@ namespace slots{
 	bool bDel;
     };
     DF_SHARED_PTR(UserMail);
+
+    struct FHistory{
+	std::string uid;
+	int32_t inviteCount;
+	int64_t totalReward;
+	int64_t rewardRemain;
+    };
+    DF_SHARED_PTR(FHistory);    
     
     /* user mails*/
     typedef std::vector<UserMailPtr> UserMails;
@@ -100,6 +108,13 @@ namespace slots{
 	bool getMailAttachment(const std::string &uid, const std::string &mailId);
 	bool getFriendsList(const std::string &uid, uint32_t page,
 			    uint32_t pageSize, FriendsList &list);
+	bool getInviteHistory(const std::string &uid, FHistory &out);
+	bool updateFHistory(const std::string &uid, const std::string &key,
+			    const std::string &value);
+	bool getReward(const std::string &uid);
+
+	bool removeFriend(const std::string &uid, const std::string &tid);
+	bool makeFriend(const std::string &uidStr, const std::string &tidStr);	
 
 	static SlotsDB &getInstance();
     private:

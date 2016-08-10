@@ -47,35 +47,31 @@ namespace slots{
 		return false;
 	    }
 	    GiftRecordPtr tmp(new GiftRecord(master, guest));
-	    _lock.lock();
+	    MUTEX_GUARD(_lock);
 	    _sendLimit[master] ++;
 	    _receiveLimit[guest] ++;
 	    _giftsData.push_back(tmp);
-	    _lock.unlock();
 	    return true;
 	}
 
 	void getGifts(uint64_t guest, Gifts &out) {
-	    _lock.lock();	    
+	    MUTEX_GUARD(_lock);
 	    for (auto val: _giftsData) {
 		if (val->guest == guest) {
 		    out.push_back(val);
 		}
 	    }
-	    _lock.unlock();
 	}
 
 	// taker take gift from tar
 	bool takeGift(uint64_t taker, uint64_t tar) {
-	    _lock.lock();
+	    MUTEX_GUARD(_lock);
 	    for (auto val: _giftsData) {
 		if (val->master == tar && val->guest==taker && !val->received) {
 		    val->received = true;
-		    _lock.unlock();
 		    return true;
 		}
 	    }
-	    _lock.unlock();
 	    return false;
 	}
 
@@ -85,14 +81,13 @@ namespace slots{
 
 	int64_t getGiftSum(uint64_t uid) {
 	    int64_t ret = 0;
-	    _lock.lock();
+	    MUTEX_GUARD(_lock);	    
 	    for (auto val: _giftsData) {
 		if (val->guest==uid && !val->received) {
 		    val->received = true;
 		    ret += _giftValue;
 		}
 	    }
-	    _lock.unlock();
 	    return ret;
 	}
 
@@ -141,7 +136,7 @@ namespace slots{
 	std::map<uint64_t, uint32_t> _receiveLimit;
 	Gifts _giftsData;
 	int64_t _giftValue;
-	cgserver::ThreadMutex _lock;
+	std::mutex _lock;
 	pthread_t _tid;
     };
     DF_SHARED_PTR(GiftsData);

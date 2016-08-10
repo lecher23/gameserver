@@ -27,7 +27,8 @@ namespace cgserver{
 	bool initClient(const std::string &uri, const std::string &uname,
 			const std::string &pwd,const std::string &db, int port = 3306);
 	bool addRow(const std::string &tableName, const RowValues &rv);
-	bool addRow(const std::string &tableName, const std::string &field, const std::string &value);
+	bool addRow(const std::string &tableName, const std::string &field,
+		    const std::string &value, bool quoteValue = true);
 	
 	bool query(const std::string &q);
 	bool simpleSelect(const std::string &tb, const std::string &fd,

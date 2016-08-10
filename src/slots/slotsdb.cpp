@@ -1,6 +1,7 @@
 #include "slotsdb.h"
 #include "../mysql/sqlupdate.h"
 #include "../mysql/sqlselect.h"
+#include "../mysql/sqldelete.h"
 #include "../util/stringutil.h"
 
 using namespace cgserver;
@@ -274,6 +275,38 @@ namespace slots{
 	return true;
     }
 
+    bool SlotsDB::getInviteHistory(const std::string &uid, FHistory &out) {
+	std::string sQuery;
+	SqlSelect ss(sQuery);
+	ss.addTable("f_history");
+	ss.addEqualCondition("uid", uid);
+	MysqlRow res;
+	if (!_client.queryWithResult(sQuery, res)) {
+	    return false;
+	}
+	if (res.size() < 4) {
+	    return false;
+	}
+	out.uid = res[0];
+	cgserver::StringUtil::StrToInt32(res[1].c_str(), out.inviteCount);
+	cgserver::StringUtil::StrToInt64(res[2].c_str(), out.totalReward);
+	cgserver::StringUtil::StrToInt64(res[3].c_str(), out.rewardRemain);
+	return true;
+    }
+
+    bool SlotsDB::updateFHistory(const std::string &uid, const std::string &key, const std::string &value) {
+	std::string uQuery;
+	SqlUpdate su(uQuery);
+	su.setTable("f_history");
+	su.updateValue(key, value);
+	su.addEqualCondition("uid", uid);
+	return _client.query(uQuery);
+    }
+
+    bool SlotsDB::getReward(const std::string &uid) {
+	return updateFHistory(uid, "reward_remain", "0");
+    }
+
     bool SlotsDB::collectSlotsUsers(const cgserver::MysqlRows &rows, SlotsUsers &out) const {
 	for (auto itr = rows.begin(); itr != rows.end(); ++itr){
 	    SlotsUserPtr su(new SlotsUser);
@@ -306,6 +339,53 @@ namespace slots{
 	cgserver::StringUtil::StrToInt64(row[10].c_str(), ur.fortune);
 	cgserver::StringUtil::StrToUInt32(row[11].c_str(), ur.vipLevel);
 	return true;
+    }
+
+    bool SlotsDB::removeFriend(const std::string &uidStr, const std::string &tidStr){
+	uint64_t uid;
+	if (!StringUtil::StrToUInt64(uidStr.c_str(), uid))
+	    return false;
+	uint64_t tid;
+	if (!StringUtil::StrToUInt64(tidStr.c_str(), tid))
+	    return false;
+	std::string query;
+	cgserver::SqlDelete sd(query);
+	sd.addTable("friends");
+	if (tid > uid){
+	    sd.addEqualCondition("uid1", uidStr);
+	    sd.setConditionJoin(true);
+	    sd.addEqualCondition("uid2", tidStr);	    
+	}else if (tid < uid) {
+	    sd.addEqualCondition("uid1", tidStr);
+	    sd.setConditionJoin(true);
+	    sd.addEqualCondition("uid2", uidStr);	    
+	}else {
+	    return false;
+	}
+	return _client.query(query);
+    }
+
+    bool SlotsDB::makeFriend(const std::string &uidStr, const std::string &tidStr) {
+	uint64_t uid;
+	if (!StringUtil::StrToUInt64(uidStr.c_str(), uid))
+	    return false;
+	uint64_t tid;
+	if (!StringUtil::StrToUInt64(tidStr.c_str(), tid))
+	    return false;
+	std::string values = "";
+	// bigger id in uid2
+	if (tid > uid){
+	    values += uidStr;
+	    values += ",";
+	    values += tidStr;
+	}else if (tid < uid) {
+	    values += tidStr;
+	    values += ",";
+	    values += uidStr;
+	}else{
+	    return false;
+	}
+	return _client.addRow("friends", "uid1, uid2", values, false);
     }
 
 #undef APPEND_VALUE
