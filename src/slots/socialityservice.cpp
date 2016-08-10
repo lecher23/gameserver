@@ -29,7 +29,7 @@ namespace slots{
 	}
 	case 1:{
 	    // get all information to be shown in friends dialog
-	    // ret = getAllInfo(packet, rf);
+	    ret = getAllInfo(packet, rf);
 	    break;
 	}
 	case 2:{
@@ -270,4 +270,23 @@ namespace slots{
 	rf.formatSimpleResult(true, "");
 	return true;
     }
+
+    bool SocialityService::getAllInfo(CPacket &packet, ResultFormatter &rf) {
+	/*get all fiend info. Include friendlist, f_history info*/
+	std::string uid;
+	GET_PARAM("uid", uid, true);
+	SlotsDB &db = SlotsDB::getInstance();
+	FriendsList friends;
+	if (!db.getFriendsList(uid, 0, 10, friends)) {
+	    CLOG(WARNING) << "Get friend list of user[" << uid << "] from db failed";
+	    return false;
+	}
+	FHistory history;
+	if (!db.getInviteHistory(uid, history)) {
+	    CLOG(WARNING) << "Get friend history of user[" << uid << "] from db failed";
+	    return false;
+	}
+	rf.formatFullFriendInfo(friends, history);
+	return true;
+    }    
 }

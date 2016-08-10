@@ -111,6 +111,7 @@ namespace slots{
 	bool getInviteHistory(const std::string &uid, FHistory &out);
 	bool updateFHistory(const std::string &uid, const std::string &key,
 			    const std::string &value);
+
 	bool getReward(const std::string &uid);
 
 	bool removeFriend(const std::string &uid, const std::string &tid);

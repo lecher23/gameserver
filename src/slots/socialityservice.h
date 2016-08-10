@@ -22,6 +22,7 @@ namespace slots{
 	bool getReward(CPacket &packet, ResultFormatter &rf);
 	bool removeFriend(CPacket &packet, ResultFormatter &rf);
 	bool batchGetGold(CPacket &packet, ResultFormatter &rf);
+	bool getAllInfo(CPacket &packet, ResultFormatter &rf);	
     };
 }
 #endif

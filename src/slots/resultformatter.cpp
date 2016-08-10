@@ -54,23 +54,24 @@ namespace slots{
     void ResultFormatter::formatFriendsInfo(const FriendsList &friends) {
 	_writer.StartObject();
 	formatStatus(true);
-	_writer.Key("friends");
-	_writer.StartArray();
-	for (auto itr = friends.begin(); itr != friends.end(); ++itr) {
-	    _writer.StartObject();
-	    _writer.Key("uid");
-	    _writer.String((*itr)->uInfo.uid.c_str());
-	    _writer.Key("avatar");
-	    _writer.String((*itr)->uInfo.uid.c_str());
-	    _writer.Key("name");
-	    _writer.String((*itr)->uInfo.fname.c_str());
-	    _writer.Key("golds");
-	    _writer.Int64((*itr)->uRes.fortune);
-	    _writer.EndObject();	    
-	}
-	_writer.EndArray();
+	formatFriendList(friends);
 	_writer.EndObject();
     }
+
+    void ResultFormatter::formatFullFriendInfo(
+	const FriendsList &friends, const FHistory &history)
+    {
+	_writer.StartObject();
+	formatStatus(true);
+	formatFriendList(friends);
+	_writer.Key("invite_count");
+	_writer.Int(history.inviteCount);
+	_writer.Key("total_reward");	
+	_writer.Int64(history.totalReward);
+	_writer.Key("cached_reward");	
+	_writer.Int64(history.rewardRemain);
+	_writer.EndObject();
+    }    
 
     void ResultFormatter::formatGiftsInfo(const Gifts &gifts, int64_t giftsVal) {
 	_writer.StartObject();
@@ -171,5 +172,23 @@ namespace slots{
 	// _writer.Key("vip_point");
 	// _writer.String(uRes.vipPoint);
 	_writer.EndObject();
-    }	
+    }
+
+    void ResultFormatter::formatFriendList(const FriendsList &friends) {
+	_writer.Key("friends");
+	_writer.StartArray();
+	for (auto itr = friends.begin(); itr != friends.end(); ++itr) {
+	    _writer.StartObject();
+	    _writer.Key("uid");
+	    _writer.String((*itr)->uInfo.uid.c_str());
+	    _writer.Key("avatar");
+	    _writer.String((*itr)->uInfo.uid.c_str());
+	    _writer.Key("name");
+	    _writer.String((*itr)->uInfo.fname.c_str());
+	    _writer.Key("golds");
+	    _writer.Int64((*itr)->uRes.fortune);
+	    _writer.EndObject();	    
+	}
+	_writer.EndArray();
+    }
 }

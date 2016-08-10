@@ -4,7 +4,7 @@
 #include <map>
 #include <vector>
 #include "mysql.h"
-#include "../util/threadlock.h"
+#include "../util/common_define.h"
 
 namespace cgserver{
     // Notice: we use key-value to indicate field-field_value in mysql.
@@ -39,21 +39,26 @@ namespace cgserver{
 	bool queryWithResult(const std::string &q, MysqlRows &out);
 	
 	bool insertWithReturn(MysqlStr &insertQuery, MysqlStr &selectQuery, MysqlRow &out);
+
+	/*startTransaction will try to get lock, but won't release lock*/
+	bool startTransaction();
+	/*end transaction release lock, but won't get lock*/
+	bool endTransaction(bool commit);
 	
 	uint64_t affectRows();	
+	bool exeQuery(const std::string &q);
 	
     private:
         MysqlClient(){}
 	MysqlClient(const MysqlClient&);
 	MysqlClient & operator = (const MysqlClient &);
 	
-	bool exeQuery(const std::string &q);
 	void appendValue(const std::string &sVal, std::string sDest);
 	bool getSingleResult(MysqlRow &out);
 	bool getAllResult(MysqlRows &out);	
 	
 	MYSQL _client;
-	ThreadMutex _lock; //we should use "ke chong ru suo"
+	std::recursive_mutex _lock;
     };
 }
 #endif

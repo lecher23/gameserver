@@ -90,19 +90,27 @@ namespace slots{
 	APPEND_VALUE(select, mid);
 
 	MysqlRow out;
+	if (!_client.startTransaction()) {
+	    CLOG(ERROR) << "Start transaction failed.";
+	    return false;
+	}
 	if (!_client.insertWithReturn(insertQuery, selectQuery, out) || out.empty()) {
-	    CLOG(ERROR) << "Add new user failed.\n";
+	    CLOG(ERROR) << "Add new user failed.";
+	    _client.endTransaction(false);
 	    return false;
 	}
 	uid = out[0];
 	if (!_client.addRow("user_resource", "uid", uid)) {
 	    CLOG(WARNING) << "Add new user ["<< mid << "] failed.";
+	    _client.endTransaction(false);	    
 	    return false;
 	}
 	if (!_client.addRow("f_history", "uid", uid)) {
 	    CLOG(WARNING) << "Add new user ["<< mid << "] failed.";
+	    _client.endTransaction(false);	    
 	    return false;
 	}
+	_client.endTransaction(true);
 	return true;
     }
 
@@ -281,10 +289,7 @@ namespace slots{
 	ss.addTable("f_history");
 	ss.addEqualCondition("uid", uid);
 	MysqlRow res;
-	if (!_client.queryWithResult(sQuery, res)) {
-	    return false;
-	}
-	if (res.size() < 4) {
+	if (!_client.queryWithResult(sQuery, res) || res.size() < 4) {
 	    return false;
 	}
 	out.uid = res[0];

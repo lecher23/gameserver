@@ -286,7 +286,7 @@ class ServerTest(unittest.TestCase):
         self.assertEqual(100, ob["value"])        
         self.assertEqual(1, len(ob["gifts"]))
 
-    def _testGetCachedReward(self):
+    def testGetCachedReward(self):
         u, m = self._addUser()
         params = []
         params.append("type=7")
@@ -295,7 +295,7 @@ class ServerTest(unittest.TestCase):
         self.assertTrue(ob is not None)
         self.assertEqual("OK", ob["status"])        
 
-    def _testDeleteFriend(self):
+    def testDeleteFriend(self):
         uid, m = self._addUser()
         tid, m = self._addUser()
 
@@ -380,3 +380,17 @@ class ServerTest(unittest.TestCase):
         self.assertEqual(1, len(ob["gifts"]))
         self.assertEqual(sender, ob["gifts"][0]["uid"])
         self.assertTrue(ob["gifts"][0]["received"])
+
+    def testGetAllInfo(self):
+        uid = 41
+        params = []
+        params.append("type=1")
+        params.append("uid=%d" % uid)
+        ob = self._request(params)
+        self.assertTrue(ob is not None)
+        self.assertEqual("OK", ob["status"])
+        self.assertEqual(0, len(ob["friends"]))
+        self.assertEqual(10, ob["invite_count"])
+        self.assertEqual(300, ob["total_reward"])
+        self.assertEqual(200, ob["cached_reward"])
+

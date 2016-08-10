@@ -21,6 +21,7 @@ namespace slots{
 	void formatSimpleResult(bool ok, const std::string &err);
 	void formatGameResult(const UserResource &sr, int64_t earned, const std::string &detail);
 	void formatFriendsInfo(const FriendsList &friends);
+	void formatFullFriendInfo(const FriendsList &friends, const FHistory &history);
 	void formatGiftsInfo(const Gifts &gifts, int64_t giftsVal);
 	
 	void formatStatus(bool bOk);
@@ -28,6 +29,7 @@ namespace slots{
 	void formatMail(const UserMail &uMail);
 	void formatUserInfo(const UserInfo &uInfo);
 	void formatUserResource(const UserResource &uRes);
+	void formatFriendList(const FriendsList &friends);	
     private:
 	JsonWriter _writer;
     };

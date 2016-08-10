@@ -60,9 +60,7 @@ namespace cgserver{
 	    q.append(S_Values);
 	    q.append(values);
 	}
-	_lock.lock();
-	bool ret = exeQuery(q);
-	_lock.unlock();
+	return exeQuery(q);
     }
 
     bool MysqlClient::addRow(
@@ -95,43 +93,12 @@ namespace cgserver{
     }
     
 
-    void MysqlClient::appendValue(const std::string &sVal, std::string sDest) {
-	sDest.append(S_DQuote);
-	sDest.append(sVal);
-	sDest.append(S_DQuote);	
-    }
-
     uint64_t MysqlClient::affectRows(){
 	return mysql_affected_rows(&_client);
     }
 
-    bool MysqlClient::exeQuery(const std::string &q) {
-	CLOG(INFO) << "run query:"<< q ;
-	int ret = mysql_query(&_client, q.c_str());
-	if (ret != 0) {
-	    switch(ret) {
-	    case CR_COMMANDS_OUT_OF_SYNC:
-		CLOG(ERROR) << "ERROR:CR_COMMANDS_OUT_OF_SYNC" ;
-		break;
-	    case CR_SERVER_GONE_ERROR:
-		CLOG(ERROR) << "ERROR:CR_SERVER_GONE_ERROR" ;
-		break;
-	    case CR_SERVER_LOST:
-		CLOG(ERROR) << "ERROR:CR_SERVER_LOST" ;
-		break;
-	    default:
-		CLOG(ERROR) << "Unknow error." ;
-	    }
-	    return false;
-	}
-	return true;
-    }
-
     bool MysqlClient::query(const std::string &q) {
-	_lock.lock();
-	bool ret = exeQuery(q);
-	_lock.unlock();
-	return ret;
+	return exeQuery(q);
     }
 
     /*Get single result from mysql db*/
@@ -184,6 +151,53 @@ namespace cgserver{
 	    ret = true;
 	}while(0);
 	return ret;
+    }
+
+    bool MysqlClient::startTransaction() {
+	_lock.lock();
+	return exeQuery("START TRANSACTION");
+    }
+    
+    bool MysqlClient::endTransaction(bool commit) {
+	bool ret;
+	if (commit) {
+	    ret = exeQuery("COMMIT");
+	} else {
+	    ret = exeQuery("ROLLBACK");
+	}
+	_lock.unlock();
+	return ret;
+    }
+
+    bool MysqlClient::exeQuery(const std::string &q) {
+	CLOG(INFO) << "run query:"<< q ;
+	_lock.lock();
+	int ret = mysql_query(&_client, q.c_str());
+	_lock.unlock();
+	if (ret != 0) {
+	    switch(ret) {
+	    case CR_COMMANDS_OUT_OF_SYNC:
+		CLOG(ERROR) << "ERROR:CR_COMMANDS_OUT_OF_SYNC" ;
+		break;
+	    case CR_SERVER_GONE_ERROR:
+		CLOG(ERROR) << "ERROR:CR_SERVER_GONE_ERROR" ;
+		break;
+	    case CR_SERVER_LOST:
+		CLOG(ERROR) << "ERROR:CR_SERVER_LOST" ;
+		break;
+	    default:
+		CLOG(ERROR) << "Unknow error." ;
+	    }
+	    return false;
+	}
+	return true;
+    }
+    
+/***Private method***/
+    void MysqlClient::appendValue(const std::string &sVal, std::string sDest) {
+	sDest.append(S_DQuote);
+	sDest.append(sVal);
+	sDest.append(S_DQuote);	
     }
 
     /*Get first result from mysql db.*/
