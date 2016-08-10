@@ -6,6 +6,7 @@
 #include "../handlers/ihandler.h"
 #include "../mysql/mysqlclient.h"
 #include "../util/config.h"
+#include "../util/requestvalidator.h"
 
 namespace cgserver{
     SocketProcessor::SocketProcessor():_handler(NULL){
@@ -51,9 +52,10 @@ namespace cgserver{
 		CLOG(WARNING) << "Parse http packet failed.";
 		break;
 	    }
+	    CLOG(INFO) << "Reveive:" << packet.getURI();
 	    /* Check if it is valid http request.*/
 	    if (!validatePacket(packet)) {
-		CLOG(WARNING) << "Validate http packet failed.";		
+		CLOG(WARNING) << "validate http packet failed.";		
 		break;
 	    }
 	    HttpResponsePacket resp;
@@ -70,14 +72,7 @@ namespace cgserver{
 	if (!_needCheck) {
 	    return true;
 	}
-	std::string sign;	
-	if (!packet.getParamValue("sign", sign)) {
-	    CLOG(WARNING) << "validate request failed.";
-	    return false;
-	}	
-	std::string strToSign(packet.getURI());
-	strToSign += _secret;
-	return true;
+	return RequestValidator::validate(packet, _secret);
     }
 
     bool SocketProcessor::readData(SocketPtr &sk, DataBuffer &buf) const{
@@ -89,7 +84,6 @@ namespace cgserver{
 	}
 	buf.pourData(bytes_recv);
 	*(buf.getFree()) = '\0';
-	CLOG(INFO) << "Recieve packet:" << buf.getData();
 	return true;
     }
 

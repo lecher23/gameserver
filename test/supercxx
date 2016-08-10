@@ -71,7 +71,7 @@ class SuperCxx:
 
     def compile_project(self):
         print "Begin recompile project."
-        cmd = "cd %s && make clean && make" % (self.workspace)
+        cmd = "cd %s && make clean && make" % (os.path.join(self.workspace, "src"))
         s, o = commands.getstatusoutput(cmd)
         if (s != 0):
             print "Run cmd [%s] failed" % cmd

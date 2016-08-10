@@ -70,7 +70,6 @@ bool TcpServer::initServer(int port) {
 	return false;
     }
 
-    // Init thread pool, default 8 threads and queue size is 512
     _pool.reset(new ThreadPool(poolSize));
     if (!_pool->start()) {
 	CLOG(ERROR) << "Create thread poll failed.";
@@ -94,7 +93,6 @@ void TcpServer::startServer(int port) {
 	SocketPtr tmp(clientSocket);
 	Task *task = new Task(tmp, _processor);
 	if (_pool->pushTask((Runnable *)task) != ThreadPool::ERROR_NONE) {
-	    // response failed msg to user.
 	    // release mem
 	    delete task;
 	}
