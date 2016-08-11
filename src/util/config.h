@@ -5,6 +5,7 @@
 #include <string>
 
 namespace cgserver{
+    #define MAX_POOL_SIZE 12
     class Config{
     public:
 	~Config();

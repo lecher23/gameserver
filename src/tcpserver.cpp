@@ -11,7 +11,7 @@
 #include "util/processorfactory.h"
 #include "util/luatoolfactory.h"
 #include "util/config.h"
-#include "mysql/mysqlclient.h"
+#include "mysql/mysqlconnpool.h"
 
 namespace cgserver {
     
@@ -30,20 +30,9 @@ bool TcpServer::initServer(int port) {
     _processor = ProcessorFactory::getProcessor();
     _processor->init((void *)handler);
 
-    /*Init db*/
-    std::string dbAddr = Config::getInstance().getConfigValue("db", "addr");
-    std::string dbUName = Config::getInstance().getConfigValue("db", "user_name");
-    std::string dbUPwd = Config::getInstance().getConfigValue("db", "user_pwd");
-    std::string dbDb = Config::getInstance().getConfigValue("db", "db_name");
-
-    if (dbAddr.empty() || dbUName.empty() || dbDb.empty()) {
-	CLOG(ERROR) << "Mysql connection info not set under section [db]";
-	return false;
-    }
-
-    CLOG(INFO) << "Init mysql client on " << dbAddr;
-    if (!MysqlClient::getInstance().initClient(dbAddr, dbUName, dbUPwd, dbDb)) {
-	CLOG(ERROR) << "Init mysql client failed.";
+    CLOG(INFO) << "Init mysql pool.";
+    if (!MysqlConnPool::getInstance().init()) {
+	CLOG(ERROR) << "Init mysql pool failed.";
 	return false;
     }
 
