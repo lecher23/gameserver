@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include <netinet/in.h>
 #include "../handlers/ihandler.h"
-#include "../mysql/mysqlclient.h"
 #include "../util/config.h"
 #include "../util/requestvalidator.h"
 
