@@ -108,7 +108,6 @@ ThreadPool::ERROR_TYPE ThreadPool::pushTask(Runnable *runner, bool isBlocked)
     // add runner ok
     _queue.push_back(runner);
     _cond.signalConsumer();
-
     return ERROR_NONE;
 }
 

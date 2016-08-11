@@ -14,6 +14,7 @@ namespace cgserver{
 	virtual ~IHandler(){}
 	virtual bool process(HTTPPacket &packet, HttpResponsePacket &resp) = 0; // we should add const later
 	virtual void init() {}
+	virtual void release() {}
     };
 
     DF_SHARED_PTR(IHandler);

@@ -5,7 +5,6 @@
 #include <netinet/in.h>
 #include <iostream>
 #include "handlers/packethandler.h"
-#include "handlers/handlerfactory.h"
 #include "socket/socketprocessor.h"
 #include "util/task.h"
 #include "util/processorfactory.h"
@@ -15,7 +14,7 @@
 
 namespace cgserver {
     
-TcpServer::TcpServer():_stop(false){
+TcpServer::TcpServer():_stop(false), _handler(nullptr){
 }
 
 TcpServer::~TcpServer() {
@@ -26,9 +25,9 @@ void TcpServer::initLogger(){
 }   
 
 bool TcpServer::initServer(int port) {
-    IHandler *handler = HandlerFactory::getHandler();
+    _handler = HandlerFactory::getHandler();
     _processor = ProcessorFactory::getProcessor();
-    _processor->init((void *)handler);
+    _processor->init((void *)_handler);
 
     CLOG(INFO) << "Init mysql pool.";
     if (!MysqlConnPool::getInstance().init()) {
@@ -91,6 +90,7 @@ void TcpServer::startServer(int port) {
 void TcpServer::stopServer() {
     _stop = true;
     _pool->stop(ThreadPool::STOP_THREAD_ONLY);
+    _handler->release();
 }
 
 }

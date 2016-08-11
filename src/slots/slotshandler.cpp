@@ -36,4 +36,8 @@ namespace slots{
 	}
 	CLOG(INFO) << "Init slots cache success.";
     }
+
+    void SlotsHandler::release() {
+	SlotsDataCenter::instance().release();
+    }
 }

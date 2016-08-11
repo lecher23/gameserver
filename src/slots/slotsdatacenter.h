@@ -54,6 +54,10 @@ namespace slots{
 	    return _gifts;
 	}
 
+	void release(){
+	    _suCache.stop_cache();
+	}
+
     private:
 	GiftsDataPtr _gifts;
 	

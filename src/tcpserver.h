@@ -5,6 +5,7 @@
 #include "util/threadpool.h"
 #include "util/iprocessor.h"
 #include "socket/socket.h"
+#include "handlers/handlerfactory.h"
 
 namespace cgserver{
     class TcpServer{
@@ -21,6 +22,7 @@ namespace cgserver{
 	bool _stop;
 	IProcessorPtr _processor;
 	ThreadPoolPtr _pool;
+	IHandler *_handler;
     };
 }
 #endif

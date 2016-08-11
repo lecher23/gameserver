@@ -12,7 +12,7 @@
 using namespace std;
 namespace slots{
     template<class T1, class T2>  
-	class SlotsCache  
+    class SlotsCache  
     {  
     public:  
         struct cache_data  
@@ -22,15 +22,21 @@ namespace slots{
             int expire_time;  
             int count;  
             T2 data;  
-        };  
+        };
+
+	enum THREAD_TYPE {
+	    DUMP_THREAD_RUNNING,
+	    DUMP_THREAD_STOPPED
+	};
   
-        SlotsCache()  
-	    {  
-		m_max_size = 0;  
-		m_avg_expire_time = 0;  
-		m_mutex = NULL;  
-		m_cache_map = NULL;  
-	    }  
+        SlotsCache(){
+	    m_max_size = 0;  
+	    m_avg_expire_time = 0;  
+	    m_mutex = NULL;  
+	    m_cache_map = NULL;
+	    _stop = false;
+	    _dump_thread_status = DUMP_THREAD_STOPPED;
+	}  
   
         virtual ~SlotsCache()  
 	    {  
@@ -193,16 +199,27 @@ namespace slots{
 	    CLOG(INFO) << "dump data to db finish.";	    
             pthread_mutex_unlock(m_mutex);  	    
 	}
-  
+
+	void stop_cache() {
+	    _stop = true;
+	    // wait until cache stop;
+	    while (_dump_thread_status != DUMP_THREAD_STOPPED) {
+		sleep(1);
+	    }
+	    // write data to mysql
+	    write_to_db();
+	}
+	
     protected:  
         static void* dump_thread(void *args)  
-        {  
-            SlotsCache *p_instance = (SlotsCache *)args;  
-            for(;;)  
-		{  
-		    sleep(p_instance->dump_interval);  
-		    p_instance->write_to_db();  
-		}  
+        {
+            SlotsCache *p_instance = (SlotsCache *)args;
+	    p_instance->_dump_thread_status = DUMP_THREAD_RUNNING;
+            while(!p_instance->_stop){
+		sleep(p_instance->dump_interval);  
+		p_instance->write_to_db();  
+	    }
+	    p_instance->_dump_thread_status = DUMP_THREAD_STOPPED;
             return NULL;  
         }
   
@@ -211,7 +228,10 @@ namespace slots{
         int m_avg_expire_time;
 	int dump_interval; // second
         map<T1, cache_data> *m_cache_map;  
-        pthread_mutex_t *m_mutex;  
+        pthread_mutex_t *m_mutex;
+	
+	bool _stop;
+	THREAD_TYPE _dump_thread_status;
     };
 }  
 #endif  

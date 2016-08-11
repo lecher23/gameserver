@@ -15,6 +15,7 @@ namespace slots{
 			     cgserver::HttpResponsePacket &resp);
 	virtual void init();
 
+	virtual void release();
     };
 }
 #endif
