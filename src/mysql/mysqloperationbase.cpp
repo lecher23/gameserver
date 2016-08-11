@@ -136,7 +136,7 @@ namespace cgserver{
     }
 
     bool MysqlOperationBase::insertWithReturn(
-	MYSQL * conn, MysqlStr &insertQuery, MysqlStr &selectQuery, MysqlRow &out)
+	MYSQL * conn, MysqlStr &insertQuery, MysqlStr &selectQuery, MysqlRows &out)
     {
 	bool ret = false;
 	do {
@@ -150,7 +150,27 @@ namespace cgserver{
 	}while(0);
 	return ret;
     }
+
+    bool MysqlOperationBase::addRow(
+	MYSQL * conn, const MysqlStr &tableName, const MysqlStr &field,
+	const MysqlStr &value, bool quoteValue)
+    {
+	MysqlStr q = "insert into ";
+	q += tableName;
+	q += " (";
+	q += field;
+	q += ") values (";
+	q += (quoteValue ? "\"":"");
+	q += value;
+	q += (quoteValue ? "\"":"");
+	q += ")";
+	return exeQuery(conn, q);
+    }
     
+
+    void MysqlOperationBase::setQuery(const MysqlStr &query) {
+	_query = query;
+    }    
 
     void MysqlOperationBase::setTable(const MysqlStr &table){
 	_query += table;
@@ -179,23 +199,23 @@ namespace cgserver{
 	const MysqlStr &left, const MysqlStr &right,
 	bool conjAnd, bool quoteRight)
     {
-	_query += conjAnd ? "AND" : "OR";
+	_query += conjAnd ? " AND " : " OR ";
 	MAKE_COND_SENTENCE(left, right, quoteRight);	
     }
 
     void MysqlOperationBase::addCondition(
 	const MysqlStr &cond, bool conjAnd, bool quoteCond)
     {
-	_query += conjAnd ? "AND" : "OR";
+	_query += conjAnd ? " AND " : " OR ";
 	_query += quoteCond ? "(" : "";
 	_query += cond;
 	_query += quoteCond ? ")" : "";
     }
 
     void MysqlOperationBase::setSortField(const MysqlStr &of, bool asc) {
-	_query += " order by ";
+	_query += " ORDER BY ";
 	_query += of;
-	_query += (asc ? " asc " : " desc ");
+	_query += (asc ? " ASC " : " DESC ");
     }
     
     void MysqlOperationBase::setLimit(const MysqlStr &offset, const MysqlStr &size) {
@@ -221,4 +241,27 @@ namespace cgserver{
 	    _query += val;
 	}
     }
+
+    void MysqlOperationBase::innerJoin(const MysqlStr &left, const MysqlStr &right,
+				       const MysqlStr &leftKey, const MysqlStr &rightKey)
+    {
+	_query += " FROM ";
+	_query += left;
+	_query += " INNER JOIN ";
+	_query += right;
+	_query += " ON ";
+	strJoin(left, leftKey, ".");
+	_query += "=";
+	strJoin(right, rightKey, ".");
+    }
+
+    void MysqlOperationBase::strJoin(
+	const MysqlStr &left, const MysqlStr &right, const MysqlStr &seq)
+    {
+	_query += left;
+	_query += seq;
+	_query += right;
+    }    
+    
+    
 }

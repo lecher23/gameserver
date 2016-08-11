@@ -16,7 +16,6 @@ namespace cgserver{
 	void addTable(const MysqlStr &table);
 	void setTable(const MysqlStr &table);
 
-	MysqlRows result;
     };
 }
 #endif

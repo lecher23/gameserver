@@ -1,13 +1,11 @@
 #include "slotsdb.h"
-#include "../mysql/sqlupdate.h"
-#include "../mysql/sqlselect.h"
-#include "../mysql/sqldelete.h"
 #include "../util/stringutil.h"
+#include "adduser2mysql.h"
 
 using namespace cgserver;
 
 namespace slots{
-    SlotsDB::SlotsDB():_client(cgserver::MysqlClient::getInstance()){
+    SlotsDB::SlotsDB():_pool(cgserver::MysqlConnPool::getInstance()){
     }
     
     SlotsDB::~SlotsDB(){
@@ -18,99 +16,58 @@ namespace slots{
 	return instance;
     }
     
-#define APPEND_VALUE(prefix, val)		\
-    prefix##Query.append(1,'"');		\
-    prefix##Query.append(val);			\
-    prefix##Query.append(1,'"');
-
-// only value not empty will be set.
-#define SET_VALUE(prefix, key, val, seq)	\
-    if (!val.empty()){				\
-	prefix##Query.append(key);		\
-	prefix##Query.append(1,'=');		\
-	APPEND_VALUE(prefix, val);		\
-	if (seq) {				\
-	    prefix##Query.append(1, ',');	\
-	}					\
-    }
-
-    bool SlotsDB::getUserInfo(const std::string &sQuery, SlotsUser &su) const {
+    bool SlotsDB::getUserInfo(MysqlOperationBase * mob, SlotsUser &su) const {
 	UserInfo &ui = su.uInfo;
 	UserResource &ur = su.uRes;
-	MysqlRow res;
-	if (!_client.queryWithResult(sQuery, res)) {
-	    CLOG(WARNING) << "Run query [" << sQuery << "] failed.\n";
-	    //errMsg = "Run query failed.Code 110001.";
+	if (!_pool.doMysqlOperation(mob)) {
 	    return false;
 	}
-	if (res.size() == 0) {
+	MysqlRows &res = mob->result;
+	if (res.size() == 0 || res[0].size() == 0) {
 	    CLOG(INFO) << "Init user[" << ui.mid << "] to db.\n";
 	    std::string uid;
 	    if (!addUser(ui.mid, ui.uid)) {
 		CLOG(WARNING) << "Set raw user info failed.\n";
 		return false;
 	    }
-	    if (!_client.queryWithResult(sQuery, res)) {
-		CLOG(WARNING) << "Run query [" << sQuery << "] failed.\n";
+	    if (!_pool.doMysqlOperation(mob)) {
 		return false;
 	    }
-	    if (res.size() == 0) {
+	    if (res.size() == 0 || res[0].size() == 0) {
 		CLOG(WARNING) << "Init user failed.";
 		return false;
 	    }
 	}
-	return collectSlotsUser(res, su);
+	return collectSlotsUser(res[0], su);
     }
 
     bool SlotsDB::getUserInfoByMachineId(const std::string &mid, SlotsUser &su) const
     {
 	// get logic
-	std::string sQuery = "select * from user_info as A inner join user_resource as B on A.uid = B.uid and A.mid = ";
-	APPEND_VALUE(s, su.uInfo.mid);
-	return getUserInfo(sQuery, su);
+	MysqlSimpleSelect mss;
+	mss.setField("*");
+	mss.innerJoin("user_info", "user_resource", "uid", "uid");
+	mss.addCondition("mid", su.uInfo.mid, true, true);
+	return getUserInfo((MysqlOperationBase *)&mss, su);
     }
 
     bool SlotsDB::getUserInfoByUserId(const std::string &uid, SlotsUser &su) const
     {
-	// get logic
-	std::string sQuery = "select * from user_info as A inner join user_resource as B on A.uid = B.uid and A.uid = ";
-	APPEND_VALUE(s, uid);
-	return getUserInfo(sQuery, su);
+	MysqlSimpleSelect mss;
+	mss.setField("*");
+	mss.innerJoin("user_info", "user_resource", "uid", "uid");
+	mss.addCondition("user_info.uid", uid, true, true);
+	return getUserInfo((MysqlOperationBase *)&mss, su);
     }
 
     bool SlotsDB::addUser(const std::string &mid, std::string &uid) const 
     {
-	// we should use transaction to make sure data ACID.
-	// first we should forbid autocommit by using mysql_autocommit(&sql, false);
-	std::string insertQuery = "insert into user_info (mid) values(";
-	APPEND_VALUE(insert, mid);
-	insertQuery.append(1, ')');
-	
-	std::string selectQuery = "select uid from user_info where mid=";
-	APPEND_VALUE(select, mid);
-
-	MysqlRow out;
-	if (!_client.startTransaction()) {
-	    CLOG(ERROR) << "Start transaction failed.";
+	AddUser2Mysql job;
+	job.setMid(mid);
+	if (!_pool.doMysqlOperation((MysqlOperationBase *) &job)) {
 	    return false;
 	}
-	if (!_client.insertWithReturn(insertQuery, selectQuery, out) || out.empty()) {
-	    CLOG(ERROR) << "Add new user failed.";
-	    _client.endTransaction(false);
-	    return false;
-	}
-	uid = out[0];
-	if (!_client.addRow("user_resource", "uid", uid)) {
-	    CLOG(WARNING) << "Add new user ["<< mid << "] failed.";
-	    _client.endTransaction(false);	    
-	    return false;
-	}
-	if (!_client.addRow("f_history", "uid", uid)) {
-	    CLOG(WARNING) << "Add new user ["<< mid << "] failed.";
-	    _client.endTransaction(false);	    
-	    return false;
-	}
-	_client.endTransaction(true);
+	uid = job.getUid();
 	return true;
     }
 
@@ -126,16 +83,14 @@ namespace slots{
     }
 
     bool SlotsDB::updateUserResource(UserResource &ur) const {
-	std::string query;
-	SqlUpdate su(query);
-	su.setTable("user_resource");
-	su.updateVal("level", ur.level);
-	su.updateVal("exp", ur.exp);
-	su.updateVal("fortune", ur.fortune);
-	su.updateVal("vip_level", ur.vipLevel);
-	su.hasCondition();
-	su.addEqualCondition("uid", ur.uid);
-	if (!_client.query(query)) {
+	MysqlSimpleUpdate msu;
+	msu.setTable("user_resource");
+	msu.setUpdateValue("level", StringUtil::toString(ur.level));
+	msu.addUpdateValue("exp", StringUtil::toString(ur.exp));
+	msu.addUpdateValue("fortune", StringUtil::toString(ur.fortune));
+	msu.addUpdateValue("vip_level", StringUtil::toString(ur.vipLevel));
+	msu.setCondition("uid", ur.uid, true);
+	if (!_pool.doMysqlOperation((MysqlOperationBase *) &msu)) {
 	    return false;
 	}
 	// important: if update success, it must flag to unchanged.
@@ -144,19 +99,23 @@ namespace slots{
     }
 
     bool SlotsDB::updateUserInfo(UserInfo &ui) const {
-	// we should use transaction to make sure data ACID.
-	// first we should forbid autocommit by using mysql_autocommit(&sql, false);
-	std::string updateQuery = "UPDATE user_info SET ";
-	SET_VALUE(update, "fname", ui.fname, true);
-	//SET_VALUE(update, "lname", ui.lname, true);
-	SET_VALUE(update, "avatar", ui.avatar, true);
-	SET_VALUE(update, "male", ui.male, true);
-	SET_VALUE(update, "country", ui.country, true);
-	SET_VALUE(update, "uid", ui.uid, false);
-	updateQuery.append(" where uid = ");
-	APPEND_VALUE(update, ui.uid);
-	
-	if (!_client.query(updateQuery)) {
+	MysqlSimpleUpdate msu;
+	msu.setTable("user_info");	
+	msu.setUpdateValue("uid", ui.uid, true);
+	if (!ui.fname.empty()) {
+	    msu.addUpdateValue("fname", ui.fname, true);
+	}
+	if (!ui.avatar.empty()) {
+	    msu.addUpdateValue("avatar", ui.avatar, true);
+	}
+	if (!ui.male.empty()) {
+	    msu.addUpdateValue("male", ui.male, true);
+	}
+	if (!ui.country.empty()) {
+	    msu.addUpdateValue("country", ui.country, true);
+	}
+	msu.setCondition("uid", ui.uid, true);
+	if (!_pool.doMysqlOperation((MysqlOperationBase *) &msu)) {
 	    return false;
 	}
 	ui.changed = false;
@@ -166,39 +125,35 @@ namespace slots{
     bool SlotsDB::searchUser(const std::string &field, const std::string &keyword,
 			     uint32_t offset, uint32_t size, SlotsUsers &users)
     {
-	MysqlRows result;
-	std::string q;
-	cgserver::SqlSelect ss(q);
-	ss.addField("*");
-	ss.innerJoin("user_info", "user_resource", "uid", "uid");
-	ss.setConditionJoin(true);
-	ss.addEqualCondition(field, keyword);
-	ss.setLimit(offset, size);
-	if (!_client.queryWithResult(q, result)) {
+	MysqlSimpleSelect mss;
+	mss.setField("*");
+	mss.innerJoin("user_info", "user_resource", "uid", "uid");
+	mss.addCondition(field, keyword, true, true);
+	mss.setLimit(offset, size);
+
+	if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss)) {
 	    return false;
 	}
-	return collectSlotsUsers(result, users);
+	return collectSlotsUsers(mss.result, users);
     }
 
     bool SlotsDB::getUserMails(
 	const MyString &uid, MyString &offset, MyString &count, UserMails &out)
     {
 	out.clear();
-	std::string sQuery = "SELECT * from mail_info as A INNER JOIN mails"
-	    " as B on A.mail_id = B.mail_id WHERE A.b_delete = false and A.uid=";
-	APPEND_VALUE(s, uid);
-	sQuery.append(" order by ctime desc limit ");
-	sQuery.append(offset);
-	sQuery.append(1, ',');
-	sQuery.append(count);
-
-	MysqlRows result;
-	if (!_client.queryWithResult(sQuery, result)) {
-	    CLOG(WARNING) << "Get user [" << uid << "] mails from db failed.";
+	MysqlSimpleSelect mss;
+	mss.setField("*");
+	mss.innerJoin("mail_info", "mails", "mail_id", "mail_id");
+	mss.setCondition("mail_info.b_delete=false", false);
+	mss.addCondition("mail_info.uid", uid, true, true);
+	mss.setSortField("ctime", false);
+	mss.setLimit(offset, count);
+	
+	if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss)) {
 	    return false;
 	}
 
-	if(!getMailInfo(result, out)) {
+	if(!getMailInfo(mss.result, out)) {
 	    CLOG(WARNING) << "Transform user [" << uid << "] mails failed.";
 	    return false;
 	}
@@ -208,15 +163,12 @@ namespace slots{
 
     //user read mail. record to db
     bool SlotsDB::readMail(const std::string &uid, const std::string &mailId) {
-	std::string query;
-	SqlUpdate su(query);
-	su.setTable("mail_info");
-	su.updateValue("b_read", "1");
-	su.hasCondition();
-	su.addEqualCondition("uid", uid);
-	su.setConditionJoin(true);
-	su.addEqualCondition("mail_id", mailId);
-	if (!_client.query(query)) {
+	MysqlSimpleUpdate msu;
+	msu.setTable("mail_info");
+	msu.setUpdateValue("b_read", "1");
+	msu.setCondition("uid", uid, true);
+	msu.addCondition("mail_id", mailId, true, true);
+	if (!_pool.doMysqlOperation((MysqlOperationBase *) &msu)) {
 	    CLOG(WARNING) << "Set read mail for user [" << uid << "] failed.";
 	    return false;
 	}
@@ -224,15 +176,12 @@ namespace slots{
     }
 
     bool SlotsDB::delMail(const std::string &uid, const std::string &mailId) {
-	std::string query;
-	SqlUpdate su(query);
-	su.setTable("mail_info");
-	su.updateValue("b_delete", "1");
-	su.hasCondition();
-	su.addEqualCondition("uid", uid);
-	su.setConditionJoin(true);
-	su.addEqualCondition("mail_id", mailId);
-	if (!_client.query(query)) {
+	MysqlSimpleUpdate msu;
+	msu.setTable("mail_info");
+	msu.setUpdateValue("b_read", "1");
+	msu.setCondition("uid", uid, true);
+	msu.addCondition("mail_id", mailId, true, true);
+	if (!_pool.doMysqlOperation((MysqlOperationBase *) &msu)) {	
 	    CLOG(WARNING) << "Del mail for user [" << uid << "] failed.";
 	    return false;
 	}
@@ -265,6 +214,7 @@ namespace slots{
     bool SlotsDB::getFriendsList(
 	const std::string &uid, uint32_t page,uint32_t pageSize, FriendsList &list)
     {
+	MysqlSimpleSelect mss;
 	std::string sQuery = "select * from user_info as A inner join user_resource as B on A.uid = B.uid and (A.uid in (select uid2 as uid from friends where uid1 = ";
 	sQuery += uid;
 	sQuery += ") or A.uid in (select uid1 as uid from friends where uid2  =";
@@ -274,24 +224,26 @@ namespace slots{
 	sQuery += cgserver::StringUtil::toString(page);
 	sQuery += ",";
 	sQuery += cgserver::StringUtil::toString(pageSize);
+	mss.setQuery(sQuery);
 
-	MysqlRows res;
-	if (!_client.queryWithResult(sQuery, res)) {
+	if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss)) {
 	    return false;
 	}
-	collectSlotsUsers(res, list);
+	collectSlotsUsers(mss.result, list);
 	return true;
     }
 
     bool SlotsDB::getInviteHistory(const std::string &uid, FHistory &out) {
-	std::string sQuery;
-	SqlSelect ss(sQuery);
-	ss.addTable("f_history");
-	ss.addEqualCondition("uid", uid);
-	MysqlRow res;
-	if (!_client.queryWithResult(sQuery, res) || res.size() < 4) {
+	MysqlSimpleSelect mss;
+	mss.setField("*");
+	mss.setTable("f_history");
+	mss.setCondition("uid", uid, true);
+	if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss) ||
+	    mss.result.size() == 0 || mss.result[0].size() < 4)
+	{
 	    return false;
 	}
+	MysqlRow &res = mss.result[0];
 	out.uid = res[0];
 	cgserver::StringUtil::StrToInt32(res[1].c_str(), out.inviteCount);
 	cgserver::StringUtil::StrToInt64(res[2].c_str(), out.totalReward);
@@ -300,12 +252,11 @@ namespace slots{
     }
 
     bool SlotsDB::updateFHistory(const std::string &uid, const std::string &key, const std::string &value) {
-	std::string uQuery;
-	SqlUpdate su(uQuery);
-	su.setTable("f_history");
-	su.updateValue(key, value);
-	su.addEqualCondition("uid", uid);
-	return _client.query(uQuery);
+	MysqlSimpleUpdate msu;
+	msu.setTable("f_history");
+	msu.setUpdateValue(key, value, true);
+	msu.setCondition("uid", uid, true);
+	return _pool.doMysqlOperation((MysqlOperationBase *) &msu);
     }
 
     bool SlotsDB::getReward(const std::string &uid) {
@@ -353,21 +304,19 @@ namespace slots{
 	uint64_t tid;
 	if (!StringUtil::StrToUInt64(tidStr.c_str(), tid))
 	    return false;
-	std::string query;
-	cgserver::SqlDelete sd(query);
-	sd.addTable("friends");
+
+	MysqlSimpleDelete msd;
+	msd.setTable("friends");
 	if (tid > uid){
-	    sd.addEqualCondition("uid1", uidStr);
-	    sd.setConditionJoin(true);
-	    sd.addEqualCondition("uid2", tidStr);	    
+	    msd.setCondition("uid1", uidStr, true);
+	    msd.addCondition("uid2", tidStr, true, true);	    
 	}else if (tid < uid) {
-	    sd.addEqualCondition("uid1", tidStr);
-	    sd.setConditionJoin(true);
-	    sd.addEqualCondition("uid2", uidStr);	    
+	    msd.setCondition("uid1", tidStr, true);
+	    msd.addCondition("uid2", uidStr, true, true);	    
 	}else {
 	    return false;
 	}
-	return _client.query(query);
+	return _pool.doMysqlOperation((MysqlOperationBase *) &msd);
     }
 
     bool SlotsDB::makeFriend(const std::string &uidStr, const std::string &tidStr) {
@@ -377,20 +326,21 @@ namespace slots{
 	uint64_t tid;
 	if (!StringUtil::StrToUInt64(tidStr.c_str(), tid))
 	    return false;
-	std::string values = "";
+	MysqlSimpleInsert msi;
+	msi.setTable("friends");
+	msi.setField("uid1");
+	msi.addField("uid2");
 	// bigger id in uid2
 	if (tid > uid){
-	    values += uidStr;
-	    values += ",";
-	    values += tidStr;
+	    msi.setValue(uidStr);
+	    msi.addValue(tidStr);
 	}else if (tid < uid) {
-	    values += tidStr;
-	    values += ",";
-	    values += uidStr;
+	    msi.setValue(tidStr);
+	    msi.addValue(uidStr);
 	}else{
 	    return false;
 	}
-	return _client.addRow("friends", "uid1, uid2", values, false);
+	return _pool.doMysqlOperation((MysqlOperationBase *) &msi);	
     }
 
 #undef APPEND_VALUE

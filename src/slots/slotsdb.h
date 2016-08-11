@@ -3,7 +3,8 @@
 
 #include <stdint.h>
 #include <string>
-#include "../mysql/mysqlclient.h"
+#include "../mysql/mysqlconnpool.h"
+#include "../mysql/mysqloperationbase.h"
 
 namespace slots{
     struct UserInfo{
@@ -88,7 +89,7 @@ namespace slots{
     public:
         ~SlotsDB();
 
-	bool getUserInfo(const std::string &query, SlotsUser &su) const ;
+	bool getUserInfo(cgserver::MysqlOperationBase *mob, SlotsUser &su) const ;
 	bool getUserInfoByMachineId(const std::string &mid, SlotsUser &su) const ;
 	bool getUserInfoByUserId(const std::string &uid, SlotsUser &su) const ;
 	
@@ -127,7 +128,7 @@ namespace slots{
 	
         SlotsDB();
 	SlotsDB(SlotsDB &);
-	cgserver::MysqlClient &_client;
+	cgserver::MysqlConnPool &_pool;
     };
 }
 #endif
