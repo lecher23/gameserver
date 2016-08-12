@@ -37,7 +37,6 @@ namespace slots{
 
     bool GameService::doSlots1(CPacket &packet, ResultFormatter &rf)
     {
-	int64_t moneyEarned;
 	std::string detail;
 	bool ret = false;
 	do {
@@ -77,13 +76,17 @@ namespace slots{
 		CLOG(WARNING) << "Get detail from lua script failed.";
 		break;
 	    }
-	
+	    
+	    int64_t moneyEarned;
 	    if (!lua->getValue(moneyEarned) || moneyEarned < 0) {
 		CLOG(WARNING) << "Invalid bet earned.";	    
 		break;
 	    }
 	    CLOG(INFO) << "User [" << uid << "] earn:" << moneyEarned;
-	    user->uRes.mdfyFortune(moneyEarned - betVal);
+	    SlotsEventData data;
+	    data.earned = moneyEarned;
+	    data.bet = betVal;
+	    SlotsDataCenter::instance().slotsEvent.processData(user, data);
 	    ret = true;
 	    rf.formatGameResult(user->uRes, moneyEarned, detail);
 	} while (false);
@@ -118,14 +121,14 @@ namespace slots{
 	case 0:{
 	    // reduce incr
 	    UserResource &ur = sup->uRes;
-	    ur.mdfyFortune(-incrVal);
+	    ur.incrFortune(-incrVal);
 	    CLOG(INFO) << "User[" << uid << "] new fortune:" << ur.fortune;
 	    break;
 	}
 	case 2:
 	case 4:{
 	    UserResource &ur = sup->uRes;
-	    ur.mdfyFortune(incrVal * (dV -1));	    
+	    ur.incrFortune(incrVal * (dV -1));	    
 	    CLOG(INFO) << "User[" << uid << "] new fortune:" << ur.fortune;
 	    break;
 	}

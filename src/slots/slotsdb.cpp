@@ -19,6 +19,7 @@ namespace slots{
     bool SlotsDB::getUserInfo(MysqlOperationBase * mob, SlotsUser &su) const {
 	UserInfo &ui = su.uInfo;
 	UserResource &ur = su.uRes;
+	UserHistory &uh = su.uHis;
 	if (!_pool.doMysqlOperation(mob)) {
 	    return false;
 	}
@@ -30,15 +31,23 @@ namespace slots{
 		CLOG(WARNING) << "Set raw user info failed.\n";
 		return false;
 	    }
-	    if (!_pool.doMysqlOperation(mob)) {
-		return false;
-	    }
-	    if (res.size() == 0 || res[0].size() == 0) {
-		CLOG(WARNING) << "Init user failed.";
-		return false;
-	    }
+	    ur.reset();
+	    ur.uid = ui.uid;
+	    uh.reset();
+	    uh.uid = ui.uid;
+	    return true;
 	}
-	return collectSlotsUser(res[0], su);
+	if (!collectSlotsUser(res[0], su)) {
+	    return false;
+	}
+	MysqlSimpleSelect mss;
+	mss.setField("*");
+	mss.setTable("history");
+	mss.setCondition("uid", su.uInfo.uid, true);
+	if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss)) {
+	    return false;
+	}
+	return collectUserHistory(mss.result, su.uHis);
     }
 
     bool SlotsDB::getUserInfoByMachineId(const std::string &mid, SlotsUser &su) const
@@ -78,6 +87,9 @@ namespace slots{
 	}
 	if (su->uRes.changed) {
 	    ret = (updateUserResource(su->uRes) && ret);
+	}
+	if (su->uHis.changed) {
+	    ret = (updateUserHistory(su->uHis) && ret);
 	}
 	return ret;
     }
@@ -119,6 +131,21 @@ namespace slots{
 	    return false;
 	}
 	ui.changed = false;
+	return true;
+    }
+
+    bool SlotsDB::updateUserHistory(UserHistory &uhis) const {
+	MysqlSimpleUpdate msu;
+	msu.setTable("history");
+	msu.setUpdateValue("max_fortune", StringUtil::toString(uhis.maxFortune));
+	msu.addUpdateValue("max_earned", StringUtil::toString(uhis.maxEarned));
+	msu.addUpdateValue("total_earned", StringUtil::toString(uhis.totalEarned));
+	msu.addUpdateValue("tw_earned", StringUtil::toString(uhis.twEarned));
+	msu.setCondition("uid", uhis.uid, true);
+	if (!_pool.doMysqlOperation((MysqlOperationBase *) &msu)) {
+	    return false;
+	}
+	uhis.changed = false;
 	return true;
     }
 
@@ -273,27 +300,40 @@ namespace slots{
 	return true;
     }
 
+    bool SlotsDB::collectUserHistory(const cgserver::MysqlRows &rows, UserHistory &uh) const{
+	if (rows.empty() || rows[0].size() < 9) {
+	    return false;
+	}
+	auto &row = rows[0];
+	uh.uid = row[0];
+	cgserver::StringUtil::StrToInt64(row[1].c_str(), uh.maxFortune);
+	cgserver::StringUtil::StrToInt64(row[2].c_str(), uh.maxEarned);
+	cgserver::StringUtil::StrToInt64(row[3].c_str(), uh.totalEarned);
+	cgserver::StringUtil::StrToInt64(row[4].c_str(), uh.twEarned);
+	cgserver::StringUtil::StrToInt32(row[5].c_str(), uh.lwEarnedSort);
+	cgserver::StringUtil::StrToInt32(row[6].c_str(), uh.lwLevelSort);
+	cgserver::StringUtil::StrToInt32(row[7].c_str(), uh.lwFortuneSort);
+	cgserver::StringUtil::StrToInt32(row[8].c_str(), uh.lwAchievSort);
+	return true;
+    }    
+
     bool SlotsDB::collectSlotsUser(const cgserver::MysqlRow &row, SlotsUser &su) const{
-	if (row.size() < 12) {
+	if (row.size() < 15) {
 	    return false;
 	}
 	UserInfo &ui = su.uInfo;
 	UserResource &ur = su.uRes;
-	//user_info:uid, mid, fname, lname, avatar, male, country
 	ui.uid = row[0];
 	ui.mid = row[1];
 	ui.fname = row[2];
-	//ui.lname = row[3];
 	ui.avatar = row[4];
 	ui.male = row[5];
 	ui.country = row[6];
-	// user_resource:uid, level, exp, fortune, vip_level
-	// we should makesure things right.
 	ur.uid = row[7];	
-	cgserver::StringUtil::StrToUInt32(row[8].c_str(), ur.level);
-	cgserver::StringUtil::StrToUInt64(row[9].c_str(), ur.exp);
+	cgserver::StringUtil::StrToInt32(row[8].c_str(), ur.level);
+	cgserver::StringUtil::StrToInt64(row[9].c_str(), ur.exp);
 	cgserver::StringUtil::StrToInt64(row[10].c_str(), ur.fortune);
-	cgserver::StringUtil::StrToUInt32(row[11].c_str(), ur.vipLevel);
+	cgserver::StringUtil::StrToInt32(row[11].c_str(), ur.vipLevel);
 	return true;
     }
 

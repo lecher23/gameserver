@@ -49,7 +49,7 @@ then
 	# ...
 	cd ${BASE_PATH} && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${EXT_LIB_PATH};nohup ${SERVER_BIN} > server.out 2>&1 &
     else
-	echo "Server is running."
+	echo "Start stopped. Server is running."
     fi
 elif [ $1 = "status" ];
 then

@@ -178,7 +178,7 @@ namespace slots{
 	if (!dc.get(uidStr, user)) {
 	    return false;
 	}
-	user->uRes.mdfyFortune((int64_t)gData->getGiftValue());
+	user->uRes.incrFortune((int64_t)gData->getGiftValue());
 	rf.formatResult(*user);
 	return true;
     }
@@ -233,7 +233,7 @@ namespace slots{
 	if(!SlotsDataCenter::instance().get(uid, user)) {
 	    return false;
 	}
-	user->uRes.mdfyFortune(res.rewardRemain);
+	user->uRes.incrFortune(res.rewardRemain);
 	rf.formatSimpleResult(true, "");
 	return true;
     }
@@ -266,7 +266,7 @@ namespace slots{
 	if (!dc.get(uidStr, user)) {
 	    return false;
 	}
-	user->uRes.mdfyFortune(sum);
+	user->uRes.incrFortune(sum);
 	rf.formatSimpleResult(true, "");
 	return true;
     }
