@@ -383,6 +383,31 @@ namespace slots{
 	return _pool.doMysqlOperation((MysqlOperationBase *) &msi);	
     }
 
-#undef APPEND_VALUE
-#undef SET_VALUE    
+    bool SlotsDB::getRankData(RankType rType, LeaderBoardRank &out){
+	static const std::string tables[] = {"cur_fortune_rank", "cur_earned_rank",
+					     "cur_acmt_rank", "cur_level_rank",
+					     "lw_fortune_rank", "lw_earned_rank",
+					     "lw_acmt_rank", "lw_level_rank",
+					     "tw_earned_rank"};
+	MysqlSimpleSelect mss;
+	mss.setField("*");
+	mss.setTable(tables[rType]);
+	if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss)) {
+	    return false;
+	}
+	out.data.clear();
+	for (auto &row: mss.result) {
+	    if (row.size() < 5) {
+		CLOG(WARNING) << "get rank item from db failed.";
+		continue;
+	    }
+	    LeaderBoardItemPtr tmp(new LeaderBoardItem);
+	    StringUtil::StrToInt64(row[1].c_str(), tmp->uid);	    
+	    tmp->name = row[2];
+	    StringUtil::StrToInt32(row[3].c_str(), tmp->country);
+	    StringUtil::StrToInt64(row[4].c_str(), tmp->value);
+	    out.data.push_back(tmp);
+	}
+	return true;
+    }    
 }

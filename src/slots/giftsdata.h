@@ -3,6 +3,7 @@
 
 #include "../util/common_define.h"
 #include "../util/timeutil.h"
+#include <map>
 
 namespace slots{
     #define MAX_GIFT_COUNT 30

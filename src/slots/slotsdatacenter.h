@@ -8,27 +8,18 @@
 #include "../util/timeutil.h"
 
 namespace slots{
-    enum LeaderBoardType{
-	ELBT_FORTUNE,
-	ELBT_MAX_EARNED,
-	ELBT_ACHIVEMENTS,
-	ELBT_LEVEL
-    };
-
+#define MAX_CACHE_NUMBER 4000
+#define DUMP_INTERVAL 60
+    
     /*This lru cache will never expired*/
     class SlotsDataCenter{
     public:
-	struct LeaderBoardData{
-	    std::vector<LeaderBoardItemPtr> data;
-	    int64_t timestamp;
-	};
-
 	~SlotsDataCenter(){
 	}
 
-	bool init (bool needDump = true, int dumpInterval = 60){
-	    _suCache.init(300, needDump, 60);
-	    _gifts.reset(new GiftsData(100));
+	bool init (bool needDump = true, int dumpInterval = DUMP_INTERVAL){
+	    _suCache.init(MAX_CACHE_NUMBER, needDump, dumpInterval);
+	    _gifts.reset(new GiftsData(999));
 	    slotsEvent.init();
 	    return _gifts->init();
 	}
@@ -72,28 +63,36 @@ namespace slots{
 	    _suCache.stop_cache();
 	}
 
-	LeaderBoardData &getLeaderBoardData(LeaderBoardType ldBdTp) {
-	    LeaderBoardData &boardData = (ldBdTp == ELBT_FORTUNE?_fortuneOrder:
-					  (ldBdTp == ELBT_MAX_EARNED?_maxSingleEarned:
-					   (ldBdTp == ELBT_ACHIVEMENTS?_achiveOrder:_levelOrder)));
-	    if (!leaderBoardDataExpired(boardData.timestamp)) {
-		return boardData;
+	LeaderBoardRank &getLeaderBoardData(RankType rType) {
+	    LeaderBoardRank &rank = (rType == ERT_CUR_FORTUNE?_curRank.fortune:
+				     (rType == ERT_CUR_EARNED?_curRank.earned:
+				      (rType == ERT_CUR_ACHIVEMENTS?_curRank.achievement:
+				       (rType == ERT_CUR_LEVEL?_curRank.level:
+					(rType == ERT_LW_FORTUNE?_lwRank.fortune:
+					 (rType == ERT_LW_EARNED?_lwRank.earned:
+					  (rType == ERT_LW_ACHIVEMENTS?_lwRank.achievement:
+					   (rType == ERT_LW_LEVEL?_lwRank.level:
+					    _twEarnedRank))))))));
+	    if (!rankDataExpired(rank.timestamp)) {
+		return rank;
 	    }
-	    refreshLeaderData(boardData, ldBdTp);
-	    return boardData;
+	    refreshRankData(rank, rType);
+	    return rank;
 	}
 
 	SlotsEvent slotsEvent;
     private:
-	bool leaderBoardDataExpired(int64_t ts) {
+	bool rankDataExpired(int64_t ts) {
 	    int64_t now = cgserver::CTimeUtil::getCurrentTimeInSeconds();
-	    // just cache for 4 min.
-	    return (now - ts) > 240;
+	    // just cache for 5 min.
+	    return (now - ts) > 300;
 	}
 
-	void refreshLeaderData(LeaderBoardData &boardData, LeaderBoardType ldBdTp) {
-	    boardData.timestamp = cgserver::CTimeUtil::getCurrentTimeInSeconds();
-	    //TODO
+	void refreshRankData(LeaderBoardRank &rankData, RankType rType) {
+	    SlotsDB &db = SlotsDB::getInstance();
+	    if (db.getRankData(rType, rankData)){
+		rankData.timestamp = cgserver::CTimeUtil::getCurrentTimeInSeconds();
+	    }
 	}
 	
 	GiftsDataPtr _gifts;
@@ -103,11 +102,9 @@ namespace slots{
 	
 	SlotsCache<std::string, SlotsUserPtr> _suCache;
 
-	LeaderBoardData _fortuneOrder;
-	LeaderBoardData _maxSingleEarned;
-	LeaderBoardData _achiveOrder;
-	LeaderBoardData _levelOrder;
-
+	LeaderBoardData _curRank;
+	LeaderBoardData _lwRank;
+	LeaderBoardRank _twEarnedRank;
     };
 }
 #endif

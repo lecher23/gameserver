@@ -4,6 +4,21 @@
 #include "../util/common_define.h"
 
 namespace slots{
+#define RANK_LIMIT 1000
+
+    enum RankType{
+	ERT_CUR_FORTUNE = 0,
+	ERT_CUR_EARNED,
+ 	ERT_CUR_ACHIVEMENTS,
+	ERT_CUR_LEVEL,
+	ERT_LW_FORTUNE,
+	ERT_LW_EARNED,
+ 	ERT_LW_ACHIVEMENTS,
+	ERT_LW_LEVEL,
+	ERT_TW_EARNED,
+	ERT_END
+    };
+    
     struct UserInfo{
 	std::string uid;
 	std::string mid;
@@ -154,12 +169,28 @@ namespace slots{
     typedef SlotsUsers FriendsList;
 
     struct LeaderBoardItem{
-	std::string i;
+	int64_t uid;
 	std::string name;
-	std::string country;
-	std::string level;
-	std::string value;
+	int32_t country;
+	int64_t value;
     };
     DF_SHARED_PTR(LeaderBoardItem);
+
+    struct  LeaderBoardRank {
+	std::vector<LeaderBoardItemPtr> data;
+	int64_t timestamp;
+	LeaderBoardRank() {
+	    data.resize(RANK_LIMIT);
+	    data.clear();
+	    timestamp = 0;
+	}
+    };
+
+    struct LeaderBoardData {
+	LeaderBoardRank level;
+	LeaderBoardRank fortune;
+	LeaderBoardRank earned;
+	LeaderBoardRank achievement;
+    };
 }
 #endif

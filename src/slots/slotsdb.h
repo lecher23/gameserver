@@ -41,7 +41,9 @@ namespace slots{
 	bool getReward(const std::string &uid);
 
 	bool removeFriend(const std::string &uid, const std::string &tid);
-	bool makeFriend(const std::string &uidStr, const std::string &tidStr);	
+	bool makeFriend(const std::string &uidStr, const std::string &tidStr);
+
+	bool getRankData(RankType rType, LeaderBoardRank &out);
 
 	static SlotsDB &getInstance();
     private:

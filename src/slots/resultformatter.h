@@ -1,7 +1,7 @@
 #ifndef RESULTFORMATTER_H
 #define RESULTFORMATTER_H
 
-#include "slotsdb.h"
+#include "slotstables.h"
 #include "giftsdata.h"
 #include "rapidjson/writer.h"
 #include "rapidjson/stringbuffer.h"
@@ -23,6 +23,7 @@ namespace slots{
 	void formatFriendsInfo(const FriendsList &friends);
 	void formatFullFriendInfo(const FriendsList &friends, const FHistory &history);
 	void formatGiftsInfo(const Gifts &gifts, int64_t giftsVal);
+	void formatRankResult(const LeaderBoardRank &rank, int32_t rankValue);
 	
 	void formatStatus(bool bOk);
 	void formatMailsInfo(const UserMails &uMails);

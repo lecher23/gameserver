@@ -6,6 +6,7 @@
 #include "updateservice.h"
 #include "mailservice.h"
 #include "gameservice.h"
+#include "rankservice.h"
 #include "socialityservice.h"
 
 namespace slots{
@@ -27,8 +28,9 @@ namespace slots{
 		ret.reset((IService *)new GameService);
 	    } else if (path == "/slots/friends") {
 		ret.reset((IService *)new SocialityService);
+	    } else if (path == "/slots/rank") {
+		ret.reset((IService *)new RankService);
 	    }
-
 	    return ret;
 	}
     /* private: */

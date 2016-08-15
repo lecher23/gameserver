@@ -92,7 +92,30 @@ namespace slots{
 	_writer.Key("value");
 	_writer.Int64(giftsVal);
 	_writer.EndObject();
-    }    
+    }
+
+    void ResultFormatter::formatRankResult(const LeaderBoardRank &rank, int32_t rankValue) {
+	_writer.StartObject();
+	formatStatus(true);
+	_writer.Key("data");
+	_writer.StartArray();
+	for (auto &itr: rank.data) {
+	    _writer.StartObject();
+	    _writer.Key("uid");
+	    _writer.Int64(itr->uid);
+	    _writer.Key("name");
+	    _writer.String(itr->name.c_str());
+	    _writer.Key("country");
+	    _writer.Int(itr->country);
+	    _writer.Key("value");
+	    _writer.Int64(itr->value);
+	    _writer.EndObject();
+	}
+	_writer.EndArray();
+	_writer.Key("myrank");
+	_writer.Int(rankValue);
+	_writer.EndObject();
+    }
 
     void ResultFormatter::formatStatus(bool bOk) {
 	_writer.Key("status");

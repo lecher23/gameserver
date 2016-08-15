@@ -45,3 +45,19 @@ class UserApiTest(unittest.TestCase):
         self.assertTrue(ob is not None)
         self.assertEqual("OK", ob["status"])
 
+    def testUserExist(self):
+        # insert user into MYSQL
+        params = []
+        params.append("mid=test_user_exist")
+        ob = self._request(params)
+
+        # get user
+        params = []
+        params.append("mid=test_user_exist")
+        ob = self._request(params)
+        self.assertTrue(ob is not None)
+        self.assertEqual("OK", ob["status"])
+        
+        
+        
+        
