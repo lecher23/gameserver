@@ -193,24 +193,20 @@ public:
 
     void test_simple( void )
     {
-	boost::asio::io_service io;
-	tcp::resolver resolver(io);
-	// get ip from domain
-	tcp::resolver::query query("www.baidu.com", "asiotest");
-	tcp::resolver::iterator endopoint_iterator = resolver.resolve(query);
-	// test ip
-	tcp::socket socket(io);
-	boost::asio::connect(socket, endpoint_iterator);
-	// get response
-	for (;;) {
-	    std::vector<char > buf;
-	    boost::system::error_code error;
-	    size_t len = socket.read_some(boost::asio::buffer(buf), error);
-	    if (error = boost::asio::error::eof)
-		break;
-	    else if (error)
-		std::cout << error << std::endl;
-	    std::cout.write(buf);
+	try{
+	    boost::asio::io_service io;
+	    int port = 9877;
+	    tcp::acceptor acceptor(io, tcp::endpoint(tcp::v4(), port));
+	    acceptor.listen();
+	    for(int i = 0; i < 3; ++i) {
+		tcp::socket sk(io);
+		acceptor.accept(sk);
+		std::string message = "HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello, world!";
+		boost::system::error_code ignored_error;
+		boost::asio::write(sk, boost::asio::buffer(message), ignored_error);
+	    }
+	}catch (std::exception& e){
+	    std::cerr<< e.what() << std::endl;
 	}
     }
 };
