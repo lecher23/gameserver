@@ -1,25 +1,24 @@
 #ifndef ASYNCSERVER_H
 #define ASYNCSERVER_H
 
-#include <boost/asio.hpp>
 #include <thread>
 #include <vector>
 #include <memory>
 #include <functional>
+#include "asynctask.h"
 
 namespace cgserver{
     class AsyncServer{
     public:
 	typedef std::shared_ptr <boost::asio::ip::tcp::socket> socket_ptr;
-        AsyncServer();
+        explicit AsyncServer(int port);
         ~AsyncServer();
 
 	void start();
 	void stop();
 
-	socket_ptr getSocket();
-
-	void handleAccept(socket_ptr sk, const error_code &err);
+	void handleAccept(AsyncTaskPtr task, const asio_error &err);
+	void doAccept();	
     private:
 	void run();
 	boost::asio::io_service _service;
