@@ -80,6 +80,22 @@ namespace slots{
 	    return rank;
 	}
 
+	AttachmentPtr getAttach(int32_t attid, bool &exist) {
+	    exist = true;
+	    auto res = _attachInfo.find(attid);
+	    if (res != _attachInfo.end()) {
+		return res->second;
+	    }
+	    SlotsDB &db = SlotsDB::getInstance();
+	    std::string strid = cgserver::StringUtil::toString(attid);
+	    AttachmentPtr ret(new Attachment);
+	    exist = db.getAttachment(strid, *ret);
+	    if (exist) {
+		_attachInfo[attid] = ret;
+	    }
+	    return ret;
+	}
+
 	SlotsEvent slotsEvent;
     private:
 	bool rankDataExpired(int64_t ts) {
@@ -95,16 +111,23 @@ namespace slots{
 	    }
 	}
 	
-	GiftsDataPtr _gifts;
 	
 	SlotsDataCenter(){}
 	SlotsDataCenter(const SlotsDataCenter &);
-	
+
+	/* User data*/
 	SlotsCache<std::string, SlotsUserPtr> _suCache;
 
+	/* Rank data*/
 	LeaderBoardData _curRank;
 	LeaderBoardData _lwRank;
 	LeaderBoardRank _twEarnedRank;
+
+	/* Gifts data*/
+	GiftsDataPtr _gifts;
+
+	/* Mail data*/
+	std::map<int32_t, AttachmentPtr> _attachInfo;
     };
 }
 #endif

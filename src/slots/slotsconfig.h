@@ -73,6 +73,7 @@ namespace slots{
 	// 0,50,110,180, we can use binary serch
 	std::vector<LevelConfig> levelConfig;
 	std::vector<VipLevelConfig> vipLevelConfig;
+
     };
 }
 #endif

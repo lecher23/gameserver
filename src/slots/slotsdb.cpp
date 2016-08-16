@@ -180,7 +180,7 @@ namespace slots{
 	    return false;
 	}
 
-	if(!getMailInfo(mss.result, out)) {
+	if(!collectMailInfo(mss.result, out)) {
 	    CLOG(WARNING) << "Transform user [" << uid << "] mails failed.";
 	    return false;
 	}
@@ -215,7 +215,7 @@ namespace slots{
     	return true;
     }
     
-    bool SlotsDB::getMailInfo(const MysqlRows &mails, UserMails &out){
+    bool SlotsDB::collectMailInfo(const MysqlRows &mails, UserMails &out){
 	for (auto itr = mails.begin(); itr != mails.end(); ++itr) {
 	    if ((*itr).size() < 12) {
 		CLOG(WARNING) << "Invalid fields num from db. Cur:" <<
@@ -226,9 +226,9 @@ namespace slots{
 	    tmp->mailInfo.mailId = (*itr)[5];
 	    tmp->mailInfo.title = (*itr)[7];
 	    tmp->mailInfo.content = (*itr)[8];
-	    tmp->mailInfo.attachment = (*itr)[9];
+	    StringUtil::StrToInt32((*itr)[9].c_str(), tmp->mailInfo.attachment);
 	    tmp->mailInfo.createTime = (*itr)[10];
-	    tmp->mailInfo.keepDays = (*itr)[11];
+	    StringUtil::StrToInt32((*itr)[11].c_str(), tmp->mailInfo.keepDays);	    
 
 	    tmp->bRead = (*itr)[2] == "0" ? false:true;
 	    tmp->bGet = (*itr)[3] == "0" ? false:true;
@@ -237,6 +237,45 @@ namespace slots{
 	}
 	return true;
     }
+
+    bool SlotsDB::getAttachments(std::map<int32_t, AttachmentPtr> &attch) {
+	MysqlSimpleSelect mss;
+	mss.setField("*");
+	mss.setTable("m_attachment");
+	if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss)) {
+	    return false;
+	}
+	for (auto &ele: mss.result) {
+	    if (ele.size() < 3) continue;
+	    int32_t attid;
+	    if (!StringUtil::StrToInt32(ele[0].c_str(), attid)) continue;
+	    auto tmp = attch.find(attid);
+	    if (tmp == attch.end()) {
+		attch[attid] = AttachmentPtr(new Attachment);
+	    }
+	    StringUtil::StrToInt32(ele[1].c_str(), attch[attid]->type);
+	    StringUtil::StrToInt64(ele[2].c_str(), attch[attid]->value);	    
+	}
+	return true;
+    }
+    
+    bool SlotsDB::getAttachment(const std::string &attchId, Attachment &attch) {
+	MysqlSimpleSelect mss;
+	mss.setField("*");
+	mss.setTable("m_attachment");
+	mss.setCondition("attid", attchId, false);
+	if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss)) {
+	    return false;
+	}
+	if (mss.result.size() == 0) {
+	    return false;
+	}
+	auto &row = mss.result[0];
+	StringUtil::StrToInt32(row[1].c_str(), attch.type);
+	StringUtil::StrToInt64(row[2].c_str(), attch.value);
+	return true;
+    }
+    
 
     bool SlotsDB::getFriendsList(
 	const std::string &uid, uint32_t page,uint32_t pageSize, FriendsList &list)

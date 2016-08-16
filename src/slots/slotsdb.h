@@ -32,6 +32,9 @@ namespace slots{
 	bool delMail(const std::string &uid, const std::string &mailId);
 	
 	bool getMailAttachment(const std::string &uid, const std::string &mailId);
+	bool getAttachments(std::map<int32_t, AttachmentPtr> &attch);
+	bool getAttachment(const std::string &attchId, Attachment &attch);
+	    
 	bool getFriendsList(const std::string &uid, uint32_t page,
 			    uint32_t pageSize, FriendsList &list);
 	bool getInviteHistory(const std::string &uid, FHistory &out);
@@ -45,9 +48,10 @@ namespace slots{
 
 	bool getRankData(RankType rType, LeaderBoardRank &out);
 
+
 	static SlotsDB &getInstance();
     private:
-	bool getMailInfo(const cgserver::MysqlRows &mails, UserMails &out);
+	bool collectMailInfo(const cgserver::MysqlRows &mails, UserMails &out);
 	/* collect single result from table user_info and user_resource*/
 	bool collectSlotsUser(const cgserver::MysqlRow &row, SlotsUser &su) const;
 	/* collect multi result from table user_info and user_resource*/	

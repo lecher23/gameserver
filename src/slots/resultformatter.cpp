@@ -135,19 +135,29 @@ namespace slots{
 
     /*{"id":xxx,...}*/    
     void ResultFormatter::formatMail(const UserMail &uMail) {
+	auto &mi = uMail.mailInfo;
 	_writer.StartObject();
 	_writer.Key("id");
-	_writer.String(uMail.mailInfo.mailId.c_str());
+	_writer.String(mi.mailId.c_str());
 	_writer.Key("title");
-	_writer.String(uMail.mailInfo.title.c_str());
+	_writer.String(mi.title.c_str());
 	_writer.Key("content");
-	_writer.String(uMail.mailInfo.content.c_str());
+	_writer.String(mi.content.c_str());
 	// _writer.Key("attachment");
 	// _writer.String(uMail.mailInfo.attachment);
+	AttachmentPtr ap;
+	bool exist;
+	ap = SlotsDataCenter::instance().getAttach(mi.attachment, exist);
+	_writer.Key("type");
+	_writer.Int(exist ? ap->type : 0);
+	if (exist) {
+	    _writer.Key("value");
+	    _writer.Int64(ap->value);
+	}
 	_writer.Key("create_time");
 	_writer.String(uMail.mailInfo.createTime.c_str());
 	_writer.Key("keey_days");
-	_writer.String(uMail.mailInfo.keepDays.c_str());
+	_writer.Int(uMail.mailInfo.keepDays);
 	_writer.Key("is_read");
 	_writer.Bool(uMail.bRead);
 	_writer.Key("is_get");

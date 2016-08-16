@@ -12,6 +12,7 @@ class ServerSql:
         self.pwd = PASSWD
         self.conn = None
         self.cursor = None
+        self.table_sqls = {}
 
     def init(self):
         self.conn = mysqldb.connect(host = HOST, user = USER, passwd = PASSWD)
@@ -64,6 +65,8 @@ class ServerSql:
             sqls.append("insert into %s (uid) values (%s)" % (dest_table, r[0]))
         self._transaction(dest_table, sqls)
 
+    ''' Table creator'''
+    
     def createRankTables(self):
         tables = ["cur_level_rank", "cur_fortune_rank", "cur_earned_rank", "cur_acmt_rank",
                   "lw_level_rank", "lw_fortune_rank", "lw_earned_rank", "lw_acmt_rank",
@@ -72,6 +75,14 @@ class ServerSql:
             self._dropTable(table)
             self._createRankTable(table)
 
+    def createAttachmentTable(self):
+        table = "m_attachment"
+        sql = "create table %s(attid BIGINT AUTO_INCREMENT PRIMARY KEY, type INT NOT NULL, value varchar(64) NOT NULL)" % table
+        self.table_sqls[table] = sql
+        self._dropTable(table)
+        self.cursor.execute(sql)
+
+    ''' Help function'''
     def _transaction(self, dest_table, sqls):
         self.startTransaction()
         try:
@@ -86,6 +97,7 @@ class ServerSql:
 
     def _createRankTable(self, table):
         sql = "create table %s(id BIGINT AUTO_INCREMENT PRIMARY KEY, uid INT NOT NULL, fname CHAR(24) DEFAULT \"Guest\", country INT NOT NULL DEFAULT 86, value BIGINT NOT NULL)" % table
+        self.table_sqls[table] = sql
         self.cursor.execute(sql)
 
     def _dropTable(self, table):
@@ -99,6 +111,7 @@ if __name__ == "__main__":
     
     lbs = ServerSql()
     lbs.init()
-    lbs.refreshRankData()
+    #lbs.refreshRankData()
     #lbs.createRankTables();
+    lbs.createAttachmentTable()
 

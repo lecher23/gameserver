@@ -1,7 +1,7 @@
 #ifndef RESULTFORMATTER_H
 #define RESULTFORMATTER_H
 
-#include "slotstables.h"
+#include "slotsdatacenter.h"
 #include "giftsdata.h"
 #include "rapidjson/writer.h"
 #include "rapidjson/stringbuffer.h"

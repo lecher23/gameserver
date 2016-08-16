@@ -140,11 +140,17 @@ namespace slots{
 	std::string mailId;
 	std::string title;
 	std::string content;
-	std::string attachment;
+	int32_t attachment;
 	std::string createTime;
-	std::string keepDays;
+	int32_t keepDays;
     };
     DF_SHARED_PTR(SlotsMail);
+
+    struct Attachment{
+	int32_t type;
+	int64_t value;
+    };
+    DF_SHARED_PTR(Attachment);    
 
     /*owned by one user*/
     struct UserMail{
