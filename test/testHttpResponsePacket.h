@@ -25,7 +25,7 @@ public:
 	std::string out;
 	std::string key = "47611322";
 	for (size_t i = 0; i < str.size(); ++i) {
-	    out.append(1, (char)(str[i] - key[i % key.size()]));
+	    out.append(1, (char)(str[i] - key[i % key.size()] + '0'));
 	}
 	return out;
     }
@@ -37,7 +37,7 @@ public:
 	resp.setBody(str_to_encrypt.c_str(), str_to_encrypt.size());
 	std::string out(resp.getBody(), str_to_encrypt.size());
 	std::string restore = _decrypt(out);
-	std::cout << out << std::endl;
+	std::cout << std::endl << out << std::endl;
 	AST_EQ(str_to_encrypt, restore);
     }
 };

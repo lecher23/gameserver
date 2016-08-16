@@ -76,7 +76,7 @@ void HttpResponsePacket::encrypt(const char *body, int len){
     size_t key_len = key.size();
     size_t j = 0;
     for (i = 0; i < len; ++i) {
-	_body[i] = char (body[i] + key[j]);
+	_body[i] = char (body[i] + key[j] - '0');
 	++j;
 	if (j == key_len) j = 0;
     }
