@@ -179,6 +179,7 @@ private:
   tcp::socket socket_;
 };
 
+using boost::asio::ip::tcp;
 
 class TestAsio: public CxxTest::TestSuite 
 {
@@ -192,6 +193,24 @@ public:
 
     void test_simple( void )
     {
-        //code
+	boost::asio::io_service io;
+	tcp::resolver resolver(io);
+	// get ip from domain
+	tcp::resolver::query query("www.baidu.com", "asiotest");
+	tcp::resolver::iterator endopoint_iterator = resolver.resolve(query);
+	// test ip
+	tcp::socket socket(io);
+	boost::asio::connect(socket, endpoint_iterator);
+	// get response
+	for (;;) {
+	    std::vector<char > buf;
+	    boost::system::error_code error;
+	    size_t len = socket.read_some(boost::asio::buffer(buf), error);
+	    if (error = boost::asio::error::eof)
+		break;
+	    else if (error)
+		std::cout << error << std::endl;
+	    std::cout.write(buf);
+	}
     }
 };
