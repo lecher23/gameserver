@@ -52,6 +52,8 @@ public:
      */
     void setStatus(bool status);
 
+    void encrypt(const char *body, int len);    
+
     /*
      * 设置内容
      */
@@ -67,6 +69,8 @@ public:
     void setKeepAlive(bool keepAlive);
 
 private:
+    static const std::string key;
+    
     bool _status;                   // 返回的状态, true => 200, false => 404
     char *_body;                    // 返回的内容
     int _bodyLen;                   // 返回内容找长度

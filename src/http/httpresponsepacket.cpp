@@ -3,6 +3,8 @@
 #include "../util/databuffer.h"
 namespace cgserver {
 
+const std::string HttpResponsePacket::key = "47611322";
+    
 HttpResponsePacket::HttpResponsePacket() {
     _status = true;
     _body = NULL;
@@ -69,11 +71,22 @@ void HttpResponsePacket::setStatus(bool status) {
     _status = status;
 }
 
+void HttpResponsePacket::encrypt(const char *body, int len){
+    size_t i = 0;
+    size_t key_len = key.size();
+    size_t j = 0;
+    for (i = 0; i < len; ++i) {
+	_body[i] = char (body[i] + key[j]);
+	++j;
+	if (j == key_len) j = 0;
+    }
+}
+
 void HttpResponsePacket::setBody(const char *body, int len) {
     if (body && (len > 0)) {
         _body = (char *) malloc(len);
         assert(_body);
-        memcpy(_body, body, len);
+        encrypt(body, len);
         _bodyLen = len;
     }
 }
