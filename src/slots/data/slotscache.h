@@ -6,8 +6,8 @@
 #include <map>  
 #include <time.h>  
 #include <pthread.h>
-#include "../util/common_define.h"
-#include "slotsdb.h"
+#include <util/common_define.h>
+#include <slots/sql/slotsdb.h>
 
 using namespace std;
 namespace slots{

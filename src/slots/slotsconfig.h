@@ -15,7 +15,7 @@ namespace slots{
 	    int64_t maxBet;
 	    int64_t reward;
 	};
-
+	
 	struct VipLevelConfig{
 	    int32_t level;
 	    float expPer;
@@ -52,6 +52,11 @@ namespace slots{
 		if (exp < itr->expNeed) return *itr;
 	    }
 	    return levelConfig.back();
+	}
+
+	int64_t expGain(int64_t money) {
+	    // TODO: USE ARGORITHM
+	    return money;
 	}
 
 	int64_t expNeed2LevelUp(int64_t exp) {

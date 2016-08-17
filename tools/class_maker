@@ -13,10 +13,10 @@ if __name__ == "__main__":
         exit(1)
     cname = sys.argv[1]
     utag = cname.upper() + "_H"
-    hc = "#ifndef %s\n#define %s\nnamespace cgserver{\n    class %s{\n    public:\n        %s();\n        ~%s();\n    };\n}\n#endif\n" %\
+    hc = "#ifndef %s\n#define %s\nBEGIN_NAMESPACE(cgserver)\n    class %s{\n    public:\n        %s();\n        ~%s();\n    };\nEND_NAMESPACE\n#endif\n" %\
          (utag, utag, cname, cname, cname)
     createFile(cname.lower() + ".h", hc)
-    cppc = '#include "%s.h"\nnamespace cgserver{\n    %s::%s(){\n    }\n    %s::~%s(){\n    }\n}' %\
+    cppc = '#include "%s.h"\nBEGIN_NAMESPACE(cgserver)\n    %s::%s(){\n    }\n\n    %s::~%s(){\n    }\nEND_NAMESPACE' %\
            (cname.lower(), cname, cname, cname, cname)
     createFile(cname.lower() + ".cpp", cppc)    
 

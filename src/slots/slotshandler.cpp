@@ -1,7 +1,7 @@
-#include "../util/timeutil.h"
+#include <util/timeutil.h>
 #include "slotshandler.h"
 #include "serviceprovider.h"
-#include "slotsdatacenter.h"
+#include <slots/data/slotsdatacenter.h>
 
 namespace slots{
     SlotsHandler::SlotsHandler(){

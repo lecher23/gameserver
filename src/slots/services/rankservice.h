@@ -1,7 +1,6 @@
 #ifndef RANKSERVICE_H
 #define RANKSERVICE_H
 
-#include "slotsdb.h"
 #include "iservice.h"
 
 namespace slots{

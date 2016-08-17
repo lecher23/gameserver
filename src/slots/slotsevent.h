@@ -2,29 +2,34 @@
 #define SLOTSEVENT_H
 
 #include "slotsconfig.h"
-#include "slotsdb.h"
+#include <slots/sql/slotsdb.h>
+#include <slots/achievementsystem.h>
+#include <slots/data/slotsdatacenter.h>
+#include <slots/data/gamedata.h>
 
-namespace slots{
-    struct SlotsEventData{
-	int64_t earned;
-	int64_t bet;
-    };
-    class SlotsEvent{
-    public:
-        SlotsEvent();
-        ~SlotsEvent();
+BEGIN_NAMESPACE(slots)
 
-	void init();
+class SlotsEvent{
+ public:
+    explicit SlotsEvent();
+    ~SlotsEvent();
 
-	void processData(SlotsUserPtr user, SlotsEventData &date);
+    void playGame(SlotsUserPtr user, SlotsEventData &data);
+    void processGameDetail(SlotsUserPtr user, SlotsEventData &data);
+    void processExp(SlotsUserPtr user, SlotsEventData &data);
+    void processMoney(SlotsUserPtr user, SlotsEventData &data);    
 
-	void fortuneChange(UserResource &uRes, int64_t money);
-	void expChange(UserResource &uRes, int64_t money);
-	void vipPointChange(UserResource &res, int64_t money);
-	void vipLevelUp(UserResource &res, int64_t money);
+    void init();
 
-    private:
-	SlotsConfig _slotsConfig;
-    };
-}
+    void fortuneChange(UserResource &uRes, int64_t money);
+    void expChange(UserResource &uRes, int64_t money);
+    void vipPointChange(UserResource &res, int64_t money);
+    void vipLevelUp(UserResource &res, int64_t money);
+
+ private:
+    SlotsConfig _slotsConfig;
+    GameData _gData;
+    AchievementSystem _amtSys;
+};
+END_NAMESPACE
 #endif

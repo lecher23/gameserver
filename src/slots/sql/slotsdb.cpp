@@ -1,6 +1,6 @@
 #include "slotsdb.h"
-#include "../util/stringutil.h"
-#include "adduser2mysql.h"
+#include <util/stringutil.h>
+#include <slots/sql/adduser2mysql.h>
 
 using namespace cgserver;
 

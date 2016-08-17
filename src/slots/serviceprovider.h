@@ -1,13 +1,13 @@
 #ifndef SERVICEPROVIDER_H
 #define SERVICEPROVIDER_H
 
-#include "iservice.h"
-#include "loginservice.h"
-#include "updateservice.h"
-#include "mailservice.h"
-#include "gameservice.h"
-#include "rankservice.h"
-#include "socialityservice.h"
+#include <slots/services/iservice.h>
+#include <slots/services/loginservice.h>
+#include <slots/services/updateservice.h>
+#include <slots/services/mailservice.h>
+#include <slots/services/gameservice.h>
+#include <slots/services/rankservice.h>
+#include <slots/services/socialityservice.h>
 
 namespace slots{
     class ServiceProvider{

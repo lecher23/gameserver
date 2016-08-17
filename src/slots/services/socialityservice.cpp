@@ -1,6 +1,6 @@
-#include "socialityservice.h"
-#include "../util/stringutil.h"
-#include "slotsdatacenter.h"
+#include <slots/services/socialityservice.h>
+#include <util/stringutil.h>
+#include <slots/data/slotsdatacenter.h>
 
 using namespace cgserver;
 namespace slots{

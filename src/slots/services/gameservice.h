@@ -2,7 +2,6 @@
 #define GAMESERVICE_H
 
 #include "iservice.h"
-#include "slotsdatacenter.h"
 
 namespace slots{
     class GameService:IService{

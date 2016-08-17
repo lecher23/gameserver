@@ -1,5 +1,5 @@
 #include "rankservice.h"
-#include "slotsdatacenter.h"
+#include <slots/data/slotsdatacenter.h>
 
 using namespace cgserver;
 namespace slots{

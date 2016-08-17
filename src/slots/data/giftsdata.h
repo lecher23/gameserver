@@ -1,8 +1,8 @@
 #ifndef GIFTSDATA_H
 #define GIFTSDATA_H
 
-#include "../util/common_define.h"
-#include "../util/timeutil.h"
+#include <util/common_define.h>
+#include <util/timeutil.h>
 #include <map>
 
 namespace slots{

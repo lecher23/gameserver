@@ -7,6 +7,8 @@
 #include "glog/logging.h"
 
 #define DF_SHARED_PTR(T) typedef std::shared_ptr<T> T##Ptr;
+#define BEGIN_NAMESPACE(x) namespace x{
+#define END_NAMESPACE  }
 
 #ifndef LIKELY
 #if __GNUC__ > 2 || __GNUC_MINOR__ >= 96

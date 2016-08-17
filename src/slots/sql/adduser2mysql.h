@@ -1,8 +1,8 @@
 #ifndef ADDUSER2MYSQL_H
 #define ADDUSER2MYSQL_H
 
-#include "../mysql/mysqloperationbase.h"
-#include "slotstables.h"
+#include <mysql/mysqloperationbase.h>
+#include <slots/data/slotstables.h>
 
 namespace slots{
     class AddUser2Mysql: cgserver::MysqlOperationBase{

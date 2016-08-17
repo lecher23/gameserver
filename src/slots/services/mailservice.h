@@ -1,7 +1,7 @@
 #ifndef MAILSERVICE_H
 #define MAILSERVICE_H
 
-#include "slotsdb.h"
+#include <slots/sql/slotsdb.h>
 #include "iservice.h"
 
 namespace slots{

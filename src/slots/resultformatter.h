@@ -1,10 +1,10 @@
 #ifndef RESULTFORMATTER_H
 #define RESULTFORMATTER_H
 
-#include "slotsdatacenter.h"
-#include "giftsdata.h"
-#include "rapidjson/writer.h"
-#include "rapidjson/stringbuffer.h"
+#include <slots/data/slotsdatacenter.h>
+#include <slots/data/giftsdata.h>
+#include <rapidjson/writer.h>
+#include <rapidjson/stringbuffer.h>
 #include <string>
 #include <sstream>
 

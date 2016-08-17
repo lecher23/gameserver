@@ -1,7 +1,6 @@
 #ifndef LOGINSERVICE_H
 #define LOGINSERVICE_H
 
-#include "slotsdb.h"
 #include "iservice.h"
 
 namespace slots{

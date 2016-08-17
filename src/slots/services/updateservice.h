@@ -1,7 +1,6 @@
 #ifndef UPDATESERVICE_H
 #define UPDATESERVICE_H
 
-#include "slotsdb.h"
 #include "iservice.h"
 
 namespace slots{

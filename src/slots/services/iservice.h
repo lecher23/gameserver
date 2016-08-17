@@ -1,12 +1,14 @@
 #ifndef ISERVICE_H
 #define ISERVICE_H
 
-#include "../handlers/ihandler.h"
-#include "../util/luatoolfactory.h"
-#include "../util/common_define.h"
-#include "../util/stringutil.h"
+#include <handlers/ihandler.h>
+#include <util/luatoolfactory.h>
+#include <util/common_define.h>
+#include <util/stringutil.h>
 
-#include "resultformatter.h"
+#include <slots/resultformatter.h>
+#include <slots/sql/slotsdb.h>
+#include <slots/data/slotsdatacenter.h>
 
 namespace slots{
     

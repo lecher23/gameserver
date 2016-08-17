@@ -3,9 +3,9 @@
 
 #include <stdint.h>
 #include <string>
-#include "../mysql/mysqlconnpool.h"
-#include "../mysql/mysqloperationbase.h"
-#include "slotstables.h"
+#include <mysql/mysqlconnpool.h>
+#include <mysql/mysqloperationbase.h>
+#include <slots/data/slotstables.h>
 
 namespace slots{
 

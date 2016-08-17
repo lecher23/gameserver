@@ -1,7 +1,6 @@
 #ifndef SOCIALITYSERVICE_H
 #define SOCIALITYSERVICE_H
 
-#include "slotsdb.h"
 #include "iservice.h"
 
 namespace slots{
