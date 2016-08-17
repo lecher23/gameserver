@@ -7,6 +7,7 @@
 #include <boost/asio.hpp>
 #include <array>
 #include <memory>
+#include <iostream>
 #include "http/httpresponsepacket.h"
 
 namespace cgserver{
@@ -17,17 +18,15 @@ namespace cgserver{
     typedef boost::asio::io_service asio_service;
     typedef boost::system::error_code asio_error;
 
-    class AsyncTask;
-    typedef std::shared_ptr<AsyncTask> AsyncTaskPtr;    
-
-    class AsyncTask{
+    class AsyncTask: public std::enable_shared_from_this< AsyncTask >
+    {
     public:
 	explicit AsyncTask(asio_service &service);
         ~AsyncTask();
 
-	void handleWrite(AsyncTaskPtr task, const asio_error &err, size_t write_len);
-	void handleRead(AsyncTaskPtr task, const asio_error &err, size_t read_len);
-	void read(AsyncTaskPtr task);
+	void handleWrite(const asio_error &err, size_t write_len);
+	void handleRead(const asio_error &err, size_t read_len);
+	void read();
 	bool process();
 	asio_socket &getSocket();
 	HttpResponsePacket &getResponse();
@@ -39,6 +38,7 @@ namespace cgserver{
 	bool _finish;
 	bool _limit;
     };
-
+    typedef std::shared_ptr<AsyncTask> AsyncTaskPtr;
+    
 }
 #endif

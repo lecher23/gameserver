@@ -11,7 +11,7 @@ namespace cgserver{
     class AsyncServer{
     public:
 	typedef std::shared_ptr <boost::asio::ip::tcp::socket> socket_ptr;
-        explicit AsyncServer(int port);
+        explicit AsyncServer(asio_service &service, int port);
         ~AsyncServer();
 
 	void start();
@@ -21,10 +21,13 @@ namespace cgserver{
 	void doAccept();	
     private:
 	void run();
-	boost::asio::io_service _service;
+	boost::asio::io_service &_service;
 	boost::asio::ip::tcp::acceptor _acceptor;
 	std::vector<std::thread> threads;
-	std::vector<socket_ptr> sockets;
+	AsyncTaskPtr _task;
+	
+	bool _stop;
+	std::shared_ptr<asio_service::work> _work;
     };
 }
 #endif
