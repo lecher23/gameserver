@@ -57,6 +57,10 @@ namespace slots{
 		CLOG(WARNING) << "Add new user ["<< _mid << "] failed.";
 		break;
 	    }
+	    if (!addRow(conn, "g_history", "uid", _uid)) {
+		CLOG(WARNING) << "Add new user ["<< _mid << "] failed.";
+		break;
+	    }
 	    ret = true;
 	}while(false);
 	endTransaction(conn, ret);

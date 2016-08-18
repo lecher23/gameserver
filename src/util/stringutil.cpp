@@ -4,7 +4,7 @@
 #include <string.h>
 #include "stringutil.h"
 
-namespace cgserver {
+BEGIN_NAMESPACE(cgserver)
 StringUtil::StringUtil() 
 {
 }
@@ -658,8 +658,109 @@ void StringUtil::split(const char *src, const char delimiter, strs_t &out) {
 	out.push_back(std::string(src));
 }
     
-void StringUtil::splitString(const std::string &src, const char delimiter, strs_t &out){
+void StringUtil::splitString(const std::string &src, const char delimiter, strs_t &out) {
     split(src.c_str(), delimiter, out);
+}
+
+void StringUtil::StrToIntArrayWithDefault(
+    const char *src, const char seq, int32_t *dest, size_t count, int32_t defaultVal)
+{
+    int32_t tmp = 0;
+    size_t idx = 0;
+    bool negtive = false;
+    while (*src != '\0' && idx < count) {
+	char ch = *src;
+	if (ch == seq) {
+	    dest[idx++] = negtive ? -tmp : tmp;
+	    tmp = 0;
+	    negtive = false;
+	} else if (ch == '-') {
+	    negtive = true;
+	}else {
+	    tmp = tmp * 10 + (ch - '0');
+	}
+	++src;
+    }
+    if(*src == '\0' && idx < count) {
+	dest[idx++] = negtive ? -tmp : tmp;
+    }
+    while(idx < count) {
+	dest[idx++] = defaultVal;
+    }
+}
+
+void StringUtil::StrToIntArrayWithDefault(
+    const char *src, int len, const char seq, int32_t *dest, size_t count, int32_t defaultVal)
+{
+    int32_t tmp = 0;
+    size_t idx = 0;
+    size_t cur = 0;
+    bool negtive = false;
+    char ch;
+    while (cur < len && idx < count) {
+	ch = *(src + cur);
+	if (ch == seq) {
+	    dest[idx++] = negtive ? -tmp : tmp;
+	    tmp = 0;
+	    negtive = false;
+	} else if (ch == '-') {
+	    negtive = true;
+	}else {
+	    tmp = tmp * 10 + (ch - '0');
+	}
+	++cur;
+    }
+    if(cur == len && idx < count) {
+	dest[idx++] = negtive ? -tmp : tmp;
+    }
+    while(idx < count) {
+	dest[idx++] = defaultVal;
+    }
+}
+
+void StringUtil::ArrayToStr(int32_t ary[], size_t len, const char seq, std::string &out) {
+    out.clear();
+    if (len == 0) {
+	return;
+    }
+    std::stringstream ss;
+    ss << ary[0];
+    for (size_t i = 1; i < len; ++i) {
+	ss << seq;
+	ss << ary[i];
+    }
+    out = ss.str();
+}
+
+// dest[row][col] --> col1, col2, col3, col4;...
+void StringUtil::StrToIntArray(
+    const char *src, const char rowSeq, const char colSeq,
+    int32_t *dest[], size_t row, size_t col)
+{
+    size_t cur_row = 0;
+    size_t end = 0;
+    const char *begin = src;
+    char ch;
+    while(cur_row < row) {
+	ch = *src;
+	while(ch != rowSeq && ch != '\0') {
+	    ++src;
+	    ch = *src;
+	}
+	StrToIntArrayWithDefault(begin, src - begin, colSeq, dest[cur_row], col, 0);
+	++cur_row;
+	if (ch == '\0') {
+	    break;
+	}
+	++src;
+	begin = src;
+    }
+    while (cur_row < row) {
+	for (size_t i = 0; i < col; ++i) {
+	    dest[cur_row][i] = 0;
+	}
+	++cur_row;
+    }
 }
 
 unsigned char StringUtil::toHex(const unsigned char &x) {
@@ -715,5 +816,5 @@ bool StringUtil::URLDecode(const std::string &sIn, std::string &sOut) {
 }
     
     
-}
+END_NAMESPACE
 

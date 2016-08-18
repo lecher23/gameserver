@@ -1,9 +1,9 @@
 #ifndef SLOTSDATACENTER_H
 #define SLOTSDATACENTER_H
 
-#include "slotscache.h"
 #include <slots/sql/slotsdb.h>
 #include <slots/data/persistencethread.h>
+#include <slots/data/slotsuserdata.h>
 #include <slots/data/giftsdata.h>
 #include <util/timeutil.h>
 
@@ -19,7 +19,6 @@ class SlotsDataCenter{
     }
 
     bool init (bool needDump = true, int dumpInterval = DUMP_INTERVAL){
-	_suCache.init(MAX_CACHE_NUMBER, needDump, dumpInterval);
 	_gifts.reset(new GiftsData(999));
 	return _gifts->init();
     }
@@ -29,38 +28,12 @@ class SlotsDataCenter{
 	return cache;
     }
 
-    bool get(std::string &uid, SlotsUserPtr &out) {
-	bool ret = _suCache.get(uid, out);
-	if (!ret) {
-	    CLOG(INFO) << "Get user["<< uid <<"] info from db.";
-	    SlotsDB &db = SlotsDB::getInstance();
-	    out.reset(new SlotsUser);
-	    std::string err;
-	    ret = db.getUserInfoByUserId(uid, *out);
-	    if (ret) {
-		out->uInfo.changed = false;
-		out->uRes.changed = false;
-		set(out);
-	    } else {
-		CLOG(WARNING) << "Get user[" << uid << "] info failed.";
-	    }
-	}else {
-	    ret = (out.get() != NULL);
-	    CLOG(INFO) << "Get user["<< uid <<"] info from cache.";
-	}
-	return ret;
-    }
-
-    bool set(SlotsUserPtr &input) {
-	return _suCache.set(input->uInfo.uid, input);
-    }
-
     GiftsDataPtr getGiftsData() {
 	return _gifts;
     }
 
     void release(){
-	_suCache.stop_cache();
+	// do noting
     }
 
     LeaderBoardRank &getLeaderBoardData(RankType rType) {
@@ -100,6 +73,9 @@ class SlotsDataCenter{
 	return _persisThread.getUnusedGameRecord();
     }
 
+    /* User data*/
+    SlotsUserData slotsUserData;
+
  private:
     bool rankDataExpired(int64_t ts) {
 	int64_t now = cgserver::CTimeUtil::getCurrentTimeInSeconds();
@@ -117,9 +93,6 @@ class SlotsDataCenter{
 	
     SlotsDataCenter(){}
     SlotsDataCenter(const SlotsDataCenter &);
-
-    /* User data*/
-    SlotsCache<std::string, SlotsUserPtr> _suCache;
 
     /* Rank data*/
     LeaderBoardData _curRank;

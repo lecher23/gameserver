@@ -82,6 +82,13 @@ class ServerSql:
         self._dropTable(table)
         self.cursor.execute(sql)
 
+    def createGameHistoryTable(self):
+        table = "g_history"
+        sql = 'create table %s( uid INT NOT NULL PRIMARY KEY, friend_num INT DEFAULT 0, friend_gifts_num INT DEFAULT 0, consitive_login INT DEFAULT 0, tiny_game_times INT DEFAULT 0, bigwin varchar(255) DEFAULT "0", megawin varchar(255) DEFAULT "0", free_times varchar(255) DEFAULT "0", game_times varchar(255) DEFAULT "0", jackpot_times varchar(255) DEFAULT "0", g_jackpot_times INT DEFAULT "0", four_line_times varchar(255) DEFAULT "0", five_line_times varchar(255) DEFAULT "0")' % table
+        self.table_sqls[table] = sql
+        self._dropTable(table)
+        self.cursor.execute(sql)
+
     ''' Help function'''
     def _transaction(self, dest_table, sqls):
         self.startTransaction()
@@ -113,5 +120,6 @@ if __name__ == "__main__":
     lbs.init()
     #lbs.refreshRankData()
     #lbs.createRankTables();
-    lbs.createAttachmentTable()
+    lbs.createGameHistoryTable();
+    #lbs.createAttachmentTable()
 

@@ -21,7 +21,7 @@ class SuperCxx:
     def do_test(self, test_name = None, compile = False):
         if compile:
             self.compile_project()
-        os.system("rm -f main")
+        os.system("rm -f %s" % self.app_name)
         if (test_name != None):
             cpp_fpath = self.create_cpp_file(test_name)
             self.run_single_test(cpp_fpath)

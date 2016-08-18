@@ -18,7 +18,8 @@ namespace slots{
 	bool getUserInfoByUserId(const std::string &uid, SlotsUser &su) const ;
 	
 	bool addUser(const std::string &mid, std::string &uid)const ;
-	/* Only update table user_info. */
+	
+	bool updateGameHistory(GameHistory &gh) const;
 	bool updateUserInfo(UserInfo &ui) const;
 	bool updateUserResource(UserResource &ur) const;
 	bool updateUserHistory(UserHistory &uhis) const;
@@ -47,7 +48,7 @@ namespace slots{
 	bool makeFriend(const std::string &uidStr, const std::string &tidStr);
 
 	bool getRankData(RankType rType, LeaderBoardRank &out);
-
+	bool getGameHistory(const std::string &uid, GameHistory &gd) const;
 
 	static SlotsDB &getInstance();
     private:
