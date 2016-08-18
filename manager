@@ -1,4 +1,4 @@
-#!/user/bin/python
+#!/usr/bin/python
 
 import sys, os, commands
 import time
@@ -26,7 +26,7 @@ class Manager:
         idx = self.getTargetLine(tag)
         if idx < 0:
             return
-        k_v = self.content[idx].split("=")
+        k_v = self.content[idx].strip().split("=")
         value = k_v[1]
         pairs = value.split(";")
         ret = {}
@@ -35,9 +35,9 @@ class Manager:
             ret[x[0]] = x[1]
         ret[code] = resp
         tmp = ["%s:%s" % (k, v) for k, v in ret.items()]
-        self.content[idx] = "%s=%s" % (tag, ";".join(tmp))
+        self.content[idx] = "%s=%s\n" % (tag, ";".join(tmp))
         self.toFile()
-        
+
     def toFile(self):
         f = open(self.file_path, "w")
         f.write("".join(self.content))
@@ -48,10 +48,11 @@ class Manager:
         s, o = commands.getstatusoutput(cmd)
         time.sleep(1)
         if s == 0:
-            cmd = 'curl "127.0.0.1:9876/getUserSetting?user_id=%s"' % code
+            cmd = 'curl -X POST "127.0.0.1:9876/getUserSetting?user_id=%s"' % code
             s, o = commands.getstatusoutput(cmd)
+            print o
             if s == 0:
-                return o == resp
+                return o.split("\n")[-1].strip() == resp
             else:
                 print "Run cmd [%s] failed." % cmd
         else:
@@ -61,14 +62,16 @@ class Manager:
     def doIt(self, code, resp):
         self.readFile()
         self.processLine("special_setting", code, resp)
-        if self.refreshCfg(code, resp):
-            print "Config not take effect."
+        if not self.refreshCfg(code, resp):
+            print "Updata config failed."
         else:
-            print "Done!"
+            print "Update config [%s: %s] done!" % (code, resp)
 
 if __name__ == "__main__":
     m = Manager();
     if len(sys.argv) < 3:
+        print "Usage: [code] [resposne]"
+        print "IE: HN31 YES"
         exit(0)
     m.doIt(sys.argv[1], sys.argv[2])
         
