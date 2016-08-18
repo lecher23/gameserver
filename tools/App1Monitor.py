@@ -15,11 +15,20 @@ class Monitor:
         self.prevDay = 0
         self.detail = []
         self.yesterday = ""
+        self.max_close_wait_num = 0
+
+    def getCloseWaitCount(self):
+        cmd = "netstat -apn | grep 9876 | grep CLOSE_WAIT | wc -l"
+        s, o = commands.getstatusoutput(cmd)
+        if (s != 0):
+            return -1
+        return o
 
     def getCount(self):
         cmd = "grep %s %s | wc -l" % (GKW, LOG)
         s, o = commands.getstatusoutput(cmd)
-        return int(o)
+        if s == 0 and self.max_close_wait_num < int(o):
+            self.max_close_wait_num = int(o)
 
     def doItr(self):
         today = time.strftime('%Y-%m-%d',time.localtime(time.time()))
@@ -39,19 +48,20 @@ class Monitor:
         self.detail = []
 
     def sendMail(self, oneday):
-        content = "Hi:\nHere is yesterday monitor data:\n" +\
+        content = "Hi:\nHere is monitor data:\n" +\
                   "*****************\n\n"+\
-                  "total:%d\n\ndetail:%s\n\nhistory:%d\n" %\
-                  (oneday, self.detail, self.prevRound);
+                  "total:%d\n\ndetail:%s\n\nhistory:%d\n"\
+                  "max CLOSE_WAIT:%d\n" %\
+                  (oneday, self.detail, self.prevRound, self.max_close_wait_num);
         message = MIMEText(content, 'plain', 'utf-8')
         message['From'] = Header("App1 Monitor", 'utf-8')
         message['To'] =  Header("Monitor", 'utf-8')
-        subject = 'Day monitor data before %s.' % self.yesterday
+        subject = 'Day monitor data %s.' % self.yesterday
         message['Subject'] = Header(subject, 'utf-8')
         smtp = smtplib.SMTP()
         smtp.connect('smtp.exmail.qq.com')
         smtp.login("licheng@touchtogame.com", "Lc90426")
-        smtp.sendmail("licheng@touchtogame.com", "licheng@touchtogame.com", message.as_string())
+        smtp.sendmail("licheng@touchtogame.com", "593869744@qq.com", message.as_string())
         smtp.quit()
 
 
