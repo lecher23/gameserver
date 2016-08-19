@@ -20,7 +20,13 @@ class SlotsDataCenter{
 
     bool init (bool needDump = true, int dumpInterval = DUMP_INTERVAL){
 	_gifts.reset(new GiftsData(999));
-	return _gifts->init();
+	bool ret = _persisThread.init();
+	if (!ret) {
+	    return false;
+	}
+	// add slots user data.
+	_persisThread.addData(PersistenceBasePtr((PersistenceBase *) &slotsUserData));
+	return ret && _gifts->init();
     }
 
     static SlotsDataCenter &instance(){
@@ -75,6 +81,7 @@ class SlotsDataCenter{
 
     /* User data*/
     SlotsUserData slotsUserData;
+    //AchievementSystem achievementSystem(...);
 
  private:
     bool rankDataExpired(int64_t ts) {

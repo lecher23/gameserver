@@ -86,7 +86,8 @@ void HttpResponsePacket::setBody(const char *body, int len) {
     if (body && (len > 0)) {
         _body = (char *) malloc(len);
         assert(_body);
-        encrypt(body, len);
+        //encrypt(body, len);
+	memcpy(_body, body, len);
         _bodyLen = len;
     }
 }

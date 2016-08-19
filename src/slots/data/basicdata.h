@@ -1,5 +1,5 @@
-#ifndef SLOTSTABLES_H
-#define SLOTSTABLES_H
+#ifndef BASICDATA_H
+#define BASICDATA_H
 
 #include <util/common_define.h>
 #include <util/stringutil.h>
@@ -8,8 +8,20 @@
 
 BEGIN_NAMESPACE(slots)
 #define RANK_LIMIT 1000
-#define SLOTS_GAME_TYPES 1
 #define MAX_ELE_TYPES 16
+
+template <typename T>
+struct BasicData {
+    T val;
+    bool changed;
+};
+
+enum SlotsStyle{
+    ESS_SLOTS_1 = 0,
+    ESS_END
+};
+
+#define SLOTS_GAME_TYPES ESS_END
 
 enum RankType{
     ERT_CUR_FORTUNE = 0,
@@ -287,11 +299,6 @@ struct LeaderBoardData {
 
 /** Game data during running.**/
 
-enum GameType {
-    EGT_SLOTS_ROOM_1 = 0,
-    EGT_SLOTS_ROOM_2
-};
-
 enum ResultType {
     ERT_NORMAL = 0,
     ERT_BIG_WIN,
@@ -323,7 +330,7 @@ enum ResultType {
 
 struct GameRecord{
     std::string uid;
-    GameType gameType;
+    SlotsStyle gameType;
     int64_t time;
     std::string detail;
     int64_t bet;
@@ -353,11 +360,14 @@ DF_SHARED_PTR(PersistenceBase);
 struct SlotsEventData{
     int64_t earned;
     int64_t bet;
-    GameType gType;
+    SlotsStyle gType;
     std::vector<ResultType> retTypes;
     bool enableTinyGame;
     bool isFreeRound;
+    std::string detail;
 };
+
+typedef SlotsEventData SingleGameDetail;
 
 END_NAMESPACE
 #endif

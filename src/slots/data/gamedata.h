@@ -1,7 +1,7 @@
 #ifndef GAMEDATA_H
 #define GAMEDATA_H
 
-#include <slots/data/slotstables.h>
+#include <slots/data/basicdata.h>
 
 BEGIN_NAMESPACE(slots)
 

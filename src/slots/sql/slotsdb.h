@@ -5,7 +5,7 @@
 #include <string>
 #include <mysql/mysqlconnpool.h>
 #include <mysql/mysqloperationbase.h>
-#include <slots/data/slotstables.h>
+#include <slots/data/basicdata.h>
 
 namespace slots{
 

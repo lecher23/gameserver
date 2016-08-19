@@ -2,7 +2,7 @@
 #define PERSISTENCETHREAD_H
 
 #include <vector>
-#include "slotstables.h"
+#include "basicdata.h"
 
 BEGIN_NAMESPACE(slots)
 #define MAX_GAME_RECORDS 10240
@@ -56,6 +56,7 @@ class PersistenceThread{
 
     GameRecords  _gameRecords;
     std::vector<PersistenceBasePtr> _data;
+    pthread_t tid;
 };
 END_NAMESPACE
 #endif

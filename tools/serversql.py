@@ -89,6 +89,13 @@ class ServerSql:
         self._dropTable(table)
         self.cursor.execute(sql)
 
+    def createAchievementTable(self):
+        table = "achievement"
+        sql='create table %s(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, uid INT NOT NULL, achieve_id INT NOT NULL, detail CHAR(255) DEFAULT "", value BIGINT NOT NULL)' % table
+        self.table_sqls[table] = sql
+        self._dropTable(table)
+        self.cursor.execute(sql)
+
     ''' Help function'''
     def _transaction(self, dest_table, sqls):
         self.startTransaction()
@@ -120,6 +127,6 @@ if __name__ == "__main__":
     lbs.init()
     #lbs.refreshRankData()
     #lbs.createRankTables();
-    lbs.createGameHistoryTable();
+    lbs.createAchievementTable()
     #lbs.createAttachmentTable()
 

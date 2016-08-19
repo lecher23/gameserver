@@ -22,8 +22,16 @@ namespace slots{
 	    float goldPer;
 	    int64_t goldNeed;
 	};
+
+	struct AchievementConfig{
+	    int32_t id;// achievement id
+	    size_t type;// achievement type
+	    int64_t goal;// data to reach achievement
+	    int64_t reward;// gold of reward
+	};
+
+	typedef std::vector<AchievementConfig> AchievementConfigs;
 	
-        SlotsConfig() {}
         ~SlotsConfig() {}
 
 	bool init(){
@@ -74,11 +82,22 @@ namespace slots{
 	    return vipLevelConfig.back();
 	}
 
+	std::vector<AchievementConfig> &getAchievementConfig(){
+	    return achievementConfig;
+	}
+
+	static SlotsConfig &instance() {
+	    static SlotsConfig cfg;
+	    return cfg;
+	}
+
     private:
+        SlotsConfig() {}
+	
 	// 0,50,110,180, we can use binary serch
 	std::vector<LevelConfig> levelConfig;
 	std::vector<VipLevelConfig> vipLevelConfig;
-
+	AchievementConfigs achievementConfig;
     };
 }
 #endif

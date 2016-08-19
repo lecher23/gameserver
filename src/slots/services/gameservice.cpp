@@ -1,5 +1,6 @@
 #include "gameservice.h"
 #include <util/luatoolfactory.h>
+#include <slots/processors/allprocessors.h>
 
 BEGIN_NAMESPACE(slots)
 GameService::GameService(){
@@ -29,7 +30,6 @@ bool GameService::doJob(CPacket &packet, CResponse &resp) {
 }
 
 #define GET_SLOTS_USER_WITH_BREAK(uid, dest)		\
-    SlotsUserPtr dest;					\
     if (!SlotsDataCenter::instance().slotsUserData.get(uid, dest)) {	\
 	break;						\
     }
@@ -37,6 +37,7 @@ bool GameService::doJob(CPacket &packet, CResponse &resp) {
 
 bool GameService::doSlots1(CPacket &packet, ResultFormatter &rf)
 {
+    const static SlotsStyle style = ESS_SLOTS_1;
     std::string detail;
     bool ret = false;
     do {
@@ -50,46 +51,29 @@ bool GameService::doSlots1(CPacket &packet, ResultFormatter &rf)
 	    CLOG(WARNING) << "Invalid bet value: " << bet;
 	    break;
 	}
-
-	GET_SLOTS_USER_WITH_BREAK(uid, user);
-	
-	cgserver::LuaToolPtr lua = cgserver::LuaToolFactory::getInstance().borrowTool();
-	if (lua.get() == NULL) {
-	    CLOG(WARNING) << "Get lua tool failed.";
+	GameContext gc;
+	gc.gameInfo.bet = betVal;
+	gc.gameInfo.gType = style;
+	GET_SLOTS_USER_WITH_BREAK(uid, gc.user);
+	GameProcessor gProcessor;
+	if (!gProcessor.process(gc)) {
 	    break;
 	}
-
-	/* Input: game_type, user_level, vip_level, bet, place_holder
-	   Return: bet_change, detail*/
-	lua->chooseFunc("main");
-	lua->pushValue(int64_t(1));
-	lua->pushValue((int64_t)user->uRes.level);
-	lua->pushValue((int64_t)user->uRes.vipLevel);
-	lua->pushValue(betVal);
-	lua->pushValue("");
-	if (!lua->exeFunc(5, 2)) {
-	    CLOG(WARNING) << "Exe lua function failed.";
+	HistoryProcessor hProcessor;
+	if (!hProcessor.process(gc)) {
 	    break;
 	}
-
-	if (!lua->getValue(detail)){
-	    CLOG(WARNING) << "Get detail from lua script failed.";
+	AchievementProcessor aProcessor;
+	if (!aProcessor.process(gc)) {
 	    break;
 	}
-	    
-	int64_t moneyEarned;
-	if (!lua->getValue(moneyEarned) || moneyEarned < 0) {
-	    CLOG(WARNING) << "Invalid bet earned.";	    
-	    break;
-	}
-	CLOG(INFO) << "User [" << uid << "] earn:" << moneyEarned;
-	SlotsEventData data;
-	data.earned = moneyEarned;
-	data.bet = betVal;
 	//SlotsDataCenter::instance().slotsEvent.playGame(user, data);
 	ret = true;
-	rf.formatGameResult(user->uRes, moneyEarned, detail);
+	rf.formatGameResult(gc.user->uRes, gc.gameInfo.earned, gc.gameInfo.detail);
     } while (false);
+    if (!ret) {
+	rf.formatSimpleResult(ret, "");
+    }
     return ret;
 }
 

@@ -9,6 +9,12 @@ PersistenceThread::~PersistenceThread(){
 bool PersistenceThread::init() {
     _exeInterval = 60;
     _stop = false;
+    int ret = pthread_create(&tid, NULL, run, this);
+    if (ret != 0) {
+	CLOG(ERROR) << "Create persistence thread failed:"<< ret;
+	return false;
+    }
+    return true;
 }
 
 void PersistenceThread::stop() {
