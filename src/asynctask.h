@@ -9,9 +9,12 @@
 #include <memory>
 #include <iostream>
 #include "http/httpresponsepacket.h"
+#include "util/databuffer.h"
 
 namespace cgserver{
 #define asio_buffer(T) boost::asio::buffer(T)
+#define ASIO boost::asio
+#define MAX_BUFFER_SIZE 2048    
     typedef boost::asio::ip::tcp::socket asio_socket;
     typedef boost::asio::ip::tcp::acceptor asio_acceptor;
     typedef boost::asio::ip::tcp::endpoint asio_endpoint;
@@ -34,7 +37,8 @@ namespace cgserver{
 	HttpResponsePacket _resp;
 	asio_service &_service;
 	asio_socket _socket;
-	std::array<char, 1024> _buffer;
+	DataBuffer _input;
+	DataBuffer _output;
 	bool _finish;
 	bool _limit;
     };

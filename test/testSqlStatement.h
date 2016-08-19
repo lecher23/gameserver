@@ -4,6 +4,7 @@
 #include <stdlib.h>
 
 #include "mysql/sqlstatement.h"
+#include "asyncserver.h"
 
 #define AST_EQ(x, y) TS_ASSERT_EQUALS(x, y);
 #define AST_TRUE(x) TS_ASSERT(x);
@@ -14,6 +15,7 @@ class TestSqlStatement : public CxxTest::TestSuite
 public:
     void test_hasCondition( void )
     {
+	std::cout << "test has condition" << std::endl;
 	std::string out;
 	SqlStatement ss(out);
 	ss.hasCondition();

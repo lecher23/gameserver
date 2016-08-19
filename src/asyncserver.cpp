@@ -3,7 +3,7 @@
 using boost::asio::ip::tcp;
 namespace cgserver{
     AsyncServer::AsyncServer(asio_service &service, int port)
-	:_service(service),_acceptor(_service, tcp::endpoint(tcp::v4(), port))
+	:_service(service),_acceptor(service, tcp::endpoint(tcp::v4(), port))
     {
 	_stop = false;
     }
@@ -50,6 +50,7 @@ namespace cgserver{
 	if (!err) {
 	    task->read();
 	}
+	// continue to accept
 	doAccept();
     }    
 }
