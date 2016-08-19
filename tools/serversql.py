@@ -15,6 +15,7 @@ class ServerSql:
         self.table_sqls = {}
 
     def init(self):
+        self.generateTableSql();        
         self.conn = mysqldb.connect(host = HOST, user = USER, passwd = PASSWD)
         self.conn.select_db('SLOTS')
         self.cursor = self.conn.cursor()
@@ -66,35 +67,37 @@ class ServerSql:
         self._transaction(dest_table, sqls)
 
     ''' Table creator'''
-    
+    def createTable(self, table):
+        self._dropTable(table)
+        self.cursor.execute(self.table_sqls[table])
+
     def createRankTables(self):
         tables = ["cur_level_rank", "cur_fortune_rank", "cur_earned_rank", "cur_acmt_rank",
                   "lw_level_rank", "lw_fortune_rank", "lw_earned_rank", "lw_acmt_rank",
                   "tw_earned_rank"]
         for table in tables:
-            self._dropTable(table)
-            self._createRankTable(table)
-
-    def createAttachmentTable(self):
-        table = "m_attachment"
-        sql = "create table %s(attid BIGINT AUTO_INCREMENT PRIMARY KEY, type INT NOT NULL, value varchar(64) NOT NULL)" % table
+            self.createTable(table)
+            
+    def generateTableSql(self):
+        table = "achievement"
+        sql='create table %s(uid INT NOT NULL, aid INT NOT NULL, detail CHAR(255) DEFAULT "", get_reward BOOL DEFAULT 0, gain_time BIGINT NOT NULL, PRIMARY KEY(uid, aid))' % table
         self.table_sqls[table] = sql
-        self._dropTable(table)
-        self.cursor.execute(sql)
-
-    def createGameHistoryTable(self):
+        
         table = "g_history"
         sql = 'create table %s( uid INT NOT NULL PRIMARY KEY, friend_num INT DEFAULT 0, friend_gifts_num INT DEFAULT 0, consitive_login INT DEFAULT 0, tiny_game_times INT DEFAULT 0, bigwin varchar(255) DEFAULT "0", megawin varchar(255) DEFAULT "0", free_times varchar(255) DEFAULT "0", game_times varchar(255) DEFAULT "0", jackpot_times varchar(255) DEFAULT "0", g_jackpot_times INT DEFAULT "0", four_line_times varchar(255) DEFAULT "0", five_line_times varchar(255) DEFAULT "0")' % table
         self.table_sqls[table] = sql
-        self._dropTable(table)
-        self.cursor.execute(sql)
 
-    def createAchievementTable(self):
-        table = "achievement"
-        sql='create table %s(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, uid INT NOT NULL, achieve_id INT NOT NULL, detail CHAR(255) DEFAULT "", value BIGINT NOT NULL)' % table
+        table = "m_attachment"
+        sql = "create table %s(attid BIGINT AUTO_INCREMENT PRIMARY KEY, type INT NOT NULL, value varchar(64) NOT NULL)" % table
         self.table_sqls[table] = sql
-        self._dropTable(table)
-        self.cursor.execute(sql)
+
+        tables = ["cur_level_rank", "cur_fortune_rank", "cur_earned_rank", "cur_acmt_rank",
+                  "lw_level_rank", "lw_fortune_rank", "lw_earned_rank", "lw_acmt_rank",
+                  "tw_earned_rank"]
+        for table in tables:
+            sql = "create table %s(id BIGINT AUTO_INCREMENT PRIMARY KEY, uid INT NOT NULL, fname CHAR(24) DEFAULT \"Guest\", country INT NOT NULL DEFAULT 86, value BIGINT NOT NULL)" % table
+            self.table_sqls[table] = sql
+        
 
     ''' Help function'''
     def _transaction(self, dest_table, sqls):
@@ -109,11 +112,6 @@ class ServerSql:
             return
         self.endTransaction()
 
-    def _createRankTable(self, table):
-        sql = "create table %s(id BIGINT AUTO_INCREMENT PRIMARY KEY, uid INT NOT NULL, fname CHAR(24) DEFAULT \"Guest\", country INT NOT NULL DEFAULT 86, value BIGINT NOT NULL)" % table
-        self.table_sqls[table] = sql
-        self.cursor.execute(sql)
-
     def _dropTable(self, table):
         try:
             sql = "drop table %s" % table
@@ -127,6 +125,6 @@ if __name__ == "__main__":
     lbs.init()
     #lbs.refreshRankData()
     #lbs.createRankTables();
-    lbs.createAchievementTable()
+    #lbs.createAchievementTable()
     #lbs.createAttachmentTable()
 

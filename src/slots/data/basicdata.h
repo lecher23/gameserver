@@ -14,6 +14,21 @@ template <typename T>
 struct BasicData {
     T val;
     bool changed;
+
+    void setVal(T &val_) {
+	val = val_;
+	changed = true;
+    }
+};
+
+enum GameEvent {
+    EGE_LEVEL_UP = 0, // level up
+    EGE_EARNED_INCR, // increment total earned
+    EGE_USE_BET, // use bet
+    EGE_NEW_FRIEND, // add new friend success
+    EGE_RECV_GIFT, // get gift from user
+    EGE_SEND_GIFT, // send gift to user
+    EGE_PLAYED_GAME // has play game
 };
 
 enum SlotsStyle{

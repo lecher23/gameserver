@@ -13,9 +13,9 @@ class HistoryProcessor{
 
     bool process(GameContext &context) const;
  private:
-    void processGameDetail(SlotsUserPtr &user, SingleGameDetail &data) const;
-    void processExp(SlotsUserPtr &user, SingleGameDetail &data) const;
-    void processMoney(SlotsUserPtr &user, SlotsEventData &data) const;
+    void processGameDetail(GameContext &context, SingleGameDetail &data) const;
+    void processExp(GameContext &context, SingleGameDetail &data) const;
+    void processMoney(GameContext &context, SlotsEventData &data) const;
 };
 
 END_NAMESPACE
