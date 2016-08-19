@@ -24,8 +24,9 @@ class SlotsDataCenter{
 	if (!ret) {
 	    return false;
 	}
+	slotsUserData.reset(new SlotsUserData);
 	// add slots user data.
-	_persisThread.addData(PersistenceBasePtr((PersistenceBase *) &slotsUserData));
+	_persisThread.addData(slotsUserData);
 	return ret && _gifts->init();
     }
 
@@ -39,7 +40,7 @@ class SlotsDataCenter{
     }
 
     void release(){
-	// do noting
+	_persisThread.stop();
     }
 
     LeaderBoardRank &getLeaderBoardData(RankType rType) {
@@ -80,7 +81,7 @@ class SlotsDataCenter{
     }
 
     /* User data*/
-    SlotsUserData slotsUserData;
+    SlotsUserDataPtr slotsUserData;
     //AchievementSystem achievementSystem(...);
 
  private:

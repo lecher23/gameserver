@@ -8,7 +8,18 @@
 #include <slots/data/basicdata.h>
 
 namespace slots{
-
+    const std::string gAchievement = "user_achievement";
+    const std::string gAchievementDetail = "achievement_item";
+    const std::string gGameHistory = "g_history";
+    const std::string gFriends = "friends";
+    const std::string gFriendHistory = "f_history";
+    const std::string gUserInfo = "user_info";
+    const std::string gUserResource = "user_resource";
+    const std::string gAttachment = "m_attachment";
+    const std::string gUserMails = "mail_info";
+    const std::string gMailDetail = "mails";
+    const std::string gLifeHistory = "history";
+    
     class SlotsDB{
     public:
         ~SlotsDB();
@@ -18,12 +29,14 @@ namespace slots{
 	bool getUserInfoByUserId(const std::string &uid, SlotsUser &su) const ;
 	
 	bool addUser(const std::string &mid, std::string &uid)const ;
+	bool add(const Achievement &acmt);	
 	
 	bool updateGameHistory(GameHistory &gh) const;
 	bool updateUserInfo(UserInfo &ui) const;
 	bool updateUserResource(UserResource &ur) const;
 	bool updateUserHistory(UserHistory &uhis) const;
 	bool update(SlotsUserPtr su) const;
+	bool update(const Achievement &acmt);	
 
 	bool searchUser(const std::string &field, const std::string &key,
 			uint32_t offset, uint32_t size, SlotsUsers &users);
@@ -50,6 +63,8 @@ namespace slots{
 	bool getRankData(RankType rType, LeaderBoardRank &out);
 	bool getGameHistory(const std::string &uid, GameHistory &gd) const;
 
+	bool getUserAchievement(const std::string &uid, Achievements &out);
+
 	static SlotsDB &getInstance();
     private:
 	bool collectMailInfo(const cgserver::MysqlRows &mails, UserMails &out);
@@ -57,7 +72,8 @@ namespace slots{
 	bool collectSlotsUser(const cgserver::MysqlRow &row, SlotsUser &su) const;
 	/* collect multi result from table user_info and user_resource*/	
 	bool collectSlotsUsers(const cgserver::MysqlRows &rows, SlotsUsers &out) const;
-	bool collectUserHistory(const cgserver::MysqlRows &rows, UserHistory &uh) const;	
+	bool collectUserHistory(const cgserver::MysqlRows &rows, UserHistory &uh) const;
+	bool collectAchievements(const cgserver::MysqlRows &result, Achievements &out);	
 	
         SlotsDB();
 	SlotsDB(SlotsDB &);

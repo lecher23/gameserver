@@ -175,7 +175,7 @@ namespace slots{
 	}
 	// add gold to user.
 	SlotsUserPtr user;
-	if (!dc.slotsUserData.get(uidStr, user)) {
+	if (!dc.slotsUserData->get(uidStr, user)) {
 	    return false;
 	}
 	user->uRes.incrFortune((int64_t)gData->getGiftValue());
@@ -230,7 +230,7 @@ namespace slots{
 	    return false;
 	}
 	SlotsUserPtr user;
-	if(!SlotsDataCenter::instance().slotsUserData.get(uid, user)) {
+	if(!SlotsDataCenter::instance().slotsUserData->get(uid, user)) {
 	    return false;
 	}
 	user->uRes.incrFortune(res.rewardRemain);
@@ -263,7 +263,7 @@ namespace slots{
 	int64_t sum = gData->getGiftSum(uid);
 	// add gold to user.
 	SlotsUserPtr user;
-	if (!dc.slotsUserData.get(uidStr, user)) {
+	if (!dc.slotsUserData->get(uidStr, user)) {
 	    return false;
 	}
 	user->uRes.incrFortune(sum);

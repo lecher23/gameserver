@@ -79,16 +79,30 @@ class ServerSql:
             self.createTable(table)
             
     def generateTableSql(self):
-        table = "achievement"
-        sql='create table %s(uid INT NOT NULL, aid INT NOT NULL, detail CHAR(255) DEFAULT "", get_reward BOOL DEFAULT 0, gain_time BIGINT NOT NULL, PRIMARY KEY(uid, aid))' % table
+        # This is mail tables in MySQL
+        table = "mail_detail"
+        sql = 'create table %s( mail_id INT NOT NULL AUTO_INCREMENT, dest_id INT NOT NULL DEFAULT 0, title VARCHAR(127) NOT NULL, content VARCHAR(256) NOT NULL, attachment INT DEFAULT 0, ctime DATETIME NOT NULL, keep_days INT DEFAULT 7, PRIMARY KEY(mail_id))' % table
         self.table_sqls[table] = sql
+
+        table = "user_mails"
+        sql = 'create table %s( uid INT NOT NULL, mail_id INT NOT NULL, b_read BOOL DEFAULT false, b_get BOOL DEFAULT false, b_delete BOOL DEFAULT false, PRIMARY KEY(uid, mail_id))' % table
+        self.table_sqls[table] = sql
+
+        table = "attachment"
+        sql = "create table %s(attid BIGINT AUTO_INCREMENT PRIMARY KEY, type INT NOT NULL, value varchar(64) NOT NULL)" % table
+        self.table_sqls[table] = sql
+        
+        table = "user_achievement"
+        sql='create table %s(uid INT NOT NULL, uaid INT NOT NULL, is_recv_reward BOOL DEFAULT 0, progress BIGINT DEFAULT 0, is_gain BOOL DEFAULT 0, time BIGINT DEFAULT 0, PRIMARY KEY(uid, uaid))' % table
+        self.table_sqls[table] = sql
+
+        table = "achievement_item"
+        sql='create table %s(aiid INT AUTO_INCREMENT PRIMARY KEY, target BIGINT NOT NULL, reward BIGINT DEFAULT 0, reward_type INT DEFAULT 0, type INT NOT NULL)' % table
+        self.table_sqls[table] = sql
+        
         
         table = "g_history"
         sql = 'create table %s( uid INT NOT NULL PRIMARY KEY, friend_num INT DEFAULT 0, friend_gifts_num INT DEFAULT 0, consitive_login INT DEFAULT 0, tiny_game_times INT DEFAULT 0, bigwin varchar(255) DEFAULT "0", megawin varchar(255) DEFAULT "0", free_times varchar(255) DEFAULT "0", game_times varchar(255) DEFAULT "0", jackpot_times varchar(255) DEFAULT "0", g_jackpot_times INT DEFAULT "0", four_line_times varchar(255) DEFAULT "0", five_line_times varchar(255) DEFAULT "0")' % table
-        self.table_sqls[table] = sql
-
-        table = "m_attachment"
-        sql = "create table %s(attid BIGINT AUTO_INCREMENT PRIMARY KEY, type INT NOT NULL, value varchar(64) NOT NULL)" % table
         self.table_sqls[table] = sql
 
         tables = ["cur_level_rank", "cur_fortune_rank", "cur_earned_rank", "cur_acmt_rank",
@@ -97,7 +111,6 @@ class ServerSql:
         for table in tables:
             sql = "create table %s(id BIGINT AUTO_INCREMENT PRIMARY KEY, uid INT NOT NULL, fname CHAR(24) DEFAULT \"Guest\", country INT NOT NULL DEFAULT 86, value BIGINT NOT NULL)" % table
             self.table_sqls[table] = sql
-        
 
     ''' Help function'''
     def _transaction(self, dest_table, sqls):
@@ -123,6 +136,8 @@ if __name__ == "__main__":
     
     lbs = ServerSql()
     lbs.init()
+    lbs.createTable("achievement_item")
+    lbs.createTable("user_achievement")
     #lbs.refreshRankData()
     #lbs.createRankTables();
     #lbs.createAchievementTable()

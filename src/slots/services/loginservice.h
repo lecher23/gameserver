@@ -11,8 +11,7 @@ namespace slots{
 
 	virtual bool doJob(CPacket &packet, CResponse &resp);
     private:
-	void formatResult(bool success, SlotsUser &su, std::string &out) const;
-	bool getUserInfo(CPacket &packet, SlotsUser &su) const;
+	bool getUserInfo(CPacket &packet, SlotsUser &su, Achievements &cj) const;
     };
 }
 #endif

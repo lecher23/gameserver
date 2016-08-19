@@ -40,19 +40,24 @@ class PersistenceThread{
  private:
     static void * run(void *args) {
 	// connect to db
-	PersistenceThread *p_instance = (PersistenceThread *)args;
-	while(!p_instance->_stop){
-	    sleep(p_instance->_exeInterval);
-	    for (auto &itr: p_instance->_data) {
+	PersistenceThread *instance = (PersistenceThread *)args;
+	instance->_isRunnig = true;
+	while(!instance->_stop){
+	    sleep(instance->_exeInterval);
+	    for (auto &itr: instance->_data) {
 		itr->save2MySQL();
 	    }
-	    p_instance->persistent();  
+	    instance->persistent();
+	    ++instance->_count;
 	}
+	instance->_isRunnig = false;
 	return NULL;  
     }
 
     int32_t _exeInterval;
+    uint64_t _count;
     bool _stop;
+    bool _isRunnig;
 
     GameRecords  _gameRecords;
     std::vector<PersistenceBasePtr> _data;

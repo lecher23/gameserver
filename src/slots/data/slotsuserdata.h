@@ -10,6 +10,7 @@ class SlotsUserData: public PersistenceBase{
     SlotsUserData();
     virtual ~SlotsUserData();
     virtual void save2MySQL();
+    virtual bool needSave(uint64_t factor);
 
     /* get user info. if user not exist, read it from db*/
     bool get(const std::string &uid, SlotsUserPtr &out);

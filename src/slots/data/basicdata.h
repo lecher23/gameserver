@@ -366,6 +366,7 @@ class PersistenceBase{
  public:
     virtual ~PersistenceBase() {}
     virtual void save2MySQL() = 0;
+    virtual bool needSave(uint64_t factor) = 0;
  protected:
     int64_t lastActiveTime;
 };
@@ -383,6 +384,26 @@ struct SlotsEventData{
 };
 
 typedef SlotsEventData SingleGameDetail;
+
+struct Achievement{
+    std::string uid;
+    std::string aid;
+    bool isRecvReward;
+    int64_t progress;
+    bool isGain;
+    int64_t time;
+    int64_t target;
+    int64_t reward;
+    int32_t reward_type;
+    int32_t type;
+
+    int fieldsNum() {
+	return 11;
+    }
+};
+DF_SHARED_PTR(Achievement);
+
+typedef std::vector<AchievementPtr> Achievements;
 
 END_NAMESPACE
 #endif

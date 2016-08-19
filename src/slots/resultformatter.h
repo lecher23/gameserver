@@ -18,12 +18,14 @@ namespace slots{
 
 	void formatResult(const UserMails &uMails);
 	void formatResult(const SlotsUser &su);
+	void formatResult(const SlotsUser &su, const Achievements &cj);
 	void formatSimpleResult(bool ok, const std::string &err);
 	void formatGameResult(const UserResource &sr, int64_t earned, const std::string &detail);
 	void formatFriendsInfo(const FriendsList &friends);
 	void formatFullFriendInfo(const FriendsList &friends, const FHistory &history);
 	void formatGiftsInfo(const Gifts &gifts, int64_t giftsVal);
 	void formatRankResult(const LeaderBoardRank &rank, int32_t rankValue);
+	void formatUserAchievement(const Achievements &cj);	
 	
 	void formatStatus(bool bOk);
 	void formatMailsInfo(const UserMails &uMails);

@@ -1,13 +1,13 @@
 #include "persistencethread.h"
 BEGIN_NAMESPACE(slots)
-PersistenceThread::PersistenceThread(){
+PersistenceThread::PersistenceThread():_count(0){
 }
     
 PersistenceThread::~PersistenceThread(){
 }
 
 bool PersistenceThread::init() {
-    _exeInterval = 60;
+    _exeInterval = 10;
     _stop = false;
     int ret = pthread_create(&tid, NULL, run, this);
     if (ret != 0) {
@@ -19,6 +19,12 @@ bool PersistenceThread::init() {
 
 void PersistenceThread::stop() {
     _stop = true;
+    while (_isRunnig) {
+	sleep(1);
+    }
+    for (auto &itr: _data) {
+	itr->save2MySQL();
+    }
 }
 
 GameRecord &PersistenceThread::getUnusedGameRecord() {

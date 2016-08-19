@@ -44,7 +44,7 @@ bool SlotsDB::getUserInfo(MysqlOperationBase * mob, SlotsUser &su) const {
     }
     MysqlSimpleSelect mss;
     mss.setField("*");
-    mss.setTable("history");
+    mss.setTable(gLifeHistory);
     mss.setCondition("uid", su.uInfo.uid, true);
     if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss) || !getGameHistory(ui.uid, gd)) {
 	return false;
@@ -57,7 +57,7 @@ bool SlotsDB::getUserInfoByMachineId(const std::string &mid, SlotsUser &su) cons
     // get logic
     MysqlSimpleSelect mss;
     mss.setField("*");
-    mss.innerJoin("user_info", "user_resource", "uid", "uid");
+    mss.innerJoin(gUserInfo, gUserResource, "uid", "uid");
     mss.addCondition("mid", su.uInfo.mid, true, true);
     return getUserInfo((MysqlOperationBase *)&mss, su);
 }
@@ -66,8 +66,8 @@ bool SlotsDB::getUserInfoByUserId(const std::string &uid, SlotsUser &su) const
 {
     MysqlSimpleSelect mss;
     mss.setField("*");
-    mss.innerJoin("user_info", "user_resource", "uid", "uid");
-    mss.addCondition("user_info.uid", uid, true, true);
+    mss.innerJoin(gUserInfo, gUserResource, "uid", "uid");
+    mss.addCondition(gUserInfo + ".uid", uid, true, true);
     return getUserInfo((MysqlOperationBase *)&mss, su);
 }
 
@@ -101,7 +101,7 @@ bool SlotsDB::update(SlotsUserPtr su) const {
 
 bool SlotsDB::updateGameHistory(GameHistory &gh) const {
     MysqlSimpleUpdate msu;
-    msu.setTable("g_history");
+    msu.setTable(gGameHistory);
     msu.setUpdateValue("friend_num", StringUtil::toString(gh.friendNum));
     msu.addUpdateValue("friend_gifts_num", StringUtil::toString(gh.friendGiftsNum));   
     msu.addUpdateValue("consitive_login", StringUtil::toString(gh.consitiveLogin));   
@@ -142,7 +142,7 @@ bool SlotsDB::updateGameHistory(GameHistory &gh) const {
 
 bool SlotsDB::updateUserResource(UserResource &ur) const {
     MysqlSimpleUpdate msu;
-    msu.setTable("user_resource");
+    msu.setTable(gUserResource);
     msu.setUpdateValue("level", StringUtil::toString(ur.level));
     msu.addUpdateValue("exp", StringUtil::toString(ur.exp));
     msu.addUpdateValue("fortune", StringUtil::toString(ur.fortune));
@@ -158,7 +158,7 @@ bool SlotsDB::updateUserResource(UserResource &ur) const {
 
 bool SlotsDB::updateUserInfo(UserInfo &ui) const {
     MysqlSimpleUpdate msu;
-    msu.setTable("user_info");	
+    msu.setTable(gUserInfo);	
     msu.setUpdateValue("uid", ui.uid, true);
     if (!ui.fname.empty()) {
 	msu.addUpdateValue("fname", ui.fname, true);
@@ -182,7 +182,7 @@ bool SlotsDB::updateUserInfo(UserInfo &ui) const {
 
 bool SlotsDB::updateUserHistory(UserHistory &uhis) const {
     MysqlSimpleUpdate msu;
-    msu.setTable("history");
+    msu.setTable(gLifeHistory);
     msu.setUpdateValue("max_fortune", StringUtil::toString(uhis.maxFortune));
     msu.addUpdateValue("max_earned", StringUtil::toString(uhis.maxEarned));
     msu.addUpdateValue("total_earned", StringUtil::toString(uhis.totalEarned));
@@ -200,7 +200,7 @@ bool SlotsDB::searchUser(const std::string &field, const std::string &keyword,
 {
     MysqlSimpleSelect mss;
     mss.setField("*");
-    mss.innerJoin("user_info", "user_resource", "uid", "uid");
+    mss.innerJoin(gUserInfo, gUserResource, "uid", "uid");
     mss.addCondition(field, keyword, true, true);
     mss.setLimit(offset, size);
 
@@ -216,9 +216,9 @@ bool SlotsDB::getUserMails(
     out.clear();
     MysqlSimpleSelect mss;
     mss.setField("*");
-    mss.innerJoin("mail_info", "mails", "mail_id", "mail_id");
-    mss.setCondition("mail_info.b_delete=false", false);
-    mss.addCondition("mail_info.uid", uid, true, true);
+    mss.innerJoin(gUserMails, gMailDetail, "mail_id", "mail_id");
+    mss.setCondition(gUserMails + ".b_delete=false", false);
+    mss.addCondition(gUserMails + ".uid", uid, true, true);
     mss.setSortField("ctime", false);
     mss.setLimit(offset, count);
 	
@@ -234,10 +234,10 @@ bool SlotsDB::getUserMails(
     return true;
 }
 
-//user read mail. record to db
+//user read mail. record to db. infact, this param is useless
 bool SlotsDB::readMail(const std::string &uid, const std::string &mailId) {
     MysqlSimpleUpdate msu;
-    msu.setTable("mail_info");
+    msu.setTable(gUserMails);
     msu.setUpdateValue("b_read", "1");
     msu.setCondition("uid", uid, true);
     msu.addCondition("mail_id", mailId, true, true);
@@ -248,10 +248,11 @@ bool SlotsDB::readMail(const std::string &uid, const std::string &mailId) {
     return true;
 }
 
+// delete mail
 bool SlotsDB::delMail(const std::string &uid, const std::string &mailId) {
     MysqlSimpleUpdate msu;
-    msu.setTable("mail_info");
-    msu.setUpdateValue("b_read", "1");
+    msu.setTable(gUserMails);
+    msu.setUpdateValue("b_delete", "1");
     msu.setCondition("uid", uid, true);
     msu.addCondition("mail_id", mailId, true, true);
     if (!_pool.doMysqlOperation((MysqlOperationBase *) &msu)) {	
@@ -287,7 +288,7 @@ bool SlotsDB::collectMailInfo(const MysqlRows &mails, UserMails &out){
 bool SlotsDB::getAttachments(std::map<int32_t, AttachmentPtr> &attch) {
     MysqlSimpleSelect mss;
     mss.setField("*");
-    mss.setTable("m_attachment");
+    mss.setTable(gAttachment);
     if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss)) {
 	return false;
     }
@@ -308,7 +309,7 @@ bool SlotsDB::getAttachments(std::map<int32_t, AttachmentPtr> &attch) {
 bool SlotsDB::getAttachment(const std::string &attchId, Attachment &attch) {
     MysqlSimpleSelect mss;
     mss.setField("*");
-    mss.setTable("m_attachment");
+    mss.setTable(gAttachment);
     mss.setCondition("attid", attchId, false);
     if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss)) {
 	return false;
@@ -327,9 +328,17 @@ bool SlotsDB::getFriendsList(
     const std::string &uid, uint32_t page,uint32_t pageSize, FriendsList &list)
 {
     MysqlSimpleSelect mss;
-    std::string sQuery = "select * from user_info as A inner join user_resource as B on A.uid = B.uid and (A.uid in (select uid2 as uid from friends where uid1 = ";
+    std::string sQuery = "select * from ";
+    sQuery += gUserInfo;
+    sQuery +=" as A inner join ";
+    sQuery += gUserResource;
+    sQuery += " as B on A.uid = B.uid and (A.uid in (select uid2 as uid from ";
+    sQuery += gFriends;
+    sQuery += " where uid1 = ";
     sQuery += uid;
-    sQuery += ") or A.uid in (select uid1 as uid from friends where uid2  =";
+    sQuery += ") or A.uid in (select uid1 as uid from ";
+    sQuery += gFriends;
+    sQuery += " where uid2  =";
     sQuery += uid;
     sQuery += ")) ";
     sQuery += "limit ";
@@ -348,7 +357,7 @@ bool SlotsDB::getFriendsList(
 bool SlotsDB::getInviteHistory(const std::string &uid, FHistory &out) {
     MysqlSimpleSelect mss;
     mss.setField("*");
-    mss.setTable("f_history");
+    mss.setTable(gFriendHistory);
     mss.setCondition("uid", uid, true);
     if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss) ||
 	mss.result.size() == 0 || mss.result[0].size() < 4)
@@ -365,7 +374,7 @@ bool SlotsDB::getInviteHistory(const std::string &uid, FHistory &out) {
 
 bool SlotsDB::updateFHistory(const std::string &uid, const std::string &key, const std::string &value) {
     MysqlSimpleUpdate msu;
-    msu.setTable("f_history");
+    msu.setTable(gFriendHistory);
     msu.setUpdateValue(key, value, true);
     msu.setCondition("uid", uid, true);
     return _pool.doMysqlOperation((MysqlOperationBase *) &msu);
@@ -431,7 +440,7 @@ bool SlotsDB::removeFriend(const std::string &uidStr, const std::string &tidStr)
 	return false;
 
     MysqlSimpleDelete msd;
-    msd.setTable("friends");
+    msd.setTable(gFriends);
     if (tid > uid){
 	msd.setCondition("uid1", uidStr, true);
 	msd.addCondition("uid2", tidStr, true, true);	    
@@ -452,7 +461,7 @@ bool SlotsDB::makeFriend(const std::string &uidStr, const std::string &tidStr) {
     if (!StringUtil::StrToUInt64(tidStr.c_str(), tid))
 	return false;
     MysqlSimpleInsert msi;
-    msi.setTable("friends");
+    msi.setTable(gFriends);
     msi.setField("uid1");
     msi.addField("uid2");
     // bigger id in uid2
@@ -499,7 +508,7 @@ bool SlotsDB::getRankData(RankType rType, LeaderBoardRank &out){
 bool SlotsDB::getGameHistory(const std::string &uid, GameHistory &gd) const {
     MysqlSimpleSelect mss;
     mss.setField("*");
-    mss.setTable("g_history");
+    mss.setTable(gGameHistory);
     mss.setCondition("uid", uid, false);
     if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss)) {
 	CLOG(WARNING) << "Get game history from mysql failed.";
@@ -510,5 +519,57 @@ bool SlotsDB::getGameHistory(const std::string &uid, GameHistory &gd) const {
 	return false;
     }
     return gd.deserialize(mss.result[0]);
+}
+
+bool SlotsDB::add(const Achievement &acmt) {
+    MysqlSimpleInsert msi;
+    msi.setTable(gAchievement);
+    msi.setField("uid");
+    msi.addField("uaid");
+    msi.addField("is_recv_reward");
+    msi.addField("progress");
+    msi.addField("is_gain");
+    msi.addField("time");
+    msi.setValue(acmt.uid);
+    msi.addValue(acmt.aid);
+    msi.addValue(acmt.isRecvReward ? "1" : "0");
+    msi.addValue(StringUtil::toString(acmt.progress));
+    msi.addValue(acmt.isGain ? "1" : "0");
+    msi.addValue(StringUtil::toString(acmt.time));
+    return _pool.doMysqlOperation((MysqlOperationBase *) &msi);
+}
+
+bool SlotsDB::getUserAchievement(const std::string &uid, Achievements &out) {
+    MysqlSimpleSelect mss;
+    mss.setField("*");
+    mss.innerJoin(gAchievement, gAchievementDetail, "uaid", "aiid");
+    mss.addCondition("uid", uid, true, false);
+    if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss)) {
+	CLOG(WARNING) << "Get achievement from mysql failed.";
+	return false;
+    }
+    return collectAchievements(mss.result, out);
+}
+
+bool SlotsDB::collectAchievements(const MysqlRows &result, Achievements &out) {
+    for (auto &row: result) {
+	AchievementPtr ap(new Achievement);
+	if (row.size() < ap->fieldsNum()) {
+	    CLOG(WARNING) << "BAD DATA.";
+	    continue;
+	}
+	ap->uid = row[0];
+	ap->aid = row[1];
+	ap->isRecvReward = (row[2] != "0");
+	StringUtil::StrToInt64(row[3].c_str(), ap->progress);	
+	ap->isGain = (row[4] != "0");
+	StringUtil::StrToInt64(row[5].c_str(), ap->time);		
+	StringUtil::StrToInt64(row[7].c_str(), ap->target);		
+	StringUtil::StrToInt64(row[8].c_str(), ap->reward);		
+	StringUtil::StrToInt32(row[9].c_str(), ap->reward_type);		
+	StringUtil::StrToInt32(row[10].c_str(), ap->type);
+	out.push_back(ap);
+    }
+    return true;
 }
 END_NAMESPACE

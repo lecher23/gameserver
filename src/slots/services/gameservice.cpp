@@ -30,7 +30,7 @@ bool GameService::doJob(CPacket &packet, CResponse &resp) {
 }
 
 #define GET_SLOTS_USER_WITH_BREAK(uid, dest)		\
-    if (!SlotsDataCenter::instance().slotsUserData.get(uid, dest)) {	\
+    if (!SlotsDataCenter::instance().slotsUserData->get(uid, dest)) {	\
 	break;						\
     }
 
@@ -97,7 +97,7 @@ bool GameService::doMultiple(CPacket &packet){
     }
 
     SlotsUserPtr sup;
-    if (!SlotsDataCenter::instance().slotsUserData.get(uid, sup)) {
+    if (!SlotsDataCenter::instance().slotsUserData->get(uid, sup)) {
 	return false;
     }
 

@@ -8,6 +8,10 @@ SlotsUserData::SlotsUserData(){
 SlotsUserData::~SlotsUserData(){
 }
 
+bool SlotsUserData::needSave(uint64_t factor) {
+    return true;
+}
+
 bool SlotsUserData::get(const std::string &uid, SlotsUserPtr &out){
     auto ret = _data.find(uid);
     if (ret == _data.end()) {
