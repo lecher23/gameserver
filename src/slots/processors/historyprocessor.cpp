@@ -70,7 +70,7 @@ void HistoryProcessor::processExp(GameContext &context, SingleGameDetail &data) 
     if (data.bet == 0) {
 	return;
     }
-    auto &config = SlotsConfig::instance();
+    auto &config = SlotsConfig::getInstance();
     auto expNeed = config.expNeed2LevelUp(uRes.exp);
     auto expGot = config.expGain(data.bet);
     // level up event

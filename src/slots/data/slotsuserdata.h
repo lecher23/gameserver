@@ -9,7 +9,7 @@ class SlotsUserData: public PersistenceBase{
  public:
     SlotsUserData();
     virtual ~SlotsUserData();
-    virtual void save2MySQL();
+    virtual void save2MySQL(uint64_t factor);
     virtual bool needSave(uint64_t factor);
 
     /* get user info. if user not exist, read it from db*/

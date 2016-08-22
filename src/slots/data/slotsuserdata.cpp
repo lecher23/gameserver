@@ -38,7 +38,7 @@ void SlotsUserData::set(const std::string &uid, SlotsUserPtr &in) {
     _data[uid] = in;    
 }
 
-void SlotsUserData::save2MySQL(){
+void SlotsUserData::save2MySQL(uint64_t factor){
     MUTEX_GUARD(_lock);
     CLOG(INFO) << "dump data to db.";
     SlotsDB &db = SlotsDB::getInstance();

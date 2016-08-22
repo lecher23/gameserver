@@ -29,14 +29,13 @@ namespace slots{
 	bool getUserInfoByUserId(const std::string &uid, SlotsUser &su) const ;
 	
 	bool addUser(const std::string &mid, std::string &uid)const ;
-	bool add(const Achievement &acmt);	
+	bool add(const UserCJ &cj);	
 	
 	bool updateGameHistory(GameHistory &gh) const;
 	bool updateUserInfo(UserInfo &ui) const;
 	bool updateUserResource(UserResource &ur) const;
 	bool updateUserHistory(UserHistory &uhis) const;
 	bool update(SlotsUserPtr su) const;
-	bool update(const Achievement &acmt);	
 
 	bool searchUser(const std::string &field, const std::string &key,
 			uint32_t offset, uint32_t size, SlotsUsers &users);
@@ -64,6 +63,9 @@ namespace slots{
 	bool getGameHistory(const std::string &uid, GameHistory &gd) const;
 
 	bool getUserAchievement(const std::string &uid, Achievements &out);
+	bool getUserAchievement(const std::string &uid, const std::string &cjID, UserCJ &out);
+
+	bool getAchivementSetting(CjSettingMap &out);
 
 	static SlotsDB &getInstance();
     private:
@@ -73,11 +75,13 @@ namespace slots{
 	/* collect multi result from table user_info and user_resource*/	
 	bool collectSlotsUsers(const cgserver::MysqlRows &rows, SlotsUsers &out) const;
 	bool collectUserHistory(const cgserver::MysqlRows &rows, UserHistory &uh) const;
-	bool collectAchievements(const cgserver::MysqlRows &result, Achievements &out);	
+	bool collectAchievement(const cgserver::MysqlRow &row, UserCJ &out) const;	
+	bool collectAchievements(const cgserver::MysqlRows &result, Achievements &out) const;	
 	
         SlotsDB();
 	SlotsDB(SlotsDB &);
 	cgserver::MysqlConnPool &_pool;
+
     };
 }
 #endif

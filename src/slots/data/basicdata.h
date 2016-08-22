@@ -365,7 +365,7 @@ typedef std::map<int64_t, GameSceneDataPtr> GameSceneDataSet;
 class PersistenceBase{
  public:
     virtual ~PersistenceBase() {}
-    virtual void save2MySQL() = 0;
+    virtual void save2MySQL(uint64_t factor) = 0;
     virtual bool needSave(uint64_t factor) = 0;
  protected:
     int64_t lastActiveTime;
@@ -385,25 +385,37 @@ struct SlotsEventData{
 
 typedef SlotsEventData SingleGameDetail;
 
-struct Achievement{
+struct UserCJ {
     std::string uid;
     std::string aid;
     bool isRecvReward;
     int64_t progress;
     bool isGain;
     int64_t time;
+    bool changed;
+    int fieldsNum() {
+	return 6;
+    }
+};
+DF_SHARED_PTR(UserCJ);
+
+struct CjSetting{
+    std::string id;
     int64_t target;
     int64_t reward;
     int32_t reward_type;
     int32_t type;
-
     int fieldsNum() {
-	return 11;
+	return 5;
     }
 };
-DF_SHARED_PTR(Achievement);
+DF_SHARED_PTR(CjSetting);
+typedef std::vector<CjSettingPtr> CjSettings;
+typedef std::map<int32_t, CjSettings> CjSettingMap;
 
+typedef UserCJPtr AchievementPtr;
 typedef std::vector<AchievementPtr> Achievements;
+
 
 END_NAMESPACE
 #endif

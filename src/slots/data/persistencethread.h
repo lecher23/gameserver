@@ -45,7 +45,7 @@ class PersistenceThread{
 	while(!instance->_stop){
 	    sleep(instance->_exeInterval);
 	    for (auto &itr: instance->_data) {
-		itr->save2MySQL();
+		itr->save2MySQL(instance->_count);
 	    }
 	    instance->persistent();
 	    ++instance->_count;

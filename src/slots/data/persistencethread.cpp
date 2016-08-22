@@ -23,7 +23,7 @@ void PersistenceThread::stop() {
 	sleep(1);
     }
     for (auto &itr: _data) {
-	itr->save2MySQL();
+	itr->save2MySQL(_count);
     }
 }
 

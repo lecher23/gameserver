@@ -236,8 +236,6 @@ void ResultFormatter::formatUserAchievement(const Achievements &cj) {
 	_writer.Bool(iCj.isGain);
 	_writer.Key("recved");
 	_writer.Bool(iCj.isRecvReward);
-	_writer.Key("target");
-	_writer.Int64(iCj.target);
 	_writer.Key("time");
 	_writer.Int64(iCj.time);
 	_writer.EndObject();
