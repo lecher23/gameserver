@@ -24,7 +24,7 @@ namespace cgserver{
 	void run();
 	boost::asio::io_service &_service;
 	boost::asio::ip::tcp::acceptor _acceptor;
-	std::vector<std::thread> threads;
+	std::vector<std::shared_ptr<std::thread>> threads;
 	AsyncConnPtr _task;
 	IHandler *_handler;
 	

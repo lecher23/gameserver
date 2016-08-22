@@ -47,7 +47,9 @@ then
     if [ -z ${SERVER_PID} ];
     then
 	# ...
-	cd ${BASE_PATH} && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${EXT_LIB_PATH};nohup ${SERVER_BIN} > server.out 2>&1 &
+	cmd="cd ${BASE_PATH} && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${EXT_LIB_PATH}; ${SERVER_BIN} > server.out"
+	echo $cmd
+	cd ${BASE_PATH} && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${EXT_LIB_PATH}; ${SERVER_BIN} > server.out
     else
 	echo "Start stopped. Server is running."
     fi

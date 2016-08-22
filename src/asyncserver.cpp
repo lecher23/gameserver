@@ -9,10 +9,14 @@ namespace cgserver{
     }
     
     AsyncServer::~AsyncServer(){
-	_work.reset();
+	std::cout <<"stop thread" << std::endl;
+	stop();
+	//_work.reset();
     }
 
     void AsyncServer::run() {
+	//doAccept();
+	_work.reset(new asio_service::work(_service));
 	_service.run();
     }
 
@@ -20,13 +24,16 @@ namespace cgserver{
 	_handler = handler;
 	std::cout << "start server." << std::endl;	
 	doAccept();
-	// auto f = std::bind(&AsyncServer::run, this);
-	// for (int i = 0; i < 8; ++i) {
-	//     std::thread t(f);
-	// }
-	//_work.reset(new asio_service::work(_service));
+	auto f = std::bind(&AsyncServer::run, this);
+	for (int i = 0; i < 8; ++i) {
+	    std::shared_ptr<std::thread>
+	    	tPtr(new std::thread(std::bind(&asio_service::run, &_service)));
+	    // std::shared_ptr<std::thread>
+	    // 	tPtr(new std::thread(std::bind(&AsyncServer::run, this)));	    
+	    threads.push_back(tPtr);
+	}
 	std::cout << "service run" << std::endl;
-	_service.run();
+	//_service.run();
     }
 
     void AsyncServer::doAccept() {
@@ -40,8 +47,12 @@ namespace cgserver{
     }
 
     void AsyncServer::stop() {
-	this->_work.reset();
+	//this->_work.reset();
+	_service.stop();
 	_stop = true;
+	for (auto &it: threads) {
+	    it->join();
+	}
     }
 
     void AsyncServer::handleAccept(AsyncConnPtr task, const asio_error &err) {
