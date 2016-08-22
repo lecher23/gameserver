@@ -9,7 +9,7 @@ namespace slots{
 
     bool LoginService::doJob(CPacket &packet, CResponse &resp){
 	bool pOk = false;
-	SlotsUser sUser;	
+	SlotsUserPtr sUser;	
 	Achievements cj;
 	do {
 	    if (!getUserInfo(packet, sUser, cj)){
@@ -21,7 +21,7 @@ namespace slots{
 	SBuf buf;
 	ResultFormatter rf(buf);
 	if (pOk) {
-	    rf.formatResult(sUser, cj);
+	    rf.formatResult(*sUser, cj);
 	} else {
 	    rf.formatSimpleResult(pOk, "");
 	}
@@ -30,14 +30,16 @@ namespace slots{
 	return pOk;
     }
     
-    bool LoginService::getUserInfo(CPacket &packet, SlotsUser &su, Achievements &cj) const{
-	if (!packet.getParamValue("mid", su.uInfo.mid)) {
+    bool LoginService::getUserInfo(CPacket &packet, SlotsUserPtr &su, Achievements &cj) const{
+	std::string mid;
+	if (!packet.getParamValue("mid", mid)) {
 	    return false;
 	}
+	auto &slotsUserData = SlotsDataCenter::instance().slotsUserData;
 	//get user info from db.
 	SlotsDB &db = SlotsDB::getInstance();
-	if (db.getUserInfoByMachineId(su.uInfo.mid, su)) {
-	    return db.getUserAchievement(su.uInfo.uid, cj);
+	if (slotsUserData->get(mid, su, false)) {
+	    return db.getUserAchievement(su->uInfo.uid, cj);
 	} 
 	return false;
     }
