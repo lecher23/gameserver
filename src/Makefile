@@ -15,7 +15,8 @@ CC=g++ -std=c++11 -g -I ${EXTRA_H_DIR}
 #将以下变量导出到子shell中，本次相当于导出到子目录下的makefile中
 export CC BIN OBJS_DIR BIN_DIR ROOT_DIR EXTRA_H_DIR EXTRA_LIB_DIR
 #需要先执行SUBDIRS最后才能是DEBUG
-all:$(SUBDIRS) $(CUR_OBJS) DEBUG
+#all:$(SUBDIRS) $(CUR_OBJS) DEBUG
+all:$(CUR_OBJS) DEBUG
 #递归执行子目录下的makefile文件，这是递归执行的关键
 $(SUBDIRS):ECHO
 	make -C $@

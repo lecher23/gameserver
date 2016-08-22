@@ -16,7 +16,8 @@ namespace cgserver{
 	_service.run();
     }
 
-    void AsyncServer::start() {
+    void AsyncServer::start(IHandler *handler) {
+	_handler = handler;
 	std::cout << "start server." << std::endl;	
 	doAccept();
 	// auto f = std::bind(&AsyncServer::run, this);
@@ -32,11 +33,10 @@ namespace cgserver{
 	if (_stop){
 	    return;
 	}
-	_task.reset(new AsyncTask(_service));
+	_task.reset(new AsyncConn(_service));
 	_acceptor.async_accept(
 	    _task->getSocket(),
 	    std::bind(&AsyncServer::handleAccept, this, _task, std::placeholders::_1));
-	std::cout << "finish doaccept"<< std::endl;
     }
 
     void AsyncServer::stop() {
@@ -44,11 +44,11 @@ namespace cgserver{
 	_stop = true;
     }
 
-    void AsyncServer::handleAccept(AsyncTaskPtr task, const asio_error &err) {
-	std::cout << "New connection come." << std::endl;
+    void AsyncServer::handleAccept(AsyncConnPtr task, const asio_error &err) {
 	// process this connection
 	if (!err) {
-	    task->read();
+	    task->setHandler(_handler);
+	    task->startConn();
 	}
 	// continue to accept
 	doAccept();

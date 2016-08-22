@@ -5,7 +5,8 @@
 #include <vector>
 #include <memory>
 #include <functional>
-#include "asynctask.h"
+#include "asyncconn.h"
+#include "handlers/ihandler.h"
 
 namespace cgserver{
     class AsyncServer{
@@ -14,17 +15,18 @@ namespace cgserver{
         explicit AsyncServer(asio_service &service, int port);
         ~AsyncServer();
 
-	void start();
+	void start(IHandler *handler);
 	void stop();
 
-	void handleAccept(AsyncTaskPtr task, const asio_error &err);
+	void handleAccept(AsyncConnPtr task, const asio_error &err);
 	void doAccept();	
     private:
 	void run();
 	boost::asio::io_service &_service;
 	boost::asio::ip::tcp::acceptor _acceptor;
 	std::vector<std::thread> threads;
-	AsyncTaskPtr _task;
+	AsyncConnPtr _task;
+	IHandler *_handler;
 	
 	bool _stop;
 	std::shared_ptr<asio_service::work> _work;

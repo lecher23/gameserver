@@ -12,6 +12,8 @@
 #include "util/config.h"
 #include "mysql/mysqlconnpool.h"
 
+#include "asyncserver.h"
+
 namespace cgserver {
     
 TcpServer::TcpServer():_stop(false), _handler(nullptr){
@@ -48,21 +50,21 @@ bool TcpServer::initServer(int port) {
 	return false;
     }
 
-    if (!_socket.setAddress(NULL, port)){
-	CLOG(ERROR) << "Set socket address failed.";
-	return false;
-    }
+    // if (!_socket.setAddress(NULL, port)){
+    // 	CLOG(ERROR) << "Set socket address failed.";
+    // 	return false;
+    // }
     
-    if (!_socket.listen(256)) {
-	CLOG(ERROR) << "Listen failed.";
-	return false;
-    }
+    // if (!_socket.listen(256)) {
+    // 	CLOG(ERROR) << "Listen failed.";
+    // 	return false;
+    // }
 
-    _pool.reset(new ThreadPool(poolSize));
-    if (!_pool->start()) {
-	CLOG(ERROR) << "Create thread poll failed.";
-	return false;
-    }
+    // _pool.reset(new ThreadPool(poolSize));
+    // if (!_pool->start()) {
+    // 	CLOG(ERROR) << "Create thread poll failed.";
+    // 	return false;
+    // }
     CLOG(INFO) << "Init server success.";
     return true;
 }
@@ -72,25 +74,29 @@ void TcpServer::startServer(int port) {
 	LOG(ERROR) << "Init Server failed.!";
 	return;
     }
-    Socket *clientSocket;
-    while(!_stop) {
-	if ((clientSocket = _socket.accept()) == NULL) {
-	    //accept failed.
-	    continue;
-	}
-	SocketPtr tmp(clientSocket);
-	Task *task = new Task(tmp, _processor);
-	if (_pool->pushTask((Runnable *)task) != ThreadPool::ERROR_NONE) {
-	    // release mem
-	    delete task;
-	}
-    }
+    // Socket *clientSocket;
+    // while(!_stop) {
+    // 	if ((clientSocket = _socket.accept()) == NULL) {
+    // 	    //accept failed.
+    // 	    continue;
+    // 	}
+    // 	SocketPtr tmp(clientSocket);
+    // 	Task *task = new Task(tmp, _processor);
+    // 	if (_pool->pushTask((Runnable *)task) != ThreadPool::ERROR_NONE) {
+    // 	    // release mem
+    // 	    delete task;
+    // 	}
+    // }
+    asio_service service;
+    AsyncServer server(service, port);
+    server.start(_handler);
 }
 
 void TcpServer::stopServer() {
     _stop = true;
     _pool->stop(ThreadPool::STOP_THREAD_ONLY);
     _handler->release();
+    delete _handler;
 }
 
 }
