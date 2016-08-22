@@ -2,6 +2,7 @@
 #include "slotshandler.h"
 #include <slots/services/serviceprovider.h>
 #include <slots/data/slotsdatacenter.h>
+#include <slots/slotsconfig.h>
 
 BEGIN_NAMESPACE(slots)
 SlotsHandler::SlotsHandler(){
