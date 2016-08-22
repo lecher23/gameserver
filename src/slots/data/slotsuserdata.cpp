@@ -12,24 +12,25 @@ bool SlotsUserData::needSave(uint64_t factor) {
     return true;
 }
 
-bool SlotsUserData::get(const std::string &uid, SlotsUserPtr &out){
-    auto ret = _data.find(uid);
-    if (ret == _data.end()) {
-	CLOG(INFO) << "Get user["<< uid <<"] info from db.";
+bool SlotsUserData::get(const std::string &id, SlotsUserPtr &out, bool isUserId){
+    if (!isUserId || _data.find(id) == _data.end()) {
+	CLOG(INFO) << "Get user["<< id <<"] info from db.";
 	SlotsDB &db = SlotsDB::getInstance();
 	out.reset(new SlotsUser);
-	if (db.getUserInfoByUserId(uid, *out)) {
-	    out->uInfo.changed = false;
-	    out->uRes.changed = false;
-	    out->uHis.changed = false;
-	    out->gDetail.changed = false;
-	    set(uid,out);
-	} else {
-	    CLOG(WARNING) << "Get user[" << uid << "] info failed.";
+	bool ret = isUserId ? db.getUserInfoByUserId(id, *out)
+	    : db.getUserInfoByMachineId(id, *out);
+	if (!ret) {
+	    CLOG(WARNING) << "Get user[" << id << "] info failed.";
 	    return false;
 	}
+	out->uInfo.changed = false;
+	out->uRes.changed = false;
+	out->uHis.changed = false;
+	out->gDetail.changed = false;
+	set(out->uInfo.uid, out);
+	return true;
     }
-    out = _data[uid];
+    out = _data[id];
     return true;
 }
 

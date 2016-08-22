@@ -13,7 +13,7 @@ class SlotsUserData: public PersistenceBase{
     virtual bool needSave(uint64_t factor);
 
     /* get user info. if user not exist, read it from db*/
-    bool get(const std::string &uid, SlotsUserPtr &out);
+    bool get(const std::string &uid, SlotsUserPtr &out, bool isUserId = true);
     void set(const std::string &uid, SlotsUserPtr &in);
     
  private:
