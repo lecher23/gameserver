@@ -58,7 +58,7 @@ bool SlotsDB::getUserInfoByMachineId(const std::string &mid, SlotsUser &su) cons
     MysqlSimpleSelect mss;
     mss.setField("*");
     mss.innerJoin(gUserInfo, gUserResource, "uid", "uid");
-    mss.addCondition("mid", su.uInfo.mid, true, true);
+    mss.addCondition("mid", mid, true, true);
     return getUserInfo((MysqlOperationBase *)&mss, su);
 }
 
