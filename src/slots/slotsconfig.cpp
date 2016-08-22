@@ -24,7 +24,7 @@ bool SlotsConfig::init(){
 
     auto &db = SlotsDB::getInstance();
     // get achievement config from db
-    if (!db.getAchivementSetting(achieveConfig)){
+    if (!db.getAchivementSetting(cjConfig)){
 	return false;
     }
     return true;

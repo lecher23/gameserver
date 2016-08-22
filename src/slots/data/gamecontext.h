@@ -14,6 +14,9 @@ class GameContext{
     SlotsUserPtr user;
     SingleGameDetail gameInfo;    
     int64_t gameID;
+    int64_t preMaxForture;
+    int64_t preMaxEarned;
+    int64_t preTotalEarned;
 
     // in future, we can keep all game event here
     // game event can take affect to user status

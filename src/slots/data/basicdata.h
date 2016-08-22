@@ -376,11 +376,11 @@ DF_SHARED_PTR(PersistenceBase);
 struct SlotsEventData{
     int64_t earned;
     int64_t bet;
-    SlotsStyle gType;
     std::vector<ResultType> retTypes;
+    std::string detail;
     bool enableTinyGame;
     bool isFreeRound;
-    std::string detail;
+    SlotsStyle gType;
 };
 
 typedef SlotsEventData SingleGameDetail;

@@ -41,7 +41,7 @@ class SlotsConfig{
 
     std::vector<LevelConfig> levelConfig;
     std::vector<VipLevelConfig> vipLevelConfig;
-    CjSettingMap achieveConfig;
+    CjSettingMap cjConfig;
     
  private:
     SlotsConfig() {}

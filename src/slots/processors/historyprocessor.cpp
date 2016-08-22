@@ -90,13 +90,15 @@ void HistoryProcessor::processMoney(GameContext &context, SlotsEventData &data) 
     UserHistory &uHis = context.user->uHis;
     uRes.incrFortune(actualEarned);
     // update max fortune
+    context.preMaxForture = uHis.maxFortune;
     uHis.newFortune(uRes.fortune);
     // update max earned
+    context.preMaxEarned = uHis.maxEarned;
     uHis.newEarned(data.earned);
     // update earned (include this week and total)
-    auto before = uHis.totalEarned;
+    context.preTotalEarned = uHis.totalEarned;
     uHis.incrEarned(data.earned);
-    if (before != uHis.totalEarned) {
+    if (context.preTotalEarned != uHis.totalEarned) {
 	context.events.insert(EGE_EARNED_INCR);
     }
 }
