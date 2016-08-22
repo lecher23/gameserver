@@ -366,7 +366,7 @@ class PersistenceBase{
  public:
     virtual ~PersistenceBase() {}
     virtual void save2MySQL(uint64_t factor) = 0;
-    virtual bool needSave(uint64_t factor) = 0;
+    virtual bool needSave(uint64_t factor) {};
  protected:
     int64_t lastActiveTime;
 };
@@ -398,6 +398,7 @@ struct UserCJ {
     }
 };
 DF_SHARED_PTR(UserCJ);
+typedef std::vector<UserCJPtr> UserCJs;
 
 struct CjSetting{
     std::string id;

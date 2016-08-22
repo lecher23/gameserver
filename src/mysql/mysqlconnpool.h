@@ -20,7 +20,7 @@ namespace cgserver{
 	bool doMysqlOperation(MysqlOperationBase *op);
 	
     private:
-    MysqlConnPool():_inited(false){}
+        MysqlConnPool():_inited(false){}
 	MysqlConnPool(const MysqlConnPool&);
 	MysqlConnPool & operator = (const MysqlConnPool &);
 	

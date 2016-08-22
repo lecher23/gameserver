@@ -4,6 +4,7 @@
 #include <slots/sql/slotsdb.h>
 #include <slots/data/persistencethread.h>
 #include <slots/data/slotsuserdata.h>
+#include <slots/data/sqlqueue.h>
 #include <slots/data/giftsdata.h>
 #include <util/timeutil.h>
 
@@ -25,8 +26,10 @@ class SlotsDataCenter{
 	    return false;
 	}
 	slotsUserData.reset(new SlotsUserData);
+	sqlQueue.reset(new SqlQueue);
 	// add slots user data.
 	_persisThread.addData(slotsUserData);
+	_persisThread.addData(sqlQueue);	
 	return ret && _gifts->init();
     }
 
@@ -82,6 +85,7 @@ class SlotsDataCenter{
 
     /* User data*/
     SlotsUserDataPtr slotsUserData;
+    SqlQueuePtr sqlQueue;
     //AchievementSystem achievementSystem(...);
 
  private:

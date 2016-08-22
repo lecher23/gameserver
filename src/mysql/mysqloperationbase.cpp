@@ -9,9 +9,9 @@ namespace cgserver{
     }
 
     bool MysqlOperationBase::exeQuery(MYSQL *conn, const MysqlStr &query) {
-	CLOG(INFO) << "run query:"<< query ;
 	int ret = mysql_query(conn, query.c_str());
 	if (ret != 0) {
+	    CLOG(INFO) << "run query:["<< query << "] failed." ;
 	    switch(ret) {
 	    case CR_COMMANDS_OUT_OF_SYNC:
 		CLOG(ERROR) << "ERROR:CR_COMMANDS_OUT_OF_SYNC" ;

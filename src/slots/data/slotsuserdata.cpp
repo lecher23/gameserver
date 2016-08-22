@@ -14,7 +14,7 @@ bool SlotsUserData::needSave(uint64_t factor) {
 
 bool SlotsUserData::get(const std::string &id, SlotsUserPtr &out, bool isUserId){
     if (!isUserId || _data.find(id) == _data.end()) {
-	CLOG(INFO) << "Get user["<< id <<"] info from db.";
+	//CLOG(INFO) << "Get user["<< id <<"] info from db.";
 	SlotsDB &db = SlotsDB::getInstance();
 	out.reset(new SlotsUser);
 	bool ret = isUserId ? db.getUserInfoByUserId(id, *out)
@@ -41,12 +41,12 @@ void SlotsUserData::set(const std::string &uid, SlotsUserPtr &in) {
 
 void SlotsUserData::save2MySQL(uint64_t factor){
     MUTEX_GUARD(_lock);
-    CLOG(INFO) << "dump data to db.";
+    //CLOG(INFO) << "dump data to db.";
     SlotsDB &db = SlotsDB::getInstance();
     for (auto itr = _data.begin(); itr != _data.end(); ++itr) {
 	db.update(itr->second);
     }
-    CLOG(INFO) << "dump data to db finish.";	    
+    //CLOG(INFO) << "dump data to db finish.";	    
 }
 
 END_NAMESPACE
