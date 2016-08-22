@@ -13,7 +13,7 @@ namespace slots{
 
 	virtual bool process(cgserver::HTTPPacket &packet,
 			     cgserver::HttpResponsePacket &resp);
-	virtual void init();
+	virtual bool init();
 
 	virtual void release();
     };

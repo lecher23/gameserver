@@ -16,7 +16,7 @@ namespace cgserver{
 	virtual ~SocketProcessor();
 	
 	virtual void process(SocketPtr clientSocket) const;
-	virtual void init(void *handler);
+	virtual bool init(void *handler);
 	
     private:
 	bool readData(SocketPtr &sk, DataBuffer &buff) const ;

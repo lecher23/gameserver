@@ -16,7 +16,7 @@ namespace cglogic{
 
     PacketHandler::~PacketHandler(){}
     
-    void PacketHandler::init(){
+    bool PacketHandler::init(){
 	CLOG(INFO) << "**Init packet handler**" ;
 	Config &cfg = Config::getInstance();
 	_acceptPrefix = cfg.getConfigValue(AppName, AcceptPrefix);
@@ -36,7 +36,8 @@ namespace cglogic{
 	    _cfg[kv[0]] = kv[1];
 	    kv.clear();
 	}
-	CLOG(INFO) << "**Init packet handler success**" ;	
+	CLOG(INFO) << "**Init packet handler success**" ;
+	return true;
     }
 
     bool PacketHandler::process(HTTPPacket &packet, HttpResponsePacket &resp) {

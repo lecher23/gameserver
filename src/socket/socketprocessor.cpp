@@ -18,9 +18,9 @@ namespace cgserver{
 	}
     }
 
-    void SocketProcessor::init(void *resource) {
+    bool SocketProcessor::init(void *resource) {
 	if (resource == NULL){
-	    return;
+	    return false;
 	}
 	if (_handler != NULL) {
 	    delete _handler;
@@ -30,7 +30,7 @@ namespace cgserver{
 	_secret = secret;
 	_needCheck = (need_check == "true");
 	_handler = (IHandler *)resource;
-	_handler->init();
+	return _handler->init();
     }
 
     void SocketProcessor::process(SocketPtr sk) const{

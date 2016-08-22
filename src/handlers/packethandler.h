@@ -12,7 +12,7 @@ namespace cglogic{
 	virtual ~PacketHandler();
 	virtual bool process(cgserver::HTTPPacket &packet,
 			     cgserver::HttpResponsePacket &resp);
-	virtual void init();
+	virtual bool init();
 	void debug();
 
 	static const std::string AppName;

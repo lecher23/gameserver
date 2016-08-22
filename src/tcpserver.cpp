@@ -27,7 +27,10 @@ void TcpServer::initLogger(){
 bool TcpServer::initServer(int port) {
     _handler = HandlerFactory::getHandler();
     _processor = ProcessorFactory::getProcessor();
-    _processor->init((void *)_handler);
+    if (!_processor->init((void *)_handler)) {
+	return false;
+    }
+    
 
     CLOG(INFO) << "Init mysql pool.";
     if (!MysqlConnPool::getInstance().init()) {

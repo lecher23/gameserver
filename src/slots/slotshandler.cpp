@@ -29,12 +29,13 @@ bool SlotsHandler::process(CPacket &packet, CResponse &resp)
     return ret;
 }
 
-void SlotsHandler::init() {
+bool SlotsHandler::init() {
     if(!SlotsDataCenter::instance().init()){
-	CLOG(WARNING) << "Init slots cache failed.";
-	return;
+	CLOG(ERROR) << "Init slots cache failed.";
+	return false;
     }
     CLOG(INFO) << "Init slots cache success.";
+    return true;
 }
 
 void SlotsHandler::release() {
