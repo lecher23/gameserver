@@ -16,10 +16,11 @@ namespace cgserver{
         ~MysqlConnPool();
 
 	bool init();
+	bool readyToUse();
 	bool doMysqlOperation(MysqlOperationBase *op);
 	
     private:
-        MysqlConnPool(){}
+    MysqlConnPool():_inited(false){}
 	MysqlConnPool(const MysqlConnPool&);
 	MysqlConnPool & operator = (const MysqlConnPool &);
 	
@@ -33,6 +34,7 @@ namespace cgserver{
 	std::string _databaseName;
 	int _connPoolSize;
 	int _mysqlPort;
+	bool _inited;
 	
 	MYSQL _client;
 	std::vector<MYSQL *> busyConn;

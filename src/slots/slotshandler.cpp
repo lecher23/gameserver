@@ -30,6 +30,10 @@ bool SlotsHandler::process(CPacket &packet, CResponse &resp)
 }
 
 bool SlotsHandler::init() {
+    if (!cgserver::MysqlConnPool::getInstance().readyToUse()) {
+	CLOG(ERROR) << "Mysql conn pool not ready.";	
+	return false;
+    }
     if(!SlotsDataCenter::instance().init()){
 	CLOG(ERROR) << "Init slots cache failed.";
 	return false;

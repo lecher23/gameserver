@@ -49,8 +49,13 @@ namespace cgserver{
 		return false;
 	    }
 	}
+	_inited = true;
 	return true;
     }
+
+    bool MysqlConnPool::readyToUse() {
+	return _inited;
+    }    
 
     bool MysqlConnPool::doMysqlOperation(MysqlOperationBase *op){
 	MYSQL *conn = this->getConnect();
