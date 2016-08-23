@@ -1,0 +1,99 @@
+{
+    "type_map":{
+	"LEVEL": 0,
+	"EARNED": 1,
+	"BET": 2,
+	"FRIEND_NUM": 3,
+	"GIFT_RECV": 4,
+	"GIFT_SEND": 5,
+	"TINY_GAME": 6,
+	"FREE_GAME": 7,
+	"MEGA_WIN": 8,
+	"BIG_WIN": 9,
+	"JACKPOT": 10,
+	"LINE": 11,
+	"GAME_COUNT": 12,
+	"LOGIN": 13
+    },
+    "FRIEND_NUM":[
+	{
+	    "target": 100,
+	    "reward": 100
+	}
+    ],
+    "LEVEL":[
+	{
+	    "target": 10,
+	    "reward": 100
+	}
+    ],
+    "EARNED":[
+	{
+	    "target": 100,
+	    "reward": 100
+	}
+    ],
+    "BET": [
+	{
+	    "target": 100,
+	    "reward": 100
+	}
+    ],
+    "LOGIN": [
+	{
+	    "target": 10,
+	    "reward": 100
+	}
+    ],
+    "BIG_WIN": [
+	{
+	    "target": 10,
+	    "reward": 100
+	},
+	{
+	    "target": 10000010,
+	    "reward": 100
+	}
+    ],
+    "MEGA_WIN": [
+	{
+	    "target": 10,
+	    "reward": 100
+	}
+    ],
+    "GAME_COUNT": [
+	{
+	    "target": 100,
+	    "reward": 100
+	}
+    ],
+    "LINE": [
+	{
+	    "target": 1004000010,
+	    "reward": 100
+	},
+	{
+	    "target": 1005000010,
+	    "reward": 100
+	}
+    ],
+    "TINY_GAME":[
+	{
+	    "target": 15,
+	    "reward": 100
+	}
+    ],
+    "GIFT_SEND":[
+	{
+	    "target": 10,
+	    "reward": 100
+	}
+    ]
+    "GIFT_RECV":[
+	{
+	    "target": 10,
+	    "reward": 100
+	}
+    ]
+    
+}
