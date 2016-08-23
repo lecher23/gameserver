@@ -9,7 +9,7 @@
 BEGIN_NAMESPACE(slots)
 #define RANK_LIMIT 1000
 #define MAX_ELE_TYPES 16
-#define TO_LINE_CJ_VALUE(gameid, eleid, value) (gameid * 10000000000 + eleid * 10000000 + value)
+#define TO_LINE_CJ_VALUE(gameid, eleid, line, value) (gameid * 1000000000000 + eleid * 1000000000 + line * 10000000 + value)
 #define TO_GAME_CJ_VALUE(gameid, value) (gameid * 10000000 + value)
 
 template <typename T>
@@ -36,7 +36,9 @@ enum GameEvent {
     EGE_MEGA_WIN,
     EGE_BIG_WIN,
     EGE_JACKPOT,
-    EGE_LINE
+    EGE_LINE,
+    EGE_GAME_COUNT,
+    EGE_LOGIN
 };
 
 enum SlotsStyle{

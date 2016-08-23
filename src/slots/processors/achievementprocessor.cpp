@@ -39,7 +39,15 @@ bool AchievementProcessor::process(GameContext &context) const {
 	case EGE_LEVEL_UP:
 	case EGE_NEW_FRIEND:
 	case EGE_SEND_GIFT:
-	case EGE_RECV_GIFT:{
+	case EGE_RECV_GIFT:
+	case EGE_TINY_GAME:
+	case EGE_FREE_GAME:
+	case EGE_MEGA_WIN:
+	case EGE_BIG_WIN:
+	case EGE_JACKPOT:	    
+	case EGE_GAME_COUNT:
+	case EGE_LOGIN:
+	{
 	    auto itr = _config.find(item.e);		
 	    if (itr != _config.end()){
 		auto &setting = itr->second;    
@@ -50,10 +58,11 @@ bool AchievementProcessor::process(GameContext &context) const {
 	}
 	case EGE_USE_BET:
 	case EGE_EARNED_INCR:
+	case EGE_LINE:
 	    processRangeCj(context, item);
 	    break;
 	case EGE_PLAYED_GAME:
-	    processGame(context, item);
+	    // do nothing
 	    break;
 	default:
 	    CLOG(WARNING) << "Invalid event type." ;
@@ -100,22 +109,6 @@ void AchievementProcessor::processRangeCj(GameContext &context, const EventInfo 
 	context.userCj.push_back(cj);
     }
 
-}
-
-void AchievementProcessor::processGame(GameContext &context, const EventInfo &e) const {
-    if(e.e == EGE_PLAYED_GAME) {
-	return;
-    }
-    // tinye game times
-    if (context.gameInfo.enableTinyGame) {
-    }
-    // free game times
-    if (context.gameInfo.isFreeRound) {
-    }
-
-    // four line times in game x with elements i
-
-    // five line times in game x with elements i
 }
 
 #undef TAKE_ACHIEVEMENT

@@ -29,7 +29,11 @@ bool HistoryProcessor::process(GameContext &context) const {
 void HistoryProcessor::processGameDetail(GameContext &context, SingleGameDetail &data) const {
     auto &udt = context.user->gDetail;
     auto gType = data.gType;
-    // get all types
+    // incr game times
+    ++udt.gameTimes[gType];
+    context.events.push_back(
+	EventInfo(EGE_GAME_COUNT, TO_GAME_CJ_VALUE(gType, udt.gameTimes[gType])));
+    
     // here we just use one event that: game played.
     for (auto itr: data.retTypes) {
 	switch(itr) {
@@ -66,15 +70,15 @@ void HistoryProcessor::processGameDetail(GameContext &context, SingleGameDetail 
 	    auto pre = now;
 	    now += item.count;
 	    context.events.push_back(
-		EventInfo(EGE_LINE, TO_LINE_CJ_VALUE(gType, ele, pre),
-			  TO_LINE_CJ_VALUE(gType, ele, now)));
+		EventInfo(EGE_LINE, TO_LINE_CJ_VALUE(gType, ele, 4, pre),
+			  TO_LINE_CJ_VALUE(gType, ele, 4, now)));
 	}else if (item.colum == 5) {
 	    auto &now = udt.fiveLine[gType][ele];
 	    auto pre = now;
 	    now += item.count;
 	    context.events.push_back(
-		EventInfo(EGE_LINE, TO_LINE_CJ_VALUE(gType, ele, pre),
-			  TO_LINE_CJ_VALUE(gType, ele, now)));
+		EventInfo(EGE_LINE, TO_LINE_CJ_VALUE(gType, ele, 5, pre),
+			  TO_LINE_CJ_VALUE(gType, ele, 4, now)));
 	}
     }
     if (data.enableTinyGame) {

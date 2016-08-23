@@ -136,8 +136,10 @@ if __name__ == "__main__":
     
     lbs = ServerSql()
     lbs.init()
-    lbs.createTable("achievement_item")
-    lbs.createTable("user_achievement")
+    for k, v in lbs.table_sqls.items():
+        print '"%s":"%s",' % (k, v.replace(",", ",\n").replace('"', '\\"'))
+    #lbs.createTable("achievement_item")
+    #lbs.createTable("user_achievement")
     #lbs.refreshRankData()
     #lbs.createRankTables();
     #lbs.createAchievementTable()
