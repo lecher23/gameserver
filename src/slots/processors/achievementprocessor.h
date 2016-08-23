@@ -3,6 +3,7 @@
 
 #include <slots/data/basicdata.h>
 #include <slots/data/gamecontext.h>
+#include <slots/slotsconfig.h>
 
 BEGIN_NAMESPACE(slots)
 
@@ -15,10 +16,12 @@ class AchievementProcessor{
 
  private:
 
-    void processLevel(GameContext &context) const;    
-    void processFriends(GameContext &context) const;    
-    void processMoney(GameContext &context) const;    
-    void processGame(GameContext &context) const;    
+    void processLevel(GameContext &context, const EventInfo &e) const;    
+    void processFriends(GameContext &context, const EventInfo &e) const;    
+    void processRangeCj(GameContext &context, const EventInfo &e) const;    
+    void processGame(GameContext &context, const EventInfo &e) const;
+
+    CjSettingMap &_config;
 };
 
 END_NAMESPACE

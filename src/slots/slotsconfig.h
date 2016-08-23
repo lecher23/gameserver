@@ -45,6 +45,7 @@ class SlotsConfig{
     
  private:
     SlotsConfig() {}
+    SlotsConfig(const SlotsConfig &);
 };
 typedef SlotsConfig::LevelConfig SlotsLevelConfig;
 typedef SlotsConfig::VipLevelConfig SlotsVipConfig;

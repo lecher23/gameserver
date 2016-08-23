@@ -10,20 +10,18 @@ HistoryProcessor::~HistoryProcessor(){
 }
 
 bool HistoryProcessor::process(GameContext &context) const {
-    context.events.insert(EGE_PLAYED_GAME);
+    context.events.push_back(EventInfo(EGE_PLAYED_GAME));
     processGameDetail(context, context.gameInfo);
     // is free to play
     if (context.gameInfo.isFreeRound) {
 	context.gameInfo.bet = 0;
     } else {
-	context.events.insert(EGE_USE_BET);
+	context.events.push_back(EventInfo(EGE_USE_BET, context.gameInfo.bet));
     }
     // update user fortune
     processMoney(context, context.gameInfo);
     // update user exp&level    
     processExp(context, context.gameInfo);
-    // update game detail
-    processGameDetail(context, context.gameInfo);
     return true;
 }
 
@@ -31,6 +29,7 @@ bool HistoryProcessor::process(GameContext &context) const {
 void HistoryProcessor::processGameDetail(GameContext &context, SingleGameDetail &data) const {
     auto &udt = context.user->gDetail;
     // get all types
+    // here we just use one event that: game played.
     for (auto itr: data.retTypes) {
 	switch(itr) {
 	case ERT_BIG_WIN:
@@ -76,7 +75,7 @@ void HistoryProcessor::processExp(GameContext &context, SingleGameDetail &data) 
     // level up event
     if (expNeed <= expGot ) {
 	uRes.levelUp();
-	context.events.insert(EGE_LEVEL_UP);
+	context.events.push_back(EventInfo(EGE_LEVEL_UP, uRes.level));
     }
     uRes.incrExp(expGot);
 }
@@ -90,16 +89,15 @@ void HistoryProcessor::processMoney(GameContext &context, SlotsEventData &data) 
     UserHistory &uHis = context.user->uHis;
     uRes.incrFortune(actualEarned);
     // update max fortune
-    context.preMaxForture = uHis.maxFortune;
     uHis.newFortune(uRes.fortune);
     // update max earned
-    context.preMaxEarned = uHis.maxEarned;
     uHis.newEarned(data.earned);
     // update earned (include this week and total)
-    context.preTotalEarned = uHis.totalEarned;
+    auto pre = uHis.totalEarned;
     uHis.incrEarned(data.earned);
-    if (context.preTotalEarned != uHis.totalEarned) {
-	context.events.insert(EGE_EARNED_INCR);
+    if (pre != uHis.totalEarned) {
+	// if total earned changed, create event.
+	context.events.push_back(EventInfo(EGE_EARNED_INCR, pre, uHis.totalEarned));
     }
 }
 
