@@ -107,8 +107,11 @@ void AchievementProcessor::processGame(GameContext &context, const EventInfo &e)
 	return;
     }
     // tinye game times
-
-    // small game times
+    if (context.gameInfo.enableTinyGame) {
+    }
+    // free game times
+    if (context.gameInfo.isFreeRound) {
+    }
 
     // four line times in game x with elements i
 

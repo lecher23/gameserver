@@ -28,33 +28,53 @@ bool HistoryProcessor::process(GameContext &context) const {
 
 void HistoryProcessor::processGameDetail(GameContext &context, SingleGameDetail &data) const {
     auto &udt = context.user->gDetail;
+    auto gType = data.gType;
     // get all types
     // here we just use one event that: game played.
     for (auto itr: data.retTypes) {
 	switch(itr) {
-	case ERT_BIG_WIN:
-	    udt.bigwin[data.gType] ++;
+	case ERT_BIG_WIN:{
+	    auto &bigwinVal = udt.bigwin[gType];
+	    ++ bigwinVal;
+	    context.events.push_back(
+		EventInfo(EGE_BIG_WIN, TO_GAME_CJ_VALUE(gType, bigwinVal)));
 	    break;
-	case ERT_MEGA_WIN:
-	    udt.megawin[data.gType] ++;
+	}
+	case ERT_MEGA_WIN:{
+	    auto &megawinVal = udt.megawin[gType];
+	    ++megawinVal;
+	    context.events.push_back(
+		EventInfo(EGE_MEGA_WIN, TO_GAME_CJ_VALUE(gType, megawinVal)));	    
 	    break;
-	case ERT_JACKPOT:
+	}
+	case ERT_JACKPOT:{
+	    auto &jackVal = udt.jackpotTimes[data.gType];
 	    udt.gJackpotTimes ++;
-	    udt.jackpotTimes[data.gType] ++;
+	    ++jackVal;
+	    context.events.push_back(
+		EventInfo(EGE_JACKPOT, TO_GAME_CJ_VALUE(gType, jackVal)));
 	    break;
-	case ERT_NORMAL:
-	    // do noting
-	    break;
+	}
 	default:
-	    if (itr > ERT_FOULINE) {
-		if (itr < ERT_FIVELINE) {
-		    uint32_t eleNum = itr - ERT_FOULINE - 1;
-		    udt.fourLine[data.gType][eleNum] ++;
-		}else if(itr < ERT_MULTILINE_END) {
-		    uint32_t eleNum = itr - ERT_FIVELINE - 1;
-		    udt.fourLine[data.gType][eleNum] ++;
-		}
-	    }
+	    ;
+	}
+    }
+    for (auto &item: data.lineInfo) {
+	auto ele = item.ele;
+	if (item.colum == 4) {
+	    auto &now = udt.fourLine[gType][ele];
+	    auto pre = now;
+	    now += item.count;
+	    context.events.push_back(
+		EventInfo(EGE_LINE, TO_LINE_CJ_VALUE(gType, ele, pre),
+			  TO_LINE_CJ_VALUE(gType, ele, now)));
+	}else if (item.colum == 5) {
+	    auto &now = udt.fiveLine[gType][ele];
+	    auto pre = now;
+	    now += item.count;
+	    context.events.push_back(
+		EventInfo(EGE_LINE, TO_LINE_CJ_VALUE(gType, ele, pre),
+			  TO_LINE_CJ_VALUE(gType, ele, now)));
 	}
     }
     if (data.enableTinyGame) {

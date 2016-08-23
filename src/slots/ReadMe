@@ -1,0 +1,16 @@
+成就类型(值从0开始):
+LEVEL_UP：等级成就
+EARNED：累积盈利
+BET：累积赌注
+FRIEND：朋友个数
+RECV_GIFT：接收礼物
+SEND_GIFT：赠送礼物
+TINY_GAME：小游戏，具体值为 gameid * factor2 + target
+FREE_GAME：免费游戏，具体值为 gameid * factor2 + target
+MEGA_WIN：具体值为 gameid * factor2 + target
+BIG_WIN ：具体值为 gameid * factor2 + target
+JACKPOT ：具体值为 gameid * factor2 + target
+LINE : 连线成就，具体的值为 gameid * factor1 + eleid * factor2 + target
+
+factor1 = 10^10
+factor2 = 10^7

@@ -9,6 +9,8 @@
 BEGIN_NAMESPACE(slots)
 #define RANK_LIMIT 1000
 #define MAX_ELE_TYPES 16
+#define TO_LINE_CJ_VALUE(gameid, eleid, value) (gameid * 10000000000 + eleid * 10000000 + value)
+#define TO_GAME_CJ_VALUE(gameid, value) (gameid * 10000000 + value)
 
 template <typename T>
 struct BasicData {
@@ -28,7 +30,13 @@ enum GameEvent {
     EGE_NEW_FRIEND, // add new friend success
     EGE_RECV_GIFT, // get gift from user
     EGE_SEND_GIFT, // send gift to user
-    EGE_PLAYED_GAME // has play game
+    EGE_PLAYED_GAME, // has play game
+    EGE_TINY_GAME,
+    EGE_FREE_GAME,
+    EGE_MEGA_WIN,
+    EGE_BIG_WIN,
+    EGE_JACKPOT,
+    EGE_LINE
 };
 
 enum SlotsStyle{
@@ -373,10 +381,17 @@ class PersistenceBase{
 
 DF_SHARED_PTR(PersistenceBase);
 
+struct SlotLineInfo {
+    int32_t colum;
+    int32_t count;
+    int32_t ele;
+};
+
 struct SlotsEventData{
     int64_t earned;
     int64_t bet;
     std::vector<ResultType> retTypes;
+    std::vector<SlotLineInfo> lineInfo;
     std::string detail;
     bool enableTinyGame;
     bool isFreeRound;
