@@ -1,9 +1,15 @@
 #ifndef COMMON_DEFINE_H
 #define COMMON_DEFINE_H
+
+#define BOOST_SYSTEM_NO_DEPRECATED
+
 #include <string>
 #include <iostream>
 #include <memory>
+#include <thread>
 #include <mutex>
+#include <boost/asio.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include "glog/logging.h"
 
 #define DF_SHARED_PTR(T) typedef std::shared_ptr<T> T##Ptr;
@@ -22,14 +28,20 @@
 #endif
 #endif
 
-
 #define CLOG(x) LOG(x)
 #define MyString std::string
 
 #define MUTEX_GUARD(x) std::lock_guard<std::mutex> mutex_guard(x);
 
+typedef boost::asio::io_service asio_service;
+typedef boost::asio::io_service::work asio_work;
+typedef boost::asio::deadline_timer asio_deadline_timer;
+typedef boost::system::error_code asio_error;
+#define asio_seconds(V) boost::posix_time::seconds(V)
+typedef std::shared_ptr<asio_work> asio_work_ptr;
+typedef std::shared_ptr<asio_deadline_timer> asio_deadline_timer_ptr;
+
 namespace common{
-#define _LOG(x) std::cout<<(x)<<std::endl;
 #define CONNECTION_CLOSE "close"
 #define CONNECTION_KEEP_ALIVE "Keep-Alive"
     

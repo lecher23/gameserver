@@ -34,11 +34,12 @@ namespace slots{
 		    break;
 		}
 		rf.formatResult(uMails);
-	    }else if (type == "2") {
+	    }else if (type == "3") {
 		std::string mailId;
 		GET_PARAM("mailid", mailId, true);
-		if (!db.readMail(uid, mailId)) {
-		    CLOG(WARNING) << "Process /slots/mail?type=2 failed on [mysql]";
+		// use async?
+		if (!db.delMail(uid, mailId)) {
+		    CLOG(WARNING) << "delete mail from mysql failed";
 		    rf.formatSimpleResult(false, "Internal error.");
 		    break;
 		}

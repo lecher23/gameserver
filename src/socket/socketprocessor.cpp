@@ -65,6 +65,7 @@ namespace cgserver{
 	    }
 	    CLOG(INFO) << "Send response success.";
 	} while(0);
+	sk->shutdown();
     }
 
     bool SocketProcessor::validatePacket(HTTPPacket &packet) const {

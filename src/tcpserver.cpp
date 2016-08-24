@@ -11,6 +11,7 @@
 #include "util/luatoolfactory.h"
 #include "util/config.h"
 #include "mysql/mysqlconnpool.h"
+#include <resourcefactory.h>
 
 namespace cgserver {
     
@@ -30,6 +31,20 @@ bool TcpServer::initServer(int port) {
 	CLOG(ERROR) << "Init mysql pool failed.";
 	return false;
     }
+
+    if(!ResourceFactory::getInstance().init()) {
+	return false;
+    }
+
+    auto timer = ResourceFactory::getInstance().getServerTimer();
+    auto st = ResourceFactory::getInstance().getServiceThread();
+    if(!st->start()) {
+	return false;
+    }
+    auto f = [=](){
+	CLOG(INFO) << "Timer worked.";
+    };
+    timer->addTask(f, ServerTimer::EET_10_S);
     
     _handler = HandlerFactory::getHandler();
     _processor = ProcessorFactory::getProcessor();

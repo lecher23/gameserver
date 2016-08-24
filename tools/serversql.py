@@ -1,4 +1,7 @@
 import MySQLdb as mysqldb
+import sys 
+#from optparse import OptionParser
+import getopt
 
 HOST = "localhost"
 USER = "root"
@@ -22,6 +25,19 @@ class ServerSql:
 
     def release(self):
         self.conn.close()
+
+    def runQuery(self, q):
+        self.startTransaction()
+        self.cursor.execute(q)        
+        self.endTransaction(True)
+
+    def addMail(self, title, content, keep_days = 7):
+        sql = "insert into mails(title, content, ctime ,keep_days)values(\"%s\", \"%s\", now(), %d)" % (title, content, keep_days)
+        self.runQuery(sql)
+
+    def sendMail(self, uid, mailid):
+        sql = "insert into mail_info(uid, mail_id)values(%d, %d)" % (uid, mailid)
+        self.runQuery(sql)
 
     def clearTable(self, table):
         sql = 'delete from %s' % table
@@ -133,9 +149,49 @@ class ServerSql:
             print "Table not exist."
 
 if __name__ == "__main__":
-    
+    if len(sys.argv) < 2:
+        exit(1)
     lbs = ServerSql()
-    lbs.init()
+    lbs.init()    
+    cmd = sys.argv[1]
+    if cmd == "add_mail":
+        nxt = sys.argv[2]
+        if nxt == "-h":
+            print "add_mail title content [keep_days]"
+        elif nxt == "-a":
+            #title_[start, end]
+            mail_start = int(sys.argv[3])
+            mail_end = int(sys.argv[4])
+            for i in range(mail_start, mail_end + 1):
+                lbs.addMail("mail_%d" % i, "content :%d" % i)
+        else:
+            lbs.addMail(sys.argv[2], sys.argv[3], 7 if len(sys.argv) < 7 else int(sys.argv[4]))
+        print "Done!"
+        exit(0)
+
+    if cmd == "send_mail":
+        nxt = sys.argv[2]
+        if nxt == "-h":
+            print "send_mail uid mid"
+        elif nxt == "-a":
+            # send_mail -a uid mail_start mail_end
+            mail_start = int(sys.argv[4])
+            mail_end = int(sys.argv[5])
+            for i in range(mail_start, mail_end + 1):
+                lbs.sendMail(int(sys.argv[3]), i)
+        else:
+            lbs.sendMail(int(sys.argv[2]), int(sys.argv[3]))
+        print "Done!"
+        exit(0)
+        
+
+    if cmd == "rank":
+        nxt = sys.argv[2]
+        if nxt == "-h":
+            print "..."
+        elif nxt == "level":
+            lbs.refreshLevelOrder()
+        
     for k, v in lbs.table_sqls.items():
         print '"%s":"%s",' % (k, v.replace(",", ",\n").replace('"', '\\"'))
     #lbs.createTable("achievement_item")

@@ -3,8 +3,8 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define AST_EQ(x, y) TS_ASSERT_EQUALS(x, y);
-#define AST_TRUE(x) TS_ASSERT(x);
+#define ast_eq(x, y) TS_ASSERT_EQUALS(x, y);
+#define ast_true(x) TS_ASSERT(x);
 
 using namespace cgserver;
 

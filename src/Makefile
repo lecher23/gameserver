@@ -1,4 +1,5 @@
 SUBDIRS=$(shell ls -l | grep ^d |awk '{if($$9 != "build") print $$9}')
+#SUBDIRS=slots
 ROOT_DIR=$(shell pwd)
 BIN=server
 BUILD_DIR=$(ROOT_DIR)/../build
@@ -25,7 +26,10 @@ DEBUG:ECHO
 ECHO:
 	@echo $(SUBDIRS)
 $(CUR_OBJS):%.o:%.cpp
-	$(CC) -c $^ -o $(OBJS_DIR)/$@ 
+	$(CC) -c $^ -o $(OBJS_DIR)/$@
+
+current:$(CUR_OBJS) DEBUG
+
 clean:
 	@rm $(OBJS_DIR)/*.o
 install:

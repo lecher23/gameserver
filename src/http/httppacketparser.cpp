@@ -24,8 +24,7 @@ HTTPPacketParser::HTTPPacketParser():
     _step(PS_START_LINE),_parseFinish(false),_drainedLength(0),_dataLength(0){}
 
 void HTTPPacketParser::debug(){
-    _LOG(_drainedLength);
-    _LOG(_dataLength);
+    ;
 }
 
 void HTTPPacketParser::reset(){

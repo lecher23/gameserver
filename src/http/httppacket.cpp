@@ -76,34 +76,33 @@ void HTTPPacket::setMethod(HTTPMethod method) {
 
 void HTTPPacket::setMethod(const char *method) {
     assert(method);
-//    ANET_LOG(SPAM,"method=|%s|", method);
     if (strcmp(method, "GET") == 0) {
         setMethod(HTTPPacket::HM_GET);
-        _LOG("setMethod(HTTPPacket::HM_GET)");
+        //CLOG("setMethod(HTTPPacket::HM_GET)");
     } else if (strcmp(method, "POST") == 0) {
         setMethod(HTTPPacket::HM_POST);
-        _LOG("setMethod(HTTPPacket::HM_POST)");
+        //CLOG("setMethod(HTTPPacket::HM_POST)");
     } else if (strcmp(method, "HEAD") == 0) {
         setMethod(HTTPPacket::HM_HEAD);
-        _LOG("setMethod(HTTPPacket::HM_HEAD)");
+        //CLOG("setMethod(HTTPPacket::HM_HEAD)");
     } else if (strcmp(method, "OPTIONS") == 0) {
         setMethod(HTTPPacket::HM_OPTIONS);
-        _LOG("setMethod(HTTPPacket::HM_OPTIONS)");
+        //CLOG("setMethod(HTTPPacket::HM_OPTIONS)");
     } else if (strcmp(method, "PUT") == 0) {
         setMethod(HTTPPacket::HM_PUT);
-        _LOG("setMethod(HTTPPacket::HM_PUT)");
+        //CLOG("setMethod(HTTPPacket::HM_PUT)");
     } else if (strcmp(method, "DELETE") == 0) {
         setMethod(HTTPPacket::HM_DELETE);
-        _LOG("setMethod(HTTPPacket::HM_DELETE)");
+        //CLOG("setMethod(HTTPPacket::HM_DELETE)");
     } else if (strcmp(method, "TRACE") == 0) {
         setMethod(HTTPPacket::HM_TRACE);
-        _LOG("setMethod(HTTPPacket::HM_TRACE)");
+        //CLOG("setMethod(HTTPPacket::HM_TRACE)");
     } else if (strcmp(method, "CONNECT") == 0) {
         setMethod(HTTPPacket::HM_CONNECT);
-        _LOG("setMethod(HTTPPacket::HM_CONNECT)");
+        //CLOG("setMethod(HTTPPacket::HM_CONNECT)");
     } else {
         setMethod(HTTPPacket::HM_UNSUPPORTED);
-        _LOG("setMethod(HTTPPacket::HM_UNSUPPORTED)");
+        //CLOG("setMethod(HTTPPacket::HM_UNSUPPORTED)");
         if (_extendMethod != NULL) {
             ::free(_extendMethod);
         }
@@ -234,7 +233,7 @@ int HTTPPacket::getStatusCode() {
 }
 
 void HTTPPacket::setKeepAlive(bool keepAlive) {
-    //_LOG( "isKeepAlive:%d", isKeepAlive());
+    ////CLOG( "isKeepAlive:%d", isKeepAlive());
     if (isKeepAlive() == keepAlive) {
         return ;
     }
@@ -257,14 +256,14 @@ void HTTPPacket::setKeepAlive(bool keepAlive) {
 bool HTTPPacket::isKeepAlive() {
     const char *value = getHeader("Connection");
     if (HTTP_1_0 == getVersion()) {
-        _LOG( "version: 1.0");
+        //CLOG( "version: 1.0");
         if (NULL != value && strcmp(CONNECTION_KEEP_ALIVE, value) == 0) {
             return true;
         } else {
             return false;
         }
     } else {
-        _LOG( "version: 1.1");
+        //CLOG( "version: 1.1");
         if (NULL != value && strcmp(CONNECTION_CLOSE, value) == 0) {
             return false;
         } else {
@@ -296,7 +295,7 @@ char* HTTPPacket::strdupTrimed(const char *str, bool front, bool end) {
         }
     }
     if (p1 == p2 && ' ' == *p1) {
-        //_LOG("origin:|%s|trimed to NULL", str);
+        ////CLOG("origin:|%s|trimed to NULL", str);
         return NULL;
     } else {
         size_t len = p2 - p1 + 1;
@@ -304,7 +303,7 @@ char* HTTPPacket::strdupTrimed(const char *str, bool front, bool end) {
         assert(data);
         strncpy(data, p1, len);
         data[len] = '\0';
-//        ANET_LOG(DEBUG,"origin:|%s|;trimed:|%s|;len:|%d|", str, data, len);
+        //CLOG(DEBUG,"origin:|%s|;trimed:|%s|;len:|%d|", str, data, len);
         return data;
     }
 }

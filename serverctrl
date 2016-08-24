@@ -53,7 +53,7 @@ then
     else
 	echo "Start stopped. Server is running."
     fi
-elif [ $1 = "status" ];
+elif [ $1 = "st" ];
 then
     if [ -z ${SERVER_PID} ];
     then
