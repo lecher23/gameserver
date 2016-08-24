@@ -51,6 +51,7 @@ namespace cgserver{
 	    }
 	    std::cout << "**Send response success**" << std::endl;
 	} while(0);
+	sk->shutdown();
     }
 
     bool SocketProcessor::readData(SocketPtr &sk, DataBuffer &buf) const{
