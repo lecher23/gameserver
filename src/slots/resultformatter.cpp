@@ -110,22 +110,33 @@ void ResultFormatter::formatGiftsInfo(const Gifts &gifts, int64_t giftsVal) {
     _writer.EndObject();
 }
 
-void ResultFormatter::formatRankResult(const LeaderBoardRank &rank, int32_t rankValue) {
+// [start, end)
+void ResultFormatter::formatRankResult(
+    const LeaderBoardRank &rank, int64_t uid, uint32_t start, uint32_t end)
+{
     _writer.StartObject();
     formatStatus(true);
     _writer.Key("data");
     _writer.StartArray();
+    uint32_t cur = 0;
+    int32_t rankValue = 0;
     for (auto &itr: rank.data) {
-	_writer.StartObject();
-	_writer.Key("uid");
-	_writer.Int64(itr->uid);
-	_writer.Key("name");
-	_writer.String(itr->name.c_str());
-	_writer.Key("country");
-	_writer.Int(itr->country);
-	_writer.Key("value");
-	_writer.Int64(itr->value);
-	_writer.EndObject();
+	if (cur >= start && cur < end) {
+	    _writer.StartObject();
+	    _writer.Key("uid");
+	    _writer.Int64(itr->uid);
+	    _writer.Key("name");
+	    _writer.String(itr->name.c_str());
+	    _writer.Key("country");
+	    _writer.Int(itr->country);
+	    _writer.Key("value");
+	    _writer.Int64(itr->value);
+	    _writer.EndObject();
+	}
+	++cur;
+	if (itr->uid == uid) {
+	    rankValue = cur;
+	}
     }
     _writer.EndArray();
     _writer.Key("myrank");

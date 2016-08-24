@@ -55,6 +55,7 @@ bool SlotsDB::getUserInfo(MysqlOperationBase * mob, SlotsUser &su) const {
 bool SlotsDB::getUserInfoByMachineId(const std::string &mid, SlotsUser &su) const
 {
     // get logic
+    su.uInfo.mid = mid;
     MysqlSimpleSelect mss;
     mss.setField("*");
     mss.innerJoin(gUserInfo, gUserResource, "uid", "uid");
@@ -64,6 +65,7 @@ bool SlotsDB::getUserInfoByMachineId(const std::string &mid, SlotsUser &su) cons
 
 bool SlotsDB::getUserInfoByUserId(const std::string &uid, SlotsUser &su) const
 {
+    su.uInfo.uid = uid;
     MysqlSimpleSelect mss;
     mss.setField("*");
     mss.innerJoin(gUserInfo, gUserResource, "uid", "uid");

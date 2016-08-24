@@ -22,7 +22,7 @@ namespace slots{
 	if (!getIntVal(packet, "uid", uid)) {
 	    return false;
 	}
-	uint32_t page, pageSize;
+	uint32_t page, pageSize = 0;
 	if (!getIntVal(packet, "page", page)) {
 	    page = 0;
 	}
@@ -33,10 +33,9 @@ namespace slots{
 	
 	auto &dc = SlotsDataCenter::instance();
 	auto &rank = dc.getLeaderBoardData(rType);
-	auto rankValue = getRankValue(rank, uid);
 	SBuf buf;
 	ResultFormatter rf(buf);
-	rf.formatRankResult(rank, rankValue);
+	rf.formatRankResult(rank, uid, page, page + pageSize);
 	resp.setBody(buf.GetString());
 	return true;
     }

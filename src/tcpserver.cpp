@@ -41,10 +41,10 @@ bool TcpServer::initServer(int port) {
     if(!st->start()) {
 	return false;
     }
-    auto f = [=](){
-	CLOG(INFO) << "Timer worked.";
-    };
-    timer->addTask(f, ServerTimer::EET_10_S);
+    // auto f = [=](){
+    // 	CLOG(INFO) << "Timer worked.";
+    // };
+    //timer->addTask(f, ServerTimer::EET_10_S);
     
     _handler = HandlerFactory::getHandler();
     _processor = ProcessorFactory::getProcessor();

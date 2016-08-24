@@ -2,6 +2,7 @@ import MySQLdb as mysqldb
 import sys 
 #from optparse import OptionParser
 import getopt
+import random
 
 HOST = "localhost"
 USER = "root"
@@ -22,6 +23,32 @@ class ServerSql:
         self.conn = mysqldb.connect(host = HOST, user = USER, passwd = PASSWD)
         self.conn.select_db('SLOTS')
         self.cursor = self.conn.cursor()
+
+    def doSpecial(self):
+        # exp_range = (1, 5000000)
+        # fortune_range = (0, 10000000)
+        # level_range = (1, 50)
+        # uid_range = (14116, 15114)
+        # self.startTransaction()
+        # try:
+        #     for i in range(uid_range[0], uid_range[1]):
+        #         sql = "update user_resource set level=%d, exp=%d, fortune=%d where uid=%d" \
+        #               % (random.randint(level_range[0], level_range[1]),
+        #                  random.randint(exp_range[0], exp_range[1]),
+        #                  random.randint(fortune_range[0], fortune_range[1]), i)
+        #         print sql
+        #         self.cursor.execute(sql)
+        #         sql = "update history set total_earned=%d, tw_earned=%d where uid=%d" \
+        #               %(random.randint(exp_range[0], exp_range[1]),
+        #                 random.randint(fortune_range[0], fortune_range[1]), i)
+        #         print sql
+        #         self.cursor.execute(sql)
+        # except Exception,e:
+        #     print e
+        #     self.endTransaction(False)
+        #     return
+        # self.endTransaction(True)
+        pass
 
     def release(self):
         self.conn.close()
@@ -183,14 +210,18 @@ if __name__ == "__main__":
             lbs.sendMail(int(sys.argv[2]), int(sys.argv[3]))
         print "Done!"
         exit(0)
-        
+
+    if cmd == "special":
+        lbs.doSpecial();
+        exit(0)
 
     if cmd == "rank":
         nxt = sys.argv[2]
         if nxt == "-h":
             print "..."
-        elif nxt == "level":
-            lbs.refreshLevelOrder()
+        elif nxt == "all":
+            lbs.refreshRankData()
+        exit(0)
         
     for k, v in lbs.table_sqls.items():
         print '"%s":"%s",' % (k, v.replace(",", ",\n").replace('"', '\\"'))

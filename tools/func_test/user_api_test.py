@@ -57,6 +57,16 @@ class UserApiTest(unittest.TestCase):
         ob = self._request(params)
         self.assertTrue(ob is not None)
         self.assertEqual("OK", ob["status"])
+
+
+    def testAddAlotOfuser(self):
+        for i in range(1, 1000):
+            print i
+            params = []
+            params.append("mid=%d" % i)
+            ob = self._request(params)
+            self.assertTrue(ob is not None)
+            self.assertEqual("OK", ob["status"])
         
         
         

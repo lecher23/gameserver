@@ -24,7 +24,8 @@ namespace slots{
 	void formatFriendsInfo(const FriendsList &friends);
 	void formatFullFriendInfo(const FriendsList &friends, const FHistory &history);
 	void formatGiftsInfo(const Gifts &gifts, int64_t giftsVal);
-	void formatRankResult(const LeaderBoardRank &rank, int32_t rankValue);
+	void formatRankResult
+	    (const LeaderBoardRank &rank, int64_t uid, uint32_t start, uint32_t end);
 	void formatUserAchievement(const Achievements &cj);	
 	
 	void formatStatus(bool bOk);
