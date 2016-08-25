@@ -1,4 +1,5 @@
 #include "loginservice.h"
+#include <slots/processors/loginprocessor.h>
 
 namespace slots{
     LoginService::LoginService(){
@@ -17,6 +18,12 @@ namespace slots{
 	    }
 	    pOk = true;
 	}while(0);
+
+        GameContext context;
+        context.user = sUser;
+
+        LoginProcessor lp;
+        lp.process(context);
 
 	SBuf buf;
 	ResultFormatter rf(buf);

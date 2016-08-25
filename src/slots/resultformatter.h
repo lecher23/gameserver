@@ -33,7 +33,8 @@ namespace slots{
 	void formatMail(const UserMail &uMail);
 	void formatUserInfo(const UserInfo &uInfo);
 	void formatUserResource(const UserResource &uRes);
-	void formatFriendList(const FriendsList &friends);	
+	void formatFriendList(const FriendsList &friends);
+        void formatLoginInfo(const SlotsUser &su);
     private:
 	JsonWriter _writer;
     };

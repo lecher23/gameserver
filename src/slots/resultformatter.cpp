@@ -16,12 +16,15 @@ void ResultFormatter::formatResult(const UserMails &uMails)  {
 void ResultFormatter::formatResult(const SlotsUser &su)  {
     _writer.StartObject();
     formatStatus(true);
-	
+
     _writer.Key("user_info");
     formatUserInfo(su.uInfo);
 
-    _writer.Key("user_resource");	
-    formatUserResource(su.uRes);	
+    _writer.Key("user_resource");
+    formatUserResource(su.uRes);
+
+    _writer.Key("login_info");
+    formatLoginInfo(su);
 
     _writer.EndObject();
 }
@@ -32,14 +35,16 @@ void ResultFormatter::formatResult(const SlotsUser &su, const Achievements &cj) 
     _writer.Key("user_info");
     formatUserInfo(su.uInfo);
 
-    _writer.Key("user_resource");	
+    _writer.Key("user_resource");
     formatUserResource(su.uRes);
-    
-    _writer.Key("user_achievement");	
+
+    _writer.Key("user_achievement");
     formatUserAchievement(cj);
 
+    _writer.Key("login_info");
+    formatLoginInfo(su);
+
     _writer.EndObject();
-	
 }
     
 void ResultFormatter::formatSimpleResult(bool success, const std::string &err)
@@ -271,4 +276,20 @@ void ResultFormatter::formatFriendList(const FriendsList &friends) {
     }
     _writer.EndArray();
 }
+
+void ResultFormatter::formatLoginInfo(const SlotsUser &su) {
+    _writer.StartObject();
+    _writer.Key("days");
+    _writer.Int(su.gDetail.consitiveLogin);
+    _writer.Key("recv_reward");
+    _writer.Bool(su.loginReward.recved);
+    _writer.Key("level_bonus");
+    _writer.Int64(su.loginReward.specialReward);
+    _writer.Key("runner_bonus");
+    _writer.Int64(su.loginReward.runnerReward);
+    _writer.Key("day_bonus");
+    _writer.Int64(su.loginReward.daysReward);
+    _writer.EndObject();
+}
+
 END_NAMESPACE
