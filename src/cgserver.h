@@ -6,7 +6,7 @@
 #include <arpa/inet.h>
 #include <error.h>
 #include <sstream>
-#include "tcpserver.h"
+#include <server/tcpserver.h>
 
 namespace cgserver{
     class CgServer{

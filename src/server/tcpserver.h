@@ -1,11 +1,11 @@
 #ifndef TCP_SERVER_H
 #define TCP_SERVER_H
 
-#include "socket/addrspec.h"
-#include "util/threadpool.h"
-#include "util/iprocessor.h"
-#include "socket/socket.h"
-#include "handlers/handlerfactory.h"
+#include <socket/addrspec.h>
+#include <util/threadpool.h>
+#include <util/iprocessor.h>
+#include <socket/socket.h>
+#include <handlers/handlerfactory.h>
 
 namespace cgserver{
     class TcpServer{
@@ -14,10 +14,12 @@ namespace cgserver{
 	~TcpServer();
 	void startServer(int port);
 	bool initServer(int port);
-	void initLogger();	
+	void initLogger();
 	void stopServer();
     private:
-	
+        bool startAsyncServer(int port);
+        bool startRowServer(int port);
+
 	Socket _socket;
 	bool _stop;
 	IProcessorPtr _processor;

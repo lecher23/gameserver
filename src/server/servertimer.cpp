@@ -31,4 +31,19 @@ void ServerTimer::addTask(std::function<void(void)> func, ExpireType t) {
     }
 }
 
+void ServerTimer::addTask(TimerExecutorPtr timer, ExpireType t) {
+    if(_timers[t].get() != NULL) {
+	_timers[t]->async_wait(
+	    std::bind(&ServerTimer::executorWrapper, this, timer, std::placeholders::_1));
+    }
+}
+
+void ServerTimer::executorWrapper(TimerExecutorPtr timer, const asio_error &err){
+    if (err) {
+	CLOG(WARNING) << "Timer error:" << err;
+	return;
+    }
+    timer->execute();
+}
+
 END_NAMESPACE

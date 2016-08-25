@@ -28,7 +28,7 @@ ECHO:
 $(CUR_OBJS):%.o:%.cpp
 	$(CC) -c $^ -o $(OBJS_DIR)/$@
 
-current:$(CUR_OBJS) DEBUG
+top:$(CUR_OBJS) DEBUG
 
 clean:
 	@rm $(OBJS_DIR)/*.o

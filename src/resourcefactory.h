@@ -2,8 +2,8 @@
 #define RESOURCEFACTORY_H
 
 #include <util/common_define.h>
-#include <servicethread.h>
-#include <servertimer.h>
+#include <server/servicethread.h>
+#include <server/servertimer.h>
 
 BEGIN_NAMESPACE(cgserver)
 

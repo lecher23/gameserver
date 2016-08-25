@@ -1,7 +1,6 @@
 *.o
 *.out
 maketest
-server
 unittest
 unittest.cpp
 dev

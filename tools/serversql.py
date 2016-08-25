@@ -24,6 +24,21 @@ class ServerSql:
         self.conn.select_db('SLOTS')
         self.cursor = self.conn.cursor()
 
+    def deleteAllUser(self, begin, end):
+        tbs = ['user_info','user_resource','f_history','history','g_history']
+        sqls = []
+        if end == 0:
+            for t in tbs:
+                sqls.append("delete from %s where uid >= %d" % (t, begin))
+        else:
+            for t in tbs:
+                sqls.append("delete from %s where uid >= %d and uid <= " % (t, begin, end))
+        self.startTransaction()
+        for q in sqls:
+            print q
+            self.cursor.execute(q)
+        self.endTransaction(True)
+
     def doSpecial(self):
         # exp_range = (1, 5000000)
         # fortune_range = (0, 10000000)
@@ -222,7 +237,13 @@ if __name__ == "__main__":
         elif nxt == "all":
             lbs.refreshRankData()
         exit(0)
-        
+
+    if cmd == "del":
+        nxt = sys.argv[2]
+        if nxt == 'all':
+            lbs.deleteAllUser(int(sys.argv[3]), int(sys.argv[4]))
+        exit(0)
+
     for k, v in lbs.table_sqls.items():
         print '"%s":"%s",' % (k, v.replace(",", ",\n").replace('"', '\\"'))
     #lbs.createTable("achievement_item")

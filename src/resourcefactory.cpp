@@ -1,4 +1,4 @@
-#include "resourcefactory.h"
+#include <resourcefactory.h>
 
 BEGIN_NAMESPACE(cgserver)
 
