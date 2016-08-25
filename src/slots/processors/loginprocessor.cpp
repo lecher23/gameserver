@@ -26,6 +26,7 @@ bool LoginProcessor::process(GameContext &context) const {
         processReward(loginDays, context.user->uRes.level, context.user->loginReward);
     }
     lastLogin = now;
+    gHistory.changed = true;
     return true;
 }
 
