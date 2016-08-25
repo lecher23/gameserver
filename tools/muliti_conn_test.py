@@ -15,22 +15,27 @@ def query(idx):
     f = open("result_%d" % idx, "w")
     begin = time.time()
     time_used = 0.0
-    REQ_TIMES = 400
+    REQ_TIMES = 4000
+    wrong = 0
     for i in range (0, REQ_TIMES):
         mid = int(time.time() * 1000000) + random.randint(2, 999)
 
-        begin_ = time.time()
-        #conn.request("POST", "/slots/login?mid=%d" % mid)
-        conn = httplib.HTTPConnection(HOST)
-        conn.request("POST", "/slots/login?mid=123456")
-        rsp = conn.getresponse()
-        end_ = time.time()
-
+        try:
+            begin_ = time.time()
+            #conn.request("POST", "/slots/login?mid=%d" % mid)
+            conn = httplib.HTTPConnection(HOST)
+            conn.request("POST", "/slots/login?mid=123456")
+            rsp = conn.getresponse()
+            end_ = time.time()
+        except:
+            wrong += 1
+        time.sleep(0.009)
         time_used += end_ - begin_
         body = rsp.read()
     end = time.time()
     ot = "%20s: %20d\n%20s: %20d\n" % ("begin", begin, "end", end)
     ot += "%20s: %20d\n" % ("Request Num", REQ_TIMES)
+    ot += "%20s: %20d\n" % ("Tcp error", wrong)
     ot += "%20s: %20f\n" % ("Each request", time_used / REQ_TIMES)
     f.write(ot)
     f.close()

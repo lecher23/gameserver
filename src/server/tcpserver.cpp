@@ -119,8 +119,15 @@ void TcpServer::startServer(int port) {
 	LOG(ERROR) << "Init Server failed.!";
 	return;
     }
-    startRowServer(port);
-    // startAsyncServer(port);
+    int use_asio;
+    if (!Config::getInstance().getIntValue("server", "use_asio", use_asio)) {
+        use_asio = 1;
+    }
+    if (use_asio == 0) {
+        startRowServer(port);
+    }else {
+        startAsyncServer(port);
+    }
 }
 
 void TcpServer::stopServer() {
