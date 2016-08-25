@@ -29,7 +29,7 @@ def query(idx):
         time_used += end_ - begin_
         body = rsp.read()
     end = time.time()
-    ot = "%20s: %20d\n%20s:%20d\n" % ("begin", int(begin), "end", int(end))
+    ot = "%20s: %20d\n%20s: %20d\n" % ("begin", begin, "end", end)
     ot += "%20s: %20d\n" % ("Request Num", REQ_TIMES)
     ot += "%20s: %20f\n" % ("Each request", time_used / REQ_TIMES)
     f.write(ot)

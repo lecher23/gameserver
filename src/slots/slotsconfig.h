@@ -9,6 +9,7 @@
 #include <slots/data/basicdata.h>
 
 BEGIN_NAMESPACE(slots)
+
 class SlotsConfig{
  public:
     struct LevelConfig{
@@ -17,7 +18,7 @@ class SlotsConfig{
 	int64_t maxBet;
 	int64_t reward;
     };
-	
+
     struct VipLevelConfig{
 	int32_t level;
 	float expPer;
@@ -33,7 +34,7 @@ class SlotsConfig{
     int64_t expGain(int64_t money);
     int64_t expNeed2LevelUp(int64_t exp);
     const VipLevelConfig &getVipLevel(int64_t vipPoint);
-    
+
     static SlotsConfig &getInstance(){
 	static SlotsConfig cfg;
 	return cfg;
@@ -42,8 +43,9 @@ class SlotsConfig{
     std::vector<LevelConfig> levelConfig;
     std::vector<VipLevelConfig> vipLevelConfig;
     CjSettingMap cjConfig;
-    
- private:
+    LoginSetting loginCfg; // read it from mysql or other place
+
+private:
     SlotsConfig() {}
     SlotsConfig(const SlotsConfig &);
 };

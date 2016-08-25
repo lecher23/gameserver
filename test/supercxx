@@ -53,7 +53,7 @@ class SuperCxx:
         extra = " ".join(self.extra_option) if self.extra_option else ""
         build_str = "g++ %s -o %s %s %s %s %s %s" % \
                     (extra, self.app_name, cpp_file, libs, headers, objs, links)
-        #print build_str
+        print build_str
         o, s = commands.getstatusoutput(build_str)
         if o != 0:
             print "Build test [%s] failed!" % cpp_file

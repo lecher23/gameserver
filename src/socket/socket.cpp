@@ -356,6 +356,7 @@ bool Socket::listen(int backlog) {
     }
 
     setReuseAddress(true);
+    setSoLinger(true, 0);
 
     if (addr.getProtocolFamily() == AF_UNIX){
         /* special logic for unix domain socket. 

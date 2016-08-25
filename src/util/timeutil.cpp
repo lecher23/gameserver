@@ -12,6 +12,15 @@ int64_t CTimeUtil::getCurrentTime()
     return (tval.tv_sec * 1000000LL + tval.tv_usec);
 }
 
+int64_t CTimeUtil::getMorningTime() {
+    time_t t = time(0);
+    struct tm *zeroTm = localtime(&t);
+    zeroTm->tm_hour = 0;
+    zeroTm->tm_min = 0;
+    zeroTm->tm_sec = 0;
+    return mktime(zeroTm);
+}
+
 inline time_t CTimeUtil::getTime()
 {
     struct timeval tval;

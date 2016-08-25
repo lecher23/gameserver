@@ -106,6 +106,7 @@ bool SlotsDB::updateGameHistory(GameHistory &gh) const {
     msu.setTable(gGameHistory);
     msu.setUpdateValue("friend_num", StringUtil::toString(gh.friendNum));
     msu.addUpdateValue("friend_gifts_num", StringUtil::toString(gh.friendGiftsNum));   
+    msu.addUpdateValue("last_login", StringUtil::toString(gh.lastLogin));   
     msu.addUpdateValue("consitive_login", StringUtil::toString(gh.consitiveLogin));   
     msu.addUpdateValue("tiny_game_times", StringUtil::toString(gh.tinyGameTimes));
     std::string tmp;
@@ -611,6 +612,7 @@ bool SlotsDB::getAchivementSetting(CjSettingMap &out) {
 	StringUtil::StrToInt64(row[2].c_str(), item->reward);
 	StringUtil::StrToInt32(row[3].c_str(), item->reward_type);
 	StringUtil::StrToInt32(row[4].c_str(), item->type);
+	StringUtil::StrToInt32(row[5].c_str(), item->value);
 	out[item->type].push_back(item);
     }
     return true;

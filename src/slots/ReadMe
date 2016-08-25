@@ -16,10 +16,22 @@ factor1 = 10^12
 factor2 = 10^9
 factor3 = 10^7
 
-#游戏ID(gameid)：从第一个游戏开始，第一个游戏的值为0
+# 游戏ID(gameid)：从第一个游戏开始，第一个游戏的值为0
 
-#游戏元素(eleid)：从第一个元素开始递增，第一个元素的值为0
+# 游戏元素(eleid)：从第一个元素开始递增，第一个元素的值为0
 
-#Rank
+# Rank
 ## Rank will cache rank data to mem. and server will update rank data from db every 5 min.
 ## There must have a job to caculate rank data to db.
+
+# Login setting
+## Level bonus setting:
+eg:
+level 1:1000 (level 1 user can get 1000)
+## Runner bonus setting:
+eg:
+1000, 254 (there 25.4% chance to hit, and its reward 1000)
+make sure the sum of chance is 100%
+## Login days bonus setting:
+eg:
+1: 1000 (login 1 day can get 1000 gold)

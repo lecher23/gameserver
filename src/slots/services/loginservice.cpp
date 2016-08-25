@@ -3,13 +3,13 @@
 namespace slots{
     LoginService::LoginService(){
     }
-    
+
     LoginService::~LoginService(){
     }
 
     bool LoginService::doJob(CPacket &packet, CResponse &resp){
 	bool pOk = false;
-	SlotsUserPtr sUser;	
+	SlotsUserPtr sUser;
 	Achievements cj;
 	do {
 	    if (!getUserInfo(packet, sUser, cj)){
@@ -17,7 +17,7 @@ namespace slots{
 	    }
 	    pOk = true;
 	}while(0);
-	
+
 	SBuf buf;
 	ResultFormatter rf(buf);
 	if (pOk) {
@@ -25,12 +25,14 @@ namespace slots{
 	} else {
 	    rf.formatSimpleResult(pOk, "");
 	}
-	
+
 	resp.setBody(buf.GetString());
 	return pOk;
     }
-    
-    bool LoginService::getUserInfo(CPacket &packet, SlotsUserPtr &su, Achievements &cj) const{
+
+    bool LoginService::getUserInfo(
+        CPacket &packet, SlotsUserPtr &su, Achievements &cj) const
+    {
 	std::string mid;
 	if (!packet.getParamValue("mid", mid)) {
 	    return false;

@@ -29,6 +29,7 @@ public:
     {
         return getCurrentTime() + usecOffset;
     }
+    static int64_t getMorningTime();
     static time_t getTime();
 
     static timeval getTimeval();

@@ -11,6 +11,7 @@ BEGIN_NAMESPACE(slots)
 #define MAX_ELE_TYPES 16
 #define TO_LINE_CJ_VALUE(gameid, eleid, line, value) (gameid * 1000000000000 + eleid * 1000000000 + line * 10000000 + value)
 #define TO_GAME_CJ_VALUE(gameid, value) (gameid * 10000000 + value)
+#define CHANCE_MAX_POINT 1000
 
 template <typename T>
 struct BasicData {
@@ -105,7 +106,7 @@ struct UserResource {
 	vipPoint += input;
 	changed = true;
     }
-	
+
     void levelUp() {
 	level ++;
 	changed = true;
@@ -181,6 +182,7 @@ struct GameHistory{
     std::string uid;
     int32_t friendNum;
     int32_t friendGiftsNum;
+    int64_t lastLogin;
     int32_t consitiveLogin;
     int32_t tinyGameTimes;
     int32_t bigwin[SLOTS_GAME_TYPES];// 0,0,0,0
@@ -196,6 +198,7 @@ struct GameHistory{
 	uid = uid;
 	friendNum = 0;
 	friendGiftsNum = 0;
+        lastLogin = 0;
 	consitiveLogin = 0;
 	tinyGameTimes = 0;
 	gJackpotTimes = 0;
@@ -214,23 +217,24 @@ struct GameHistory{
     }
 
     bool deserialize(std::vector<std::string> &row) {
-	if (row.size() < 13) return false;
+	if (row.size() < 14) return false;
 	uid = row[0];
 	friendNum = cgserver::StringUtil::StrToInt32WithDefault(row[1].c_str(), 0);
 	friendGiftsNum = cgserver::StringUtil::StrToInt32WithDefault(row[2].c_str(), 0);
-	consitiveLogin = cgserver::StringUtil::StrToInt32WithDefault(row[3].c_str(), 0);
-	tinyGameTimes = cgserver::StringUtil::StrToInt32WithDefault(row[4].c_str(), 0);
+	lastLogin = cgserver::StringUtil::StrToInt64WithDefault(row[3].c_str(), 0);
+	consitiveLogin = cgserver::StringUtil::StrToInt32WithDefault(row[4].c_str(), 0);
+	tinyGameTimes = cgserver::StringUtil::StrToInt32WithDefault(row[5].c_str(), 0);
 	cgserver::StringUtil::StrToIntArrayWithDefault
-	    (row[5].c_str(), ',', bigwin, SLOTS_GAME_TYPES, 0);
+	    (row[6].c_str(), ',', bigwin, SLOTS_GAME_TYPES, 0);
 	cgserver::StringUtil::StrToIntArrayWithDefault
-	    (row[6].c_str(), ',', megawin, SLOTS_GAME_TYPES, 0);
+	    (row[7].c_str(), ',', megawin, SLOTS_GAME_TYPES, 0);
 	cgserver::StringUtil::StrToIntArrayWithDefault
-	    (row[7].c_str(), ',', freeTimes, SLOTS_GAME_TYPES, 0);
+	    (row[8].c_str(), ',', freeTimes, SLOTS_GAME_TYPES, 0);
 	cgserver::StringUtil::StrToIntArrayWithDefault
-	    (row[8].c_str(), ',', gameTimes, SLOTS_GAME_TYPES, 0);
+	    (row[9].c_str(), ',', gameTimes, SLOTS_GAME_TYPES, 0);
 	cgserver::StringUtil::StrToIntArrayWithDefault
-	    (row[9].c_str(), ',', jackpotTimes, SLOTS_GAME_TYPES, 0);
-	gJackpotTimes = cgserver::StringUtil::StrToInt32WithDefault(row[10].c_str(), 0);
+	    (row[10].c_str(), ',', jackpotTimes, SLOTS_GAME_TYPES, 0);
+	gJackpotTimes = cgserver::StringUtil::StrToInt32WithDefault(row[11].c_str(), 0);
 	int32_t *pFourLine[SLOTS_GAME_TYPES];
 	int32_t *pFiveLine[SLOTS_GAME_TYPES];
 	for (size_t i = 0; i < SLOTS_GAME_TYPES; ++i) {
@@ -238,21 +242,30 @@ struct GameHistory{
 	    pFiveLine[i] = fiveLine[i];
 	}
 	cgserver::StringUtil::StrToIntArray
-	    (row[11].c_str(), ';', ',', pFourLine, SLOTS_GAME_TYPES,MAX_ELE_TYPES);
+	    (row[12].c_str(), ';', ',', pFourLine, SLOTS_GAME_TYPES,MAX_ELE_TYPES);
 	cgserver::StringUtil::StrToIntArray
-	    (row[12].c_str(), ';', ',', pFiveLine, SLOTS_GAME_TYPES,MAX_ELE_TYPES);
-	
+	    (row[13].c_str(), ';', ',', pFiveLine, SLOTS_GAME_TYPES,MAX_ELE_TYPES);
+
 	return true;
     }
 };
 
 DF_SHARED_PTR(GameHistory);
 
+struct LoginReward {
+        int64_t runnerReward;
+        int64_t daysReward;
+        int64_t specialReward;
+        int64_t timestamp;
+        bool recved;
+};
+
 struct SlotsUser{
     UserInfo uInfo;
     UserResource uRes;
     UserHistory uHis;
     GameHistory gDetail;
+    LoginReward loginReward;
 };
 DF_SHARED_PTR(SlotsUser);
 
@@ -423,8 +436,9 @@ struct CjSetting{
     int64_t reward;
     int32_t reward_type;
     int32_t type;
+    int32_t value;
     int fieldsNum() {
-	return 5;
+	return 6;
     }
 };
 DF_SHARED_PTR(CjSetting);
@@ -434,6 +448,12 @@ typedef std::map<int32_t, CjSettings> CjSettingMap;
 typedef UserCJPtr AchievementPtr;
 typedef std::vector<AchievementPtr> Achievements;
 
+struct LoginSetting{
+    std::map<int32_t, int64_t> levelBonus;
+    std::map<int32_t, int64_t> loginDaysBonus;
+    // (bonus, chance), sorted by chance desc
+    std::vector<std::pair<int64_t, int32_t> > runnerBonus;
+};
 
 END_NAMESPACE
 #endif

@@ -24,10 +24,10 @@ class GameContext{
     ~GameContext() {}
 
     SlotsUserPtr user;
-    SingleGameDetail gameInfo;    
+    SingleGameDetail gameInfo;
     int64_t gameID;
     std::vector<UserCJ> userCj;
-    
+
     // to save all game event during game.
     std::vector<EventInfo> events;
 };

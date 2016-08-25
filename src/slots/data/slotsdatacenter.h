@@ -15,7 +15,7 @@ BEGIN_NAMESPACE(slots)
 
 /*This lru cache will never expired*/
 class SlotsDataCenter{
- public:
+public:
     ~SlotsDataCenter(){
     }
 
@@ -86,9 +86,8 @@ class SlotsDataCenter{
     /* User data*/
     SlotsUserDataPtr slotsUserData;
     SqlQueuePtr sqlQueue;
-    //AchievementSystem achievementSystem(...);
 
- private:
+private:
     bool rankDataExpired(int64_t ts) {
 	int64_t now = cgserver::CTimeUtil::getCurrentTimeInSeconds();
 	// just cache for 5 min.
@@ -101,8 +100,7 @@ class SlotsDataCenter{
 	    rankData.timestamp = cgserver::CTimeUtil::getCurrentTimeInSeconds();
 	}
     }
-	
-	
+
     SlotsDataCenter(){}
     SlotsDataCenter(const SlotsDataCenter &);
 
