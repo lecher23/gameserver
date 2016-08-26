@@ -17,6 +17,12 @@ def exe_cmd(cmd):
         exit(0)
     print "Exe cmd [%s] done." % cmd
 
+def clone_from_git(git, version, dest):
+    cmd = "git clone %s %s" % (git, dest)
+    exe_cmd(cmd)
+    cmd = "cd %s && git checkout %s" % (dest, version)
+    exe_cmd(cmd)
+
 def get_boost_hpp_lib(lib_name, version):
     os.system("mkdir %s" % TMP_DIR)
     cmd = "git clone %s/%s %s/%s" % (BOOST_GIT, lib_name, TMP_DIR, lib_name)
@@ -44,7 +50,9 @@ def resolve_boost_dependency():
     get_boost_hpp_lib("system", "boost-1.61.0")
     get_boost_hpp_lib("date_time", "boost-1.61.0")
 
+def resolve_glog_dependency():
+    clone_from_git("https://github.com/google/glog", "v0.3.4")
+
 if __name__ == "__main__":
     os.system("rm -rf %s" % TMP_DIR)
     exit(0)
-    
