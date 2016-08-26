@@ -10,28 +10,21 @@
 #include <slots/services/socialityservice.h>
 
 BEGIN_NAMESPACE(slots)
+std::map<std::string, IServicePtr> _routing
+        = {{"/slots/login", IServicePtr((IService *)new LoginService)},
+           {"/slots/update", IServicePtr((IService *)new UpdateService)},
+           {"/slots/mail", IServicePtr((IService *)new MailService)},
+           {"/slots/game", IServicePtr((IService *)new GameService)},
+           {"/slots/friends", IServicePtr((IService *)new SocialityService)},
+           {"/slots/rank", IServicePtr((IService *)new RankService)}};
+
 class ServiceProvider{
  public:
     ServiceProvider();
     ~ServiceProvider();
 
-    static IServicePtr getService(const std::string &path) {
-	/* TODO: Use map instead of choice.*/
-	IServicePtr ret;
-	if (path == "/slots/login"){
-	    ret.reset((IService *)new LoginService);
-	} else if (path == "/slots/update") {
-	    ret.reset((IService *)new UpdateService);
-	} else if (path == "/slots/mail") {
-	    ret.reset((IService *)new MailService);
-	} else if (path == "/slots/game") {
-	    ret.reset((IService *)new GameService);
-	} else if (path == "/slots/friends") {
-	    ret.reset((IService *)new SocialityService);
-	} else if (path == "/slots/rank") {
-	    ret.reset((IService *)new RankService);
-	}
-	return ret;
+    static const IServicePtr getService(const std::string &path) {
+	return _routing[path];
     }
     /* private: */
     /* 	static const std::map<std::string, IServicePtr> _router; */
