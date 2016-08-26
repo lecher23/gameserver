@@ -7,8 +7,8 @@ import os
 CUR = os.path.split(os.path.realpath(__file__))[0]
 TMP_DIR = os.path.join(CUR, ".cgservertmp")
 BOOST_GIT = "https://github.com/boostorg"
-INCLUDE_DIR = os.path.join(CUR, "depend/headers")
-LIB_DIR = os.path.join(CUR, "depend/libs")
+INCLUDE_DIR = os.path.join(CUR, "depend/include")
+LIB_DIR = os.path.join(CUR, "depend/lib")
 
 def exe_cmd(cmd):
     s, o = commands.getstatusoutput(cmd)
@@ -48,11 +48,55 @@ def resolve_boost_dependency():
     get_boost_hpp_lib("throw_exception", "boost-1.61.0")
     get_boost_hpp_lib("asio", "boost-1.61.0")
     get_boost_hpp_lib("system", "boost-1.61.0")
+    get_boost_hpp_lib("log", "boost-1.61.0")
     get_boost_hpp_lib("date_time", "boost-1.61.0")
+    get_boost_hpp_lib("utility", "boost-1.61.0")
 
 def resolve_glog_dependency():
-    clone_from_git("https://github.com/google/glog", "v0.3.4")
+    clone_from_git("https://github.com/google/glog", "v0.3.4",
+                   os.path.join(TMP_DIR, "glog"))
+    exe_cmd("cd %s && ./configure --prefix=%s" %
+            (os.path.join(TMP_DIR, "glog"), os.path.join(CUR, "depend")))
+    exe_cmd("cd %s && make && make install" %
+            os.path.join(TMP_DIR, "glog"))
+
+def resolve_rapid_json():
+    clone_from_git("https://github.com/miloyip/rapidjson", "v1.0.2",
+                   os.path.join(TMP_DIR, "rapidjson"))
+    exe_cmd("cp -r %s/include/* %s" % \
+            (os.path.join(TMP_DIR, "rapidjson"), INCLUDE_DIR))
+
+def resolve_lua():
+    # 5.1 or other version
+    # before make, we should use cmd:
+    # sudo apt-get install libreadline6 libreadline6-dev
+    tgz = "http://www.lua.org/ftp/lua-5.3.3.tar.gz"
+    fname = os.path.basename(tgz)
+    exe_cmd("cd %s && wget %s" % (TMP_DIR, tgz))
+    exe_cmd("cd %s && tar -zxf %s" % (TMP_DIR, fname))
+    exe_cmd("apt-get install libreadline6 libreadline6-dev")
+    exe_cmd("cd %s && make linux" % (os.path.join(TMP_DIR, fname.replace(".tar.gz", ""))))
+    # here is lua install info
+    # cd src && mkdir -p /usr/local/bin /usr/local/include /usr/local/lib /usr/local/man/man1 /usr/local/share/lua/5.3 /usr/local/lib/lua/5.3
+    # cd src && install -p -m 0755 lua luac /usr/local/bin
+    # cd src && install -p -m 0644 lua.h luaconf.h lualib.h lauxlib.h lua.hpp /usr/local/include
+    # cd src && install -p -m 0644 liblua.a /usr/local/lib
+    # cd doc && install -p -m 0644 lua.1 luac.1 /usr/local/man/man1
+
+    # infact, just liblua.a is ok, no need other so file.
+
+def resolve_mysql_client():
+    # for some reason, we use c connector rather than cpp connector
+    tgz = "http://dev.mysql.com/get/Downloads/Connector-C/mysql-connector-c-6.1.6-linux-glibc2.5-x86_64.tar.gz"
+    fname = os.path.basename(tgz)
+    exe_cmd("cd %s && wget %s" % (TMP_DIR, tgz))
+    exe_cmd("cd %s && tar -zxf %s" % (TMP_DIR, fname))
+    exe_cmd("cp -r %s/include/*  %s" %
+            (os.path.join(TMP_DIR, fname.replace(".tar.gz", "")), INCLUDE_DIR))
 
 if __name__ == "__main__":
     os.system("rm -rf %s" % TMP_DIR)
+    os.system("mkdir %s" % TMP_DIR)
+    resolve_mysql_client()
+    resolve_rapid_json()
     exit(0)
