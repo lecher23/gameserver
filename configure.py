@@ -4,10 +4,11 @@ import sys
 import commands
 import os
 
-CUR = "/root/CgServerPlus"
+CUR = os.path.split(os.path.realpath(__file__))[0]
 TMP_DIR = os.path.join(CUR, ".cgservertmp")
 BOOST_GIT = "https://github.com/boostorg"
-INCLUDE_DIR = os.path.join(CUR, "include")
+INCLUDE_DIR = os.path.join(CUR, "depend/headers")
+LIB_DIR = os.path.join(CUR, "depend/libs")
 
 def exe_cmd(cmd):
     s, o = commands.getstatusoutput(cmd)
@@ -25,8 +26,7 @@ def get_boost_hpp_lib(lib_name, version):
     cmd = "cp -r %s/include/boost/* %s" % (os.path.join(TMP_DIR, lib_name), os.path.join(INCLUDE_DIR, "boost"))
     exe_cmd(cmd)
 
-if __name__ == "__main__":
-    os.system("rm -rf %s" % TMP_DIR)
+def resolve_boost_dependency():
     get_boost_hpp_lib("regex", "boost-1.61.0")
     get_boost_hpp_lib("bind", "boost-1.61.0")
     get_boost_hpp_lib("type_traits", "boost-1.61.0")
@@ -40,4 +40,11 @@ if __name__ == "__main__":
     get_boost_hpp_lib("assert", "boost-1.61.0")
     get_boost_hpp_lib("core", "boost-1.61.0")
     get_boost_hpp_lib("throw_exception", "boost-1.61.0")
+    get_boost_hpp_lib("asio", "boost-1.61.0")
+    get_boost_hpp_lib("system", "boost-1.61.0")
+    get_boost_hpp_lib("date_time", "boost-1.61.0")
+
+if __name__ == "__main__":
+    os.system("rm -rf %s" % TMP_DIR)
+    exit(0)
     
