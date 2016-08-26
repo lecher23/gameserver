@@ -6,6 +6,7 @@
 #include <util/iprocessor.h>
 #include <socket/socket.h>
 #include <handlers/handlerfactory.h>
+#include <server/asyncserver.h>
 
 namespace cgserver{
     class TcpServer{
@@ -18,13 +19,14 @@ namespace cgserver{
 	void stopServer();
     private:
         bool startAsyncServer(int port);
-        bool startRowServer(int port);
+        bool startRawServer(int port);
 
 	Socket _socket;
 	bool _stop;
 	IProcessorPtr _processor;
 	ThreadPoolPtr _pool;
 	IHandler *_handler;
+        AsyncServerPtr _server;
     };
 }
 #endif

@@ -21,13 +21,16 @@ namespace cgserver{
 	void handleAccept(AsyncConnPtr task, const asio_error &err);
 	void doAccept();
     private:
+        void run();
+
 	boost::asio::io_service &_service;
 	boost::asio::ip::tcp::acceptor _acceptor;
-	std::vector<std::shared_ptr<std::thread>> threads;
+	std::vector<std::shared_ptr<std::thread>> _threads;
 	AsyncConnPtr _task;
 	IHandler *_handler;
 	bool _stop;
 	std::shared_ptr<asio_service::work> _work;
     };
+    typedef std::shared_ptr<AsyncServer> AsyncServerPtr;
 }
 #endif

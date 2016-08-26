@@ -133,7 +133,7 @@ static void sig_func(int signo) {
 	// 10
 	CLOG(INFO) << "Stoping server.\n";
 	g_server.stop();
-	exit(0);
+	//exit(0);
     }
 }
 

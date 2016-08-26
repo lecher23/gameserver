@@ -12,7 +12,6 @@
 #include <util/config.h>
 #include <mysql/mysqlconnpool.h>
 #include <resourcefactory.h>
-#include <server/asyncserver.h>
 
 BEGIN_NAMESPACE(cgserver)
 
@@ -37,11 +36,12 @@ bool TcpServer::initServer(int port) {
 	return false;
     }
 
-    auto timer = ResourceFactory::getInstance().getServerTimer();
-    auto st = ResourceFactory::getInstance().getServiceThread();
-    if(!st->start()) {
-	return false;
-    }
+    // auto timer = ResourceFactory::getInstance().getServerTimer();
+    // auto st = ResourceFactory::getInstance().getServiceThread();
+    // if(!st->start()) {
+    //     return false;
+    // }
+    // no timer
     // auto f = [=](){
     // 	CLOG(INFO) << "Timer worked.";
     // };
@@ -69,7 +69,7 @@ bool TcpServer::initServer(int port) {
     return true;
 }
 
-bool TcpServer::startRowServer(int port) {
+bool TcpServer::startRawServer(int port) {
     int poolSize;
     if (!Config::getInstance().getIntValue("server", "threadpool_size", poolSize) ||
 	poolSize < 0)
@@ -109,8 +109,8 @@ bool TcpServer::startRowServer(int port) {
 
 bool TcpServer::startAsyncServer(int port) {
     asio_service &service = ResourceFactory::getInstance().getIoService();
-    AsyncServer server(service, port);
-    server.start(_handler);
+    _server.reset(new AsyncServer(service, port));
+    _server->start(_handler);
     service.run();
 }
 
@@ -124,7 +124,7 @@ void TcpServer::startServer(int port) {
         use_asio = 1;
     }
     if (use_asio == 0) {
-        startRowServer(port);
+        startRawServer(port);
     }else {
         startAsyncServer(port);
     }
@@ -132,7 +132,14 @@ void TcpServer::startServer(int port) {
 
 void TcpServer::stopServer() {
     _stop = true;
-    _pool->stop(ThreadPool::STOP_THREAD_ONLY);
+    if (_pool.get() != NULL) {
+        _pool->stop(ThreadPool::STOP_THREAD_ONLY);
+    }
+    if(_server.get() != NULL) {
+        _server->stop();
+    }
+    asio_service &service = ResourceFactory::getInstance().getIoService();
+    service.stop();
     _handler->release();
 }
 
