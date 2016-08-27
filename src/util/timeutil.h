@@ -34,7 +34,7 @@ public:
     static timeval getTimeval();
     static timeval getTimeval(int64_t usecOffset);
     static timespec getTimespec(int64_t usecOffset = 0);
-    std::string getCurrentTimeString();
+    static std::string getCurrentTimeString();
      /**
      * Converts the time to a {struct tm} (static version).
      * This method corrects for the local time zone.

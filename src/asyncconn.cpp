@@ -1,5 +1,6 @@
 #include "asyncconn.h"
 #include <http/httppacketparser.h>
+#include <util/timeutil.h>
 
 namespace cgserver{
     AsyncConn::AsyncConn(asio_service &service)
@@ -33,7 +34,9 @@ namespace cgserver{
 		CLOG(WARNING) << "Parse http packet failed.";
 		break;
 	    }
-	    CLOG(INFO) << "Reveive:" << packet.getURI();
+	    CLOG(INFO) << "[" << 
+	      CTimeUtil::getCurrentTimeString() << "]" ;
+	    std::cout << "Recive:" << packet.getURI() << std::endl;
 	    /* Check if it is valid http request.*/
 	    if (!validatePacket(packet)) {
 		CLOG(WARNING) << "validate http packet failed.";
@@ -65,15 +68,14 @@ namespace cgserver{
     }
 
     void AsyncConn::afterRead(const asio_error &err, size_t read_len) {
-	std::cout << "read len:" << read_len << std::endl;
 	std::string tmp(_input.getData(), read_len);
-	std::cout << tmp << std::endl;
 	bool ret = false;
 	do {
 	    // some error such as sys busy or try again is special
 	    if (err){
 		// error end process
-		return;
+	      std::cout << "Asio error:" << err << std::endl;
+		break;
 	    }
 	    _input.pourData(read_len);
 	    if (!process()) {
