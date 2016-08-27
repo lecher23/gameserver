@@ -33,7 +33,10 @@ def get_boost_hpp_lib(lib_name, version):
     exe_cmd(cmd)
 
 def resolve_boost_dependency():
-    get_boost_hpp_lib("regex", "boost-1.61.0")
+    get_boost_hpp_lib("io", "boost-1.61.0")
+    get_boost_hpp_lib("algorithm", "boost-1.61.0")
+    return
+    get_boost_hpp_lib("regex", "boost-1.61.0")    
     get_boost_hpp_lib("bind", "boost-1.61.0")
     get_boost_hpp_lib("type_traits", "boost-1.61.0")
     get_boost_hpp_lib("preprocessor", "boost-1.61.0")
@@ -75,7 +78,8 @@ def resolve_lua():
     exe_cmd("cd %s && wget %s" % (TMP_DIR, tgz))
     exe_cmd("cd %s && tar -zxf %s" % (TMP_DIR, fname))
     exe_cmd("apt-get install libreadline6 libreadline6-dev")
-    exe_cmd("cd %s && make linux" % (os.path.join(TMP_DIR, fname.replace(".tar.gz", ""))))
+    lua_dir = os.path.join(TMP_DIR, fname.replace(".tar.gz", ""))
+    exe_cmd("cd %s && make linux" % lua_dir)
     # here is lua install info
     # cd src && mkdir -p /usr/local/bin /usr/local/include /usr/local/lib /usr/local/man/man1 /usr/local/share/lua/5.3 /usr/local/lib/lua/5.3
     # cd src && install -p -m 0755 lua luac /usr/local/bin
@@ -84,6 +88,7 @@ def resolve_lua():
     # cd doc && install -p -m 0644 lua.1 luac.1 /usr/local/man/man1
 
     # infact, just liblua.a is ok, no need other so file.
+    exe_cmd("cp %s %s" %(os.path.join(lua_dir, "src/liblua.a") , LIB_DIR))
 
 def resolve_mysql_client():
     # for some reason, we use c connector rather than cpp connector
@@ -97,6 +102,8 @@ def resolve_mysql_client():
 if __name__ == "__main__":
     os.system("rm -rf %s" % TMP_DIR)
     os.system("mkdir %s" % TMP_DIR)
-    resolve_mysql_client()
-    resolve_rapid_json()
+    #resolve_mysql_client()
+    #resolve_rapid_json()
+    #resolve_lua()
+    resolve_boost_dependency()
     exit(0)
