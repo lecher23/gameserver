@@ -60,6 +60,7 @@ bool TcpServer::initServer(int port) {
     }
 
     bool TcpServer::startAsyncServer(int port) {
+      std::cout << "start asio server" << std::endl;
         asio_service service;
         AsyncServer server(service, port);
         server.start(_handler);
@@ -75,11 +76,7 @@ void TcpServer::startServer(int port) {
     if (!Config::getInstance().getIntValue("server", "use_asio", use_asio)) {
         use_asio = 0;
     }
-    if (use_asio == 0) {
-        startRowServer(port);
-    }else {
-        startAsyncServer(port);
-    }
+    startAsyncServer(port);
 }
 
 void TcpServer::stopServer() {

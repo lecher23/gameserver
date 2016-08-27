@@ -53,6 +53,7 @@ namespace cgserver{
     void AsyncConn::afterWrite(const asio_error &err, size_t write_len) {
 	if (err || write_len == _output.getDataLen()) {
 	    _socket.shutdown(asio_socket::shutdown_both);
+	    _socket.close();
 	    return;
 	}
 	// if write not finish, continue write
@@ -86,6 +87,7 @@ namespace cgserver{
 	}while (false);
 	if (!ret) {
 	    _socket.shutdown(asio_socket::shutdown_both);
+	    _socket.close();
 	}
     }
 
