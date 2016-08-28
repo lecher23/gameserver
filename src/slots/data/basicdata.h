@@ -459,7 +459,7 @@ struct CargoInfo{
     int64_t base;
     int64_t vip_point;
     int64_t free_extra;
-    std::vector<int32_t> vip_extra;
+    std::vector<int32_t> vip_extra;// vip0,vip1,vip2,vip3.  15 = 15%
 
     bool deserialize(std::vector<std::string> &row) {
         if (row.size() < 5) {
@@ -480,6 +480,8 @@ struct CargoInfo{
         return true;
     }
 };
+DF_SHARED_PTR(CargoInfo);
+typedef std::map<std::string, CargoInfoPtr> CargoInfos;
 
 struct CargoHistory{
     std::string uid; // use id

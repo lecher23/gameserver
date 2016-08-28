@@ -73,6 +73,23 @@ bool SlotsDB::getUserInfoByUserId(const std::string &uid, SlotsUser &su) const
     return getUserInfo((MysqlOperationBase *)&mss, su);
 }
 
+bool SlotsDB::getCargoInfo(CargoInfos &out) const {
+    MysqlSimpleSelect mss;
+    mss.setField("*");
+    mss.setTable(gCargoInfo);
+    if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss)) {
+        return false;
+    }
+    for (auto &row: mss.result){
+        CargoInfoPtr tmp(new CargoInfo);
+        if(!tmp->deserialize(row)){
+            return false;
+        }
+        out[tmp->cid] = tmp;
+    }
+    return true;
+}
+
 bool SlotsDB::addUser(const std::string &mid, std::string &uid) const 
 {
     AddUser2Mysql job;

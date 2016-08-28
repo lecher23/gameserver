@@ -44,6 +44,7 @@ class SlotsConfig{
     std::vector<VipLevelConfig> vipLevelConfig;
     CjSettingMap cjConfig;
     LoginSetting loginCfg; // read it from mysql or other place
+    CargoInfos cargoInfo;
 
 private:
     SlotsConfig() {}
