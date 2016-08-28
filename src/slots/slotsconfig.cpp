@@ -32,6 +32,17 @@ bool SlotsConfig::init(){
         CLOG(ERROR) << "Get cargo info from db failed.";
         return false;
     }
+
+    if (!db.getLoginSetting(loginCfg)) {
+        CLOG(ERROR) << "Get login config from db failed.";
+        return false;
+    }
+    int32_t preChance = 0;
+    // sort
+    for(auto &item: loginCfg.runnerBonus) {
+        item.second = preChance + preChance;
+        preChance = item.second;
+    }
     return true;
 }
 

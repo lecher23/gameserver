@@ -174,6 +174,10 @@ class ServerSql:
         sql = 'create table %s(cid char(6) NOT NULL PRIMARY KEY, base BIGINT NOT NULL, vip_extra INT NOT NULL, vip_point BIGINT NOT NULL, free_extra BIGINT DEFAULT 0 )' % table
         self.table_sqls[table] = sql
 
+        table = "login_config"
+        sql = 'create table %s(id INT NOT NULL PRIMARY KEY, val BIGINT NOT NULL, extra_val INT DEFAULT 0)' % table
+        self.table_sqls[table] = sql
+
         tables = ["cur_level_rank", "cur_fortune_rank", "cur_earned_rank", "cur_acmt_rank",
                   "lw_level_rank", "lw_fortune_rank", "lw_earned_rank", "lw_acmt_rank",
                   "tw_earned_rank"]

@@ -20,7 +20,7 @@ const std::string gUserMails = "mail_info";
 const std::string gMailDetail = "mails";
 const std::string gLifeHistory = "history";
 const std::string gCargoInfo = "cargo_info";
-const std::string gCargoHistory = "cargo_history";
+const std::string gLoginConfig = "login_config";
 
 class SlotsDB{
 public:
@@ -43,6 +43,7 @@ public:
     bool getUserAchievement(const std::string &uid, const std::string &cjID, UserCJ &out);
     bool getAchivementSetting(CjSettingMap &out);
     bool getCargoInfo(CargoInfos &out) const;
+    bool getLoginSetting(LoginSetting &out) const;
 
     bool addUser(const std::string &mid, std::string &uid)const ;
     bool add(const UserCJ &cj);

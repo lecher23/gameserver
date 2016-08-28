@@ -448,9 +448,8 @@ typedef UserCJPtr AchievementPtr;
 typedef std::vector<AchievementPtr> Achievements;
 
 struct LoginSetting{
-    std::map<int32_t, int64_t> levelBonus;
+    std::map<int32_t, int64_t> levelBonus; // vip level
     std::map<int32_t, int64_t> loginDaysBonus;
-    // (bonus, chance), sorted by chance desc
     std::vector<std::pair<int64_t, int32_t> > runnerBonus;
 };
 

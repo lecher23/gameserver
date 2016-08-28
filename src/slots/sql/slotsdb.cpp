@@ -90,6 +90,41 @@ bool SlotsDB::getCargoInfo(CargoInfos &out) const {
     return true;
 }
 
+bool SlotsDB::getLoginSetting(LoginSetting &out) const {
+    MysqlSimpleSelect mss;
+    mss.setField("*");
+    mss.setTable(gLoginConfig);
+    if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss)) {
+        return false;
+    }
+    int64_t val;
+    int32_t id;
+    int32_t chance;
+    // id, val, extra, extra_val
+    for (auto &row: mss.result){
+        if(row.size() < 3) {
+            return false;
+        }
+        if(!StringUtil::StrToInt32(row[0].c_str(), id)
+           || !StringUtil::StrToInt64(row[1].c_str(), val))
+        {
+            return false;
+        }
+        if (id >= 10000 && id < 20000) {
+            out.levelBonus[id - 10000] = val;
+        }else if(id < 3000 && id >= 2000) {
+            out.loginDaysBonus[id - 20000] = val;
+        }else if(id < 4000 && id >= 3000
+                 && StringUtil::StrToInt32(row[2].c_str(), chance))
+        {
+            out.runnerBonus.push_back(std::pair<int64_t, int32_t>(val, chance));
+        }else{
+            return false;
+        }
+    }
+    return true;
+}
+
 bool SlotsDB::addUser(const std::string &mid, std::string &uid) const 
 {
     AddUser2Mysql job;
