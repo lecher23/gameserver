@@ -15,8 +15,8 @@ class SlotsUserData: public PersistenceBase{
     /* get user info. if user not exist, read it from db*/
     bool get(const std::string &uid, SlotsUserPtr &out, bool isUserId = true);
     void set(const std::string &uid, SlotsUserPtr &in);
-    
- private:
+
+private:
     std::map<std::string, SlotsUserPtr> _data;
     std::mutex _lock;
 };

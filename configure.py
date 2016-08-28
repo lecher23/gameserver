@@ -70,6 +70,7 @@ def resolve_rapid_json():
             (os.path.join(TMP_DIR, "rapidjson"), INCLUDE_DIR))
 
 def resolve_lua():
+    # easy install : apt-get install lua5.3 lua5.3-dev
     # 5.1 or other version
     # before make, we should use cmd:
     # sudo apt-get install libreadline6 libreadline6-dev
@@ -100,6 +101,9 @@ def resolve_mysql_client():
             (os.path.join(TMP_DIR, fname.replace(".tar.gz", "")), INCLUDE_DIR))
 
 if __name__ == "__main__":
+    if os.geteuid() != 0:
+        print "This script must be run as root."
+        exit(1)
     os.system("rm -rf %s" % TMP_DIR)
     os.system("mkdir %s" % TMP_DIR)
     #resolve_mysql_client()

@@ -168,7 +168,6 @@ struct UserHistory {
 	    changed = true;
 	}
     }
-	
     void incrEarned(int64_t earned) {
 	if (earned == 0) return;
 	totalEarned += earned;

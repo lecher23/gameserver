@@ -5,14 +5,14 @@
 
 BEGIN_NAMESPACE(slots)
 
-class MessageService{
+class MessageService: public IService{
 public:
     MessageService();
     virtual ~MessageService();
     virtual bool doJob(CPacket &packet, CResponse &resp);
 
 private:
+    bool getLoginReward(CPacket &packet);
 };
-
 END_NAMESPACE
 #endif

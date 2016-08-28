@@ -2,7 +2,7 @@
 #define MYSQLOPERATIONBASE_H
 
 #include "../util/stringutil.h"
-#include "mysql.h"
+#include <mysql.h>
 #include "../util/common_define.h"
 #include <map>
 #include <vector>
