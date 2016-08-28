@@ -24,3 +24,5 @@ $(CUR_OBJS):%.o:%.cpp
 	$(CC) -c $^ -o $(OBJS_DIR)/$@
 clean:
 	@rm $(OBJS_DIR)/*.o
+install:
+	mv ${BIN_DIR}/server ${ROOT_DIR}/../build/release

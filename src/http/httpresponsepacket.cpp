@@ -10,7 +10,7 @@ HttpResponsePacket::HttpResponsePacket() {
     _status = true;
     _body = NULL;
     _bodyLen = 0;
-    _isKeepAlive = false;
+    _isKeepAlive = true;
 }
 
 /*

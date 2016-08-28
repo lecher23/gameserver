@@ -37,6 +37,7 @@ namespace cgserver{
 	void afterWrite(const asio_error &err, size_t write_len);
 	void afterRead(const asio_error &err, size_t read_len);
 	bool validatePacket(HTTPPacket &packet) const;
+        void closeSocket();
 
         HttpResponsePacket _resp;
 	asio_service &_service;

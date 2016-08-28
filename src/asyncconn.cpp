@@ -55,8 +55,7 @@ namespace cgserver{
 
     void AsyncConn::afterWrite(const asio_error &err, size_t write_len) {
 	if (err || write_len == _output.getDataLen()) {
-	    _socket.shutdown(asio_socket::shutdown_both);
-	    _socket.close();
+            closeSocket();
 	    return;
 	}
 	// if write not finish, continue write
@@ -88,8 +87,7 @@ namespace cgserver{
 	    ret = true;
 	}while (false);
 	if (!ret) {
-	    _socket.shutdown(asio_socket::shutdown_both);
-	    _socket.close();
+	    closeSocket();
 	}
     }
 
@@ -102,5 +100,13 @@ namespace cgserver{
     bool AsyncConn::validatePacket(HTTPPacket &packet) const {
         return true;
     }
-    
+
+    void AsyncConn::closeSocket(){
+        try{
+            _socket.shutdown(asio_socket::shutdown_both);
+            _socket.close();
+        } catch (std::exception &e){
+            std::cout << "Close socket failed:" << e.what();
+        }
+    }
 }
