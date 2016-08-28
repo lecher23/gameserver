@@ -167,7 +167,7 @@ class ServerSql:
         self.table_sqls[table] = sql
 
         table = "cargo_history"
-        sql = 'create table %s(id INT AUTO_INCREMENT PRIMARY KEY, uid INT NOT NULL, cid CHAR(6) NOT NULL, tsid CHAR(64) NOT NULL, value BIGINT NOT NULL, timestamp DATETIME NOT NULL)' % table
+        sql = 'create table %s(id INT AUTO_INCREMENT PRIMARY KEY, uid INT NOT NULL, cid CHAR(6) NOT NULL, tsid CHAR(64) NOT NULL, value BIGINT NOT NULL, timestamp BIGINT NOT NULL)' % table
         self.table_sqls[table] = sql
 
         table = "cargo_info"

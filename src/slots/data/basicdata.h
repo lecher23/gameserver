@@ -454,5 +454,40 @@ struct LoginSetting{
     std::vector<std::pair<int64_t, int32_t> > runnerBonus;
 };
 
+struct CargoInfo{
+    std::string cid;
+    int64_t base;
+    int64_t vip_point;
+    int64_t free_extra;
+    std::vector<int32_t> vip_extra;
+
+    bool deserialize(std::vector<std::string> &row) {
+        if (row.size() < 5) {
+            return false;
+        }
+        cid = row[0];
+        if (!cgserver::StringUtil::StrToInt64(row[1].c_str(), base)) {
+            return false;
+        }
+        if (!cgserver::StringUtil::StrToInt64(row[3].c_str(), vip_point)) {
+            return false;
+        }
+        if (!cgserver::StringUtil::StrToInt64(row[4].c_str(), free_extra)) {
+            return false;
+        }
+        vip_extra.clear();
+        cgserver::StringUtil::StrToIntVector(row[2], vip_extra, ',');
+        return true;
+    }
+};
+
+struct CargoHistory{
+    std::string uid; // use id
+    std::string cid; // cargo id
+    std::string tsid; // transation id
+    int64_t value; // final value at the end of transaction
+    int64_t timestamp; // unix timestamp
+};
+
 END_NAMESPACE
 #endif
