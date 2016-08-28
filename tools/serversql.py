@@ -19,7 +19,7 @@ class ServerSql:
         self.table_sqls = {}
 
     def init(self):
-        self.generateTableSql();        
+        self.generateTableSql();
         self.conn = mysqldb.connect(host = HOST, user = USER, passwd = PASSWD)
         self.conn.select_db('SLOTS')
         self.cursor = self.conn.cursor()
@@ -126,8 +126,12 @@ class ServerSql:
 
     ''' Table creator'''
     def createTable(self, table):
+        if table not in self.table_sqls:
+            print "Sql config not exist for table[%s]" % table
+            exit(1)
         self._dropTable(table)
         self.cursor.execute(self.table_sqls[table])
+        print "Create table done."
 
     def createRankTables(self):
         tables = ["cur_level_rank", "cur_fortune_rank", "cur_earned_rank", "cur_acmt_rank",
@@ -135,7 +139,7 @@ class ServerSql:
                   "tw_earned_rank"]
         for table in tables:
             self.createTable(table)
-            
+
     def generateTableSql(self):
         # This is mail tables in MySQL
         table = "mail_detail"
@@ -149,7 +153,7 @@ class ServerSql:
         table = "attachment"
         sql = "create table %s(attid BIGINT AUTO_INCREMENT PRIMARY KEY, type INT NOT NULL, value varchar(64) NOT NULL)" % table
         self.table_sqls[table] = sql
-        
+
         table = "user_achievement"
         sql='create table %s(uid INT NOT NULL, uaid INT NOT NULL, is_recv_reward BOOL DEFAULT 0, progress BIGINT DEFAULT 0, is_gain BOOL DEFAULT 0, time BIGINT DEFAULT 0, PRIMARY KEY(uid, uaid))' % table
         self.table_sqls[table] = sql
@@ -157,10 +161,17 @@ class ServerSql:
         table = "achievement_item"
         sql='create table %s(aiid INT AUTO_INCREMENT PRIMARY KEY, target BIGINT NOT NULL, reward BIGINT DEFAULT 0, reward_type INT DEFAULT 0, type INT NOT NULL)' % table
         self.table_sqls[table] = sql
-        
-        
+
         table = "g_history"
         sql = 'create table %s( uid INT NOT NULL PRIMARY KEY, friend_num INT DEFAULT 0, friend_gifts_num INT DEFAULT 0, last_login BIGINT DEFAULT 0, consitive_login INT DEFAULT 0, tiny_game_times INT DEFAULT 0, bigwin varchar(255) DEFAULT "0", megawin varchar(255) DEFAULT "0", free_times varchar(255) DEFAULT "0", game_times varchar(255) DEFAULT "0", jackpot_times varchar(255) DEFAULT "0", g_jackpot_times INT DEFAULT "0", four_line_times varchar(255) DEFAULT "0", five_line_times varchar(255) DEFAULT "0")' % table
+        self.table_sqls[table] = sql
+
+        table = "cargo_history"
+        sql = 'create table %s(id INT AUTO_INCREMENT PRIMARY KEY, uid INT NOT NULL, cid CHAR(6) NOT NULL, tsid CHAR(64) NOT NULL, value BIGINT NOT NULL, timestamp DATETIME NOT NULL)' % table
+        self.table_sqls[table] = sql
+
+        table = "cargo_info"
+        sql = 'create table %s(cid char(6) NOT NULL PRIMARY KEY, base BIGINT NOT NULL, vip_extra INT NOT NULL, vip_point BIGINT NOT NULL, free_extra BIGINT DEFAULT 0 )' % table
         self.table_sqls[table] = sql
 
         tables = ["cur_level_rank", "cur_fortune_rank", "cur_earned_rank", "cur_acmt_rank",
@@ -174,7 +185,7 @@ class ServerSql:
     def _transaction(self, dest_table, sqls):
         self.startTransaction()
         try:
-            self.clearTable(dest_table)            
+            self.clearTable(dest_table)
             for sql in sqls:
                 self.cursor.execute(sql)
         except Exception, e:
@@ -242,6 +253,11 @@ if __name__ == "__main__":
         nxt = sys.argv[2]
         if nxt == 'all':
             lbs.deleteAllUser(int(sys.argv[3]), int(sys.argv[4]))
+        exit(0)
+
+    if cmd == "mktb":
+        table_name = sys.argv[2]
+        lbs.createTable(table_name)
         exit(0)
 
     for k, v in lbs.table_sqls.items():
