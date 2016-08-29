@@ -34,7 +34,7 @@ bool MessageService::getLoginReward(CPacket &packet) {
     std::string uid;
     GET_PARAM("uid", uid, true);
     SlotsUserPtr user;
-    if (!SlotsDataCenter::instance().slotsUserData->get(uid, user, true)) {
+    if (!SlotsDataCenter::instance().slotsUserData->getByUid(uid, user)) {
         return false;
     }
     auto &loginReward = user->loginReward;

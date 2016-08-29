@@ -20,6 +20,7 @@ bool LoginProcessor::process(GameContext &context) const {
     if (lastLogin < yesterday) {
         loginDays = 1;
         context.events.push_back(EventInfo(EGE_LOGIN, loginDays));
+        processReward(loginDays, context.user->uRes.level, context.user->loginReward);
     } else if (lastLogin >= yesterday && lastLogin < thisMorning) {
         ++loginDays;
         context.events.push_back(EventInfo(EGE_LOGIN, loginDays));
@@ -36,15 +37,15 @@ void LoginProcessor::processReward(
     int32_t dayn = loginDays % 7 + 1;
     auto itr = _config.levelBonus.find(level);
     if (itr == _config.levelBonus.end()){
-        loginReward.specialReward = 0;
+        loginReward.setSpecialReward(0);
     } else {
-        loginReward.specialReward = itr->second;
+        loginReward.setSpecialReward(itr->second);
     }
     auto itr1 = _config.loginDaysBonus.find(loginDays);
     if (itr1 == _config.loginDaysBonus.end()){
-        loginReward.daysReward = 0;
+        loginReward.setDaysReward(0);
     } else {
-        loginReward.daysReward = itr1->second;
+        loginReward.setDaysReward(itr1->second);
     }
     srand((int)time(0));
     int32_t val = rand() % CHANCE_MAX_POINT;
@@ -55,8 +56,8 @@ void LoginProcessor::processReward(
             break;
         }
     }
-    loginReward.runnerReward = bonus;
-    loginReward.recved = false;
+    loginReward.setRunnerReward(bonus);
+    loginReward.setRecved(false);
 }
 
 END_NAMESPACE

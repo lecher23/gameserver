@@ -6,7 +6,7 @@ using namespace cgserver;
 BEGIN_NAMESPACE(slots)
 SlotsDB::SlotsDB():_pool(cgserver::MysqlConnPool::getInstance()){
 }
-    
+
 SlotsDB::~SlotsDB(){
 }
 
@@ -14,7 +14,7 @@ SlotsDB &SlotsDB::getInstance(){
     static SlotsDB instance;
     return instance;
 }
-    
+
 bool SlotsDB::getUserInfo(MysqlOperationBase * mob, SlotsUser &su) const {
     UserInfo &ui = su.uInfo;
     UserResource &ur = su.uRes;
@@ -46,7 +46,9 @@ bool SlotsDB::getUserInfo(MysqlOperationBase * mob, SlotsUser &su) const {
     mss.setField("*");
     mss.setTable(gLifeHistory);
     mss.setCondition("uid", su.uInfo.uid, true);
-    if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss) || !getGameHistory(ui.uid, gd)) {
+    if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss)
+        || !getGameHistory(ui.uid, gd))
+    {
 	return false;
     }
     return collectUserHistory(mss.result, su.uHis);
@@ -71,6 +73,21 @@ bool SlotsDB::getUserInfoByUserId(const std::string &uid, SlotsUser &su) const
     mss.innerJoin(gUserInfo, gUserResource, "uid", "uid");
     mss.addCondition(gUserInfo + ".uid", uid, true, true);
     return getUserInfo((MysqlOperationBase *)&mss, su);
+}
+
+bool SlotsDB::getUserIdByMachineId(const std::string &mid, std::string &uid) const
+{
+    MysqlSimpleSelect mss;
+    mss.setField("uid");
+    mss.setTable(gUserInfo);
+    mss.setCondition("mid", mid, false);
+    if (_pool.doMysqlOperation((MysqlOperationBase *) &mss)
+        && mss.result.size() > 0 && mss.result[0].size() > 0)
+    {
+        uid = mss.result[0][0];
+        return true;
+    }
+    return false;
 }
 
 bool SlotsDB::getCargoInfo(CargoInfos &out) const {
@@ -103,22 +120,25 @@ bool SlotsDB::getLoginSetting(LoginSetting &out) const {
     // id, val, extra, extra_val
     for (auto &row: mss.result){
         if(row.size() < 3) {
+            CLOG(ERROR) << "Invalid row size:" << row.size();
             return false;
         }
         if(!StringUtil::StrToInt32(row[0].c_str(), id)
            || !StringUtil::StrToInt64(row[1].c_str(), val))
         {
+            CLOG(ERROR) << "Format int value failed.";
             return false;
         }
         if (id >= 10000 && id < 20000) {
             out.levelBonus[id - 10000] = val;
-        }else if(id < 3000 && id >= 2000) {
+        }else if(id < 30000 && id >= 20000) {
             out.loginDaysBonus[id - 20000] = val;
-        }else if(id < 4000 && id >= 3000
+        }else if(id < 40000 && id >= 30000
                  && StringUtil::StrToInt32(row[2].c_str(), chance))
         {
             out.runnerBonus.push_back(std::pair<int64_t, int32_t>(val, chance));
         }else{
+            CLOG(ERROR) << "Invalid config id:" << id;
             return false;
         }
     }
@@ -464,7 +484,7 @@ bool SlotsDB::collectUserHistory(const cgserver::MysqlRows &rows, UserHistory &u
     cgserver::StringUtil::StrToInt32(row[7].c_str(), uh.lwFortuneSort);
     cgserver::StringUtil::StrToInt32(row[8].c_str(), uh.lwAchievSort);
     return true;
-}    
+}
 
 bool SlotsDB::collectSlotsUser(const cgserver::MysqlRow &row, SlotsUser &su) const{
     if (row.size() < 15) {

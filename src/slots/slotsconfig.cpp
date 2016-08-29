@@ -38,9 +38,8 @@ bool SlotsConfig::init(){
         return false;
     }
     int32_t preChance = 0;
-    // sort
     for(auto &item: loginCfg.runnerBonus) {
-        item.second = preChance + preChance;
+        item.second += preChance;
         preChance = item.second;
     }
     return true;

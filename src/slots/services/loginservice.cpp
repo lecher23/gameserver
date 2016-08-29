@@ -47,9 +47,9 @@ namespace slots{
 	auto &slotsUserData = SlotsDataCenter::instance().slotsUserData;
 	//get user info from db.
 	SlotsDB &db = SlotsDB::getInstance();
-	if (slotsUserData->get(mid, su, false)) {
+	if (slotsUserData->getByMid(mid, su)) {
 	    return db.getUserAchievement(su->uInfo.uid, cj);
-	} 
+	}
 	return false;
     }
 

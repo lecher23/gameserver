@@ -28,6 +28,7 @@ public:
 
     bool getUserInfo(cgserver::MysqlOperationBase *mob, SlotsUser &su) const ;
     bool getUserInfoByMachineId(const std::string &mid, SlotsUser &su) const ;
+    bool getUserIdByMachineId(const std::string &mid, std::string &uid) const ;
     bool getUserInfoByUserId(const std::string &uid, SlotsUser &su) const ;
     bool getUserMails(const MyString &uid, MyString &offset, MyString &count, UserMails &out);
     bool getMailAttachment(const std::string &uid, const std::string &mailId);

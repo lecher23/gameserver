@@ -2,13 +2,16 @@
 #include <string>
 #include <string.h>
 #include <stdlib.h>
-#include "slots/slotsdb.h"
+#include <slots/sql/slotsdb.h>
+#include <util/config.h>
 
 #define AST_EQ(x, y) TS_ASSERT_EQUALS(x, y);
 #define AST_TRUE(x) TS_ASSERT(x);
 
 using namespace cgserver;
 using namespace slots;
+
+const std::string cfg_file = "/home/licheng/workspace/CgServerPlus/server.cfg";
 
 class SlotsDBTest : public CxxTest::TestSuite 
 {
@@ -18,26 +21,28 @@ public:
     virtual void setUp(){
 
 	if (!_inited){
-	    AST_TRUE(MysqlClient::getInstance().initClient("127.0.0.1", "root", "111222", "SLOTS"));
+            AST_TRUE(Config::getInstance().initConfig(cfg_file));
+	    AST_TRUE(MysqlConnPool::getInstance().init());
 	    _inited = true;
 	}
-	MysqlClient::getInstance().exeQuery("delete from user_info where mid=\"slotsdbtest\"");	
     }
 
     virtual void tearDown() {
     }
 
-    void test_addUser_success(void)
+    void test_getUserInfoByMachineId(void)
     {
-	SlotsDB &db = SlotsDB::getInstance();	
-	MysqlClient &client = MysqlClient::getInstance();
-	std::string uid;
-	AST_TRUE(db.addUser("slotsdbtest", uid));
-	MysqlRows out;
-	AST_TRUE(client.queryWithResult("select * from user_info where mid=\"slotsdbtest\"", out));
-	AST_EQ(1, out.size());
+            std::string mid = "1234";
+            SlotsUser su;
+            AST_TRUE(SlotsDB::getInstance().getUserInfoByMachineId(mid, su));
     }
-    
+
+    // slots user data
+    void test_getByMid(void){
+            std::string mid = "123456000";
+            SlotsUserData sud;
+    }
+
  private:
     bool _inited;
 };

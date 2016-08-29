@@ -155,7 +155,7 @@ struct UserHistory {
 	totalBet += bet;
 	changed = true;
     }
-    
+
     void newFortune(int64_t fortune) {
 	if (fortune > maxFortune) {
 	    maxFortune = fortune;
@@ -174,7 +174,6 @@ struct UserHistory {
 	twEarned += earned;
 	changed = true;
     }
-	
 };
 
 struct GameHistory{
@@ -252,11 +251,24 @@ struct GameHistory{
 DF_SHARED_PTR(GameHistory);
 
 struct LoginReward {
-        int64_t runnerReward;
-        int64_t daysReward;
-        int64_t specialReward;
-        int64_t timestamp;
-        bool recved;
+    int64_t runnerReward;
+    int64_t daysReward;
+    int64_t specialReward;
+    int64_t timestamp;
+    bool recved;
+LoginReward():runnerReward(0),daysReward(0),specialReward(0),timestamp(0){}
+    void setRunnerReward(int64_t val) {
+        runnerReward = val;
+    }
+    void setDaysReward(int64_t val) {
+        daysReward = val;
+    }
+    void setSpecialReward(int64_t val) {
+        specialReward = val;
+    }
+    void setRecved(bool val){
+        recved = val;
+    }
 };
 
 struct SlotsUser{
