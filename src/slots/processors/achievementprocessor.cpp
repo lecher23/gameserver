@@ -44,13 +44,13 @@ bool AchievementProcessor::process(GameContext &context) const {
 	case EGE_FREE_GAME:
 	case EGE_MEGA_WIN:
 	case EGE_BIG_WIN:
-	case EGE_JACKPOT:	    
+	case EGE_JACKPOT:
 	case EGE_GAME_COUNT:
 	case EGE_LOGIN:
 	{
-	    auto itr = _config.find(item.e);		
+	    auto itr = _config.find(item.e);
 	    if (itr != _config.end()){
-		auto &setting = itr->second;    
+		auto &setting = itr->second;
 		TAKE_ACHIEVEMENT(item, setting);
 		//take_cj(context, item, setting);
 	    }
@@ -78,7 +78,7 @@ void AchievementProcessor::processRangeCj(GameContext &context, const EventInfo 
     for (auto &item: setting) {
 	if (e.preData < item->target
 	    && e.curData >= item->target)
-	{				
+	{
 	    UserCJ cj;
 	    cj.uid = context.user->uInfo.uid;
 	    cj.aid = item->id;

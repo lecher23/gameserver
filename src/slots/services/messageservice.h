@@ -13,6 +13,7 @@ public:
 
 private:
     bool getLoginReward(CPacket &packet);
+    bool getCargoStatus(CPacket &packet);
 };
 END_NAMESPACE
 #endif

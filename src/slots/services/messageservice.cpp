@@ -48,4 +48,15 @@ bool MessageService::getLoginReward(CPacket &packet) {
     return true;
 }
 
+bool MessageService::getCargoStatus(CPacket &packet) {
+    std::string uid;
+    GET_PARAM("uid", uid, true);
+    std::string cargoId;
+    GET_PARAM("cargo", cargoId, true);
+    // get cargo from cache
+    // if no record, async request server
+    // if has record, return value
+    return false;
+}
+
 END_NAMESPACE

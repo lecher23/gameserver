@@ -1,5 +1,6 @@
 #include "loginservice.h"
 #include <slots/processors/loginprocessor.h>
+#include <slots/processors/achievementprocessor.h>
 
 namespace slots{
     LoginService::LoginService(){
@@ -24,6 +25,8 @@ namespace slots{
 
         LoginProcessor lp;
         lp.process(context);
+        AchievementProcessor ap;
+        ap.process(context);
 
 	SBuf buf;
 	ResultFormatter rf(buf);
