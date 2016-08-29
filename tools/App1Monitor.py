@@ -18,6 +18,7 @@ class Monitor:
         self.close_wait_limit = 30
         self.last_mail_time = 0
         self.mail_interval = 3600
+        self.last_mail_time_for_server = 0
 
     def getCloseWaitCount(self, port = 9876):
         cmd = "netstat -apn | grep %d | grep CLOSE_WAIT | wc -l" % port
@@ -26,13 +27,24 @@ class Monitor:
             return -1
         return int(o)
 
+    def getServerStatus(self, port = 9876):
+        cmd = "netstat -apn | grep %d | grep LISTEN | wc -l" % port
+        s, o = commands.getstatusoutput(cmd)
+        if(s != 0):
+            return True, o
+        return int(o) == 0, o
+
     def monitorCloseWait(self):
         val = self.getCloseWaitCount()
+        now = time.time()
         if val >= self.close_wait_limit:
-            now = time.time()
             if now - self.last_mail_time > self.mail_interval:
                 self.sendMail("Too much CLOSE_WAIT!", "Current count: %d\n" % val)
                 self.last_mail_time = now
+        need_send_mail, info = self.getServerStatus()
+        if need_send_mail and now - self.last_mail_time_for_server > self.mail_interval / 2:
+            self.sendMail("Server error!", "Info: [%s]\n" % o)
+            self.last_mail_time_for_server = now
 
     def getCount(self):
         cmd = "grep %s %s | wc -l" % (GKW, LOG)
