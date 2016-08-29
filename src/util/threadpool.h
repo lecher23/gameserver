@@ -7,6 +7,7 @@
 #include "circularqueue.h"
 #include <vector>
 #include <pthread.h>
+#include <util/common_define.h>
 
 namespace cgserver 
 {
@@ -58,8 +59,8 @@ public:
     bool start();
     void stop(STOP_TYPE stopType = STOP_AFTER_QUEUE_EMPYT);
     void clearQueue();
-    ERROR_TYPE pushTask(Runnable *task, bool isBlocked = false);
-    void pushRestartTask(Runnable *task);
+    ERROR_TYPE pushTask(std::function<void()> f, bool isBlocked = false);
+    void pushRestartTask(std::function<void()> f);
     task_queue_status_t getTaskQueueStatus();
 private:
     ThreadPool(const ThreadPool&);
@@ -73,8 +74,8 @@ private:
 private:
     size_t _threadNum;
     size_t _maxQueueSize;
-    CircularQueue<Runnable *> _queue;
-    CircularQueue<Runnable *> _restart_queue;
+    CircularQueue<std::function<void()> > _queue;
+    CircularQueue<std::function<void()> > _restart_queue;
     std::vector<pthread_t> _threads;
     mutable ProducerConsumerCond _cond;
     volatile bool _push;

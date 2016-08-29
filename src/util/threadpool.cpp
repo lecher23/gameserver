@@ -1,11 +1,9 @@
 #include "threadpool.h"
 #include <unistd.h>
-#include <iostream>
 
 using namespace std;
 
-namespace cgserver 
-{
+BEGIN_NAMESPACE(cgserver)
 
 ThreadPool::ThreadPool(const size_t threadNum, const size_t queueSize,uint32_t stack_size )
     : _threadNum(threadNum)
@@ -64,7 +62,7 @@ ThreadPool::task_queue_status_t ThreadPool::getTaskQueueStatus()
     return task_queue_normal;
 }
 
-ThreadPool::ERROR_TYPE ThreadPool::pushTask(Runnable *runner, bool isBlocked) 
+ThreadPool::ERROR_TYPE ThreadPool::pushTask(std::function<void()> f, bool isBlocked) 
 {
     if (!_push)
     {
@@ -91,30 +89,32 @@ ThreadPool::ERROR_TYPE ThreadPool::pushTask(Runnable *runner, bool isBlocked)
         }
     }
 
+    // none block just return error
     if (!isBlocked && _queue.size() >= _maxQueueSize)
     {
-        return ERROR_POOL_QUEUE_FULL;        
+        return ERROR_POOL_QUEUE_FULL;
     }
-    
+
+    // block will wait until queue not empty
     while (_push && _queue.size() >= _maxQueueSize)
     {
         _cond.producerWait();
     }
-    
+
     if (!_push)
     {
         return ERROR_POOL_HAS_STOP;
     }
     // add runner ok
-    _queue.push_back(runner);
+    _queue.push_back(f);
     _cond.signalConsumer();
     return ERROR_NONE;
 }
 
-void ThreadPool::pushRestartTask(Runnable *runner) 
+void ThreadPool::pushRestartTask(std::function<void()> f) 
 {
     ScopedMutex lock(_cond);
-    _restart_queue.push_back(runner);
+    _restart_queue.push_back(f);
     _cond.signalConsumer();
     return;
 }
@@ -240,12 +240,7 @@ void ThreadPool::clearQueue()
     ScopedMutex lock(_cond);
     while(!_queue.empty()) 
     {
-        Runnable *runner = _queue.front();
         _queue.pop_front();
-        if (runner) 
-        {
-            runner->free();
-        }
     }
     _cond.broadcastProducer();
 }
@@ -255,7 +250,7 @@ void *ThreadPool::workerLoop(void *args)
     ThreadPool *pool = (ThreadPool *)args;
     while(pool->_run) 
     {
-        Runnable *runner = NULL;
+        std::function<void()> func;
         bool from_queue = true;
         {
             ScopedMutex lock(pool->_cond);
@@ -267,21 +262,17 @@ void *ThreadPool::workerLoop(void *args)
                 return NULL;
             }
             if (!pool->_restart_queue.empty()) {
-                runner = pool->_restart_queue.front();
+                func = pool->_restart_queue.front();
                 pool->_restart_queue.pop_front();
                 from_queue = false;
             } else {
-                runner = pool->_queue.front();
+                func = pool->_queue.front();
                 pool->_queue.pop_front();
             }
             pool->_cond.signalProducer();
         }
-        if (runner)
-        {
-            runner->run(NULL, NULL);
-            runner->free();
-        }
+        func();
     }
     return NULL;
 }
-}
+END_NAMESPACE
