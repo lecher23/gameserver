@@ -33,23 +33,30 @@ struct PayInfo{
 class PayChecker{
  public:
     typedef std::function<bool(PayInfo *)> SaveFunc;
+    typedef std::function<void(asio_service *, PayInfo *)> AsyncCheckFunc;
 
-    PayChecker(int32_t poolTaskSize, int32_t poolSize,
-               int32_t queueSize, int32_t expireTime);
+    PayChecker(int32_t queueSize, int32_t expireTime);
     ~PayChecker();
 
     void setSaveFunc(SaveFunc f);
+    void setAsyncCheckFunc(AsyncCheckFunc f);
+    void threadFunc();
 
     bool start();
     bool stop();
-    bool doCheck(PayInfo *info);// only net error return false
-    void clearExpireData();
-    const PayInfo &getPayData(const std::string &id);
+    void asyncCheck(PayInfo &info);// only net error return false
+        const PayInfo &getPayData(const std::string &id);
 
 private:
-    ThreadPool _pool;
+    void clearExpireData(const asio_error &err);
     CircularQueue<PayInfo> _payInfos;
     int32_t _expireTime;
+
+    asio_service _service;
+    std::shared_ptr<std::thread> _sThread;
+    std::shared_ptr<asio_service::work> _work;
+    asio_deadline_timer_ptr _timer;
+    AsyncCheckFunc queryRemoteServer;
 
     SaveFunc _saveFunc;
     std::mutex _lock;
