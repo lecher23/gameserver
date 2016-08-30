@@ -26,6 +26,7 @@ bool LoginProcessor::process(GameContext &context) const {
         context.events.push_back(EventInfo(EGE_LOGIN, loginDays));
         processReward(loginDays, context.user->uRes.level, context.user->loginReward);
     }
+    CLOG(INFO) << "User " << gHistory.uid << " login. Days:" << loginDays;
     lastLogin = now;
     gHistory.changed = true;
     return true;
@@ -34,7 +35,10 @@ bool LoginProcessor::process(GameContext &context) const {
 void LoginProcessor::processReward(
     int32_t loginDays, int32_t level, LoginReward &loginReward) const 
 {
-    int32_t dayn = loginDays % 7 + 1;
+    int32_t dayn = loginDays % 7;
+    if (dayn == 0) {
+        dayn = 7;
+    }
     auto itr = _config.levelBonus.find(level);
     if (itr == _config.levelBonus.end()){
         loginReward.setSpecialReward(0);
