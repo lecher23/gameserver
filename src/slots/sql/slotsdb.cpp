@@ -80,7 +80,7 @@ bool SlotsDB::getUserIdByMachineId(const std::string &mid, std::string &uid) con
     MysqlSimpleSelect mss;
     mss.setField("uid");
     mss.setTable(gUserInfo);
-    mss.setCondition("mid", mid, false);
+    mss.setCondition("mid", mid, true);
     if (_pool.doMysqlOperation((MysqlOperationBase *) &mss)
         && mss.result.size() > 0 && mss.result[0].size() > 0)
     {
@@ -470,7 +470,8 @@ bool SlotsDB::collectSlotsUsers(const cgserver::MysqlRows &rows, SlotsUsers &out
 }
 
 bool SlotsDB::collectUserHistory(const cgserver::MysqlRows &rows, UserHistory &uh) const{
-    if (rows.empty() || rows[0].size() < 9) {
+    if (rows.empty() || rows[0].size() < 10) {
+        CLOG(WARNING) << "Invalid cloum number for user history.";
 	return false;
     }
     auto &row = rows[0];
@@ -478,16 +479,18 @@ bool SlotsDB::collectUserHistory(const cgserver::MysqlRows &rows, UserHistory &u
     cgserver::StringUtil::StrToInt64(row[1].c_str(), uh.maxFortune);
     cgserver::StringUtil::StrToInt64(row[2].c_str(), uh.maxEarned);
     cgserver::StringUtil::StrToInt64(row[3].c_str(), uh.totalEarned);
-    cgserver::StringUtil::StrToInt64(row[4].c_str(), uh.twEarned);
-    cgserver::StringUtil::StrToInt32(row[5].c_str(), uh.lwEarnedSort);
-    cgserver::StringUtil::StrToInt32(row[6].c_str(), uh.lwLevelSort);
-    cgserver::StringUtil::StrToInt32(row[7].c_str(), uh.lwFortuneSort);
-    cgserver::StringUtil::StrToInt32(row[8].c_str(), uh.lwAchievSort);
+    cgserver::StringUtil::StrToInt64(row[4].c_str(), uh.totalBet);
+    cgserver::StringUtil::StrToInt64(row[5].c_str(), uh.twEarned);
+    cgserver::StringUtil::StrToInt32(row[6].c_str(), uh.lwEarnedSort);
+    cgserver::StringUtil::StrToInt32(row[7].c_str(), uh.lwLevelSort);
+    cgserver::StringUtil::StrToInt32(row[8].c_str(), uh.lwFortuneSort);
+    cgserver::StringUtil::StrToInt32(row[9].c_str(), uh.lwAchievSort);
     return true;
 }
 
 bool SlotsDB::collectSlotsUser(const cgserver::MysqlRow &row, SlotsUser &su) const{
     if (row.size() < 15) {
+        CLOG(WARNING) << "Ivalid colum number from db";
 	return false;
     }
     UserInfo &ui = su.uInfo;
@@ -591,6 +594,7 @@ bool SlotsDB::getGameHistory(const std::string &uid, GameHistory &gd) const {
     }
     // no history
     if (mss.result.empty()) {
+        CLOG(WARNING) << "No game history found for user: " << uid;
 	return false;
     }
     return gd.deserialize(mss.result[0]);
