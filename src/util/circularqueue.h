@@ -2,6 +2,7 @@
 #define __CIRCULAR_QUEUE_H_
 
 #include <assert.h>
+#include <functional>
 
 namespace cgserver 
 {
@@ -83,14 +84,27 @@ public:
         _front = 0;
         _back = 0;
     }
-    
+
+    T* find(std::function<bool(T *cur)> cmp) {
+            size_t i = _front;
+      while (true){
+          T *tmp = &(_items[i]);
+          if (cmp(tmp)) {
+              return tmp;
+          }
+          if (i == _back) break;
+          if (++i == _capacity) i = 0;
+      }
+      return nullptr;
+    }
+
     inline T& front() {return _items[_front];} 
     inline T& back() {return _items[_back];}
     inline T& at(size_t idx) {return _items[idx];}
-    
+
     inline const T& front() const {return _items[_front];} 
     inline const T& back() const {return _items[_back];} 
-    
+
     inline size_t size() const {return _size;}
     inline size_t capacity() const {return _capacity;}
     inline bool empty() const {return _size == 0;}

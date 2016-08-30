@@ -5,14 +5,13 @@ using namespace std;
 
 BEGIN_NAMESPACE(cgserver)
 
-ThreadPool::ThreadPool(const size_t threadNum, const size_t queueSize,uint32_t stack_size )
+ThreadPool::ThreadPool(const size_t threadNum, const size_t queueSize)
     : _threadNum(threadNum)
     , _maxQueueSize(queueSize)
     , _queue(queueSize ? queueSize : DEFAULT_QUEUESIZE)
     , _restart_queue(queueSize ? queueSize + 1000: DEFAULT_QUEUESIZE)
     , _push(true)
     , _run(false)
-    , _stack_size(stack_size)
     , _enable_busy_check(false)
 {
     if (_threadNum == 0) {
