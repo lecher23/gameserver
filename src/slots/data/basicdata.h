@@ -92,6 +92,28 @@ struct SlotsUser{
     UserHistory uHis;
     GameHistory gDetail;
     LoginReward loginReward;
+
+    bool deserialize(const std::vector<std::string> &row) {
+        if (row.size() < 15) {
+            CLOG(WARNING) << "Ivalid colum number.";
+            return false;
+        }
+        uInfo.uid = row[0];
+        uInfo.mid = row[1];
+        uInfo.fname = row[2];
+        uInfo.avatar = row[4];
+        uInfo.male = row[5];
+        uInfo.country = row[6];
+        uRes.uid = row[7];
+        bool ret = cgserver::StringUtil::StrToInt32(row[8].c_str(), uRes.level);
+        ret = ret && cgserver::StringUtil::StrToInt64(row[9].c_str(), uRes.exp);
+        ret = ret && cgserver::StringUtil::StrToInt64(row[10].c_str(), uRes.fortune);
+        ret = ret && cgserver::StringUtil::StrToInt32(row[11].c_str(), uRes.vipLevel);
+        if(!ret) {
+            CLOG(WARNING) << "Invalid number.";
+        }
+        return ret;
+    }
 };
 DF_SHARED_PTR(SlotsUser);
 
@@ -101,6 +123,19 @@ struct FHistory{
     int32_t inviteCount;
     int64_t totalReward;
     int64_t rewardRemain;
+    bool deserialize(const std::vector<std::string> &row) {
+        if (row.size() < 4) {
+            CLOG(WARNING) << "Invalid colum number";
+        }
+        uid = row[0];
+        bool ret = cgserver::StringUtil::StrToInt32(row[1].c_str(), inviteCount);
+        ret = ret && cgserver::StringUtil::StrToInt64(row[2].c_str(), totalReward);
+        ret = ret && cgserver::StringUtil::StrToInt64(row[3].c_str(), rewardRemain);
+        if (!ret) {
+            CLOG(WARNING) << "Invalid number";
+        }
+        return ret;
+    }
 };
 DF_SHARED_PTR(FHistory);
 

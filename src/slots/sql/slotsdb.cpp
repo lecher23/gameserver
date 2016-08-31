@@ -439,12 +439,7 @@ bool SlotsDB::getInviteHistory(const std::string &uid, FHistory &out) {
     {
 	return false;
     }
-    MysqlRow &res = mss.result[0];
-    out.uid = res[0];
-    cgserver::StringUtil::StrToInt32(res[1].c_str(), out.inviteCount);
-    cgserver::StringUtil::StrToInt64(res[2].c_str(), out.totalReward);
-    cgserver::StringUtil::StrToInt64(res[3].c_str(), out.rewardRemain);
-    return true;
+    return out.deserialize(mss.result[0]);
 }
 
 bool SlotsDB::updateFHistory(const std::string &uid, const std::string &key, const std::string &value) {
@@ -460,9 +455,9 @@ bool SlotsDB::getReward(const std::string &uid) {
 }
 
 bool SlotsDB::collectSlotsUsers(const cgserver::MysqlRows &rows, SlotsUsers &out) const {
-    for (auto itr = rows.begin(); itr != rows.end(); ++itr){
+    for (auto &row: rows){
 	SlotsUserPtr su(new SlotsUser);
-	if (collectSlotsUser(*itr, *su)) {
+	if (su->deserialize(row)) {
 	    out.push_back(su);
 	}
     }
@@ -470,42 +465,14 @@ bool SlotsDB::collectSlotsUsers(const cgserver::MysqlRows &rows, SlotsUsers &out
 }
 
 bool SlotsDB::collectUserHistory(const cgserver::MysqlRows &rows, UserHistory &uh) const{
-    if (rows.empty() || rows[0].size() < 10) {
-        CLOG(WARNING) << "Invalid cloum number for user history.";
-	return false;
+    if (rows.empty()) {
+        CLOG(WARNING) << "No row in result";
+        return false;
     }
-    auto &row = rows[0];
-    uh.uid = row[0];
-    cgserver::StringUtil::StrToInt64(row[1].c_str(), uh.maxFortune);
-    cgserver::StringUtil::StrToInt64(row[2].c_str(), uh.maxEarned);
-    cgserver::StringUtil::StrToInt64(row[3].c_str(), uh.totalEarned);
-    cgserver::StringUtil::StrToInt64(row[4].c_str(), uh.totalBet);
-    cgserver::StringUtil::StrToInt64(row[5].c_str(), uh.twEarned);
-    cgserver::StringUtil::StrToInt32(row[6].c_str(), uh.lwEarnedSort);
-    cgserver::StringUtil::StrToInt32(row[7].c_str(), uh.lwLevelSort);
-    cgserver::StringUtil::StrToInt32(row[8].c_str(), uh.lwFortuneSort);
-    cgserver::StringUtil::StrToInt32(row[9].c_str(), uh.lwAchievSort);
-    return true;
+    return uh.deserialize(rows[0]);
 }
 
 bool SlotsDB::collectSlotsUser(const cgserver::MysqlRow &row, SlotsUser &su) const{
-    if (row.size() < 15) {
-        CLOG(WARNING) << "Ivalid colum number from db";
-	return false;
-    }
-    UserInfo &ui = su.uInfo;
-    UserResource &ur = su.uRes;
-    ui.uid = row[0];
-    ui.mid = row[1];
-    ui.fname = row[2];
-    ui.avatar = row[4];
-    ui.male = row[5];
-    ui.country = row[6];
-    ur.uid = row[7];	
-    cgserver::StringUtil::StrToInt32(row[8].c_str(), ur.level);
-    cgserver::StringUtil::StrToInt64(row[9].c_str(), ur.exp);
-    cgserver::StringUtil::StrToInt64(row[10].c_str(), ur.fortune);
-    cgserver::StringUtil::StrToInt32(row[11].c_str(), ur.vipLevel);
     return true;
 }
 
@@ -569,16 +536,10 @@ bool SlotsDB::getRankData(RankType rType, LeaderBoardRank &out){
     }
     out.data.clear();
     for (auto &row: mss.result) {
-	if (row.size() < 5) {
-	    CLOG(WARNING) << "get rank item from db failed.";
-	    continue;
-	}
-	LeaderBoardItemPtr tmp(new LeaderBoardItem);
-	StringUtil::StrToInt64(row[1].c_str(), tmp->uid);	    
-	tmp->name = row[2];
-	StringUtil::StrToInt32(row[3].c_str(), tmp->country);
-	StringUtil::StrToInt64(row[4].c_str(), tmp->value);
-	out.data.push_back(tmp);
+        LeaderBoardItemPtr tmp(new LeaderBoardItem);
+        if(tmp->deserialize(row)) {
+            out.data.push_back(tmp);
+        }
     }
     return true;
 }
@@ -649,24 +610,14 @@ bool SlotsDB::getUserAchievement(
 }
 
 bool SlotsDB::collectAchievement(const MysqlRow &row, UserCJ &out) const{
-    if (row.size() < out.fieldsNum()) {
-	CLOG(WARNING) << "BAD DATA.";
-	return false;
-    }
-    out.uid = row[0];
-    out.aid = row[1];
-    out.isRecvReward = (row[2] != "0");
-    StringUtil::StrToInt64(row[3].c_str(), out.progress);	
-    out.isGain = (row[4] != "0");
-    StringUtil::StrToInt64(row[5].c_str(), out.time);
-    out.changed = false;
+    // delete this func
     return true;
 }
 
 bool SlotsDB::collectAchievements(const MysqlRows &result, Achievements &out) const{
     for (auto &row: result) {
 	AchievementPtr ap(new UserCJ);
-	if (collectAchievement(row, *ap)) {
+	if (ap->deserialize(row)) {
 	    out.push_back(ap);
 	}
     }
@@ -679,16 +630,10 @@ bool SlotsDB::getAchivementSetting(CjSettingMap &out) {
     mss.setTable(gAchievementDetail);
     for (auto &row: mss.result) {
 	CjSettingPtr item(new CjSetting);
-	if (row.size() < item->fieldsNum()) {
+	if (item->deserialize(row)) {
 	    CLOG(WARNING) << "Init achievement setting from db failed.";
 	    return false;
 	}
-	item->id = row[0];
-	StringUtil::StrToInt64(row[1].c_str(), item->target);
-	StringUtil::StrToInt64(row[2].c_str(), item->reward);
-	StringUtil::StrToInt32(row[3].c_str(), item->reward_type);
-	StringUtil::StrToInt32(row[4].c_str(), item->type);
-	StringUtil::StrToInt32(row[5].c_str(), item->value);
 	out[item->type].push_back(item);
     }
     return true;

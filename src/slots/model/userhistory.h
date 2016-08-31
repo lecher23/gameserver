@@ -2,6 +2,7 @@
 #define USERHISTORY_H
 
 #include <util/common_define.h>
+#include <util/stringutil.h>
 
 BEGIN_NAMESPACE(slots)
 
@@ -55,6 +56,27 @@ struct UserHistory{
     }
     UserHistory() {
         reset();
+    }
+
+    bool deserialize(const std::vector<std::string> &row) {
+        if (row.size() < 10) {
+            CLOG(WARNING) << "Invalid cloum number for user history.";
+            return false;
+        }
+        uid = row[0];
+        bool ret = cgserver::StringUtil::StrToInt64(row[1].c_str(), maxFortune);
+        ret = ret && cgserver::StringUtil::StrToInt64(row[2].c_str(), maxEarned);
+        ret = ret && cgserver::StringUtil::StrToInt64(row[3].c_str(), totalEarned);
+        ret = ret && cgserver::StringUtil::StrToInt64(row[4].c_str(), totalBet);
+        ret = ret && cgserver::StringUtil::StrToInt64(row[5].c_str(), twEarned);
+        ret = ret && cgserver::StringUtil::StrToInt32(row[6].c_str(), lwEarnedSort);
+        ret = ret && cgserver::StringUtil::StrToInt32(row[7].c_str(), lwLevelSort);
+        ret = ret && cgserver::StringUtil::StrToInt32(row[8].c_str(), lwFortuneSort);
+        ret = ret && cgserver::StringUtil::StrToInt32(row[9].c_str(), lwAchievSort);
+        if (!ret) {
+            CLOG(WARNING) << "Invalid number";
+        }
+        return ret;
     }
 };
 
