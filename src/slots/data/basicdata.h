@@ -151,28 +151,7 @@ enum ResultType {
     ERT_BIG_WIN,
     ERT_MEGA_WIN,
     ERT_JACKPOT,
-    ERT_TINY_GAME,
-    ERT_FOULINE = 100,
-    ERT_FOULINE_1,
-    ERT_FOULINE_2,
-    ERT_FOULINE_3,
-    ERT_FOULINE_4,
-    ERT_FOULINE_5,
-    ERT_FOULINE_6,
-    ERT_FOULINE_7,
-    ERT_FOULINE_8,
-    ERT_FOULINE_9,
-    ERT_FIVELINE = 200,
-    ERT_FIVELINE_1,
-    ERT_FIVELINE_2,
-    ERT_FIVELINE_3,
-    ERT_FIVELINE_4,
-    ERT_FIVELINE_5,
-    ERT_FIVELINE_6,
-    ERT_FIVELINE_7,
-    ERT_FIVELINE_8,
-    ERT_FIVELINE_9,
-    ERT_MULTILINE_END
+    ERT_TINY_GAME
 };
 
 struct GameRecord{
@@ -186,7 +165,7 @@ struct GameRecord{
 
 // game scene data
 struct GameSceneData{
-    int64_t bet; 
+    int64_t bet;
     int32_t times;
     int32_t remain;
 };
