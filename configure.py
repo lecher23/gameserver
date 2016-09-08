@@ -24,7 +24,6 @@ def clone_from_git(git, version, dest):
     exe_cmd(cmd)
 
 def get_boost_hpp_lib(lib_name, version):
-    os.system("mkdir %s" % TMP_DIR)
     cmd = "git clone %s/%s %s/%s" % (BOOST_GIT, lib_name, TMP_DIR, lib_name)
     exe_cmd(cmd)
     cmd = "cd %s && git checkout %s" % (os.path.join(TMP_DIR, lib_name), version)
@@ -33,10 +32,22 @@ def get_boost_hpp_lib(lib_name, version):
     exe_cmd(cmd)
 
 def resolve_boost_dependency():
-    get_boost_hpp_lib("io", "boost-1.61.0")
+    get_boost_hpp_lib("tokenizer", "boost-1.61.0")
+    get_boost_hpp_lib("math", "boost-1.61.0")
+    get_boost_hpp_lib("move", "boost-1.61.0")
+    get_boost_hpp_lib("container", "boost-1.61.0")
+    get_boost_hpp_lib("functional", "boost-1.61.0")
+    get_boost_hpp_lib("array", "boost-1.61.0")
+    get_boost_hpp_lib("integer", "boost-1.61.0")
+    get_boost_hpp_lib("numeric_conversion", "boost-1.61.0")
+    get_boost_hpp_lib("lexical_cast", "boost-1.61.0")
+    get_boost_hpp_lib("concept_check", "boost-1.61.0")
+    get_boost_hpp_lib("detail", "boost-1.61.0")
+    get_boost_hpp_lib("range", "boost-1.61.0")
     get_boost_hpp_lib("algorithm", "boost-1.61.0")
-    return
-    get_boost_hpp_lib("regex", "boost-1.61.0")    
+    get_boost_hpp_lib("io", "boost-1.61.0")
+    get_boost_hpp_lib("utility", "boost-1.61.0")
+    get_boost_hpp_lib("regex", "boost-1.61.0")
     get_boost_hpp_lib("bind", "boost-1.61.0")
     get_boost_hpp_lib("type_traits", "boost-1.61.0")
     get_boost_hpp_lib("preprocessor", "boost-1.61.0")
