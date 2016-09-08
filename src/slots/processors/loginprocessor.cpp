@@ -33,7 +33,7 @@ bool LoginProcessor::process(GameContext &context) const {
 }
 
 void LoginProcessor::processReward(
-    int32_t loginDays, int32_t level, LoginReward &loginReward) const 
+    int32_t loginDays, int32_t level, LoginReward &loginReward) const
 {
     int32_t dayn = loginDays % 7;
     if (dayn == 0) {

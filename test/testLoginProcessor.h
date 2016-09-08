@@ -25,6 +25,10 @@ TestLoginProcessor():_inited(false){}
             ast_true(Config::getInstance().initConfig(cfg_file));
 	    ast_true(MysqlConnPool::getInstance().init());
             ast_true(SlotsConfig::getInstance().init());
+            auto &x = SlotsConfig::getInstance().loginCfg;
+            for (auto &item: x.runnerBonus) {
+                    CLOG(INFO) << item.first << "," << item.second;
+            }
 	    _inited = true;
         }
     }
@@ -44,7 +48,7 @@ TestLoginProcessor():_inited(false){}
         LoginProcessor lp;
         lp.process(gc);
         ast_eq(2, su->gDetail.consitiveLogin);
-        ast_eq(200, gc.user->loginReward.daysReward);
+        ast_eq(199, gc.user->loginReward.daysReward);
     }
 
     void test_process_login_1day(void)
@@ -58,7 +62,7 @@ TestLoginProcessor():_inited(false){}
         LoginProcessor lp;
         lp.process(gc);
         ast_eq(1, su->gDetail.consitiveLogin);
-        ast_eq(100, gc.user->loginReward.daysReward);
+        ast_eq(99, gc.user->loginReward.daysReward);
         CLOG(INFO) << "Runner:" << gc.user->loginReward.runnerReward;
     }
 

@@ -25,13 +25,16 @@ factor3 = 10^7
 ## There must have a job to caculate rank data to db.
 
 # Login setting
-## Level bonus setting:
+## VIP Level bonus setting: (id, val, extra_val)
+10000 + level, bonus
 eg:
-level 1:1000 (level 1 user can get 1000)
+level 1:1000 (level 1 user can get 1000) == (10001, 1000)
 ## Runner bonus setting:
+30000 + id
 eg:
-1000, 254 (there 25.4% chance to hit, and its reward 1000)
+1000, 254 (there 25.4% chance to hit, and its reward 1000) == (30001, 1000, 254)
 make sure the sum of chance is 100%
 ## Login days bonus setting:
 eg:
-1: 1000 (login 1 day can get 1000 gold)
+20000 + dayn
+1: 1000 (login 1 day can get 1000 gold) == (20001, 1000)

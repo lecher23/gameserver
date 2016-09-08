@@ -1,6 +1,4 @@
 #include "loginservice.h"
-#include <slots/processors/loginprocessor.h>
-#include <slots/processors/achievementprocessor.h>
 
 namespace slots{
     LoginService::LoginService(){
@@ -23,10 +21,8 @@ namespace slots{
         GameContext context;
         context.user = sUser;
 
-        LoginProcessor lp;
-        lp.process(context);
-        AchievementProcessor ap;
-        ap.process(context);
+        _lProcessor.process(context);
+        _aProcessor.process(context);
 
 	SBuf buf;
 	ResultFormatter rf(buf);
