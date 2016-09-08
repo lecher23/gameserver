@@ -40,6 +40,32 @@ class ServerSql:
             self.cursor.execute(q)
         self.endTransaction(True)
 
+    def addLoginRewardConfig(self, dayn, reward):
+        sql = "insert into login_config (id, val) values(%d, %d)" % \
+              (dayn + 20000, reward)
+        self.runQuery(sql)
+
+    def modifyLastLogin(self, uid, ts):
+        sql = "update g_history set last_login=%d where uid=%d" % (ts, uid)
+        self.runQuery(sql)
+
+    def modifyConsitiveLogin(self, uid, dayn):
+        sql = "update g_history set constive_login=%d where uid=%d" % (dayn, uid)
+        self.runQuery(sql)
+
+    def clearDayLoginReward(self):
+        sql = "delete from login_config where id >= 20000 and id < 30000"
+        self.runQuery(sql)
+
+    def clearRunnerConfig(self):
+        sql = "delete from login_config where id >= 30000 and id < 40000"
+        self.runQuery(sql)
+
+    def addRunnerConfig(self, idx, bonus, chance):
+        sql = "insert into login_config (id, val, extra_val) values (%d, %d, %f)" % \
+               (idx + 30000, bonus, chance)
+        self.runQuery(sql)
+
     def doSpecial(self):
         # exp_range = (1, 5000000)
         # fortune_range = (0, 10000000)
@@ -281,12 +307,68 @@ if __name__ == "__main__":
                 lbs.createTable(k)
         exit(0)
 
-    for k, v in lbs.table_sqls.items():
-        print '"%s":"%s",' % (k, v.replace(",", ",\n").replace('"', '\\"'))
-    #lbs.createTable("achievement_item")
-    #lbs.createTable("user_achievement")
-    #lbs.refreshRankData()
-    #lbs.createRankTables();
-    #lbs.createAchievementTable()
-    #lbs.createAttachmentTable()
+    if cmd == "runner_cfg":
+        nxt = sys.argv[2]
+        if nxt == "clear":
+            lbs.clearRunnerConfig()
+        elif nxt == "default":
+            cfg = [
+                [1, 1000, 10],
+                [2, 270, 1],
+                [3, 2000, 10],
+                [4, 480, 1],
+                [5, 3000, 10],
+                [6, 575, 1],
+                [7, 4000, 10],
+                [8, 954, 1],
+                [9, 5000, 10],
+                [10, 654, 1],
+                [11, 7000, 10],
+                [12, 354, 1],
+            ]
+            sm = 0.0
+            for tp in cfg:
+                sm += tp[2]
+            sm2 = 0
+            for tp in cfg:
+                tp[2] = int(tp[2] / sm * 1000)
+                sm2 += tp[2]
+            if sm2 != 1000:
+                cfg[-1][2] = cfg[-1][2] + 1000 - sm2
+            for tp in cfg:
+                lbs.addRunnerConfig(tp[0], tp[1], tp[2])
+        else:
+            x = int(sys.argv[3])
+            y = int(sys.argv[4])
+            z = float(sys.argv[5])
+            lbs.addRunnerConfig(x, y, z)
+        exit(0)
 
+    if cmd == "dayrw_cfg":
+        nxt = sys.argv[2]
+        if nxt == "clear":
+            lbs.clearDayLoginReward()
+        elif nxt == "default":
+            cfg = [
+                (1, 1000),
+                (2, 2000),
+                (3, 2000),
+                (4, 2000),
+                (5, 2000),
+                (6, 2000),
+                (7, 2000),
+            ]
+            for tp in cfg:
+                lbs.addLoginRewardConfig(tp[0], tp[1])
+        exit(0)
+
+    if cmd == "debug":
+        nxt = sys.argv[2]
+        if nxt == "last_login":
+            uid = int(sys.argv[3])
+            ts = int(sys.argv[4])
+            lbs.modifyLastLogin(uid, ts)
+        if nxt == "constive_login":
+            uid = int(sys.argv[3])
+            dayn = int(sys.argv[4])
+            lbs.modifyConsitiveLogin(uid, dayn)
