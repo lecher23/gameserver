@@ -33,6 +33,21 @@ def get_boost_hpp_lib(lib_name, version):
     exe_cmd(cmd)
 
 def resolve_boost_dependency():
+    get_boost_hpp_lib("tokenizer", "boost-1.61.0")
+    get_boost_hpp_lib("math", "boost-1.61.0")
+    get_boost_hpp_lib("move", "boost-1.61.0")
+    get_boost_hpp_lib("container", "boost-1.61.0")
+    get_boost_hpp_lib("functional", "boost-1.61.0")
+    get_boost_hpp_lib("array", "boost-1.61.0")
+    get_boost_hpp_lib("integer", "boost-1.61.0")
+    get_boost_hpp_lib("numeric_conversion", "boost-1.61.0")
+    get_boost_hpp_lib("lexical_cast", "boost-1.61.0")
+    get_boost_hpp_lib("concept_check", "boost-1.61.0")
+    get_boost_hpp_lib("detail", "boost-1.61.0")
+    get_boost_hpp_lib("range", "boost-1.61.0")
+    get_boost_hpp_lib("algorithm", "boost-1.61.0")
+    get_boost_hpp_lib("io", "boost-1.61.0")
+    get_boost_hpp_lib("utility", "boost-1.61.0")
     get_boost_hpp_lib("regex", "boost-1.61.0")
     get_boost_hpp_lib("bind", "boost-1.61.0")
     get_boost_hpp_lib("type_traits", "boost-1.61.0")
@@ -55,4 +70,5 @@ def resolve_glog_dependency():
 
 if __name__ == "__main__":
     os.system("rm -rf %s" % TMP_DIR)
+    resolve_boost_dependency()
     exit(0)
