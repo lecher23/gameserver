@@ -1,27 +1,53 @@
 #ifndef MYSQLOPERATIONBASE_H
 #define MYSQLOPERATIONBASE_H
 
-#include "../util/stringutil.h"
-#include "mysql.h"
-#include "../util/common_define.h"
+#include <mysql.h>
 #include <map>
 #include <vector>
 #include <string>
+#include <util/stringutil.h>
+#include <util/common_define.h>
 
-namespace cgserver{
+BEGIN_NAMESPACE(cgserver)
+const std::string StrEqual = "=";
+const std::string StrEmpty = "";
+const std::string StrQuote = "\"";
+const std::string StrComma = ",";
+const std::string StrDot = ".";
+const std::string StrStartTransaction = "START TRANSACTION";
+const std::string StrCommit = "COMMIT";
+const std::string StrRollback = "ROLLBACK";
+const std::string StrInsertInto = "INSERT INTO ";
+const std::string StrLeftBracket = " ( ";
+const std::string StrRightBracket = " ) ";
+const std::string StrWhereCond = " WHERE ";
+const std::string StrAnd = " AND ";
+const std::string StrOr = " OR ";
+const std::string StrOrder = " ORDER BY ";
+const std::string StrAsc = " ASC ";
+const std::string StrDesc = " DESC ";
+const std::string StrLimit = " LIMIT ";
+const std::string StrFrom = " FROM ";
+const std::string StrInnerJoin = " INNER JOIN ";
+const std::string StrOn = " ON ";
+const std::string StrValues = " ) VALUES ( ";
+const std::string StrSelect = "SELECT ";
+const std::string StrUpdate = "UPDATE ";
+const std::string StrSet = " SET ";
+const std::string StrDelete = "DELETE FROM ";
 
 #define MAKE_COND_SENTENCE(left, right, quote)	\
     _query += left;				\
-    _query += "=";				\
+    _query += StrEqual;				\
     quoteValue(right, quote);
 
     typedef std::map<std::string, std::string> RowValues;
     typedef std::vector<std::string> MysqlRow;
     typedef std::vector<MysqlRow> MysqlRows;
     typedef std::string MysqlStr;
-    
-    class MysqlOperationBase{
-    public:
+
+class MysqlOperationBase{
+public:
         MysqlOperationBase();
         virtual ~MysqlOperationBase();
 
@@ -41,7 +67,6 @@ namespace cgserver{
 	bool addRow(MYSQL *conn, const MysqlStr &tableName, const MysqlStr &field,
 		    const MysqlStr &value, bool quoteValue = true);
 	uint64_t affectRows(MYSQL *conn);
-	
 
 	void setQuery(const MysqlStr &query);
 	void setTable(const MysqlStr &table);
@@ -57,11 +82,11 @@ namespace cgserver{
 		       const MysqlStr &leftKey, const MysqlStr &rightKey);
 
 	MysqlRows result;
-    protected:
+protected:
 	void strJoin(const MysqlStr &left, const MysqlStr &right, const MysqlStr &seq);
 	void quoteValue(const MysqlStr &val, bool quote);
-	
+
 	MysqlStr _query;
-    };
-}
+};
+END_NAMESPACE
 #endif

@@ -65,7 +65,7 @@ namespace slots{
 	    GET_PARAM(key, strVal, true);
 	    return cgserver::StringUtil::StrToInt64(strVal.c_str(), val);
 	}
-	
+
     };
     DF_SHARED_PTR(IService);
 }

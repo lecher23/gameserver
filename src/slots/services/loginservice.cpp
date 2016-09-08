@@ -1,5 +1,6 @@
 #include "loginservice.h"
 #include <slots/processors/loginprocessor.h>
+#include <slots/processors/achievementprocessor.h>
 
 namespace slots{
     LoginService::LoginService(){
@@ -24,6 +25,8 @@ namespace slots{
 
         LoginProcessor lp;
         lp.process(context);
+        AchievementProcessor ap;
+        ap.process(context);
 
 	SBuf buf;
 	ResultFormatter rf(buf);
@@ -47,9 +50,9 @@ namespace slots{
 	auto &slotsUserData = SlotsDataCenter::instance().slotsUserData;
 	//get user info from db.
 	SlotsDB &db = SlotsDB::getInstance();
-	if (slotsUserData->get(mid, su, false)) {
+	if (slotsUserData->getByMid(mid, su)) {
 	    return db.getUserAchievement(su->uInfo.uid, cj);
-	} 
+	}
 	return false;
     }
 

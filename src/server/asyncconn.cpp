@@ -66,9 +66,7 @@ void AsyncConn::afterWrite(const asio_error &err, size_t write_len) {
 }
 
 void AsyncConn::afterRead(const asio_error &err, size_t read_len) {
-    std::cout << "read len:" << read_len << std::endl;
     std::string tmp(_input.getData(), read_len);
-    std::cout << tmp << std::endl;
     bool ret = false;
     do {
         // some error such as sys busy or try again is special

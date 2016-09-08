@@ -19,13 +19,28 @@ bool SlotsConfig::init(){
 	vlc.expPer = i*139;
 	vlc.goldPer = i*10;
 	vlc.goldNeed = i*50;
-	vipLevelConfig.push_back(vlc);		
+	vipLevelConfig.push_back(vlc);
     }
 
     auto &db = SlotsDB::getInstance();
     // get achievement config from db
     if (!db.getAchivementSetting(cjConfig)){
+        CLOG(ERROR) << "Get achievement setting from db failed";
 	return false;
+    }
+    if (!db.getCargoInfo(cargoInfo)) {
+        CLOG(ERROR) << "Get cargo info from db failed.";
+        return false;
+    }
+
+    if (!db.getLoginSetting(loginCfg)) {
+        CLOG(ERROR) << "Get login config from db failed.";
+        return false;
+    }
+    int32_t preChance = 0;
+    for(auto &item: loginCfg.runnerBonus) {
+        item.second += preChance;
+        preChance = item.second;
     }
     return true;
 }
@@ -48,7 +63,7 @@ int64_t SlotsConfig::expNeed2LevelUp(int64_t exp) {
     }
     return (levelConfig.back().expNeed - exp);
 }
-	
+
 const SlotsVipConfig &SlotsConfig::getVipLevel(int64_t vipPoint) {
     for (auto itr = vipLevelConfig.begin(); itr != vipLevelConfig.end(); ++itr) {
 	if (vipPoint < itr->goldNeed) return *itr;

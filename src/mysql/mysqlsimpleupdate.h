@@ -8,11 +8,9 @@ namespace cgserver{
     public:
         MysqlSimpleUpdate();
         virtual ~MysqlSimpleUpdate();
-	
 	virtual bool doOperation(MYSQL *conn);
 
 	void setUpdateValue(const std::string &field, const std::string &value, bool quoteValue = true);
-	
 	void addUpdateValue(const std::string &field, const std::string &value, bool quoteValue = true);
     };
 }

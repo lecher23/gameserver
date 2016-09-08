@@ -1,8 +1,7 @@
 #include "mysqlconnpool.h"
 #include "errmsg.h"
-#include "sqlselect.h"
-#include "../util/stringutil.h"
-#include "../util/config.h"
+#include <util/stringutil.h>
+#include <util/config.h>
 
 namespace cgserver{
 
@@ -38,7 +37,7 @@ namespace cgserver{
 	{
 	    _mysqlPort = 3306;
 	}
-	
+
 	if (_mysqlHost.empty() || _userName.empty() || _databaseName.empty()) {
 	    CLOG(ERROR) << "Mysql connection info not set under section [db]";
 	    return false;
@@ -55,7 +54,7 @@ namespace cgserver{
 
     bool MysqlConnPool::readyToUse() {
 	return _inited;
-    }    
+    }
 
     bool MysqlConnPool::doMysqlOperation(MysqlOperationBase *op){
 	MYSQL *conn = this->getConnect();
@@ -65,8 +64,8 @@ namespace cgserver{
 	bool ret = op->doOperation(conn);
 	returnConnect(conn);
 	return ret;
-    }    
-    
+    }
+
 /***Private method***/
     bool MysqlConnPool::createConnect() {
 	MYSQL *sql = new MYSQL;
@@ -107,7 +106,7 @@ namespace cgserver{
     }
 
     void MysqlConnPool::returnConnect(MYSQL *in) {
-	std::lock_guard<std::recursive_mutex> rMutexGard(_lock);	
+	std::lock_guard<std::recursive_mutex> rMutexGard(_lock);
 	idleConn.push_back(in);
     }
 }

@@ -83,6 +83,9 @@ class StringUtil
 	(const char *src, const char rowSeq, const char colSeq,
 	 int32_t *dest[], size_t row, size_t col);
 
+    static void StrToIntVector
+        (const std::string &src, std::vector<int32_t> &out, const char delimiter);
+
     unsigned char toHex(const unsigned char &x);
     unsigned char fromHex(const unsigned char &x);
     bool URLEncode(const std::string &sIn, std::string &sOut);

@@ -29,9 +29,9 @@ bool GameService::doJob(CPacket &packet, CResponse &resp) {
     return ret;
 }
 
-#define GET_SLOTS_USER_WITH_BREAK(uid, dest)		\
-    if (!SlotsDataCenter::instance().slotsUserData->get(uid, dest)) {	\
-	break;						\
+#define GET_SLOTS_USER_WITH_BREAK(uid, dest)                            \
+    if (!SlotsDataCenter::instance().slotsUserData->getByUid(uid, dest)) { \
+	break;                                                          \
     }
 
 
@@ -97,7 +97,7 @@ bool GameService::doMultiple(CPacket &packet){
     }
 
     SlotsUserPtr sup;
-    if (!SlotsDataCenter::instance().slotsUserData->get(uid, sup)) {
+    if (!SlotsDataCenter::instance().slotsUserData->getByUid(uid, sup)) {
 	return false;
     }
 
@@ -112,7 +112,7 @@ bool GameService::doMultiple(CPacket &packet){
     case 2:
     case 4:{
 	UserResource &ur = sup->uRes;
-	ur.incrFortune(incrVal * (dV -1));	    
+	ur.incrFortune(incrVal * (dV -1));
 	CLOG(INFO) << "User[" << uid << "] new fortune:" << ur.fortune;
 	break;
     }

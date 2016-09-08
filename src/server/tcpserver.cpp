@@ -70,41 +70,9 @@ bool TcpServer::initServer(int port) {
 }
 
 bool TcpServer::startRawServer(int port) {
-    int poolSize;
-    if (!Config::getInstance().getIntValue("server", "threadpool_size", poolSize) ||
-	poolSize < 0)
-    {
-	CLOG(ERROR) << "Invalid threadpoll size:" << poolSize;
-	return false;
-    }
-    if (!_socket.setAddress(NULL, port)){
-        CLOG(ERROR) << "Set socket address failed.";
-        return false;
-    }
-    if (!_socket.listen(256)) {
-        CLOG(ERROR) << "Listen failed.";
-        return false;
-    }
-
-    _pool.reset(new ThreadPool(poolSize));
-    if (!_pool->start()) {
-        CLOG(ERROR) << "Create thread poll failed.";
-        return false;
-    }
-
-    Socket *clientSocket;
-    while(!_stop) {
-        if ((clientSocket = _socket.accept()) == NULL) {
-            //accept failed.
-            continue;
-        }
-        SocketPtr tmp(clientSocket);
-        Task *task = new Task(tmp, _processor);
-        if (_pool->pushTask((Runnable *)task) != ThreadPool::ERROR_NONE) {
-            // release mem
-            delete task;
-        }
-    }
+    // no longer support
+    CLOG(ERROR) << "Raw server is no longer used.";
+    return false;
 }
 
 bool TcpServer::startAsyncServer(int port) {

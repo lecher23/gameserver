@@ -12,11 +12,11 @@ class SlotsUserData: public PersistenceBase{
     virtual void save2MySQL(uint64_t factor);
     virtual bool needSave(uint64_t factor);
 
-    /* get user info. if user not exist, read it from db*/
-    bool get(const std::string &uid, SlotsUserPtr &out, bool isUserId = true);
+    bool getByUid(const std::string &uid, SlotsUserPtr &out);
+    bool getByMid(const std::string &mid, SlotsUserPtr &out);
     void set(const std::string &uid, SlotsUserPtr &in);
-    
- private:
+
+private:
     std::map<std::string, SlotsUserPtr> _data;
     std::mutex _lock;
 };

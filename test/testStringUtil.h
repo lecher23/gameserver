@@ -153,6 +153,51 @@ public:
 	StringUtil::ArrayToStr(data, 3, ',', out);
 	AST_EQ("123,23,3", out);
     }
-    
-    
+
+    void test_str_to_int_vec_end_without_deli(void)
+    {
+            std::vector<int32_t> out;
+            std::string in = "1,2,3,49,500";
+            StringUtil::StrToIntVector(in, out, ',');
+            AST_EQ(5, out.size());
+            AST_EQ(1, out[0]);
+            AST_EQ(2, out[1]);
+            AST_EQ(3, out[2]);
+            AST_EQ(49, out[3]);
+            AST_EQ(500, out[4]);
+    }
+
+    void test_str_to_int_vec_end_with_deli(void)
+    {
+            std::vector<int32_t> out;
+            std::string in = "1,2,3,49,500,";
+            StringUtil::StrToIntVector(in, out, ',');
+            AST_EQ(5, out.size());
+            AST_EQ(1, out[0]);
+            AST_EQ(2, out[1]);
+            AST_EQ(3, out[2]);
+            AST_EQ(49, out[3]);
+            AST_EQ(500, out[4]);
+    }
+
+    void test_str_to_int_vec_single(void)
+    {
+            std::vector<int32_t> out;
+            std::string in = "1234321";
+            StringUtil::StrToIntVector(in, out, ',');
+            AST_EQ(1, out.size());
+            AST_EQ(1234321, out[0]);
+    }
+
+    void test_str_to_int_vec_start_with_zero(void)
+    {
+            std::vector<int32_t> out;
+            std::string in = "0,5,15,35";
+            StringUtil::StrToIntVector(in, out, ',');
+            AST_EQ(4, out.size());
+            AST_EQ(0, out[0]);
+            AST_EQ(5, out[1]);
+            AST_EQ(15, out[2]);
+            AST_EQ(35, out[3]);
+    }
 };

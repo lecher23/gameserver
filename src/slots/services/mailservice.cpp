@@ -14,7 +14,7 @@ namespace slots{
 	std::string errMsg;
 	GET_PARAM("type", type, true);
 	GET_PARAM("uid", uid, true);
-	
+
 	SlotsDB &db = SlotsDB::getInstance();
 	SBuf bf;
 	ResultFormatter rf(bf);
@@ -45,7 +45,7 @@ namespace slots{
 		}
 		rf.formatSimpleResult(true, "");
 	    }
-	    
+            ret = true;
 	}while(false);
 	resp.setBody(bf.GetString());
 	return ret;

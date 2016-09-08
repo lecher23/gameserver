@@ -763,6 +763,26 @@ void StringUtil::StrToIntArray(
     }
 }
 
+void StringUtil::StrToIntVector(
+    const std::string &src, std::vector<int32_t> &out, const char delimiter)
+{
+    if(src.empty()) {
+        return;
+    }
+    int32_t x = 0;
+    for (auto ch: src){
+        if(delimiter == ch) {
+            out.push_back(x);
+            x = 0;
+        } else {
+            x = x * 10 + (ch - '0');
+        }
+    }
+    if (src[src.size() - 1] != delimiter) {
+        out.push_back(x);
+    }
+}
+
 unsigned char StringUtil::toHex(const unsigned char &x) {
     return x > 9 ? x - 10 + 'A' : x + '0';
 }
@@ -814,7 +834,5 @@ bool StringUtil::URLDecode(const std::string &sIn, std::string &sOut) {
     }
     return true;
 }
-    
-    
-END_NAMESPACE
 
+END_NAMESPACE

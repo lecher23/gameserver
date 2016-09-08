@@ -8,6 +8,7 @@
 #include <slots/services/gameservice.h>
 #include <slots/services/rankservice.h>
 #include <slots/services/socialityservice.h>
+#include <slots/services/messageservice.h>
 
 BEGIN_NAMESPACE(slots)
 std::map<std::string, IServicePtr> _routing
@@ -16,6 +17,7 @@ std::map<std::string, IServicePtr> _routing
            {"/slots/mail", IServicePtr((IService *)new MailService)},
            {"/slots/game", IServicePtr((IService *)new GameService)},
            {"/slots/friends", IServicePtr((IService *)new SocialityService)},
+           {"/slots/msg", IServicePtr((IService *)new MessageService)},
            {"/slots/rank", IServicePtr((IService *)new RankService)}};
 
 class ServiceProvider{

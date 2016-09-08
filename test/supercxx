@@ -93,10 +93,10 @@ if __name__ == "__main__":
     for f in os.listdir(obj_path):
         if f not in obj_exclude:
             sc.obj_path.append(os.path.join(obj_path, f))
-    sc.header_path = [os.path.join(root, "depend/headers"),
+    sc.header_path = [os.path.join(root, "depend/include"),
                       os.path.join(root, "src"),
                       os.path.join(root, "test/cxxtest-4.3")]
-    sc.lib_path = [os.path.join(root, "depend/libs")]
+    sc.lib_path = [os.path.join(root, "depend/lib")]
     sc.libs_required = ["pthread", "lua5.1", "mysqlclient", "glog", "glfw"]
     sc.root = os.path.join(root, "test")
     sc.cxx_root = os.path.join(root, "test/cxxtest-4.3")

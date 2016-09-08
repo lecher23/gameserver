@@ -88,7 +88,7 @@ void HistoryProcessor::processGameDetail(GameContext &context, SingleGameDetail 
 }
 
 void HistoryProcessor::processExp(GameContext &context, SingleGameDetail &data) const {
-    auto &uRes = context.user->uRes;    
+    auto &uRes = context.user->uRes;
     // if zero bet then exp will not change
     if (data.bet == 0) {
 	return;
