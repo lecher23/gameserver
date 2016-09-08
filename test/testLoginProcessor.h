@@ -26,7 +26,7 @@ TestLoginProcessor():_inited(false){}
 	    ast_true(MysqlConnPool::getInstance().init());
             ast_true(SlotsConfig::getInstance().init());
             auto &x = SlotsConfig::getInstance().loginCfg;
-            for (auto &item: x.runnerBonus) {
+            for (auto &item: x.levelBonus) {
                     CLOG(INFO) << item.first << "," << item.second;
             }
 	    _inited = true;
@@ -44,11 +44,13 @@ TestLoginProcessor():_inited(false){}
         su->uInfo.uid = "id1";
         su->gDetail.lastLogin = CTimeUtil::getCurrentTimeInSeconds() - 24 * 3600;
         su->gDetail.consitiveLogin = 1;
+        su->uRes.vipLevel = 1;
         gc.user = su;
         LoginProcessor lp;
         lp.process(gc);
         ast_eq(2, su->gDetail.consitiveLogin);
-        ast_eq(199, gc.user->loginReward.daysReward);
+        ast_eq(3000, gc.user->loginReward.daysReward);
+        ast_eq(300, gc.user->loginReward.specialReward);
     }
 
     void test_process_login_1day(void)
@@ -58,11 +60,13 @@ TestLoginProcessor():_inited(false){}
         su->uInfo.uid = "id1";
         su->gDetail.lastLogin = CTimeUtil::getCurrentTimeInSeconds() - 48 * 3600;
         su->gDetail.consitiveLogin = 5;
+        su->uRes.vipLevel = 1;
         gc.user = su;
         LoginProcessor lp;
         lp.process(gc);
         ast_eq(1, su->gDetail.consitiveLogin);
-        ast_eq(99, gc.user->loginReward.daysReward);
+        ast_eq(2000, gc.user->loginReward.daysReward);
+        ast_eq(200, gc.user->loginReward.specialReward);
         CLOG(INFO) << "Runner:" << gc.user->loginReward.runnerReward;
     }
 
@@ -71,6 +75,7 @@ TestLoginProcessor():_inited(false){}
         GameContext gc;
         SlotsUserPtr su(new SlotsUser);
         su->uInfo.uid = "id1";
+        su->uRes.vipLevel = 1;
         su->gDetail.lastLogin = CTimeUtil::getCurrentTimeInSeconds();
         su->gDetail.consitiveLogin = 5;
         gc.user = su;
@@ -80,6 +85,21 @@ TestLoginProcessor():_inited(false){}
         lp.process(gc);
         ast_eq(5, su->gDetail.consitiveLogin);
         ast_eq(99, gc.user->loginReward.daysReward);
+    }
+
+    void test_process_vip_0(void)
+    {
+        GameContext gc;
+        SlotsUserPtr su(new SlotsUser);
+        su->uInfo.uid = "id1";
+        su->uRes.vipLevel = 0;
+        su->gDetail.lastLogin = CTimeUtil::getCurrentTimeInSeconds() - 48 * 3600;
+        gc.user = su;
+        LoginProcessor lp;
+        lp.process(gc);
+        ast_eq(1, su->gDetail.consitiveLogin);
+        ast_eq(2000, gc.user->loginReward.daysReward);
+        ast_eq(0, gc.user->loginReward.specialReward);
     }
 private:
     bool _inited;

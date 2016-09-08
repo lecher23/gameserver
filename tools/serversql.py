@@ -40,6 +40,15 @@ class ServerSql:
             self.cursor.execute(q)
         self.endTransaction(True)
 
+    def clearVipRewardConfig(self):
+        sql = "delete from login_config where id < 20000"
+        self.runQuery(sql)
+
+    def addVipRewardConfig(self, vip, add):
+        sql = "insert into login_config (id, val) values(%d, %d)" % \
+              (vip + 10000, add)
+        self.runQuery(sql)
+
     def addLoginRewardConfig(self, dayn, reward):
         sql = "insert into login_config (id, val) values(%d, %d)" % \
               (dayn + 20000, reward)
@@ -350,16 +359,36 @@ if __name__ == "__main__":
             lbs.clearDayLoginReward()
         elif nxt == "default":
             cfg = [
-                (1, 1000),
-                (2, 2000),
-                (3, 2000),
-                (4, 2000),
-                (5, 2000),
-                (6, 2000),
-                (7, 2000),
+                (1, 2000),
+                (2, 3000),
+                (3, 4000),
+                (4, 5000),
+                (5, 6000),
+                (6, 8000),
+                (7, 10000),
             ]
             for tp in cfg:
                 lbs.addLoginRewardConfig(tp[0], tp[1])
+        exit(0)
+
+    if cmd == "viprw_cfg":
+        nxt = sys.argv[2]
+        if nxt == "clear":
+            lbs.clearVipRewardConfig()
+        elif nxt == "default":
+            cfg = [
+                (1, 10),
+                (2, 10),
+                (3, 10),
+                (4, 10),
+                (5, 10),
+                (6, 10),
+                (7, 10),
+                (8, 10),
+                (9, 10),
+            ]
+            for tp in cfg:
+                lbs.addVipRewardConfig(tp[0], tp[1])
         exit(0)
 
     if cmd == "debug":
