@@ -9,7 +9,7 @@ MessageService::MessageService(){
 MessageService::~MessageService(){
 }
 
-bool MessageService::doJob(CPacket &packet, CResponse &resp){
+bool MessageService::doJob(CPacket &packet, CResponse &resp) {
     int32_t gType;
     if (!getIntVal(packet, "type", gType)) {
         return false;
@@ -53,6 +53,7 @@ bool MessageService::getCargoStatus(CPacket &packet) {
     GET_PARAM("uid", uid, true);
     std::string cargoId;
     GET_PARAM("cargo", cargoId, true);
+    // TODO
     // get cargo from cache
     // if no record, async request server
     // if has record, return value
