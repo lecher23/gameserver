@@ -4,5 +4,6 @@
 #include "historyprocessor.h"
 #include "gameprocessor.h"
 #include "achievementprocessor.h"
+#include "loginprocessor.h"
 
 #endif

@@ -1,6 +1,5 @@
 #include "gameservice.h"
 #include <util/luatoolfactory.h>
-#include <slots/processors/allprocessors.h>
 
 BEGIN_NAMESPACE(slots)
 GameService::GameService(){
@@ -45,7 +44,7 @@ bool GameService::doSlots1(CPacket &packet, ResultFormatter &rf)
 	std::string bet;
 	GET_PARAM_WITH_BREAK("uid", uid, true);
 	GET_PARAM_WITH_BREAK("bet", bet, true);
-	
+
 	int64_t betVal;
 	if (!cgserver::StringUtil::StrToInt64(bet.c_str(), betVal) || betVal < 0) {
 	    CLOG(WARNING) << "Invalid bet value: " << bet;
@@ -55,19 +54,15 @@ bool GameService::doSlots1(CPacket &packet, ResultFormatter &rf)
 	gc.gameInfo.bet = betVal;
 	gc.gameInfo.gType = style;
 	GET_SLOTS_USER_WITH_BREAK(uid, gc.user);
-	GameProcessor gProcessor;
-	if (!gProcessor.process(gc)) {
+	if (!_gProcessor.process(gc)) {
 	    break;
 	}
-	HistoryProcessor hProcessor;
-	if (!hProcessor.process(gc)) {
+	if (!_hProcessor.process(gc)) {
 	    break;
 	}
-	AchievementProcessor aProcessor;
-	if (!aProcessor.process(gc)) {
+	if (!_aProcessor.process(gc)) {
 	    break;
 	}
-	//SlotsDataCenter::instance().slotsEvent.playGame(user, data);
 	ret = true;
 	rf.formatGameResult(gc.user->uRes, gc.gameInfo.earned, gc.gameInfo.detail);
     } while (false);

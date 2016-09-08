@@ -2,6 +2,7 @@
 #define LOGINSERVICE_H
 
 #include "iservice.h"
+#include <slots/processors/allprocessors.h>
 
 namespace slots{
     class LoginService:IService{
@@ -12,6 +13,9 @@ namespace slots{
 	virtual bool doJob(CPacket &packet, CResponse &resp);
     private:
 	bool getUserInfo(CPacket &packet, SlotsUserPtr &su, Achievements &cj) const;
+
+        LoginProcessor _lProcessor;
+        AchievementProcessor _aProcessor;
     };
 }
 #endif
