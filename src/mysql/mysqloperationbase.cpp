@@ -11,7 +11,7 @@ MysqlOperationBase::~MysqlOperationBase(){
 bool MysqlOperationBase::exeQuery(MYSQL *conn, const MysqlStr &query) {
     int ret = mysql_query(conn, query.c_str());
     if (ret != 0) {
-        CLOG(INFO) << "run query:["<< query << "] failed." ;
+        CLOG(WARNING) << "run query:["<< query << "] failed." ;
         switch(ret) {
         case CR_COMMANDS_OUT_OF_SYNC:
             CLOG(ERROR) << "ERROR:CR_COMMANDS_OUT_OF_SYNC" ;
@@ -165,6 +165,10 @@ bool MysqlOperationBase::addRow(
     q += (quoteValue ? StrQuote:StrEmpty);
     q += StrRightBracket;
     return exeQuery(conn, q);
+}
+
+std::string MysqlOperationBase::getQuery() {
+    return _query;
 }
 
 void MysqlOperationBase::setQuery(const MysqlStr &query) {

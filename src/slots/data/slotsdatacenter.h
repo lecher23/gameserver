@@ -5,6 +5,7 @@
 #include <slots/data/persistencethread.h>
 #include <slots/data/slotsuserdata.h>
 #include <slots/data/sqlqueue.h>
+#include <slots/data/cjqueue.h>
 #include <slots/data/giftsdata.h>
 #include <util/timeutil.h>
 
@@ -26,10 +27,10 @@ public:
 	    return false;
 	}
 	slotsUserData.reset(new SlotsUserData);
-	sqlQueue.reset(new SqlQueue);
+        cjQueue.reset(new CjQueue);
 	// add slots user data.
 	_persisThread.addData(slotsUserData);
-	_persisThread.addData(sqlQueue);	
+        _persisThread.addData(cjQueue);
 	return ret && _gifts->init();
     }
 
@@ -85,7 +86,7 @@ public:
 
     /* User data*/
     SlotsUserDataPtr slotsUserData;
-    SqlQueuePtr sqlQueue;
+    CjQueuePtr cjQueue;
 
 private:
     bool rankDataExpired(int64_t ts) {

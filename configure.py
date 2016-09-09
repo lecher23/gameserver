@@ -80,7 +80,10 @@ def resolve_rapid_json():
             (os.path.join(TMP_DIR, "rapidjson"), INCLUDE_DIR))
 
 def resolve_lua():
-    # easy install : apt-get install lua5.3 lua5.3-dev
+    # easy install : apt-get install lua5.1 lua5.1-dev
+    exe_cmd("apt-get install lua5.1 lua5.1-dev")
+    return
+    # below is useless
     # 5.1 or other version
     # before make, we should use cmd:
     # sudo apt-get install libreadline6 libreadline6-dev
@@ -91,14 +94,6 @@ def resolve_lua():
     exe_cmd("apt-get install libreadline6 libreadline6-dev")
     lua_dir = os.path.join(TMP_DIR, fname.replace(".tar.gz", ""))
     exe_cmd("cd %s && make linux" % lua_dir)
-    # here is lua install info
-    # cd src && mkdir -p /usr/local/bin /usr/local/include /usr/local/lib /usr/local/man/man1 /usr/local/share/lua/5.3 /usr/local/lib/lua/5.3
-    # cd src && install -p -m 0755 lua luac /usr/local/bin
-    # cd src && install -p -m 0644 lua.h luaconf.h lualib.h lauxlib.h lua.hpp /usr/local/include
-    # cd src && install -p -m 0644 liblua.a /usr/local/lib
-    # cd doc && install -p -m 0644 lua.1 luac.1 /usr/local/man/man1
-
-    # infact, just liblua.a is ok, no need other so file.
     exe_cmd("cp %s %s" %(os.path.join(lua_dir, "src/liblua.a") , LIB_DIR))
 
 def resolve_mysql_client():

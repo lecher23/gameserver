@@ -58,9 +58,9 @@ public:
 	bool startTransaction(MYSQL *conn);
 	/*end transaction release lock, but won't get lock*/
 	bool endTransaction(MYSQL *conn, bool commit);
-	bool getResult(MYSQL *conn, MysqlRow &out);	
+	bool getResult(MYSQL *conn, MysqlRow &out);
 	bool getResult(MYSQL *conn, MysqlRows &out);
-	bool queryWithResult(MYSQL *conn, const MysqlStr &q, MysqlRow &out);	
+	bool queryWithResult(MYSQL *conn, const MysqlStr &q, MysqlRow &out);
 	bool queryWithResult(MYSQL *conn, const MysqlStr &q, MysqlRows &out);
 	bool insertWithReturn(MYSQL * conn, MysqlStr &insertQuery,
 			      MysqlStr &selectQuery, MysqlRows &out);
@@ -68,6 +68,7 @@ public:
 		    const MysqlStr &value, bool quoteValue = true);
 	uint64_t affectRows(MYSQL *conn);
 
+        std::string getQuery();
 	void setQuery(const MysqlStr &query);
 	void setTable(const MysqlStr &table);
 	void addTable(const MysqlStr &table);

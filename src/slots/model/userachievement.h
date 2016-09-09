@@ -6,6 +6,16 @@
 
 BEGIN_NAMESPACE(slots)
 
+namespace UserCJStr{
+    const std::string sTableName = "user_achievement";
+    const std::string sUid = "uid";
+    const std::string sAid = "aid";
+    const std::string sRecv = "is_recv_reward";
+    const std::string sProgress = "progress";
+    const std::string sIsGain = "is_gain";
+    const std::string sTime = "time";
+};
+
 struct UserAchievement{
     std::string uid;
     std::string aid;

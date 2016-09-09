@@ -4,6 +4,8 @@ import os
 import sys
 import time
 
+CPP_TMP_FILE = "tmp_cpp_file"
+
 class SuperCxx:
     def __init__(self):
         self.obj_path = []
@@ -25,19 +27,21 @@ class SuperCxx:
         if (test_name != None):
             cpp_fpath = self.create_cpp_file(test_name)
             self.run_single_test(cpp_fpath)
-            return 
+            return
         for f in os.listdir(self.test_root):
             if f.startswith("test") and f.endswith(".h"):
                 cpp_fpath = self.create_cpp_file(os.path.join(self.test_root, f))
                 self.run_single_test(cpp_fpath)
 
     def create_h_file(self, dest):
-        cmd = "cp %s %s" % (self.tmp_h_file, dest + ".h")
+        if not dest.endswith(".h"):
+            dest += ".h"
+        cmd = "cp %s %s" % (self.tmp_h_file, dest)
         os.system(cmd)
 
     def create_cpp_file(self, h_file):
         cpp_file = os.path.basename(h_file)[:-2] + ".cpp"
-        cpp_file_path = os.path.join(self.test_root, cpp_file)
+        cpp_file_path = os.path.join(self.test_root, CPP_TMP_FILE, cpp_file)
         os.system("rm " + cpp_file_path)
         cmd = "%s/bin/cxxtestgen --error-printer  %s -o %s" % \
               (self.cxx_root, h_file, cpp_file_path)
@@ -81,14 +85,11 @@ class SuperCxx:
             print o
             exit(1)
         print "Compile cost: %s s" % (eTime - sTime)
-        
-    
 
 if __name__ == "__main__":
     sc = SuperCxx()
     root = "/home/licheng/workspace/CgServerPlus"
     obj_path = root + "/build/obj"
-    
     obj_exclude = ["cgserver.o"]
     for f in os.listdir(obj_path):
         if f not in obj_exclude:
@@ -128,7 +129,7 @@ if __name__ == "__main__":
                 # run <casename>
                 sc.do_test(sys.argv[2])
         elif arg_len == 4:
+            # run <casename> -c
             sc.do_test(sys.argv[2], compile = True)
     else:
         print "Invalid input."
-            
