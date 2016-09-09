@@ -182,6 +182,10 @@ class ServerSql:
             self.createTable(table)
 
     def generateTableSql(self):
+        table = "f_history"
+        sql = 'create table %s(uid INT NOT NULL PRIMARY KEY, invite_count int NOT NULL DEFAULT 0, reward_total BIGINT DEFAULT 0, reward_remain BIGINT DEFAULT 0)' % table
+        self.table_sqls[table] = sql
+
         table = "user_info"
         sql = 'create table %s(uid INT AUTO_INCREMENT, mid CHAR(48) NOT NULL, fname CHAR(24), lname CHAR(2) DEFAULT "", avatar INT DEFAULT 0, male BOOL DEFAULT 1, country INT DEFAULT 86, PRIMARY KEY(uid))' % table
         self.table_sqls[table] = sql

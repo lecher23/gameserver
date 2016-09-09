@@ -70,10 +70,11 @@ class SuperCxx:
     def get_run_env(self):
         extra = ":".join(self.lib_path)
         os.environ['LD_LIBRARY_PATH'] = extra
-        return "LD_LIBRARY_PATH = $LD_LIBRARY_PATH:%s" % extra
+        return "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:%s" % extra
 
     def run_test(self):
-        cmd = "echo $LD_LIBRARY_PATH;./%s" % self.app_name
+        cmd = "export %s;./%s" % (self.get_run_env(),self.app_name)
+        print cmd
         s, o = commands.getstatusoutput(cmd)
         print o
 
@@ -101,7 +102,7 @@ if __name__ == "__main__":
                       os.path.join(root, "src"),
                       os.path.join(root, "test/cxxtest-4.3")]
     sc.lib_path = [os.path.join(root, "depend/lib")]
-    sc.libs_required = ["pthread", "lua5.1", "mysqlclient", "glog", "glfw"]
+    sc.libs_required = ["pthread", "lua5.1", "mysqlclient", "glog"]
     sc.root = os.path.join(root, "test")
     sc.cxx_root = os.path.join(root, "test/cxxtest-4.3")
     sc.test_root = os.path.join(root, "test")
