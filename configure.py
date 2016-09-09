@@ -109,6 +109,9 @@ if __name__ == "__main__":
     if os.geteuid() != 0:
         print "This script must be run as root."
         exit(1)
+    os.system("mkdir -p %s" % INCLUDE_DIR)
+    os.system("mkdir -p %s" % LIB_DIR)
+    exit(0)
     os.system("rm -rf %s" % TMP_DIR)
     os.system("mkdir %s" % TMP_DIR)
     #resolve_mysql_client()
