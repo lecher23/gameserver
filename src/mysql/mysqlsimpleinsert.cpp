@@ -29,7 +29,7 @@ void MysqlSimpleInsert::setValue(const std::string &value) {
 
 void MysqlSimpleInsert::addValue(const std::string &value) {
     // remove last char: ")"
-    _query.resize(_query.size() - 1);
+    _query.resize(_query.size() - StrRightBracket.size());
     _query += StrComma;
     quoteValue(value, true);
     _query += StrRightBracket;

@@ -23,6 +23,9 @@ BEGIN_NAMESPACE(slots)
 #define TO_GAME_CJ_VALUE(gameid, value) (gameid * 10000000 + value)
 #define CHANCE_MAX_POINT 1000
 
+const std::string sMysqlTrue = "1";
+const std::string sMysqlFalse = "0";
+
 template <typename T>
 struct BasicData {
     T val;

@@ -8,7 +8,7 @@ namespace cgserver{
     public:
         MysqlSimpleDelete();
         virtual ~MysqlSimpleDelete();
-	
+
 	virtual bool doOperation(MYSQL *conn);
     };
 }
