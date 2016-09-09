@@ -11,4 +11,4 @@ tmp.*
 test_main
 test*.cpp
 .swp
-depend
+depend/
