@@ -34,7 +34,9 @@ class SuperCxx:
                 self.run_single_test(cpp_fpath)
 
     def create_h_file(self, dest):
-        cmd = "cp %s %s" % (self.tmp_h_file, dest + ".h")
+        if not dest.endswith(".h"):
+            dest += ".h"
+        cmd = "cp %s %s" % (self.tmp_h_file, dest)
         os.system(cmd)
 
     def create_cpp_file(self, h_file):
