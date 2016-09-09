@@ -160,6 +160,11 @@ class ServerSql:
             sqls.append("insert into %s (uid) values (%s)" % (dest_table, r[0]))
         self._transaction(dest_table, sqls)
 
+    def initTables(self):
+        for key in self.table_sqls:
+            print "Create table: %s" % key
+            self.createTable(key)
+
     ''' Table creator'''
     def createTable(self, table):
         if table not in self.table_sqls:
@@ -389,6 +394,10 @@ if __name__ == "__main__":
             ]
             for tp in cfg:
                 lbs.addVipRewardConfig(tp[0], tp[1])
+        exit(0)
+
+    if cmd == "initdb":
+        lbs.initTables()
         exit(0)
 
     if cmd == "debug":
