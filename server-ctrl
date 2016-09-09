@@ -5,7 +5,7 @@ PORT=9876
 SERVER_PID="`netstat -apn | grep ${PORT} | grep LISTEN | awk '{print $7}'|sed 's/\/server//g'`"
 LOG_DIR="/root/logs"
 TAG="`date +%Y-%m-%d`"
-EXT_LIB_PATH="${BASE_PATH}/depend/libs"
+EXT_LIB_PATH="${BASE_PATH}/depend/lib"
 SERVER_BIN="${BASE_PATH}/build/release/server"
 echo $SERVER_PID
 echo $TAG
