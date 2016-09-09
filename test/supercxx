@@ -4,6 +4,9 @@ import os
 import sys
 import time
 
+CUR_PATH = os.path.split(os.path.realpath(__file__))[0]
+if CUR_PATH.endswith("/"):
+    CUR_PATH = CUR_PATH[:-1]
 CPP_TMP_FILE = "tmp_cpp_file"
 
 class SuperCxx:
@@ -14,9 +17,9 @@ class SuperCxx:
         self.libs_required = [] # such as "pthread" "lua5.1"
         self.extra_option = ["-std=c++11", "-g"]
         self.root = ""
-        self.cxx_root = "/home/licheng/workspace/cxxtest"
-        self.test_root = "/home/licheng/workspace/simpletest"
-        self.tmp_h_file = "/home/licheng/workspace/cxxtest/h.tpl"
+        self.cxx_root = ""
+        self.test_root = ""
+        self.tmp_h_file = ""
         self.workspace = ""
         self.app_name = "test_main"
 
@@ -88,7 +91,7 @@ class SuperCxx:
 
 if __name__ == "__main__":
     sc = SuperCxx()
-    root = "/home/licheng/workspace/CgServerPlus"
+    root = "/".join(CUR_PATH.split("/")[:-1])
     obj_path = root + "/build/obj"
     obj_exclude = ["cgserver.o"]
     for f in os.listdir(obj_path):
