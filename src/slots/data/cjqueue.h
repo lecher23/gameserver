@@ -24,5 +24,7 @@ private:
     std::mutex _lock;
 };
 
+DF_SHARED_PTR(CjQueue);
+
 END_NAMESPACE
 #endif

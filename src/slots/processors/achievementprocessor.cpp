@@ -1,5 +1,6 @@
 #include "achievementprocessor.h"
 #include <util/timeutil.h>
+#include <slots/data/slotsdatacenter.h>
 
 BEGIN_NAMESPACE(slots)
 
@@ -69,6 +70,9 @@ bool AchievementProcessor::process(GameContext &context) const {
 	    break;
 	}
     }
+    // save achievement
+    auto &cjQueue = SlotsDataCenter::instance().cjQueue;
+    cjQueue->addCj(context.userCj);
     return true;
 }
 
