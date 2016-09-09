@@ -65,6 +65,7 @@ def resolve_boost_dependency():
     get_boost_hpp_lib("log", "boost-1.61.0")
     get_boost_hpp_lib("date_time", "boost-1.61.0")
     get_boost_hpp_lib("utility", "boost-1.61.0")
+    get_boost_hpp_lib("system", "boost-1.61.0")
 
 def resolve_glog_dependency():
     clone_from_git("https://github.com/google/glog", "v0.3.4",
