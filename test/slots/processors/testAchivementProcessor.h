@@ -12,7 +12,7 @@ using namespace slots;
 
 const std::string lua_file = "/home/licheng/workspace/lua/main.lua";
 
-class TestAchievementProcessor : public CxxTest::TestSuite 
+class TestAchievementProcessor : public CxxTest::TestSuite
 {
 public:
 
@@ -110,9 +110,9 @@ public:
 	x.clear();
 	x.push_back(createCjSetting("36", 500));
 	x.push_back(createCjSetting("38", 1000));
-	x.push_back(createCjSetting("37", 800));		
+	x.push_back(createCjSetting("37", 800));
 	x.push_back(createCjSetting("35", 100));
-	
+
 	EventInfo e(EGE_EARNED_INCR, 50, 99);
 	AchievementProcessor p;
 	GameContext cxt;
@@ -134,9 +134,9 @@ public:
 	x.clear();
 	x.push_back(createCjSetting("36", 500));
 	x.push_back(createCjSetting("38", 1000));
-	x.push_back(createCjSetting("37", 800));		
+	x.push_back(createCjSetting("37", 800));
 	x.push_back(createCjSetting("35", 100));
-	
+
 	EventInfo e(EGE_EARNED_INCR, 100, 300);
 	AchievementProcessor p;
 	GameContext cxt;
@@ -158,9 +158,9 @@ public:
 	x.clear();
 	x.push_back(createCjSetting("36", 500));
 	x.push_back(createCjSetting("38", 1000));
-	x.push_back(createCjSetting("37", 800));		
+	x.push_back(createCjSetting("37", 800));
 	x.push_back(createCjSetting("35", 100));
-	
+
 	EventInfo e(EGE_EARNED_INCR, 100, 800);
 	AchievementProcessor p;
 	GameContext cxt;
@@ -180,14 +180,13 @@ public:
 	AST_EQ("37", cxt.userCj[1].aid);
 	AST_EQ(800, cxt.userCj[1].progress);
 
-	
 	AST_EQ(false, cxt.userCj[2].isGain);
 	AST_EQ(false, cxt.userCj[2].isRecvReward);
 	AST_EQ("9", cxt.userCj[2].uid);
 	AST_EQ("38", cxt.userCj[2].aid);
 	AST_EQ(800, cxt.userCj[2].progress);
     }
-    
+
     void test_money_earned_get_last_cj( void )
     {
 	auto &cfg = SlotsConfig::getInstance().cjConfig;
@@ -195,9 +194,9 @@ public:
 	x.clear();
 	x.push_back(createCjSetting("36", 500));
 	x.push_back(createCjSetting("38", 1000));
-	x.push_back(createCjSetting("37", 800));		
+	x.push_back(createCjSetting("37", 800));
 	x.push_back(createCjSetting("35", 100));
-	
+
 	EventInfo e(EGE_EARNED_INCR, 800, 10300);
 	AchievementProcessor p;
 	GameContext cxt;
@@ -211,6 +210,4 @@ public:
 	AST_EQ("38", cxt.userCj[0].aid);
 	AST_EQ(1000, cxt.userCj[0].progress);
     }
-    
-	
 };
