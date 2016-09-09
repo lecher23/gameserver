@@ -31,6 +31,7 @@ bool TcpServer::initServer(int port) {
 	CLOG(ERROR) << "Init mysql pool failed.";
 	return false;
     }
+    CLOG(INFO) << "Init mysql pool done.";
 
     if(!ResourceFactory::getInstance().init()) {
 	return false;

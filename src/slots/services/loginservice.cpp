@@ -11,18 +11,16 @@ namespace slots{
 	bool pOk = false;
 	SlotsUserPtr sUser;
 	Achievements cj;
+        GameContext context;
 	do {
 	    if (!getUserInfo(packet, sUser, cj)){
 		break;
 	    }
-	    pOk = true;
+            context.user = sUser;
+            _lProcessor.process(context);
+            _aProcessor.process(context);
+            pOk = true;
 	}while(0);
-
-        GameContext context;
-        context.user = sUser;
-
-        _lProcessor.process(context);
-        _aProcessor.process(context);
 
 	SBuf buf;
 	ResultFormatter rf(buf);

@@ -12,8 +12,8 @@
 
 namespace cgserver{
     const std::string CgServer::ConfigFilePath = "server.cfg";
-    
-    CgServer::CgServer(){
+
+  CgServer::CgServer(){
     }
     CgServer::~CgServer(){
 	;
@@ -24,7 +24,7 @@ namespace cgserver{
 	// close logger
 	google::ShutdownGoogleLogging();
     }
-    
+
     void CgServer::start(){
 	/*Read config file.*/
 	Config &cfg = Config::getInstance();
@@ -33,7 +33,7 @@ namespace cgserver{
 	    std::cout << "Init config failed." << std::endl;
 	    return;
 	}
-	
+
 	/*Init Logger*/
 	google::InitGoogleLogging("CgServer");
 	/*Level can be INFO(0)/WARNNING(1)/ERROR(2)/FATAL(3).*/
@@ -55,7 +55,7 @@ namespace cgserver{
 	}
 	google::SetStderrLogging(4); 
 	//error will flush to file
-	google::FlushLogFiles(3);
+	google::FlushLogFiles(2);
 	if (!logDir.empty()) {
 	    std::string logFilePrefix = logDir;
 	    // set log min level.
