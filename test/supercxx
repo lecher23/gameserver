@@ -3,6 +3,7 @@ import commands
 import os
 import sys
 import time
+from string import Template
 
 CUR_PATH = os.path.split(os.path.realpath(__file__))[0]
 if CUR_PATH.endswith("/"):
@@ -22,6 +23,9 @@ class SuperCxx:
         self.tmp_h_file = ""
         self.workspace = ""
         self.app_name = "test_main"
+        self.lua_file_path = ""
+        self.config_file_path = ""
+        self.test_common_header = ""
 
     def do_test(self, test_name = None, compile = False):
         if compile:
@@ -39,8 +43,24 @@ class SuperCxx:
     def create_h_file(self, dest):
         if not dest.endswith(".h"):
             dest += ".h"
-        cmd = "cp %s %s" % (self.tmp_h_file, dest)
-        os.system(cmd)
+        if not dest.startswith("test"):
+            dest = "test" + dest
+        h_str = Template(open(self.tmp_h_file).read());
+        h_code = h_str.safe_substitute(test_common_header = self.test_common_header,
+                                       class_name = dest[:-2])
+        f = open(dest, "w")
+        f.write(h_code)
+        f.close()
+        common_tpl = Template('''#include <string>
+namespace cxx{
+    const std::string lua_file = "${lua_file_path}";
+    const std::string cfg_file = "${config_file_path}";
+}''')
+        common_code = common_tpl.safe_substitute(lua_file_path = self.lua_file_path,
+                                                 config_file_path = self.config_file_path)
+        f = open(self.test_common_header, "w")
+        f.write(common_code)
+        f.close()
 
     def create_cpp_file(self, h_file):
         cpp_file = os.path.basename(h_file)[:-2] + ".cpp"
@@ -107,6 +127,9 @@ if __name__ == "__main__":
     sc.cxx_root = os.path.join(root, "test/cxxtest-4.3")
     sc.test_root = os.path.join(root, "test")
     sc.tmp_h_file = os.path.join(root, "tools/h.tpl")
+    sc.lua_file_path = os.path.join(root, "lua/main.lua")
+    sc.config_file_path = os.path.join(root, "server.cfg")
+    sc.test_common_header = os.path.join(root, "test/common.h")
     sc.workspace = root
 
     arg_len = len(sys.argv)

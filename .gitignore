@@ -12,3 +12,4 @@ test_main
 test*.cpp
 .swp
 depend/
+common.h
