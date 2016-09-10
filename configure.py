@@ -32,6 +32,7 @@ def get_boost_hpp_lib(lib_name, version):
     exe_cmd(cmd)
 
 def resolve_boost_dependency():
+    get_boost_hpp_lib("bind", "boost-1.61.0")
     get_boost_hpp_lib("tokenizer", "boost-1.61.0")
     get_boost_hpp_lib("math", "boost-1.61.0")
     get_boost_hpp_lib("move", "boost-1.61.0")
@@ -109,9 +110,9 @@ if __name__ == "__main__":
     if os.geteuid() != 0:
         print "This script must be run as root."
         exit(1)
-    os.system("mkdir -p %s" % INCLUDE_DIR)
-    os.system("mkdir -p %s" % LIB_DIR)
-    exit(0)
+    # os.system("mkdir -p %s" % INCLUDE_DIR)
+    # os.system("mkdir -p %s" % LIB_DIR)
+    # exit(0)
     os.system("rm -rf %s" % TMP_DIR)
     os.system("mkdir %s" % TMP_DIR)
     #resolve_mysql_client()

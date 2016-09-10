@@ -41,6 +41,12 @@ typedef boost::system::error_code asio_error;
 #define asio_seconds(V) boost::posix_time::seconds(V)
 typedef std::shared_ptr<asio_work> asio_work_ptr;
 typedef std::shared_ptr<asio_deadline_timer> asio_deadline_timer_ptr;
+typedef boost::asio::ip::tcp::socket asio_socket;
+typedef boost::asio::ip::tcp::acceptor asio_acceptor;
+typedef boost::asio::ip::tcp::endpoint asio_endpoint;
+#define asio_placeholders boost::asio::placeholders
+#define ASIO_MAX_BUFFER_SIZE 4096
+#define asio_buffer(T, S) boost::asio::buffer(T, S)
 
 namespace common{
 #define CONNECTION_CLOSE "close"

@@ -1,4 +1,5 @@
 #include "asyncserver.h"
+#include <boost/bind.hpp>
 
 using boost::asio::ip::tcp;
 namespace cgserver{
@@ -32,7 +33,7 @@ namespace cgserver{
 	_task.reset(new AsyncConn(_service));
 	_acceptor.async_accept(
 	    _task->getSocket(),
-	    std::bind(&AsyncServer::handleAccept, this, _task, std::placeholders::_1));
+	    boost::bind(&AsyncServer::handleAccept, this, _task, asio_placeholders::error));
     }
 
     void AsyncServer::stop() {

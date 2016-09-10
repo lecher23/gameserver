@@ -9,12 +9,6 @@
 #include <util/databuffer.h>
 
 BEGIN_NAMESPACE(cgserver)
-#define asio_buffer(T, S) boost::asio::buffer(T, S)
-#define ASIO boost::asio
-#define MAX_BUFFER_SIZE 2048
-typedef boost::asio::ip::tcp::socket asio_socket;
-typedef boost::asio::ip::tcp::acceptor asio_acceptor;
-typedef boost::asio::ip::tcp::endpoint asio_endpoint;
 
 class AsyncConn: public std::enable_shared_from_this< AsyncConn >
 {

@@ -13,3 +13,4 @@ test*.cpp
 .swp
 depend/
 common.h
+.cgservertmp/
