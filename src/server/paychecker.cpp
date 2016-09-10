@@ -1,4 +1,5 @@
 #include "paychecker.h"
+#include <boost/bind.hpp>
 
 BEGIN_NAMESPACE(cgserver)
 
@@ -30,7 +31,7 @@ bool PayChecker::start() {
     _work.reset(new asio_work(_service));
     _timer.reset(new asio_deadline_timer(_service, asio_seconds(_expireTime)));
     _timer->async_wait(
-        std::bind(&PayChecker::clearExpireData, this, std::placeholders::_1));
+        boost::bind(&PayChecker::clearExpireData, this, asio_placeholders::error));
     _sThread.reset(new std::thread(std::bind(&PayChecker::threadFunc, this)));
     return true;
 }

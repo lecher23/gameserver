@@ -14,3 +14,4 @@ test*.cpp
 depend/
 common.h
 .cgservertmp/
+logs/

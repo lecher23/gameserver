@@ -10,6 +10,7 @@ AsyncConn::AsyncConn(asio_service &service)
 {
     _finish = true;
     _limit = false;
+    _connected = true;
     _input.ensureFree(MAX_BUFFER_SIZE);
     _output.ensureFree(MAX_BUFFER_SIZE);
 }
@@ -54,6 +55,9 @@ bool AsyncConn::process() {
 }
 
 void AsyncConn::afterWrite(const asio_error &err, size_t write_len) {
+    if(!_connected) {
+      return;
+    }
     if (err || write_len == _output.getDataLen()) {
         closeSocket();
         return;
@@ -67,6 +71,9 @@ void AsyncConn::afterWrite(const asio_error &err, size_t write_len) {
 }
 
 void AsyncConn::afterRead(const asio_error &err, size_t read_len) {
+    if (!_connected) {
+        return ;
+    }
     bool ret = false;
     do {
         // some error such as sys busy or try again is special
@@ -90,6 +97,9 @@ void AsyncConn::afterRead(const asio_error &err, size_t read_len) {
 }
 
 void AsyncConn::startConn() {
+    _timer.reset(new asio_deadline_timer(_service, asio_seconds(CONN_EXPIRE_TIME)));
+    _timer->async_wait(
+        boost::bind(&AsyncConn::disconnect, shared_from_this(), asio_placeholders::error));
     _socket.async_read_some(asio_buffer(_input.getData(), _output.getFreeLen()),
                             boost::bind(&AsyncConn::afterRead, shared_from_this(),
                                         asio_placeholders::error, asio_placeholders::bytes_transferred));
@@ -103,11 +113,24 @@ bool AsyncConn::validatePacket(HTTPPacket &packet) const {
 }
 
 void AsyncConn::closeSocket() {
+    if  (!_connected)  {
+        return;
+    }
     try{
         _socket.shutdown(asio_socket::shutdown_both);
         _socket.close();
     } catch(std::exception& e) {
         CLOG(WARNING) << "Close socket failed: " << e.what();
     }
+    _connected = false;
 }
+
+void AsyncConn::disconnect(const asio_error &err) {
+  if (err) {
+    CLOG(INFO) << "disconnect meet error:" << err;
+    return;
+  }
+  closeSocket();
+}
+
 END_NAMESPACE

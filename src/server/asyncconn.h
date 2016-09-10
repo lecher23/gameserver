@@ -9,6 +9,8 @@
 #include <util/databuffer.h>
 
 BEGIN_NAMESPACE(cgserver)
+// no matter what happend, server will colse socket after Xs
+#define CONN_EXPIRE_TIME 5
 
 class AsyncConn: public std::enable_shared_from_this< AsyncConn >
 {
@@ -26,6 +28,7 @@ private:
 	void afterWrite(const asio_error &err, size_t write_len);
 	void afterRead(const asio_error &err, size_t read_len);
 	bool validatePacket(HTTPPacket &packet) const;
+        void disconnect(const asio_error &err);
         void closeSocket();
 
 	HttpResponsePacket _resp;
@@ -35,6 +38,8 @@ private:
 	DataBuffer _output;
 	bool _finish;
 	bool _limit;
+        bool _connected;
+        asio_deadline_timer_ptr _timer;
 
 	IHandler *_handler;
 };
