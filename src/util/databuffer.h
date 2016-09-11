@@ -2,6 +2,7 @@
 #define DATA_BUFFER_H_
 #include <stdlib.h>
 #include <assert.h>
+#include <memory>
 #include <string.h>
 #include <stdint.h>
 #include <string>
@@ -319,6 +320,8 @@ inline void DataBuffer::write(const std::string &value) {
     write((int32_t)value.length()); // use int32_t lengh to be independant to arch
     writeBytes((char*)(value.data()), value.length());
 }
+
+typedef std::shared_ptr<DataBuffer> DataBufferPtr;
 
 }
 

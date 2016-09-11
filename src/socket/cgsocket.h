@@ -30,6 +30,7 @@ private:
     int64_t _connStartTime;
     int64_t _connStopTime;
     bool _connected;
+    bool _writing;
 
     DataBuffer _input;
     DataBuffer _output;
