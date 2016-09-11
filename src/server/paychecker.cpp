@@ -77,7 +77,7 @@ void PayChecker::clearExpireData(const asio_error &err) {
     }
     _timer->expires_at(_timer->expires_at() + asio_seconds(_expireTime));
     _timer->async_wait(
-        std::bind(&PayChecker::clearExpireData, this, std::placeholders::_1));
+        boost::bind(&PayChecker::clearExpireData, this, asio_placeholders::error));
 }
 
 const PayInfo &PayChecker::getPayData(const std::string &id){
