@@ -5,7 +5,7 @@
 BEGIN_NAMESPACE(cgserver)
 
 CgSocket::CgSocket(asio_service &service)
-:_service(service), _socket(_service)
+:_service(service), _socket(_service), _input(), _output(), _msgParser()
 {
   _connStartTime = 0;
   _lastHeartBeat = 0;
@@ -67,10 +67,12 @@ void CgSocket::start() {
   _connStartTime = CTimeUtil::getCurrentTimeInSeconds();
   _timer.reset(new asio_deadline_timer(_service, asio_seconds(MAX_ALIVE_TIME)));
   _timer->async_wait(
-                     boost::bind(&CgSocket::timeoutCheck, shared_from_this(), asio_placeholders::error));
-  _socket.async_read_some(asio_buffer(_input.getData(), _output.getFreeLen()),
-                          boost::bind(&CgSocket::afterRead, shared_from_this(),
-                                      asio_placeholders::error, asio_placeholders::bytes_transferred));
+      boost::bind(&CgSocket::timeoutCheck, shared_from_this(),
+                      asio_placeholders::error));
+  _socket.async_read_some(
+      asio_buffer(_input.getData(), _output.getFreeLen()),
+      boost::bind(&CgSocket::afterRead, shared_from_this(),
+                  asio_placeholders::error, asio_placeholders::bytes_transferred));
 }
 
 void CgSocket::closeSocket() {
@@ -93,10 +95,11 @@ void CgSocket::process() {
   // if data is invalid , close socket.
   // at the end of process, send msg to client.
   _lastHeartBeat = CTimeUtil::getCurrentTimeInSeconds();
-  boost::asio::async_write(_socket,asio_buffer(_output.getData(), _output.getDataLen()),
-                           boost::asio::transfer_at_least(_output.getDataLen()),
-                           boost::bind(&CgSocket::afterWrite, shared_from_this(),
-                                       asio_placeholders::error, asio_placeholders::bytes_transferred));
+  boost::asio::async_write(
+      _socket,asio_buffer(_output.getData(), _output.getDataLen()),
+      boost::asio::transfer_at_least(_output.getDataLen()),
+      boost::bind(&CgSocket::afterWrite, shared_from_this(),
+                  asio_placeholders::error, asio_placeholders::bytes_transferred));
 }
 
 void CgSocket::timeoutCheck(const asio_error &err) {
@@ -107,7 +110,8 @@ void CgSocket::timeoutCheck(const asio_error &err) {
   }
   _timer->expires_at(_timer->expires_at() + asio_seconds(MAX_ALIVE_TIME));
   _timer->async_wait(
-                     boost::bind(&CgSocket::timeoutCheck, shared_from_this(), asio_placeholders::error));
+      boost::bind(&CgSocket::timeoutCheck, shared_from_this(),
+                  asio_placeholders::error));
 }
 
 END_NAMESPACE

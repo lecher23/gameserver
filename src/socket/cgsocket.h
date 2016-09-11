@@ -3,6 +3,7 @@
 
 #include <util/common_define.h>
 #include <util/databuffer.h>
+#include <socket/cgtcpprotol.h>
 
 BEGIN_NAMESPACE(cgserver)
 #define MAX_ALIVE_TIME 30
@@ -34,6 +35,8 @@ private:
 
     DataBuffer _input;
     DataBuffer _output;
+
+    CgTcpProtol _msgParser;
 };
 
 DF_SHARED_PTR(CgSocket);
