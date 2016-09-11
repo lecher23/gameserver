@@ -43,11 +43,13 @@ class SuperCxx:
     def create_h_file(self, dest):
         if not dest.endswith(".h"):
             dest += ".h"
-        if not dest.startswith("test"):
-            dest = "test" + dest
+        dest_name = os.path.basename(dest)
+        if not dest_name.startswith("test"):
+            dest_name = "test" + dest_name
+        dest = os.path.join(os.path.split(dest)[0], dest_name)
         h_str = Template(open(self.tmp_h_file).read());
         h_code = h_str.safe_substitute(test_common_header = self.test_common_header,
-                                       class_name = dest[:-2])
+                                       class_name = dest_name[:-2])
         f = open(dest, "w")
         f.write(h_code)
         f.close()
