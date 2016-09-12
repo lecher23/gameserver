@@ -7,6 +7,7 @@
 
 BEGIN_NAMESPACE(cgserver)
 #define MAX_ALIVE_TIME 30
+#define MAX_SOCKET_BUFFER_SIZE 30
 
 class CgSocket: public std::enable_shared_from_this<CgSocket> {
 public:
@@ -33,7 +34,7 @@ private:
     bool _connected;
     bool _writing;
 
-    DataBuffer _input;
+    char _input[MAX_SOCKET_BUFFER_SIZE];
     DataBuffer _output;
 
     CgTcpProtol _msgParser;

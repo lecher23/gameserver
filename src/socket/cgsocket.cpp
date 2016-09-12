@@ -5,12 +5,11 @@
 BEGIN_NAMESPACE(cgserver)
 
 CgSocket::CgSocket(asio_service &service)
-:_service(service), _socket(_service), _input(), _output(), _msgParser()
+:_service(service), _socket(_service),_output(), _msgParser()
 {
   _connStartTime = 0;
   _lastHeartBeat = 0;
   _connected = false;
-  _input.ensureFree(MAX_BUFFER_SIZE);
   _output.ensureFree(MAX_BUFFER_SIZE);
 }
 
@@ -30,17 +29,18 @@ void CgSocket::afterWrite(const asio_error &err, size_t write_len) {
     closeSocket();
     return;
   }
-  if (write_len == _output.getDataLen()) {
-    // clear output buffer
-    _output.clear();
-  } else {
-    // if write not finish, continue write
-    _output.drainData(write_len);
-    boost::asio::async_write(_socket,asio_buffer(_output.getData(), _output.getDataLen()),
-                             boost::asio::transfer_at_least(_output.getDataLen()),
-                             boost::bind(&CgSocket::afterWrite, shared_from_this(),
-                                         asio_placeholders::error, asio_placeholders::bytes_transferred));
-  }
+  CLOG(INFO) << "write :" << write_len;
+  // if (write_len == _output.getDataLen()) {
+  //   // clear output buffer
+  //   _output.clear();
+  // } else {
+  //   // if write not finish, continue write
+  //   _output.drainData(write_len);
+  //   boost::asio::async_write(_socket,asio_buffer(_output.getData(), _output.getDataLen()),
+  //                            boost::asio::transfer_at_least(_output.getDataLen()),
+  //                            boost::bind(&CgSocket::afterWrite, shared_from_this(),
+  //                                        asio_placeholders::error, asio_placeholders::bytes_transferred));
+  // }
 }
 
 void CgSocket::afterRead(const asio_error &err, size_t read_len) {
@@ -49,12 +49,17 @@ void CgSocket::afterRead(const asio_error &err, size_t read_len) {
   }
   bool ret = false;
   // some error such as sys busy or try again is special
-  if (err){
+  if (err || !_msgParser.parse(_input, read_len)){
     // error end process
+      CLOG(ERROR) << "error:" << err;
     closeSocket();
     return;
   }
-  _input.pourData(read_len);
+  CLOG(ERROR) << "read " << read_len;
+  _socket.async_read_some(
+      asio_buffer(_input, MAX_SOCKET_BUFFER_SIZE),
+      boost::bind(&CgSocket::afterRead, shared_from_this(),
+                  asio_placeholders::error, asio_placeholders::bytes_transferred));
   process();
 }
 
@@ -70,7 +75,7 @@ void CgSocket::start() {
       boost::bind(&CgSocket::timeoutCheck, shared_from_this(),
                       asio_placeholders::error));
   _socket.async_read_some(
-      asio_buffer(_input.getData(), _output.getFreeLen()),
+      asio_buffer(_input, MAX_SOCKET_BUFFER_SIZE),
       boost::bind(&CgSocket::afterRead, shared_from_this(),
                   asio_placeholders::error, asio_placeholders::bytes_transferred));
 }
@@ -95,11 +100,25 @@ void CgSocket::process() {
   // if data is invalid , close socket.
   // at the end of process, send msg to client.
   _lastHeartBeat = CTimeUtil::getCurrentTimeInSeconds();
-  boost::asio::async_write(
-      _socket,asio_buffer(_output.getData(), _output.getDataLen()),
-      boost::asio::transfer_at_least(_output.getDataLen()),
-      boost::bind(&CgSocket::afterWrite, shared_from_this(),
-                  asio_placeholders::error, asio_placeholders::bytes_transferred));
+  std::string packet = _msgParser.nextPacket();
+  CLOG(ERROR) << "Get packet:[" << packet << "], empty:" << packet.empty();
+  while(!packet.empty()) {
+      _output.clear();
+      char *o = _output.getFree();
+      size_t i = 0;
+      for (auto &ch: packet) {
+          o[i++] = ch;
+      }
+      _output.pourData(packet.size());
+      packet = _msgParser.nextPacket();
+      if (_connected) {
+        boost::asio::async_write(
+            _socket,asio_buffer(_output.getData(), _output.getDataLen()),
+            boost::asio::transfer_at_least(_output.getDataLen()),
+            boost::bind(&CgSocket::afterWrite, shared_from_this(),
+                        asio_placeholders::error, asio_placeholders::bytes_transferred));
+      }
+  }
 }
 
 void CgSocket::timeoutCheck(const asio_error &err) {
