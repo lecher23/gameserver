@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <util/common_define.h>
 #include <slots/data/basicdata.h>
+#include <slots/model/vipconfig.h>
 
 BEGIN_NAMESPACE(slots)
 
@@ -45,6 +46,7 @@ class SlotsConfig{
     CjSettingMap cjConfig;
     LoginSetting loginCfg; // read it from mysql or other place
     CargoInfos cargoInfo;
+    VipConfig vipSetting;
 
 private:
     SlotsConfig() {}

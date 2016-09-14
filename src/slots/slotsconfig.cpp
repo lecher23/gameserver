@@ -42,6 +42,10 @@ bool SlotsConfig::init(){
         item.second += preChance;
         preChance = item.second;
     }
+    if (!db.getVipSetting(vipSetting)) {
+        CLOG(ERROR) << "Get vip config from db failed.";
+        return false;
+    }
     return true;
 }
 

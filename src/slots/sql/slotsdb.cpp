@@ -620,13 +620,36 @@ bool SlotsDB::getAchivementSetting(CjSettingMap &out) {
     MysqlSimpleSelect mss;
     mss.setField("*");
     mss.setTable(gAchievementDetail);
+    if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss)) {
+	CLOG(WARNING) << "Get achievement setting from mysql failed.";
+	return false;
+    }
     for (auto &row: mss.result) {
 	CjSettingPtr item(new CjSetting);
-	if (item->deserialize(row)) {
+	if (!item->deserialize(row)) {
 	    CLOG(WARNING) << "Init achievement setting from db failed.";
 	    return false;
 	}
 	out[item->type].push_back(item);
+    }
+    return true;
+}
+
+bool SlotsDB::getVipSetting(VipConfig &out) const {
+    MysqlSimpleSelect mss;
+    mss.setField("*");
+    mss.setTable(gVipSetting);
+    if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss)) {
+	CLOG(WARNING) << "Get achievement from mysql failed.";
+	return false;
+    }
+    for (auto &row: mss.result) {
+	VipConfigItemPtr item(new VipConfigItem);
+	if (!item->deserialize(row)) {
+	    CLOG(WARNING) << "Init vip setting from db failed.";
+	    return false;
+	}
+	out[item->level] = item;
     }
     return true;
 }
