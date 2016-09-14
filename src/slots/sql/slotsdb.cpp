@@ -39,7 +39,7 @@ bool SlotsDB::getUserInfo(MysqlOperationBase * mob, SlotsUser &su) const {
 	gd.uid = ui.uid;
 	return true;
     }
-    if (!collectSlotsUser(res[0], su)) {
+    if (!su.deserialize(res[0])) {
 	return false;
     }
     MysqlSimpleSelect mss;
@@ -473,10 +473,6 @@ bool SlotsDB::collectUserHistory(const cgserver::MysqlRows &rows, UserHistory &u
     return uh.deserialize(rows[0]);
 }
 
-bool SlotsDB::collectSlotsUser(const cgserver::MysqlRow &row, SlotsUser &su) const{
-    return true;
-}
-
 bool SlotsDB::removeFriend(const std::string &uidStr, const std::string &tidStr){
     uint64_t uid;
     if (!StringUtil::StrToUInt64(uidStr.c_str(), uid))
@@ -607,12 +603,7 @@ bool SlotsDB::getUserAchievement(
     if (mss.result.size() == 0) {
 	return false;
     }
-    return collectAchievement(mss.result[0], out);
-}
-
-bool SlotsDB::collectAchievement(const MysqlRow &row, UserCJ &out) const{
-    // delete this func
-    return true;
+    return out.deserialize(mss.result[0]);
 }
 
 bool SlotsDB::collectAchievements(const MysqlRows &result, Achievements &out) const{

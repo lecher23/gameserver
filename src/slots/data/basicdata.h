@@ -92,33 +92,33 @@ LoginReward():runnerReward(0),daysReward(0),specialReward(0),timestamp(0){}
 };
 
 struct SlotsUser{
-    UserInfo uInfo;
-    UserResource uRes;
-    UserHistory uHis;
-    GameHistory gDetail;
-    LoginReward loginReward;
+  UserInfo uInfo;
+  UserResource uRes;
+  UserHistory uHis;
+  GameHistory gDetail;
+  LoginReward loginReward;
 
-    bool deserialize(const std::vector<std::string> &row) {
-        if (row.size() < 15) {
-            CLOG(WARNING) << "Ivalid colum number.";
-            return false;
-        }
-        uInfo.uid = row[0];
-        uInfo.mid = row[1];
-        uInfo.fname = row[2];
-        uInfo.avatar = row[4];
-        uInfo.male = row[5];
-        uInfo.country = row[6];
-        uRes.uid = row[7];
-        bool ret = cgserver::StringUtil::StrToInt32(row[8].c_str(), uRes.level);
-        ret = ret && cgserver::StringUtil::StrToInt64(row[9].c_str(), uRes.exp);
-        ret = ret && cgserver::StringUtil::StrToInt64(row[10].c_str(), uRes.fortune);
-        ret = ret && cgserver::StringUtil::StrToInt32(row[11].c_str(), uRes.vipLevel);
-        if(!ret) {
-            CLOG(WARNING) << "Invalid number.";
-        }
-        return ret;
+  bool deserialize(const std::vector<std::string> &row) {
+    if (row.size() < 15) {
+      CLOG(WARNING) << "Ivalid colum number.";
+      return false;
     }
+    uInfo.uid = row[0];
+    uInfo.mid = row[1];
+    uInfo.fname = row[2];
+    uInfo.avatar = row[4];
+    uInfo.male = row[5];
+    uInfo.country = row[6];
+    uRes.uid = uInfo.uid;
+    bool ret = cgserver::StringUtil::StrToInt32(row[8].c_str(), uRes.level);
+    ret = ret && cgserver::StringUtil::StrToInt64(row[9].c_str(), uRes.exp);
+    ret = ret && cgserver::StringUtil::StrToInt64(row[10].c_str(), uRes.fortune);
+    ret = ret && cgserver::StringUtil::StrToInt32(row[11].c_str(), uRes.vipLevel);
+    if(!ret) {
+      CLOG(WARNING) << "Invalid number.";
+    }
+    return ret;
+  }
 };
 DF_SHARED_PTR(SlotsUser);
 

@@ -67,12 +67,9 @@ public:
     static SlotsDB &getInstance();
 private:
     bool collectMailInfo(const cgserver::MysqlRows &mails, UserMails &out);
-    /* collect single result from table user_info and user_resource*/
-    bool collectSlotsUser(const cgserver::MysqlRow &row, SlotsUser &su) const;
     /* collect multi result from table user_info and user_resource*/
     bool collectSlotsUsers(const cgserver::MysqlRows &rows, SlotsUsers &out) const;
     bool collectUserHistory(const cgserver::MysqlRows &rows, UserHistory &uh) const;
-    bool collectAchievement(const cgserver::MysqlRow &row, UserCJ &out) const;
     bool collectAchievements(const cgserver::MysqlRows &result, Achievements &out) const;
 
     SlotsDB();

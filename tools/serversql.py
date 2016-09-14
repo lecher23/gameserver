@@ -4,8 +4,8 @@ import sys
 import getopt
 import random
 
-HOST = "localhost"
-USER = "root"
+HOST = "139.196.148.39"
+USER = "slot_master"
 PASSWD = "111222"
 
 
@@ -329,6 +329,7 @@ if __name__ == "__main__":
         if nxt == "clear":
             lbs.clearRunnerConfig()
         elif nxt == "default":
+            lbs.clearRunnerConfig()
             cfg = [
                 [1, 1000, 10],
                 [2, 300, 1],
@@ -366,6 +367,7 @@ if __name__ == "__main__":
         if nxt == "clear":
             lbs.clearDayLoginReward()
         elif nxt == "default":
+            lbs.clearDayLoginReward()
             cfg = [
                 (1, 2000),
                 (2, 3000),
@@ -384,6 +386,7 @@ if __name__ == "__main__":
         if nxt == "clear":
             lbs.clearVipRewardConfig()
         elif nxt == "default":
+            lbs.clearVipRewardConfig()
             cfg = [
                 (1, 10),
                 (2, 10),
