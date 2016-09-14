@@ -54,13 +54,16 @@ void LoginProcessor::processReward(
     srand((int)time(0));
     int32_t val = rand() % CHANCE_MAX_POINT;
     int64_t bonus = 0;
+    int32_t bonusId = 0;
+    size_t i = 0;
     for (auto &item: _config.runnerBonus) {
         if (val < item.second) {
             bonus = item.first;
+            bonusId = _config.runnerIdx[i++];
             break;
         }
     }
-    loginReward.setRunnerReward(bonus);
+    loginReward.setRunnerReward(bonus, bonusId);
     loginReward.setRecved(false);
 }
 

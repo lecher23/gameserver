@@ -137,6 +137,7 @@ bool SlotsDB::getLoginSetting(LoginSetting &out) const {
                  && StringUtil::StrToInt32(row[2].c_str(), chance))
         {
             out.runnerBonus.push_back(std::pair<int64_t, int32_t>(val, chance));
+            out.runnerIdx.push_back(id - 30000);
         }else{
             CLOG(ERROR) << "Invalid config id:" << id;
             return false;

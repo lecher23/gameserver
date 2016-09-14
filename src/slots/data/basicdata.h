@@ -73,10 +73,12 @@ struct LoginReward {
     int64_t daysReward;
     int64_t specialReward;
     int64_t timestamp;
+    int32_t runnerIdx;
     bool recved;
 LoginReward():runnerReward(0),daysReward(0),specialReward(0),timestamp(0){}
-    void setRunnerReward(int64_t val) {
+    void setRunnerReward(int64_t val, int32_t idx) {
         runnerReward = val;
+        runnerIdx = idx;
     }
     void setDaysReward(int64_t val) {
         daysReward = val;

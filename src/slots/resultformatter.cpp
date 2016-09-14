@@ -285,8 +285,8 @@ void ResultFormatter::formatLoginInfo(const SlotsUser &su) {
     _writer.Bool(su.loginReward.recved);
     _writer.Key("level_bonus");
     _writer.Int64(su.loginReward.specialReward);
-    _writer.Key("runner_bonus");
-    _writer.Int64(su.loginReward.runnerReward);
+    _writer.Key("runner_index");
+    _writer.Int64(su.loginReward.runnerIdx);
     _writer.Key("day_bonus");
     _writer.Int64(su.loginReward.daysReward);
     _writer.EndObject();
