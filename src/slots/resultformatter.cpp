@@ -56,6 +56,46 @@ void ResultFormatter::formatSimpleResult(bool success, const std::string &err)
     _writer.EndObject();
 }
 
+void ResultFormatter::formatSimpleResult(
+    bool success, const std::string &key, int64_t value)
+{
+    _writer.StartObject();
+    formatStatus(success);
+    _writer.Key(key.c_str());
+    _writer.Int64(value);
+    _writer.EndObject();
+}
+
+void ResultFormatter::formatSimpleResult(
+    bool success, const std::string &key, int32_t value)
+{
+    _writer.StartObject();
+    formatStatus(success);
+    _writer.Key(key.c_str());
+    _writer.Int(value);
+    _writer.EndObject();
+}
+
+void ResultFormatter::formatSimpleResult(
+    bool success, const std::string &key, const std::string &value)
+{
+    _writer.StartObject();
+    formatStatus(success);
+    _writer.Key(key.c_str());
+    _writer.String(value.c_str());
+    _writer.EndObject();
+}
+
+void ResultFormatter::formatSimpleResult(
+    bool success, const std::string &key, bool value)
+{
+    _writer.StartObject();
+    formatStatus(success);
+    _writer.Key(key.c_str());
+    _writer.Bool(value);
+    _writer.EndObject();
+}
+
 void ResultFormatter::formatGameResult(
     const UserResource &sr, int64_t earned, const std::string &detail)
 {

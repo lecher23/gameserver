@@ -10,6 +10,7 @@ MessageService::~MessageService(){
 }
 
 bool MessageService::doJob(CPacket &packet, CResponse &resp) {
+    static const std::string sFortune = "fortune";
     int32_t gType;
     if (!getIntVal(packet, "type", gType)) {
         return false;
@@ -19,8 +20,9 @@ bool MessageService::doJob(CPacket &packet, CResponse &resp) {
     bool ret = false;
     switch(gType){
     case 1:{
-        ret = getLoginReward(packet);
-        rf.formatSimpleResult(ret, "");
+        int64_t newFortune;
+        ret = getLoginReward(packet, newFortune);
+        rf.formatSimpleResult(ret, sFortune, newFortune);
         break;
     }
     default:
@@ -30,7 +32,7 @@ bool MessageService::doJob(CPacket &packet, CResponse &resp) {
     return ret;
 }
 
-bool MessageService::getLoginReward(CPacket &packet) {
+bool MessageService::getLoginReward(CPacket &packet, int64_t &newFortune) {
     std::string uid;
     GET_PARAM("uid", uid, true);
     SlotsUserPtr user;
@@ -45,6 +47,7 @@ bool MessageService::getLoginReward(CPacket &packet) {
         loginReward.daysReward + loginReward.specialReward;
     user->uRes.incrFortune(total);
     loginReward.recved = true;
+    newFortune = user->uRes.fortune;
     return true;
 }
 

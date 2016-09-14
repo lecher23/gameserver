@@ -12,7 +12,7 @@ public:
     virtual bool doJob(CPacket &packet, CResponse &resp);
 
 private:
-    bool getLoginReward(CPacket &packet);
+    bool getLoginReward(CPacket &packet, int64_t &newFortune);
     bool getCargoStatus(CPacket &packet);
 };
 END_NAMESPACE
