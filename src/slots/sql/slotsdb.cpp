@@ -102,7 +102,7 @@ bool SlotsDB::getCargoInfo(CargoInfos &out) const {
         if(!tmp->deserialize(row)){
             return false;
         }
-        out[tmp->cid] = tmp;
+        out[tmp->cargo_id] = tmp;
     }
     return true;
 }

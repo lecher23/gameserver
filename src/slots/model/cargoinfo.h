@@ -6,33 +6,32 @@
 BEGIN_NAMESPACE(slots)
 
 struct CargoInfo{
-    std::string cid;
-    int64_t base;
-    int64_t vip_point;
-    int64_t free_extra;
-    std::vector<int32_t> vip_extra;// vip0,vip1,vip2,vip3.  15 = 15%
+  int32_t cargo_id;
+  int32_t price;
+  int32_t item_type;
+  int32_t extra_rate;
+  int32_t sales_type;
+  bool display;
+  int64_t item_num;
+  int64_t vip_point;
 
-    bool deserialize(std::vector<std::string> &row) {
-        if (row.size() < 5) {
-            return false;
-        }
-        cid = row[0];
-        if (!cgserver::StringUtil::StrToInt64(row[1].c_str(), base)) {
-            return false;
-        }
-        if (!cgserver::StringUtil::StrToInt64(row[3].c_str(), vip_point)) {
-            return false;
-        }
-        if (!cgserver::StringUtil::StrToInt64(row[4].c_str(), free_extra)) {
-            return false;
-        }
-        vip_extra.clear();
-        cgserver::StringUtil::StrToIntVector(row[2], vip_extra, ',');
-        return true;
+  bool deserialize(std::vector<std::string> &row) {
+    if (row.size() < 8) {
+      return false;
     }
+    bool ret  = cgserver::StringUtil::StrToInt32(row[0].c_str(), cargo_id);
+    ret = ret && cgserver::StringUtil::StrToInt32(row[1].c_str(), price);
+    ret = ret && cgserver::StringUtil::StrToInt32(row[2].c_str(), item_type);
+    ret = ret && cgserver::StringUtil::StrToInt64(row[3].c_str(), item_num);
+    ret = ret && cgserver::StringUtil::StrToInt32(row[4].c_str(), extra_rate);
+    ret = ret && cgserver::StringUtil::StrToInt32(row[5].c_str(), sales_type);
+    ret = ret && cgserver::StringUtil::StrToInt64(row[6].c_str(), vip_point);
+    display = (row[7] == "1");
+    return ret;
+  }
 };
 DF_SHARED_PTR(CargoInfo);
-typedef std::map<std::string, CargoInfoPtr> CargoInfos;
+typedef std::map<int32_t, CargoInfoPtr> CargoInfos;
 
 END_NAMESPACE
 #endif

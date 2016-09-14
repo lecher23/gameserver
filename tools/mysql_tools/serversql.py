@@ -1,5 +1,6 @@
 import MySQLdb as mysqldb
-import sys 
+import sys
+import os
 #from optparse import OptionParser
 import getopt
 import random
@@ -8,6 +9,10 @@ HOST = "139.196.148.39"
 USER = "slot_master"
 PASSWD = "111222"
 
+cur_path = os.path.split(os.path.realpath(__file__))[0]
+print cur_path
+sys.path.append(cur_path)
+from tables import table_defines, parse_dict_to_db_sql
 
 class ServerSql:
     def __init__(self):
@@ -173,6 +178,14 @@ class ServerSql:
         self.cursor.execute(self.table_sqls[table])
         print "Create table done."
 
+    def createTable2(self, table):
+        if table not in table_defines:
+            print "Sql config not exist for table[%s]" % table
+            exit(1)
+        self._dropTable(table)
+        self.cursor.execute(parse_dict_to_db_sql(table, table_defines[table]))
+        print "Create table done."
+
     def createRankTables(self):
         tables = ["cur_level_rank", "cur_fortune_rank", "cur_earned_rank", "cur_acmt_rank",
                   "lw_level_rank", "lw_fortune_rank", "lw_earned_rank", "lw_acmt_rank",
@@ -226,10 +239,6 @@ class ServerSql:
         sql = 'create table %s(id INT AUTO_INCREMENT PRIMARY KEY, uid INT NOT NULL, cid CHAR(6) NOT NULL, tsid CHAR(64) NOT NULL, value BIGINT NOT NULL, timestamp BIGINT NOT NULL)' % table
         self.table_sqls[table] = sql
 
-        table = "cargo_info"
-        sql = 'create table %s(cid char(6) NOT NULL PRIMARY KEY, base BIGINT NOT NULL, vip_extra INT NOT NULL, vip_point BIGINT NOT NULL, free_extra BIGINT DEFAULT 0 )' % table
-        self.table_sqls[table] = sql
-
         table = "login_config"
         sql = 'create table %s(id INT NOT NULL PRIMARY KEY, val BIGINT NOT NULL, extra_val INT DEFAULT 0)' % table
         self.table_sqls[table] = sql
@@ -265,7 +274,7 @@ if __name__ == "__main__":
     if len(sys.argv) < 2:
         exit(1)
     lbs = ServerSql()
-    lbs.init()    
+    lbs.init()
     cmd = sys.argv[1]
     if cmd == "add_mail":
         nxt = sys.argv[2]
@@ -322,6 +331,11 @@ if __name__ == "__main__":
         else:
             for k in lbs.table_sqls:
                 lbs.createTable(k)
+        exit(0)
+
+    if cmd == "mktb2":
+        table_name = sys.argv[2]
+        lbs.createTable2(table_name)
         exit(0)
 
     if cmd == "runner_cfg":
