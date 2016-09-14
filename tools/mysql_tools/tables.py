@@ -50,8 +50,18 @@ history = [
     ('lw_acheivement_sort', 'INT DEFAULT 9999')
 ]
 
+vip_config = [
+    ('level', 'INT NOT NULL PRIMARY KEY'),
+    ('exp_ext', 'INT NOT NULL'),
+    ('bounus_ext', 'INT NOT NULL'),
+    ('login_ext', 'INT NOT NULL'),
+    ('exp_need', 'INT NOT NULL'),
+    ('max_bet', 'INT NOT NULL')
+]
+
 table_defines = {
-    "cargo_info": cargo_info
+    "cargo_info": cargo_info,
+    "vip_config": vip_config,
 }
 
 def parse_dict_to_db_sql(table_name, table_define = []):

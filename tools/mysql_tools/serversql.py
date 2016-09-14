@@ -44,6 +44,15 @@ class ServerSql:
             self.cursor.execute(q)
         self.endTransaction(True)
 
+    def clearVipConfig(self):
+        sql = "delete from vip_config"
+        self.runQuery(sql)
+
+    def addVipConfig(self, level, exp_ext, bounus_ext, login_ext, exp_need, max_bet):
+        sql = "insert into vip_config values(%s, %s, %s, %s, %s, %s)" % \
+              (level, exp_ext, bounus_ext, login_ext, exp_need, max_bet)
+        self.runQuery(sql)
+
     def clearVipRewardConfig(self):
         sql = "delete from login_config where id < 20000"
         self.runQuery(sql)
@@ -414,6 +423,27 @@ if __name__ == "__main__":
             ]
             for tp in cfg:
                 lbs.addVipRewardConfig(tp[0], tp[1])
+        exit(0)
+
+    if cmd == "vip_cfg":
+        nxt = sys.argv[2]
+        if nxt == "clear":
+            lbs.clearVipConfig()
+        elif nxt == "default":
+            lbs.clearVipConfig()
+            cfg = [
+                (1, 5, 5, 10, 10, 10),
+                (2, 10, 10, 10, 40, 15),
+                (3, 20, 20, 10, 100, 20),
+                (4, 25, 25, 10, 200, 25),
+                (5, 30, 30, 10, 400, 30),
+                (6, 35, 35, 10, 800, 35),
+                (7, 40, 40, 10, 1600, 40),
+                (8, 45, 45, 10, 3200, 45),
+                (9, 50, 50, 10, 6400, 50)
+            ]
+            for row in cfg:
+                lbs.addVipConfig(*row)
         exit(0)
 
     if cmd == "initdb":
