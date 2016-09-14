@@ -59,9 +59,10 @@ void LoginProcessor::processReward(
     for (auto &item: _config.runnerBonus) {
         if (val < item.second) {
             bonus = item.first;
-            bonusId = _config.runnerIdx[i++];
+            bonusId = _config.runnerIdx[i];
             break;
         }
+        i++;
     }
     loginReward.setRunnerReward(bonus, bonusId);
     loginReward.setRecved(false);
