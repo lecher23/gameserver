@@ -51,6 +51,22 @@ SlotsDBTest():_inited(false){}
     ast_eq(2, su.uRes.vipLevel);
   }
 
+  void test_getVipSetting()
+  {
+    MysqlSimpleSelect mss;
+    mss.setField("*");
+    mss.setTable(gVipSetting);
+    CLOG(INFO) << mss.getQuery();
+
+    VipConfig out;
+    ast_true(SlotsDB::getInstance().getVipSetting(out));
+    CLOG(INFO) << out.size();
+    ast_true(out.size() > 0);
+    auto itr = out.find(3);
+    ast_true(itr != out.end());
+    ast_eq(100, itr->second->exp_need);
+  }
+
 private:
   bool _inited;
 };
