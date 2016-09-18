@@ -25,19 +25,16 @@ bool CgTcpProtol::getBodyLen() {
         }
         _left = _left * 10 + _header[i] - '0';
     }
-    CLOG(ERROR)  << "Body len:" << _left;
     return true;
 }
 
 bool CgTcpProtol::parse(const char *src, int32_t len) {
     std::string info(src, len);
-    CLOG(ERROR)  << "parse:" << info;
     return (_step == EPS_HEAD) ? parseHead(src, len): parseBody(src, len);
 }
 
 bool CgTcpProtol::parseHead(const char *src, int32_t len) {
     std::string info(src, len);
-    CLOG(ERROR)  << "parseHead:" << info;
     if (len <= 0) {
         return len == 0;
     }
@@ -59,7 +56,6 @@ bool CgTcpProtol::parseHead(const char *src, int32_t len) {
 
 bool CgTcpProtol::parseBody(const char *src, int32_t len) {
     std::string info(src, len);
-    CLOG(ERROR)  << "parseBody:" << info;
     if(len <= 0) {
         return len == 0;
     }
@@ -67,7 +63,6 @@ bool CgTcpProtol::parseBody(const char *src, int32_t len) {
     _curPacket.append(src, needed);
     _left -= needed;
     if(_left == 0) {
-        CLOG(ERROR)  << "new packet:" << _curPacket;
         _packets.push(_curPacket);
         _curPacket.clear();
         _step = EPS_HEAD;
@@ -83,9 +78,7 @@ std::string CgTcpProtol::nextPacket() {
       return sEmpty;
   }
   std::string ret = _packets.front();
-  CLOG(ERROR) << "before pop:" << ret;
   _packets.pop();
-  CLOG(ERROR) << "after pop:" << ret;
   return ret;
 }
 
