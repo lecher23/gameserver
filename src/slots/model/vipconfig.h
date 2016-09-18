@@ -31,7 +31,6 @@ struct VipConfigItem{
   }
 };
 DF_SHARED_PTR(VipConfigItem);
-typedef std::map<int32_t, VipConfigItemPtr> VipConfig;
 typedef std::map<int32_t, VipConfigItem> VipConfigs;
 
 END_NAMESPACE

@@ -6,7 +6,7 @@
 #include <vector>
 #include <stdint.h>
 #include <util/common_define.h>
-#include <slots/data/basicdata.h>
+#include <slots/data/gamecontext.h>
 #include <slots/model/vipconfig.h>
 #include <slots/model/levelconfig.h>
 #include <slots/model/bet2expconfig.h>
@@ -24,7 +24,8 @@ class SlotsConfig{
 	return cfg;
     }
 
-    int64_t expGain(int64_t resource);
+    int64_t expGain(GameContext &context, int64_t resource);
+    int64_t earned(GameContext &context, int64_t src);
 
     CjSettingMap cjConfig;
     LoginSetting loginCfg; // read it from mysql or other place

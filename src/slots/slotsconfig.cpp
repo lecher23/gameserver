@@ -41,12 +41,31 @@ bool SlotsConfig::init(){
     return true;
 }
 
-int64_t SlotsConfig::expGain(int64_t resource) {
-    auto itr = bet2Exp.find(resource);
-    if (itr == bet2Exp.end()) {
-        return 0;
+#define FIND_VAL_IN_MAP(mp, dest, key, rt)      \
+    auto dest = mp.find(key);                   \
+    if (dest == mp.end()) {                     \
+        return rt;                              \
     }
-    return itr->second;
+
+#define FIND_VIP_CONFIG(key, val, dest, df)     \
+    auto itr = vipSetting.find(key);            \
+    if (itr == vipSetting.end()) {              \
+        val = df;                               \
+    }else {                                     \
+        val = itr->second.dest;                 \
+    }
+
+int64_t SlotsConfig::expGain(GameContext &context, int64_t resource) {
+    FIND_VAL_IN_MAP(bet2Exp, itr0, resource, 0);
+    float ext = 0.0;
+    FIND_VIP_CONFIG(context.user->uRes.vipLevel, ext, exp_ext, 0.0);
+    return itr0->second * (1.0 + ext);
+}
+
+int64_t SlotsConfig::earned(GameContext &context, int64_t src) {
+    float ext = 0.0;
+    FIND_VIP_CONFIG(context.user->uRes.vipLevel, ext, bounus_ext, 0.0);
+    return src * (1.0 + ext);
 }
 
 END_NAMESPACE

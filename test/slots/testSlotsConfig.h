@@ -48,6 +48,49 @@ TestSlotsConfig():_inited(false){}
     ast_eq(1300, itr->second.expNeed);
   }
 
+  void test_earned() {
+    _inited = false;
+    GameContext context;
+    SlotsUserPtr su(new SlotsUser);
+    su->uRes.vipLevel = 1;
+    context.user = su;
+
+    auto &cfg = SlotsConfig::getInstance().vipSetting;
+    cfg[1].bounus_ext = 0.3;
+
+    auto result = SlotsConfig::getInstance().earned(context, 100);
+    ast_eq(130, result);
+  }
+
+  void test_earned_level_0() {
+    _inited = false;
+    GameContext context;
+    SlotsUserPtr su(new SlotsUser);
+    su->uRes.vipLevel = 0;
+    context.user = su;
+
+    auto &cfg = SlotsConfig::getInstance().vipSetting;
+    cfg[1].bounus_ext = 0.3;
+
+    auto result = SlotsConfig::getInstance().earned(context, 100);
+    ast_eq(100, result);
+  }
+
+  void test_expGain() {
+    _inited = false;
+    GameContext context;
+    SlotsUserPtr su(new SlotsUser);
+    su->uRes.vipLevel = 1;
+    context.user = su;
+
+    auto &cfg = SlotsConfig::getInstance();
+    cfg.vipSetting[1].exp_ext = 0.5;
+    cfg.bet2Exp[100] = 200;
+
+    auto result = SlotsConfig::getInstance().expGain(context, 100);
+    ast_eq(300, result);
+  }
+
 private:
   bool _inited;
 };
