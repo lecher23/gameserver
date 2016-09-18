@@ -33,24 +33,24 @@ bool LoginProcessor::process(GameContext &context) const {
 }
 
 void LoginProcessor::processReward(
-    int32_t loginDays, int32_t level, LoginReward &loginReward) const
+    int32_t loginDays, int32_t vipLevel, LoginReward &loginReward) const
 {
     int32_t dayn = loginDays % 7;
     if (dayn == 0) {
         dayn = 7;
     }
+
     auto itr1 = _config.loginDaysBonus.find(dayn);
     if (itr1 == _config.loginDaysBonus.end()){
         loginReward.setDaysReward(0);
     } else {
         loginReward.setDaysReward(itr1->second);
     }
-    auto itr = _config.levelBonus.find(level);
-    if (itr == _config.levelBonus.end()) {
-        loginReward.setSpecialReward(0);
-    } else {
-        loginReward.setSpecialReward(loginReward.daysReward * (itr->second/100.0));
-    }
+
+    auto vExt = SlotsConfig::getInstance().vipLoginReward(
+        vipLevel, loginReward.daysReward);
+    loginReward.setSpecialReward(vExt);
+
     srand((int)time(0));
     int32_t val = rand() % CHANCE_MAX_POINT;
     int64_t bonus = 0;

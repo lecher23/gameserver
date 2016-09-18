@@ -68,4 +68,10 @@ int64_t SlotsConfig::earned(GameContext &context, int64_t src) {
     return src * (1.0 + ext);
 }
 
+int64_t SlotsConfig::vipLoginReward(int32_t level, int64_t src) {
+    float ext = 0.0;
+    FIND_VIP_CONFIG(level, ext, login_ext, 0.0);
+    return src * ext;
+}
+
 END_NAMESPACE

@@ -26,9 +26,10 @@ class SlotsConfig{
 
     int64_t expGain(GameContext &context, int64_t resource);
     int64_t earned(GameContext &context, int64_t src);
+    int64_t vipLoginReward(int32_t level, int64_t src);
 
     CjSettingMap cjConfig;
-    LoginSetting loginCfg; // read it from mysql or other place
+    LoginSetting loginCfg;
     CargoInfos cargoInfo;
     VipConfigs vipSetting;
     LevelConfigs levelConfig;
