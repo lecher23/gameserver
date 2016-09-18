@@ -41,6 +41,7 @@ bool MessageService::getLoginReward(CPacket &packet, int64_t &newFortune) {
     }
     auto &loginReward = user->loginReward;
     if (loginReward.recved) {
+        newFortune = user->uRes.fortune;
         return true;
     }
     int64_t total = loginReward.runnerReward +
