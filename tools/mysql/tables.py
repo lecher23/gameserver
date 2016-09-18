@@ -59,9 +59,23 @@ vip_config = [
     ('max_bet', 'INT NOT NULL')
 ]
 
+level_config = [
+    ('level', 'INT NOT NULL PRIMARY KEY'),
+    ('exp_need', 'BIGINT NOT NULL'), # exp needed to level up
+    ('max_bet', 'BIGINT NOT NULL'), # each level can use bet
+    ('fortune_reward', 'BIGINT NOT NULL')
+]
+
+bet_exp_config = [
+    ('bet', 'BIGINT NOT NULL PRIMARY KEY'),
+    ('exp', 'BIGINT NOT NULL')
+]
+
 table_defines = {
     "cargo_info": cargo_info,
     "vip_config": vip_config,
+    'level_config': level_config,
+    'bet_exp_cfg': bet_exp_config
 }
 
 def parse_dict_to_db_sql(table_name, table_define = []):

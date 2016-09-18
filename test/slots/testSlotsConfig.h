@@ -40,6 +40,14 @@ TestSlotsConfig():_inited(false){}
     }
   }
 
+  void test_init_level_info_success() {
+    auto &cfg = SlotsConfig::getInstance().levelConfig;
+    ast_eq(6, cfg.size());
+    auto itr = cfg.find(4);
+    ast_true(itr != cfg.end());
+    ast_eq(1300, itr->second.expNeed);
+  }
+
 private:
   bool _inited;
 };

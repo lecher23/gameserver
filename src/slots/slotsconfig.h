@@ -8,52 +8,35 @@
 #include <util/common_define.h>
 #include <slots/data/basicdata.h>
 #include <slots/model/vipconfig.h>
+#include <slots/model/levelconfig.h>
+#include <slots/model/bet2expconfig.h>
 
 BEGIN_NAMESPACE(slots)
 
 class SlotsConfig{
  public:
-    struct LevelConfig{
-	int32_t level;
-	int64_t expNeed;
-	int64_t maxBet;
-	int64_t reward;
-    };
-
-    struct VipLevelConfig{
-	int32_t level;
-	float expPer;
-	float goldPer;
-	int64_t goldNeed;
-    };
-
     ~SlotsConfig() {}
 
     bool init();
-
-    const LevelConfig &getLevel(int64_t exp);
-    int64_t expGain(int64_t money);
-    int64_t expNeed2LevelUp(int64_t exp);
-    const VipLevelConfig &getVipLevel(int64_t vipPoint);
 
     static SlotsConfig &getInstance(){
 	static SlotsConfig cfg;
 	return cfg;
     }
 
-    std::vector<LevelConfig> levelConfig;
-    std::vector<VipLevelConfig> vipLevelConfig;
+    int64_t expGain(int64_t resource);
+
     CjSettingMap cjConfig;
     LoginSetting loginCfg; // read it from mysql or other place
     CargoInfos cargoInfo;
-    VipConfig vipSetting;
+    VipConfigs vipSetting;
+    LevelConfigs levelConfig;
+    Bet2ExpConfigs bet2Exp;
 
 private:
     SlotsConfig() {}
     SlotsConfig(const SlotsConfig &);
 };
-typedef SlotsConfig::LevelConfig SlotsLevelConfig;
-typedef SlotsConfig::VipLevelConfig SlotsVipConfig;
 
 END_NAMESPACE
 #endif

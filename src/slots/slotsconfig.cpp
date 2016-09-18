@@ -4,24 +4,6 @@
 BEGIN_NAMESPACE(slots)
 
 bool SlotsConfig::init(){
-    int i;
-    for (i = 1; i < 61; ++i) {
-	LevelConfig lc;
-	lc.level = i;
-	lc.expNeed = i*139;
-	lc.maxBet = i*10;
-	lc.reward = i*50;
-	levelConfig.push_back(lc);
-    }
-    for (i = 1; i < 11; ++i) {
-	VipLevelConfig vlc;
-	vlc.level = i;
-	vlc.expPer = i*139;
-	vlc.goldPer = i*10;
-	vlc.goldNeed = i*50;
-	vipLevelConfig.push_back(vlc);
-    }
-
     auto &db = SlotsDB::getInstance();
     // get achievement config from db
     if (!db.getAchivementSetting(cjConfig)){
@@ -46,33 +28,25 @@ bool SlotsConfig::init(){
         CLOG(ERROR) << "Get vip config from db failed.";
         return false;
     }
+
+    if(!db.getLevelSetting(levelConfig)) {
+        CLOG(ERROR) << "Get level config from db failed.";
+        return false;
+    }
+
+    if(!db.getBet2ExpSetting(bet2Exp)) {
+        CLOG(ERROR) << "Get level config from db failed.";
+        return false;
+    }
     return true;
 }
 
-const SlotsLevelConfig &SlotsConfig::getLevel(int64_t exp) {
-    for (auto itr = levelConfig.begin(); itr != levelConfig.end(); ++itr) {
-	if (exp < itr->expNeed) return *itr;
+int64_t SlotsConfig::expGain(int64_t resource) {
+    auto itr = bet2Exp.find(resource);
+    if (itr == bet2Exp.end()) {
+        return 0;
     }
-    return levelConfig.back();
-}
-
-int64_t SlotsConfig::expGain(int64_t money) {
-    // TODO: USE ARGORITHM
-    return money;
-}
-
-int64_t SlotsConfig::expNeed2LevelUp(int64_t exp) {
-    for (auto itr = levelConfig.begin(); itr != levelConfig.end(); ++itr) {
-	if (exp < itr->expNeed) return (itr->expNeed - exp);
-    }
-    return (levelConfig.back().expNeed - exp);
-}
-
-const SlotsVipConfig &SlotsConfig::getVipLevel(int64_t vipPoint) {
-    for (auto itr = vipLevelConfig.begin(); itr != vipLevelConfig.end(); ++itr) {
-	if (vipPoint < itr->goldNeed) return *itr;
-    }
-    return vipLevelConfig.back();
+    return itr->second;
 }
 
 END_NAMESPACE

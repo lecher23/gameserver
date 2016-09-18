@@ -7,6 +7,8 @@
 #include <mysql/mysqloperationbase.h>
 #include <slots/data/basicdata.h>
 #include <slots/model/vipconfig.h>
+#include <slots/model/levelconfig.h>
+#include <slots/model/bet2expconfig.h>
 
 BEGIN_NAMESPACE(slots)
 const std::string gAchievement = "user_achievement";
@@ -23,6 +25,8 @@ const std::string gLifeHistory = "history";
 const std::string gCargoInfo = "cargo_info";
 const std::string gLoginConfig = "login_config";
 const std::string gVipSetting = "vip_config";
+const std::string gLevelSetting = "level_config";
+const std::string gBetExpSetting = "bet_exp_cfg";
 
 class SlotsDB{
 public:
@@ -47,7 +51,9 @@ public:
     bool getAchivementSetting(CjSettingMap &out);
     bool getCargoInfo(CargoInfos &out) const;
     bool getLoginSetting(LoginSetting &out) const;
-    bool getVipSetting(VipConfig &out) const;
+    bool getVipSetting(VipConfigs &out) const;
+    bool getLevelSetting(LevelConfigs &out) const;
+    bool getBet2ExpSetting(Bet2ExpConfigs &out) const;
 
     bool addUser(const std::string &mid, std::string &uid)const ;
     bool add(const UserCJ &cj);

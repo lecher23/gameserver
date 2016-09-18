@@ -93,15 +93,23 @@ void HistoryProcessor::processExp(GameContext &context, SingleGameDetail &data) 
     if (data.bet == 0) {
 	return;
     }
-    auto &config = SlotsConfig::getInstance();
-    auto expNeed = config.expNeed2LevelUp(uRes.exp);
-    auto expGot = config.expGain(data.bet);
-    // level up event
-    if (expNeed <= expGot ) {
-	uRes.levelUp();
-	context.events.push_back(EventInfo(EGE_LEVEL_UP, uRes.level));
-    }
+    // TODO: exp got setting
+    auto expGot = data.bet;
     uRes.incrExp(expGot);
+    auto &levelConfig = SlotsConfig::getInstance().levelConfig;
+    int64_t expNeed = 0;
+    while(true) {
+        auto itr = levelConfig.find(uRes.level);
+        if (itr == levelConfig.end()) {
+            return;
+        }
+        expNeed = itr->second.expNeed;
+        if (expNeed > uRes.exp ) {
+            return;
+        }
+        uRes.levelUp();
+        context.events.push_back(EventInfo(EGE_LEVEL_UP, uRes.level));
+    }
 }
 
 void HistoryProcessor::processMoney(GameContext &context, SlotsEventData &data) const {

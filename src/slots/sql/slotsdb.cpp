@@ -635,23 +635,60 @@ bool SlotsDB::getAchivementSetting(CjSettingMap &out) {
     return true;
 }
 
-bool SlotsDB::getVipSetting(VipConfig &out) const {
+bool SlotsDB::getVipSetting(VipConfigs &out) const {
     MysqlSimpleSelect mss;
     mss.setField("*");
     mss.setTable(gVipSetting);
     if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss)) {
-	CLOG(WARNING) << "Get achievement from mysql failed.";
+	CLOG(WARNING) << "Get vip setting from mysql failed.";
 	return false;
     }
     for (auto &row: mss.result) {
-	VipConfigItemPtr item(new VipConfigItem);
-	if (!item->deserialize(row)) {
-	    CLOG(WARNING) << "Init vip setting from db failed.";
+	VipConfigItem item;
+	if (!item.deserialize(row)) {
+	    CLOG(WARNING) << "Init row setting from db failed.";
 	    return false;
 	}
-	out[item->level] = item;
+	out[item.level] = item;
     }
     return true;
 }
+
+bool SlotsDB::getLevelSetting(LevelConfigs &out) const {
+    MysqlSimpleSelect mss;
+    mss.setField("*");
+    mss.setTable(gLevelSetting);
+    if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss)) {
+	CLOG(WARNING) << "Get level setting from mysql failed.";
+	return false;
+    }
+    for (auto &row: mss.result) {
+	LevelConfig item;
+	if (!item.deserialize(row)) {
+	    CLOG(WARNING) << "Init row setting from db failed.";
+	    return false;
+	}
+	out[item.level] = item;
+    }
+    return true;
+}
+
+bool SlotsDB::getBet2ExpSetting(Bet2ExpConfigs &out) const {
+    MysqlSimpleSelect mss;
+    mss.setField("*");
+    mss.setTable(gBetExpSetting);
+    if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss)) {
+	CLOG(WARNING) << "Get level setting from mysql failed.";
+	return false;
+    }
+    for (auto &row: mss.result) {
+	if (!Bet2ExpConfig::deserialize(row, out)) {
+	    CLOG(WARNING) << "Init row setting from db failed.";
+	    return false;
+	}
+    }
+    return true;
+}
+
 
 END_NAMESPACE

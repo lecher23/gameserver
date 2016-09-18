@@ -13,6 +13,7 @@ cur_path = os.path.split(os.path.realpath(__file__))[0]
 print cur_path
 sys.path.append(cur_path)
 from tables import table_defines, parse_dict_to_db_sql
+from game_setting import *
 
 class ServerSql:
     def __init__(self):
@@ -28,6 +29,20 @@ class ServerSql:
         self.conn = mysqldb.connect(host = HOST, user = USER, passwd = PASSWD)
         self.conn.select_db('SLOTS')
         self.cursor = self.conn.cursor()
+
+    def addColumn(self, tablename, fields = [], *values):
+        vstr = '","'.join(values)
+        sql = "insert into %s " % tablename
+        if not fields:
+            sql += 'values("%s")' % vstr
+        else:
+            sql += "(%s) values (\"%s\")" % (",".join(fields) + '("%s")', vstr)
+        self.runQuery(sql)
+
+    def addLevelInfos(self, level, exp_need, max_bet, level_reward):
+        sql = "insert into level_config values(%d, %d, %d, %d)"\
+              % (level, exp_need, max_bet, level_reward)
+        self.runQuery(sql)
 
     def deleteAllUser(self, begin, end):
         tbs = ['user_info','user_resource','f_history','history','g_history']
@@ -353,20 +368,7 @@ if __name__ == "__main__":
             lbs.clearRunnerConfig()
         elif nxt == "default":
             lbs.clearRunnerConfig()
-            cfg = [
-                [1, 1000, 10],
-                [2, 300, 1],
-                [3, 2000, 10],
-                [4, 500, 1],
-                [5, 3000, 10],
-                [6, 600, 1],
-                [7, 4000, 10],
-                [8, 1000, 1],
-                [9, 5000, 10],
-                [10, 700, 1],
-                [11, 7000, 10],
-                [12, 400, 1],
-            ]
+            cfg = runner_cfg
             sm = 0.0
             for tp in cfg:
                 sm += tp[2]
@@ -391,15 +393,7 @@ if __name__ == "__main__":
             lbs.clearDayLoginReward()
         elif nxt == "default":
             lbs.clearDayLoginReward()
-            cfg = [
-                (1, 2000),
-                (2, 3000),
-                (3, 4000),
-                (4, 5000),
-                (5, 6000),
-                (6, 8000),
-                (7, 10000),
-            ]
+            cfg = daily_reward_cfg
             for tp in cfg:
                 lbs.addLoginRewardConfig(tp[0], tp[1])
         exit(0)
@@ -431,17 +425,7 @@ if __name__ == "__main__":
             lbs.clearVipConfig()
         elif nxt == "default":
             lbs.clearVipConfig()
-            cfg = [
-                (1, 5, 5, 10, 10, 10),
-                (2, 10, 10, 10, 40, 15),
-                (3, 20, 20, 10, 100, 20),
-                (4, 25, 25, 10, 200, 25),
-                (5, 30, 30, 10, 400, 30),
-                (6, 35, 35, 10, 800, 35),
-                (7, 40, 40, 10, 1600, 40),
-                (8, 45, 45, 10, 3200, 45),
-                (9, 50, 50, 10, 6400, 50)
-            ]
+            cfg = vip_cfg
             for row in cfg:
                 lbs.addVipConfig(*row)
         exit(0)
@@ -449,6 +433,16 @@ if __name__ == "__main__":
     if cmd == "initdb":
         lbs.initTables()
         exit(0)
+
+    if cmd == "level_cfg":
+        lc = level_info;
+        for item in level_info:
+            lbs.addLevelInfos(*item)
+
+    if cmd == "bet_exp_cfg":
+        bec = bet_2_exp
+        for item in bet_2_exp:
+            lbs.addColumn("bet_exp_cfg", [], *[str(k) for k in item])
 
     if cmd == "debug":
         nxt = sys.argv[2]
