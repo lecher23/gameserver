@@ -443,16 +443,22 @@ if __name__ == "__main__":
             lbs.addColumn("bet_exp_cfg", [], [str(k) for k in item])
 
     if cmd == "slot_game_setting":
-        for item in gs.line_cfg:
-            lbs.addColumn("line_config", ["line"], [str(k) for k in item])
-        for item in gs.grid_cfg:
-            lbs.addColumn("grid_config", ["col", "row", "ele_id", "weight"],
-                          [str(k) for k in item])
-        for item in gs.ele_info:
-            lbs.addColumn("ele_info", [], [str(k) for k in item])
-        for item in gs.ele_cfg:
-            lbs.addColumn("ele_config", ["ele_id", "line_num", "value"],
-                          [str(k) for k in item])
+        second = sys.argv[2]
+        if second == "all":
+            for item in gs.line_cfg:
+                lbs.addColumn("line_config", ["line"], [str(k) for k in item])
+            for item in gs.grid_cfg:
+                lbs.addColumn("grid_config", ["grid_idx", "ele_id", "weight"],
+                              [str(k) for k in item])
+            for item in gs.ele_info:
+                lbs.addColumn("ele_info", [], [str(k) for k in item])
+            for item in gs.ele_cfg:
+                lbs.addColumn("ele_config", ["ele_id", "line_num", "value"],
+                              [str(k) for k in item])
+        elif second == "grid":
+            for item in gs.grid_cfg:
+                lbs.addColumn("grid_config", ["grid_idx", "ele_id", "weight"],
+                              [str(k) for k in item])
 
     if cmd == "debug":
         nxt = sys.argv[2]

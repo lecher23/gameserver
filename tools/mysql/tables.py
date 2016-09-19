@@ -79,8 +79,7 @@ line_config = [
 
 grid_config = [
     ('id', 'INT AUTO_INCREMENT PRIMARY KEY'),
-    ('col', 'INT NOT NULL'),
-    ('row', 'INT NOT NULL'),
+    ('grid_idx', 'INT NOT NULL'),
     ('ele_id', 'INT NOT NULL'),
     ('weight', 'INT NOT NULL')
 ]
