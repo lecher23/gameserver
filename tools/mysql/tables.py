@@ -50,6 +50,7 @@ history = [
     ('lw_acheivement_sort', 'INT DEFAULT 9999')
 ]
 
+# table below is used for game config
 vip_config = [
     ('level', 'INT NOT NULL PRIMARY KEY'),
     ('exp_ext', 'INT NOT NULL'),
@@ -71,11 +72,40 @@ bet_exp_config = [
     ('exp', 'BIGINT NOT NULL')
 ]
 
+line_config = [
+    ('id', 'INT AUTO_INCREMENT PRIMARY KEY'),
+    ('line', 'CHAR(64) NOT NULL') # 0,0,0,0,0
+]
+
+grid_config = [
+    ('id', 'INT AUTO_INCREMENT PRIMARY KEY'),
+    ('col', 'INT NOT NULL'),
+    ('row', 'INT NOT NULL'),
+    ('ele_id', 'INT NOT NULL'),
+    ('weight', 'INT NOT NULL')
+]
+
+ele_info = [
+    ('id', 'INT NOT NULL PRIMARY KEY'),
+    ('type', 'TINYINT DEFAULT 0')
+]
+
+ele_config = [
+    ('_id', 'INT AUTO_INCREMENT PRIMARY KEY'),
+    ('ele_id', 'INT NOT NULL'),
+    ('line_num', 'INT NOT NULL'),
+    ('value', 'INT NOT NULL')
+]
+
 table_defines = {
     "cargo_info": cargo_info,
     "vip_config": vip_config,
     'level_config': level_config,
-    'bet_exp_cfg': bet_exp_config
+    'bet_exp_cfg': bet_exp_config,
+    'line_config': line_config,
+    'grid_config': grid_config,
+    'ele_info': ele_info,
+    'ele_config': ele_config
 }
 
 def parse_dict_to_db_sql(table_name, table_define = []):

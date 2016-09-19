@@ -10,10 +10,9 @@ USER = "slot_master"
 PASSWD = "111222"
 
 cur_path = os.path.split(os.path.realpath(__file__))[0]
-print cur_path
 sys.path.append(cur_path)
 from tables import table_defines, parse_dict_to_db_sql
-from game_setting import *
+import game_setting as gs
 
 class ServerSql:
     def __init__(self):
@@ -30,13 +29,13 @@ class ServerSql:
         self.conn.select_db('SLOTS')
         self.cursor = self.conn.cursor()
 
-    def addColumn(self, tablename, fields = [], *values):
+    def addColumn(self, tablename, fields = [], values = []):
         vstr = '","'.join(values)
         sql = "insert into %s " % tablename
         if not fields:
             sql += 'values("%s")' % vstr
         else:
-            sql += "(%s) values (\"%s\")" % (",".join(fields) + '("%s")', vstr)
+            sql += "(%s) values (\"%s\")" % (",".join(fields), vstr)
         self.runQuery(sql)
 
     def addLevelInfos(self, level, exp_need, max_bet, level_reward):
@@ -435,14 +434,25 @@ if __name__ == "__main__":
         exit(0)
 
     if cmd == "level_cfg":
-        lc = level_info;
+        lc = gs.level_info;
         for item in level_info:
             lbs.addLevelInfos(*item)
 
     if cmd == "bet_exp_cfg":
-        bec = bet_2_exp
-        for item in bet_2_exp:
-            lbs.addColumn("bet_exp_cfg", [], *[str(k) for k in item])
+        for item in gs.bet_2_exp:
+            lbs.addColumn("bet_exp_cfg", [], [str(k) for k in item])
+
+    if cmd == "slot_game_setting":
+        for item in gs.line_cfg:
+            lbs.addColumn("line_config", ["line"], [str(k) for k in item])
+        for item in gs.grid_cfg:
+            lbs.addColumn("grid_config", ["col", "row", "ele_id", "weight"],
+                          [str(k) for k in item])
+        for item in gs.ele_info:
+            lbs.addColumn("ele_info", [], [str(k) for k in item])
+        for item in gs.ele_cfg:
+            lbs.addColumn("ele_config", ["ele_id", "line_num", "value"],
+                          [str(k) for k in item])
 
     if cmd == "debug":
         nxt = sys.argv[2]
