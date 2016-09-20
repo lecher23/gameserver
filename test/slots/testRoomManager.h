@@ -6,6 +6,7 @@
 #define private public
 #include <slots/roommanager.h>
 #undef private
+#include <util/timeutil.h>
 
 #define ast_eq(x, y) TS_ASSERT_EQUALS(x, y);
 #define ast_true(x) TS_ASSERT(x);
@@ -90,30 +91,141 @@ testRoomManager():_inited(false){}
     ast_eq(100, money);
   }
 
-  void test_useRoom_room_not_exist() {
+  void test_useRoom_user_leaved_room_dest_room_not_exist() {
     RoomManager rm;
-    ast_true(!rm.useRoom(345, 123));
+    // user 111 in room 222
+    rm._user2room[111] = 0;
+    // user 111 want use room 223
+    ast_true(rm.useRoom(111, 223));
+    // check
+    ast_eq(223, rm._user2room[111]);
+
+    // make sure room 223 exist
+    RoomInfoPtr pRoom;
+    ast_true(rm.getRoom(223, pRoom));
+    ast_eq(ERS_ROOM_BUSY, pRoom->status);
+    ast_eq(111, pRoom->userID);
   }
 
-  void test_useRoom_room_not_free() {
+  void test_useRoom_user_not_in_room_dest_room_not_exist() {
     RoomManager rm;
-    ast_true(rm.createRoom(123, 100));
+    // user 111 want use room 223
+    ast_true(rm.useRoom(111, 223));
+    // check
+    ast_eq(223, rm._user2room[111]);
+
+    // make sure room 223 exist
     RoomInfoPtr pRoom;
-    ast_true(rm.getRoom(123, pRoom));
-    pRoom->status = ERS_ROOM_BUSY;
+    ast_true(rm.getRoom(223, pRoom));
     ast_eq(ERS_ROOM_BUSY, pRoom->status);
-    ast_true(!rm.useRoom(345, 123));
+    ast_eq(111, pRoom->userID);
   }
 
-  void test_useRoom() {
+
+  void test_useRoom_user_in_another_room_dest_room_not_exist() {
     RoomManager rm;
-    ast_true(rm.createRoom(123, 100));
+    RoomInfoPtr pRoomA;
+    ast_true(rm.createRoom(222, 1000, pRoomA));
+    // user 111 in room 222
+    rm._user2room[111] = 222;
+    pRoomA->status = ERS_ROOM_BUSY;
+    pRoomA->userID = 111;
+    // user 111 want use room 223
+    ast_true(rm.useRoom(111, 223));
+    // check
+    ast_eq(ERS_ROOM_FREE, pRoomA->status);
+    ast_eq(0, pRoomA->userID);
+    ast_eq(223, rm._user2room[111]);
+
+    // make sure room 223 exist
     RoomInfoPtr pRoom;
-    ast_true(rm.getRoom(123, pRoom));
-    ast_eq(ERS_ROOM_FREE, pRoom->status);
-    ast_true(rm.useRoom(345, 123));
+    ast_true(rm.getRoom(223, pRoom));
     ast_eq(ERS_ROOM_BUSY, pRoom->status);
-    ast_eq(345, pRoom->userID);
+    ast_eq(111, pRoom->userID);
+  }
+
+  void test_useRoom_user_in_another_room_dest_room_not_in_use() {
+    RoomManager rm;
+    RoomInfoPtr pRoomA;
+    ast_true(rm.createRoom(222, 1000, pRoomA));
+    // user 111 in room 222
+    rm._user2room[111] = 222;
+    pRoomA->status = ERS_ROOM_BUSY;
+    pRoomA->userID = 111;
+    // dest room not in use
+    RoomInfoPtr pRoomB;
+    ast_true(rm.createRoom(223, 2000, pRoomB));
+    ast_eq(ERS_ROOM_FREE, pRoomB->status);
+    // user 111 want use room 223
+    ast_true(rm.useRoom(111, 223));
+    // check
+    ast_eq(ERS_ROOM_FREE, pRoomA->status);
+    ast_eq(0, pRoomA->userID);
+    ast_eq(223, rm._user2room[111]);
+
+    // make sure room 223 exist
+    RoomInfoPtr pRoom;
+    ast_true(rm.getRoom(223, pRoom));
+    ast_eq(ERS_ROOM_BUSY, pRoom->status);
+    ast_eq(111, pRoom->userID);
+  }
+
+  void test_useRoom_user_in_another_room_dest_room_in_use_not_dead() {
+    RoomManager rm;
+    RoomInfoPtr pRoomA;
+    ast_true(rm.createRoom(222, 1000, pRoomA));
+    // dest room is used by user 112, and it is not dead
+    RoomInfoPtr pRoomB;
+    ast_true(rm.createRoom(223, 2000, pRoomB));
+    pRoomB->status = ERS_ROOM_RESERVED;
+    pRoomB->userID = 112;
+    pRoomB->lastActive = cgserver::CTimeUtil::getCurrentTimeInSeconds();
+    rm._user2room[112] = 223;
+    // user 111 in room 222
+    rm._user2room[111] = 222;
+    pRoomA->status = ERS_ROOM_BUSY;
+    pRoomA->userID = 111;
+    // user 111 want use room 223
+    ast_true(!rm.useRoom(111, 223));
+    // check room 222 status
+    ast_eq(ERS_ROOM_FREE, pRoomA->status);
+    ast_eq(0, pRoomA->userID);
+    // user leave room 222
+    ast_eq(0, rm._user2room[111]);
+    // check room 223 status
+    ast_eq(ERS_ROOM_RESERVED, pRoomB->status);
+    ast_eq(112, pRoomB->userID);
+    ast_eq(223, rm._user2room[112]);
+  }
+
+  void test_useRoom_user_in_another_room_dest_room_in_use_dead() {
+    RoomManager rm;
+    RoomInfoPtr pRoomA;
+    ast_true(rm.createRoom(222, 1000, pRoomA));
+    // dest room is used by user 112, and it is not dead
+    RoomInfoPtr pRoomB;
+    ast_true(rm.createRoom(223, 2000, pRoomB));
+    pRoomB->status = ERS_ROOM_RESERVED;
+    pRoomB->userID = 112;
+    pRoomB->lastActive = cgserver::CTimeUtil::getCurrentTimeInSeconds() - 800;
+    rm._user2room[112] = 223;
+    // user 111 in room 222
+    rm._user2room[111] = 222;
+    pRoomA->status = ERS_ROOM_BUSY;
+    pRoomA->userID = 111;
+    // user 111 want use room 223
+    ast_true(rm.useRoom(111, 223));
+    // check room 222 status
+    ast_eq(ERS_ROOM_FREE, pRoomA->status);
+    ast_eq(0, pRoomA->userID);
+    // user in room 223
+    ast_eq(223, rm._user2room[111]);
+    // check room 223 status
+    ast_eq(ERS_ROOM_BUSY, pRoomB->status);
+    ast_eq(111, pRoomB->userID);
+    // user 112 leaving room 223
+    ast_eq(0, rm._user2room[112]);
+    ast_true(cgserver::CTimeUtil::getCurrentTimeInSeconds() - pRoomB->lastActive < 2);
   }
 
   void test_reserveRoom() {
@@ -134,18 +246,18 @@ testRoomManager():_inited(false){}
 
   void test_leavingRoom() {
     RoomManager rm;
-    ast_true(rm.createRoom(123, 100));
     RoomInfoPtr pRoom;
-    ast_true(rm.getRoom(123, pRoom));
-    ast_eq(ERS_ROOM_FREE, pRoom->status);
-    ast_true(rm.useRoom(345, 123));
-    ast_eq(ERS_ROOM_BUSY, pRoom->status);
-    ast_eq(345, pRoom->userID);
+    ast_true(rm.createRoom(123, 100, pRoom));
+    // user 111 in room 123
+    rm._user2room[111] = 123;
+    pRoom->userID = 111;
     // invalid user
     ast_true(!rm.leavingRoom(344, 123));
     // valid user
-    ast_true(rm.leavingRoom(345, 123));
+    ast_true(rm.leavingRoom(111, 123));
     ast_eq(ERS_ROOM_FREE, pRoom->status);
+    ast_eq(BLANK_USER_ID, pRoom->userID);
+    ast_eq(0, rm._user2room[111]);
   }
 private:
   bool _inited;
