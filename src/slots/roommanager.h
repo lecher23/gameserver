@@ -14,6 +14,7 @@ enum RoomStats {
 };
 
 #define BLANK_USER_ID 0
+#define BLANK_ROOM_ID 0
 
 struct RoomInfo{
   int32_t roomID;
@@ -31,6 +32,7 @@ public:
   RoomManager();
   ~RoomManager();
 
+  bool getRoomByUserId(int32_t userID, RoomInfoPtr &pRoom);
   bool getRoom(int32_t roomID, RoomInfoPtr &room);
   bool getRooms(RoomsInfo &out);
   bool createRoom(int32_t roomID, int64_t refill, RoomInfoPtr &pRoom);

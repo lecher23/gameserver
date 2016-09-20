@@ -9,6 +9,14 @@ RoomManager::RoomManager(){
 RoomManager::~RoomManager(){
 }
 
+bool RoomManager::getRoomByUserId(int32_t userID, RoomInfoPtr &pRoom) {
+    auto itr = _user2room.find(userID);
+    if (itr == _user2room.end() || itr->second == BLANK_ROOM_ID) {
+        return false;
+    }
+    return getRoom(itr->second, pRoom);
+}
+
 bool RoomManager::getRoom(int32_t roomID, RoomInfoPtr &pRoom) {
     auto itr = _rooms.find(roomID);
     if(itr == _rooms.end()) {
