@@ -1,5 +1,4 @@
 #include "slotsconfig.h"
-#include <slots/sql/slotsdb.h>
 
 BEGIN_NAMESPACE(slots)
 
@@ -38,6 +37,11 @@ bool SlotsConfig::init(){
         CLOG(ERROR) << "Get level config from db failed.";
         return false;
     }
+
+    if(!getSlotMachineConfig()) {
+        CLOG(ERROR) << "Get level config from db failed.";
+        return false;
+    }
     return true;
 }
 
@@ -72,6 +76,77 @@ int64_t SlotsConfig::vipLoginReward(int32_t level, int64_t src) {
     float ext = 0.0;
     FIND_VIP_CONFIG(level, ext, login_ext, 0.0);
     return src * ext;
+}
+
+bool SlotsConfig::getSlotMachineConfig() {
+    auto &db = SlotsDB::getInstance();
+    bool ret = false;
+    do {
+        GridConfigs gc;
+        if (!db.getGridsConfig(gc)){
+            break;
+        }
+        if(!getGridConfig(gc)) {
+            break;
+        }
+        LinesConfig lc;
+        if (!db.getLinesConfig(lc)){
+            break;
+        }
+        if(!getLinesConfig(lc)) {
+            break;
+        }
+        ElementsConfig ec;
+        if (!db.getElementsConfig(ec)){
+            break;
+        }
+        SlotElements se;
+        if (!db.getSlotsElements(se)){
+            break;
+        }
+        if(!getElements(se, ec)) {
+            break;
+        }
+        ret = true;
+    }while(false);
+    return ret;
+}
+
+bool SlotsConfig::getGridConfig(GridConfigs &gc) {
+    std::map<int32_t, SlotGrid> grids;
+    int32_t prev = 0;
+    auto len = gc.size();
+    /*if use for(auto &:) will meet problem, I should find out the reason.*/
+    for (int i = 0; i < len; ++i){
+        auto &grid = gc[i];
+        EleChance eleChance;
+        eleChance.eleID = grid.eleID;
+        eleChance.begin = prev;
+        prev += grid.weight;
+        eleChance.end = prev;
+        grids[grid.gridIdx].totalWeight += grid.weight;
+        grids[grid.gridIdx].elements.push_back(eleChance);
+    }
+    slotConfig.grids.swap(grids);
+    return true;
+}
+
+bool SlotsConfig::getLinesConfig(LinesConfig &lc) {
+    for (auto &line: lc) {
+        slotConfig.lines.push_back(line.line);
+    }
+    return true;
+}
+
+bool SlotsConfig::getElements(SlotElements &elements, ElementsConfig &cfg) {
+    for (auto &se: cfg) {
+        SlotElementRatio ec;
+        CLOG(INFO) << se.eleID << "," << se.value << "," << se.lineNum;
+        ec.type = elements[se.eleID];
+        ec.ratio[se.lineNum] = se.value;
+        slotConfig.elements[se.eleID] = ec;
+    }
+    return true;
 }
 
 END_NAMESPACE

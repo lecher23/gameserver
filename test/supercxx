@@ -97,8 +97,7 @@ namespace cxx{
     def run_test(self):
         cmd = "export %s;./%s" % (self.get_run_env(),self.app_name)
         print cmd
-        s, o = commands.getstatusoutput(cmd)
-        print o
+        os.system(cmd)
 
     def compile_project(self):
         print "Begin recompile project."

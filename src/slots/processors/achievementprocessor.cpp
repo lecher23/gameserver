@@ -53,7 +53,6 @@ bool AchievementProcessor::process(GameContext &context) const {
 	    if (itr != _config.end()){
 		auto &setting = itr->second;
 		TAKE_ACHIEVEMENT(item, setting);
-		//take_cj(context, item, setting);
 	    }
 	    break;
 	}

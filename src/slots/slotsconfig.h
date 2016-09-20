@@ -7,9 +7,9 @@
 #include <stdint.h>
 #include <util/common_define.h>
 #include <slots/data/gamecontext.h>
-#include <slots/model/vipconfig.h>
-#include <slots/model/levelconfig.h>
-#include <slots/model/bet2expconfig.h>
+#include <slots/data/slotmachineconfig.h>
+#include <slots/sql/slotsdb.h>
+
 
 BEGIN_NAMESPACE(slots)
 
@@ -34,8 +34,14 @@ class SlotsConfig{
     VipConfigs vipSetting;
     LevelConfigs levelConfig;
     Bet2ExpConfigs bet2Exp;
+    SlotMachineConfig slotConfig;
 
 private:
+    bool getSlotMachineConfig();
+    bool getGridConfig(GridConfigs &gc);
+    bool getLinesConfig(LinesConfig &lc);
+    bool getElements(SlotElements &elements, ElementsConfig &cfg);
+
     SlotsConfig() {}
     SlotsConfig(const SlotsConfig &);
 };

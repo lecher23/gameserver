@@ -690,5 +690,73 @@ bool SlotsDB::getBet2ExpSetting(Bet2ExpConfigs &out) const {
     return true;
 }
 
+bool SlotsDB::getGridsConfig(GridConfigs &out) const {
+    MysqlSimpleSelect mss;
+    mss.setField("*");
+    mss.setTable(gGridConfig);
+    if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss)) {
+	return false;
+    }
+    for (auto &row: mss.result) {
+        GridConfig gc;
+	if (!gc.deserialize(row)) {
+	    CLOG(WARNING) << "Init row setting from db failed.";
+	    return false;
+	}
+        out.push_back(gc);
+    }
+    return true;
+}
+
+bool SlotsDB::getLinesConfig(LinesConfig &out) const {
+    MysqlSimpleSelect mss;
+    mss.setField("*");
+    mss.setTable(gLineConfig);
+    if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss)) {
+	return false;
+    }
+    for (auto &row: mss.result) {
+        LineConfig lc;
+	if (!lc.deserialize(row)) {
+	    return false;
+	}
+        out.push_back(lc);
+    }
+    return true;
+}
+
+bool SlotsDB::getElementsConfig(ElementsConfig &out) const {
+    MysqlSimpleSelect mss;
+    mss.setField("*");
+    mss.setTable(gElementConfig);
+    if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss)) {
+	return false;
+    }
+    for (auto &row: mss.result) {
+        ElementConfig ec;
+	if (!ec.deserialize(row)) {
+	    return false;
+	}
+        out.push_back(ec);
+    }
+    return true;
+}
+
+bool SlotsDB::getSlotsElements(SlotElements &out) const {
+    MysqlSimpleSelect mss;
+    mss.setField("*");
+    mss.setTable(gSloteElement);
+    if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss)) {
+	return false;
+    }
+    for (auto &row: mss.result) {
+	if (!SlotElement::deserialize(row, out)) {
+	    return false;
+	}
+    }
+    return true;
+}
+
+
 
 END_NAMESPACE

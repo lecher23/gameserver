@@ -91,12 +91,19 @@ LoginReward():runnerReward(0),daysReward(0),specialReward(0),timestamp(0){}
     }
 };
 
+struct GameStatus {
+  int32_t type;
+  int32_t status;
+  int64_t prevBet;
+};
+
 struct SlotsUser{
   UserInfo uInfo;
   UserResource uRes;
   UserHistory uHis;
   GameHistory gDetail;
   LoginReward loginReward;
+  GameStatus gSt;
 
   bool deserialize(const std::vector<std::string> &row) {
     if (row.size() < 15) {
@@ -195,7 +202,7 @@ struct SlotLineInfo {
     int32_t ele;
 };
 
-struct SlotsEventData{
+struct SingleGameDetail{
     int64_t earned;
     int64_t bet;
     std::vector<ResultType> retTypes;
@@ -205,8 +212,6 @@ struct SlotsEventData{
     bool isFreeRound;
     SlotsStyle gType;
 };
-
-typedef SlotsEventData SingleGameDetail;
 
 typedef UserCJPtr AchievementPtr;
 typedef std::vector<AchievementPtr> Achievements;

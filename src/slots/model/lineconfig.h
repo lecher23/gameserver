@@ -16,6 +16,7 @@ struct LineConfig {
     return true;
   }
 };
+typedef std::vector<LineConfig> LinesConfig;
 
 END_NAMESPACE
 #endif

@@ -9,6 +9,9 @@
 #include <slots/model/vipconfig.h>
 #include <slots/model/levelconfig.h>
 #include <slots/model/bet2expconfig.h>
+#include <slots/model/gridconfig.h>
+#include <slots/model/lineconfig.h>
+#include <slots/model/elementsconfig.h>
 
 BEGIN_NAMESPACE(slots)
 const std::string gAchievement = "user_achievement";
@@ -27,6 +30,10 @@ const std::string gLoginConfig = "login_config";
 const std::string gVipSetting = "vip_config";
 const std::string gLevelSetting = "level_config";
 const std::string gBetExpSetting = "bet_exp_cfg";
+const std::string gElementConfig = "ele_config";
+const std::string gLineConfig = "line_config";
+const std::string gGridConfig = "grid_config";
+const std::string gSloteElement = "ele_info";
 
 class SlotsDB{
 public:
@@ -54,6 +61,10 @@ public:
     bool getVipSetting(VipConfigs &out) const;
     bool getLevelSetting(LevelConfigs &out) const;
     bool getBet2ExpSetting(Bet2ExpConfigs &out) const;
+    bool getGridsConfig(GridConfigs &out) const ;
+    bool getLinesConfig(LinesConfig &out) const;
+    bool getElementsConfig(ElementsConfig &out) const;
+    bool getSlotsElements(SlotElements &out) const;
 
     bool addUser(const std::string &mid, std::string &uid)const ;
     bool add(const UserCJ &cj);

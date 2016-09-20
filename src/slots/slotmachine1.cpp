@@ -13,26 +13,26 @@ SlotMachine1::~SlotMachine1(){
 
 void SlotMachine1::play() {
     size_t i = 0;
-    for (auto &item: _cfg.gridsConfig) {
-        chooseElement(item);
+    for (auto &item: _cfg.grids) {
+        chooseElement(item.first, item.second);
         ++i;
     }
     countLines();
 }
 
-void SlotMachine1::chooseElement(GridConfig &cfg) {
+void SlotMachine1::chooseElement(int32_t gridIdx, SlotGrid &cfg) {
     srand((int)time(0));
     int32_t val = rand() % cfg.totalWeight;
     for (auto &i: cfg.elements) {
         if (val >= i.begin && val < i.end) {
-            _result.push_back(i.eleId);
+            _result[gridIdx] = i.eleID;
             break;
         }
     }
 }
 
 void SlotMachine1::countLines() {
-    for (auto &line: _cfg.linesConfig) {
+    for (auto &line: _cfg.lines) {
         auto len = line.size();
         if (len == 0) {
             continue;

@@ -112,7 +112,7 @@ void HistoryProcessor::processExp(GameContext &context, SingleGameDetail &data) 
     }
 }
 
-void HistoryProcessor::processMoney(GameContext &context, SlotsEventData &data) const {
+void HistoryProcessor::processMoney(GameContext &context, SingleGameDetail &data) const {
     int64_t actualEarned = data.earned - data.bet;
     if (actualEarned == 0) {
 	return;

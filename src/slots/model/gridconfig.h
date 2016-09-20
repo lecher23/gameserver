@@ -12,15 +12,17 @@ struct GridConfig{
 
   bool deserialize(std::vector<std::string> &row) {
     if (row.size() < 4) {
-      CLOG(ERROR) << 'Invalid fields num.';
+      CLOG(ERROR) << "Invalid fields num.";
       return false;
     }
     bool ret = cgserver::StringUtil::StrToInt32(row[1].c_str(), gridIdx);
-    ret = ret && cgserver::StringUtil::StrToInt32(row[2].c_str(), ele_id);
+    ret = ret && cgserver::StringUtil::StrToInt32(row[2].c_str(), eleID);
     ret = ret && cgserver::StringUtil::StrToInt32(row[3].c_str(), weight);
     return ret;
   }
 };
+
+typedef std::vector<GridConfig> GridConfigs;
 
 END_NAMESPACE
 #endif
