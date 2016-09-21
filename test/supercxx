@@ -123,7 +123,7 @@ if __name__ == "__main__":
                       os.path.join(root, "src"),
                       os.path.join(root, "test/cxxtest-4.3")]
     sc.lib_path = [os.path.join(root, "depend/lib")]
-    sc.libs_required = ["pthread", "lua5.1", "mysqlclient", "glog"]
+    sc.libs_required = ["pthread", "lua5.1", "mysqlclient", "glog", "hiredis"]
     sc.root = os.path.join(root, "test")
     sc.cxx_root = os.path.join(root, "test/cxxtest-4.3")
     sc.test_root = os.path.join(root, "test")
