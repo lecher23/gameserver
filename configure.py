@@ -74,6 +74,15 @@ def resolve_glog_dependency():
     exe_cmd("cd %s && make && make install" %
             os.path.join(TMP_DIR, "glog"))
 
+def resolve_redis_client():
+    git_dir = os.path.join(TMP_DIR, "hiredis")
+    clone_from_git("https://github.com/redis/hiredis.git", "v.13.3", git_dir)
+    exe_cmd("cd %s && make" % git_dir)
+    exe_cmd("cd %s && cp *.so %s" % (git_dir, LIB_DIR))
+    h_dir = os.path.join(INCLUDE_DIR, "hiredis")
+    os.system("mkdir %s" )
+    exe_cmd("cd %s && cp *.h %s" % (git_dir, h_dir))
+
 def resolve_rapid_json():
     clone_from_git("https://github.com/miloyip/rapidjson", "v1.0.2",
                    os.path.join(TMP_DIR, "rapidjson"))
