@@ -457,7 +457,7 @@ if __name__ == "__main__":
                               [str(k) for k in item])
         elif second == "grid":
             for item in gs.grid_cfg:
-                lbs.addColumn("grid_config", ["grid_idx", "ele_id", "weight"],
+                lbs.addColumn("grid_config", ["col", "row", "ele_id", "weight"],
                               [str(k) for k in item])
 
     if cmd == "debug":
