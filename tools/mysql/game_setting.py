@@ -70,6 +70,7 @@ def format_grid_cfg(x):
     for item in x:
         if int(item[0]) > max_col:
             max_col = int(item[0])
+    max_col += 1
     return [(int(item[1]) * max_col + int(item[0]), item[2], item[3]) for item in x]
 
 grid_cfg = format_grid_cfg(grid_cfg)
