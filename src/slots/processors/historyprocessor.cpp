@@ -13,29 +13,28 @@ bool HistoryProcessor::process(GameContext &context) const {
     context.events.push_back(EventInfo(EGE_PLAYED_GAME));
     processGameDetail(context, context.gameInfo);
     // is free to play
-    if (context.gameInfo.isFreeRound) {
+    if (context.gameInfo.freeRound == 0) {
 	context.gameInfo.bet = 0;
     } else {
 	context.events.push_back(EventInfo(EGE_USE_BET, context.gameInfo.bet));
     }
     // update user fortune
     processMoney(context, context.gameInfo);
-    // update user exp&level    
+    // update user exp&level
     processExp(context, context.gameInfo);
     return true;
 }
 
 
-void HistoryProcessor::processGameDetail(GameContext &context, SingleGameDetail &data) const {
+void HistoryProcessor::processGameDetail(GameContext &context, GameResultData &data) const {
     auto &udt = context.user->gDetail;
     auto gType = data.gType;
     // incr game times
     ++udt.gameTimes[gType];
     context.events.push_back(
 	EventInfo(EGE_GAME_COUNT, TO_GAME_CJ_VALUE(gType, udt.gameTimes[gType])));
-    
     // here we just use one event that: game played.
-    for (auto itr: data.retTypes) {
+    for (auto itr: data.special) {
 	switch(itr) {
 	case ERT_BIG_WIN:{
 	    auto &bigwinVal = udt.bigwin[gType];
@@ -48,7 +47,7 @@ void HistoryProcessor::processGameDetail(GameContext &context, SingleGameDetail 
 	    auto &megawinVal = udt.megawin[gType];
 	    ++megawinVal;
 	    context.events.push_back(
-		EventInfo(EGE_MEGA_WIN, TO_GAME_CJ_VALUE(gType, megawinVal)));	    
+		EventInfo(EGE_MEGA_WIN, TO_GAME_CJ_VALUE(gType, megawinVal)));
 	    break;
 	}
 	case ERT_JACKPOT:{
@@ -63,31 +62,31 @@ void HistoryProcessor::processGameDetail(GameContext &context, SingleGameDetail 
 	    ;
 	}
     }
-    for (auto &item: data.lineInfo) {
-	auto ele = item.ele;
-	if (item.colum == 4) {
-	    auto &now = udt.fourLine[gType][ele];
-	    auto pre = now;
-	    now += item.count;
-	    context.events.push_back(
-		EventInfo(EGE_LINE, TO_LINE_CJ_VALUE(gType, ele, 4, pre),
-			  TO_LINE_CJ_VALUE(gType, ele, 4, now)));
-	}else if (item.colum == 5) {
-	    auto &now = udt.fiveLine[gType][ele];
-	    auto pre = now;
-	    now += item.count;
-	    context.events.push_back(
-		EventInfo(EGE_LINE, TO_LINE_CJ_VALUE(gType, ele, 5, pre),
-			  TO_LINE_CJ_VALUE(gType, ele, 4, now)));
-	}
-    }
-    if (data.enableTinyGame) {
+    // for (auto &item: data.lines) {
+    //     auto ele = item->first;
+    //     if (item->second == 4) {
+    //         auto &now = udt.fourLine[gType][ele];
+    //         auto pre = now;
+    //         now += item.count;
+    //         context.events.push_back(
+    //     	EventInfo(EGE_LINE, TO_LINE_CJ_VALUE(gType, ele, 4, pre),
+    //     		  TO_LINE_CJ_VALUE(gType, ele, 4, now)));
+    //     }else if (item.colum == 5) {
+    //         auto &now = udt.fiveLine[gType][ele];
+    //         auto pre = now;
+    //         now += item.count;
+    //         context.events.push_back(
+    //     	EventInfo(EGE_LINE, TO_LINE_CJ_VALUE(gType, ele, 5, pre),
+    //     		  TO_LINE_CJ_VALUE(gType, ele, 4, now)));
+    //     }
+    // }
+    if (data.bTinyGame) {
 	udt.tinyGameTimes ++;
     }
     udt.changed = true;
 }
 
-void HistoryProcessor::processExp(GameContext &context, SingleGameDetail &data) const {
+void HistoryProcessor::processExp(GameContext &context, GameResultData &data) const {
     auto &uRes = context.user->uRes;
     // if zero bet then exp will not change
     if (data.bet == 0) {
@@ -112,7 +111,7 @@ void HistoryProcessor::processExp(GameContext &context, SingleGameDetail &data) 
     }
 }
 
-void HistoryProcessor::processMoney(GameContext &context, SingleGameDetail &data) const {
+void HistoryProcessor::processMoney(GameContext &context, GameResultData &data) const {
     int64_t actualEarned = data.earned - data.bet;
     if (actualEarned == 0) {
 	return;

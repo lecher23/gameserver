@@ -703,7 +703,7 @@ bool SlotsDB::getGridsConfig(GridConfigs &out) const {
 	    CLOG(WARNING) << "Init row setting from db failed.";
 	    return false;
 	}
-        out.push_back(gc);
+        out[gc.gridIdx].push_back(gc);
     }
     return true;
 }

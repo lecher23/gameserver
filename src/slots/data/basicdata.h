@@ -196,21 +196,16 @@ class PersistenceBase{
 
 DF_SHARED_PTR(PersistenceBase);
 
-struct SlotLineInfo {
-    int32_t colum;
-    int32_t count;
-    int32_t ele;
-};
-
-struct SingleGameDetail{
-    int64_t earned;
-    int64_t bet;
-    std::vector<ResultType> retTypes;
-    std::vector<SlotLineInfo> lineInfo;
-    std::string detail;
-    bool enableTinyGame;
-    bool isFreeRound;
-    SlotsStyle gType;
+struct GameResultData{
+  int64_t earned;
+  int64_t bet;
+  std::map<int32_t, int32_t> lines;
+  std::map<int32_t, int32_t> gridsData;
+  std::vector<ResultType> special;
+  bool bTinyGame;
+  SlotsStyle gType;
+  int32_t freeRound;
+ GameResultData():bet(0), earned(0), bTinyGame(false), freeRound(0){}
 };
 
 typedef UserCJPtr AchievementPtr;

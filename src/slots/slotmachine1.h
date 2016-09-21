@@ -2,6 +2,7 @@
 #define SLOTSMACHINE1_H
 
 #include <slots/data/slotmachineconfig.h>
+#include <slots/data/basicdata.h>
 
 BEGIN_NAMESPACE(slots)
 
@@ -10,15 +11,13 @@ public:
   explicit SlotMachine1(SlotMachineConfig &cfg);
   ~SlotMachine1();
 
-  void play();
-  void chooseElement(int32_t idx, SlotGrid &cfg);
-  void countLines();
-  void newLine(int32_t eleID);
+  void play(GameResultData &data) const ;
+  void chooseElement(int32_t idx, SlotGrid &cfg, GameResultData &data) const ;
+  void countLines(GameResultData &data) const;
+  void collectSpecial(GameResultData &data) const;
 
 private:
   SlotMachineConfig &_cfg;
-  std::vector<int32_t> _result;
-  std::map<int32_t, int32_t> _lineInfo;
 };
 
 END_NAMESPACE

@@ -22,7 +22,8 @@ struct GridConfig{
   }
 };
 
-typedef std::vector<GridConfig> GridConfigs;
+typedef std::vector<GridConfig> GridsConfig;
+typedef std::map<int32_t, GridsConfig> GridConfigs;
 
 END_NAMESPACE
 #endif

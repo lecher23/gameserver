@@ -114,18 +114,22 @@ bool SlotsConfig::getSlotMachineConfig() {
 
 bool SlotsConfig::getGridConfig(GridConfigs &gc) {
     std::map<int32_t, SlotGrid> grids;
-    int32_t prev = 0;
-    auto len = gc.size();
-    /*if use for(auto &:) will meet problem, I should find out the reason.*/
-    for (int i = 0; i < len; ++i){
-        auto &grid = gc[i];
-        EleChance eleChance;
-        eleChance.eleID = grid.eleID;
-        eleChance.begin = prev;
-        prev += grid.weight;
-        eleChance.end = prev;
-        grids[grid.gridIdx].totalWeight += grid.weight;
-        grids[grid.gridIdx].elements.push_back(eleChance);
+    int32_t prev;
+    for (auto &item: gc) {
+        prev = 0;
+        auto vitem = item.second;
+        auto len = vitem.size();
+        /*if use for(auto &:) will meet problem, I should find out the reason.*/
+        for (int i = 0; i < len; ++i){
+            auto &grid = vitem[i];
+            EleChance eleChance;
+            eleChance.eleID = grid.eleID;
+            eleChance.begin = prev;
+            prev += grid.weight;
+            eleChance.end = prev;
+            grids[item.first].totalWeight += grid.weight;
+            grids[item.first].elements.push_back(eleChance);
+        }
     }
     slotConfig.grids.swap(grids);
     return true;
@@ -141,7 +145,6 @@ bool SlotsConfig::getLinesConfig(LinesConfig &lc) {
 bool SlotsConfig::getElements(SlotElements &elements, ElementsConfig &cfg) {
     for (auto &se: cfg) {
         SlotElementRatio ec;
-        CLOG(INFO) << se.eleID << "," << se.value << "," << se.lineNum;
         ec.type = elements[se.eleID];
         ec.ratio[se.lineNum] = se.value;
         slotConfig.elements[se.eleID] = ec;

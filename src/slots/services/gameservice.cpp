@@ -64,7 +64,7 @@ bool GameService::doSlots1(CPacket &packet, ResultFormatter &rf)
 	    break;
 	}
 	ret = true;
-	rf.formatGameResult(gc.user->uRes, gc.gameInfo.earned, gc.gameInfo.detail);
+	rf.formatGameResult(gc.user->uRes, gc.gameInfo.earned, "None");
     } while (false);
     if (!ret) {
 	rf.formatSimpleResult(ret, "");
