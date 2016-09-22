@@ -61,7 +61,7 @@ public:
       ast_true(Config::getInstance().initConfig(cfg_file));
       ast_true(MysqlConnPool::getInstance().init());
       ast_true(SlotsConfig::getInstance().init());
-      TemplePrincess game(SlotsConfig::getInstance().tsConfig);
+      TemplePrincess game(SlotsConfig::getInstance().themeConfig.tsConfig);
       GameResultData data;
       game.play(data);
       ast_true(data.gridsData.size() > 0);
