@@ -3,6 +3,7 @@
 
 #include <slots/data/slotmachineconfig.h>
 #include <slots/data/basicdata.h>
+#include <set>
 
 BEGIN_NAMESPACE(slots)
 
@@ -12,7 +13,9 @@ public:
   ~SlotMachine1();
 
   void play(GameResultData &data) const ;
-  void chooseElement(int32_t idx, SlotGrid &cfg, GameResultData &data) const ;
+  void chooseElementInColumn(int32_t column, GameResultData &data) const;
+  int32_t locateElement(int32_t rd, std::set<int32_t> &forbid, SlotGrid &grid) const;
+
   void countLines(GameResultData &data) const;
   void collectSpecial(GameResultData &data) const;
 

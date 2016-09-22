@@ -50,25 +50,6 @@ public:
       ast_eq(1, grd.lines[4]);
     }
 
-    void test_chooseElement()
-    {
-      SlotMachineConfig cfg;
-      SlotMachine1 game(cfg);
-
-      SlotGrid sg;
-      sg.totalWeight = 10;
-      EleChance ec;
-      ec.eleID = 10001;
-      ec.begin = 0;
-      ec.end = 10;
-      sg.elements.push_back(ec);
-
-      GameResultData data;
-      game.chooseElement(3, sg, data);
-      ast_eq(1, data.gridsData.size());
-      ast_eq(10001, data.gridsData[3]);
-    }
-
     void test_play()
     {
       ast_true(Config::getInstance().initConfig(cfg_file));
@@ -84,6 +65,85 @@ public:
       for (auto &item: data.lines) {
         CLOG(INFO) << item.first << "," << item.second;
       }
+      CLOG(INFO) << "test play() done.";
+    }
+
+    void test_locateElement_no_forbid()
+    {
+      std::set<int32_t> forbid;
+      SlotGrid sg;
+      {
+        EleChance ec;
+        ec.weight = 5;
+        ec.eleID = 10;
+        sg.elements.push_back(ec);
+      }
+      {
+        EleChance ec;
+        ec.weight = 8;
+        ec.eleID = 16;
+        sg.elements.push_back(ec);
+      }
+      SlotMachineConfig cfg;
+      SlotMachine1 game(cfg);
+      ast_eq(10, game.locateElement(0, forbid, sg));
+      ast_eq(10, game.locateElement(3, forbid, sg));
+      ast_eq(16, game.locateElement(5, forbid, sg));
+      ast_eq(16, game.locateElement(12, forbid, sg));
+      ast_eq(10, game.locateElement(13, forbid, sg));
+    }
+
+    void test_locateElement_has_forbid()
+    {
+      std::set<int32_t> forbid;
+      forbid.insert(10);
+      SlotGrid sg;
+      {
+        EleChance ec;
+        ec.weight = 5;
+        ec.eleID = 10;
+        sg.elements.push_back(ec);
+      }
+      {
+        EleChance ec;
+        ec.weight = 8;
+        ec.eleID = 16;
+        sg.elements.push_back(ec);
+      }
+      SlotMachineConfig cfg;
+      SlotMachine1 game(cfg);
+      ast_eq(16, game.locateElement(0, forbid, sg));
+      ast_eq(16, game.locateElement(3, forbid, sg));
+      ast_eq(16, game.locateElement(5, forbid, sg));
+      ast_eq(16, game.locateElement(12, forbid, sg));
+      ast_eq(16, game.locateElement(13, forbid, sg));
+    }
+
+    void test_locateElement_no_ele()
+    {
+      std::set<int32_t> forbid;
+      forbid.insert(10);
+      forbid.insert(16);
+      SlotGrid sg;
+      {
+        EleChance ec;
+        ec.weight = 5;
+        ec.eleID = 10;
+        sg.elements.push_back(ec);
+      }
+      {
+        EleChance ec;
+        ec.weight = 8;
+        ec.eleID = 16;
+        sg.elements.push_back(ec);
+      }
+      SlotMachineConfig cfg;
+      SlotMachine1 game(cfg);
+      ast_eq(-1, game.locateElement(0, forbid, sg));
+      ast_eq(-1, game.locateElement(3, forbid, sg));
+      ast_eq(-1, game.locateElement(5, forbid, sg));
+      ast_eq(-1, game.locateElement(12, forbid, sg));
+      ast_eq(-1, game.locateElement(13, forbid, sg));
     }
 private:
     bool _inited;

@@ -2,6 +2,7 @@
 #define LINECONFIG_H
 
 #include <util/common_define.h>
+#include <util/stringutil.h>
 
 BEGIN_NAMESPACE(slots)
 

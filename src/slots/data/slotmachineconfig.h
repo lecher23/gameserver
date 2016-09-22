@@ -7,9 +7,8 @@ BEGIN_NAMESPACE(slots)
 
 struct EleChance {
   int32_t eleID;
-  int32_t begin;
-  int32_t end;
- EleChance():begin(0), end(0){}
+  int32_t weight;
+ EleChance():weight(0){}
 };
 
 struct SlotGrid {
@@ -30,9 +29,14 @@ struct SlotElementRatio {
 };
 
 struct SlotMachineConfig {
+  int32_t maxRow;
+  int32_t maxColumn;
   std::map<int32_t, SlotGrid> grids;
   std::vector<SlotLine> lines; // line1, line2, line3
   std::map<int32_t, SlotElementRatio> elements; // key: elment id
+  bool bEleRepeatInCol;
+ SlotMachineConfig():maxRow(0), maxColumn(0),bEleRepeatInCol(false) {}
+  int32_t toGridIdx(int32_t row, int32_t col) {return row * maxColumn + col;}
 };
 
 END_NAMESPACE

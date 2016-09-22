@@ -34,12 +34,12 @@ bool SlotsConfig::init(){
     }
 
     if(!db.getBet2ExpSetting(bet2Exp)) {
-        CLOG(ERROR) << "Get level config from db failed.";
+        CLOG(ERROR) << "Get bet2exp config from db failed.";
         return false;
     }
 
     if(!getSlotMachineConfig()) {
-        CLOG(ERROR) << "Get level config from db failed.";
+        CLOG(ERROR) << "Get slot machine config from db failed.";
         return false;
     }
     return true;
@@ -113,22 +113,31 @@ bool SlotsConfig::getSlotMachineConfig() {
 }
 
 bool SlotsConfig::getGridConfig(GridConfigs &gc) {
+    slotConfig.maxRow = gc.rowNum;
+    slotConfig.maxColumn = gc.columnNum;
+
     std::map<int32_t, SlotGrid> grids;
-    int32_t prev;
-    for (auto &item: gc) {
-        prev = 0;
-        auto vitem = item.second;
-        auto len = vitem.size();
-        /*if use for(auto &:) will meet problem, I should find out the reason.*/
-        for (int i = 0; i < len; ++i){
-            auto &grid = vitem[i];
-            EleChance eleChance;
-            eleChance.eleID = grid.eleID;
-            eleChance.begin = prev;
-            prev += grid.weight;
-            eleChance.end = prev;
-            grids[item.first].totalWeight += grid.weight;
-            grids[item.first].elements.push_back(eleChance);
+    int32_t index;
+    int len = gc.grids.size();
+    for (size_t i = 0; i < len; ++i) {
+    //for (auto &item: gc) { // this useage has problem
+        auto &item = gc.grids[i];
+        // CLOG(INFO) << "row:"  << item.row << ", col:" << item.column
+        //            << ",  id:" << item.eleID << ", weight:" << item.weight;
+        EleChance eChance;
+        eChance.eleID = item.eleID;
+        eChance.weight = item.weight;
+        index = slotConfig.toGridIdx(item.row, item.column);
+        grids[index].elements.push_back(eChance);
+        grids[index].totalWeight += item.weight;
+    }
+    // check
+    for (int32_t i = 0; i < slotConfig.maxRow; ++i) {
+        for (int32_t j = 0; j < slotConfig.maxColumn; ++j) {
+            index = slotConfig.toGridIdx(i, j);
+            if(grids.find(index) == grids.end()) {
+                return false;
+            }
         }
     }
     slotConfig.grids.swap(grids);

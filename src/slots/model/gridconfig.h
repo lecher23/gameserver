@@ -6,24 +6,30 @@
 BEGIN_NAMESPACE(slots)
 
 struct GridConfig{
-  int32_t gridIdx;
+  int32_t row;
+  int32_t column;
   int32_t eleID;
   int32_t weight;
 
-  bool deserialize(std::vector<std::string> &row) {
-    if (row.size() < 4) {
+  bool deserialize(std::vector<std::string> &input) {
+    if (input.size() < 5) {
       CLOG(ERROR) << "Invalid fields num.";
       return false;
     }
-    bool ret = cgserver::StringUtil::StrToInt32(row[1].c_str(), gridIdx);
-    ret = ret && cgserver::StringUtil::StrToInt32(row[2].c_str(), eleID);
-    ret = ret && cgserver::StringUtil::StrToInt32(row[3].c_str(), weight);
+    bool ret = cgserver::StringUtil::StrToInt32(input[1].c_str(), row);
+    ret = ret && cgserver::StringUtil::StrToInt32(input[2].c_str(), column);
+    ret = ret && cgserver::StringUtil::StrToInt32(input[3].c_str(), eleID);
+    ret = ret && cgserver::StringUtil::StrToInt32(input[4].c_str(), weight);
     return ret;
   }
 };
 
-typedef std::vector<GridConfig> GridsConfig;
-typedef std::map<int32_t, GridsConfig> GridConfigs;
+struct GridConfigs {
+  std::vector<GridConfig> grids;
+  int32_t columnNum;
+  int32_t rowNum;
+ GridConfigs():columnNum(0), rowNum(0) {}
+};
 
 END_NAMESPACE
 #endif

@@ -442,7 +442,7 @@ if __name__ == "__main__":
         for item in gs.bet_2_exp:
             lbs.addColumn("bet_exp_cfg", [], [str(k) for k in item])
 
-    if cmd == "slot_game_setting":
+    if cmd == "sgs":
         second = sys.argv[2]
         if second == "all":
             for item in gs.line_cfg:
@@ -459,6 +459,9 @@ if __name__ == "__main__":
             for item in gs.grid_cfg:
                 lbs.addColumn("grid_config", ["col", "row", "ele_id", "weight"],
                               [str(k) for k in item])
+        elif second == "line":
+            for item in gs.format_line_cfg(gs.line_cfg):
+                lbs.addColumn("line_config", ["line"], [str(k) for k in item])
 
     if cmd == "debug":
         nxt = sys.argv[2]
