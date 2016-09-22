@@ -8,7 +8,7 @@
 #include <slots/slotsconfig.h>
 #include <util/config.h>
 #define private public
-#include <slots/slotmachine1.h>
+#include <slots/themes/templeprincess.h>
 #undef private
 
 #define ast_eq(x, y) TS_ASSERT_EQUALS(x, y);
@@ -20,10 +20,10 @@ using namespace slots;
 const std::string lua_file = cxx::lua_file;
 const std::string cfg_file = cxx::cfg_file;
 
-class testSlotMachine1: public CxxTest::TestSuite 
+class testTemplePrincess: public CxxTest::TestSuite 
 {
 public:
-    testSlotMachine1():_inited(false){}
+    testTemplePrincess():_inited(false){}
 
     virtual void setUp(){
     }
@@ -32,7 +32,7 @@ public:
     }
 
     void test_countLines () {
-      SlotMachineConfig cfg;
+      TSConfig cfg;
       std::vector<int32_t> line1 = {0,1,2,3};
       std::vector<int32_t> line2 = {8,5,2,7};
       std::vector<int32_t> line3 = {8,5,10,11};
@@ -40,7 +40,7 @@ public:
       cfg.lines[38].swap(line2);
       cfg.lines[66].swap(line3);
       cfg.maxColumn = 4;
-      SlotMachine1 game(cfg);
+      TemplePrincess game(cfg);
       std::map<int32_t, int32_t> result =
               {{0,6}, {1,1}, {2,4}, {3,3},
                {4,3}, {5,4}, {6,3}, {7,9},
@@ -61,7 +61,7 @@ public:
       ast_true(Config::getInstance().initConfig(cfg_file));
       ast_true(MysqlConnPool::getInstance().init());
       ast_true(SlotsConfig::getInstance().init());
-      SlotMachine1 game(SlotsConfig::getInstance().slotConfig);
+      TemplePrincess game(SlotsConfig::getInstance().tsConfig);
       GameResultData data;
       game.play(data);
       ast_true(data.gridsData.size() > 0);
@@ -78,7 +78,7 @@ public:
     void test_locateElement_no_forbid()
     {
       std::set<int32_t> forbid;
-      SlotGrid sg;
+      TSGrid sg;
       {
         EleChance ec;
         ec.weight = 5;
@@ -91,8 +91,8 @@ public:
         ec.eleID = 16;
         sg.elements.push_back(ec);
       }
-      SlotMachineConfig cfg;
-      SlotMachine1 game(cfg);
+      TSConfig cfg;
+      TemplePrincess game(cfg);
       ast_eq(10, game.locateElement(0, forbid, sg));
       ast_eq(10, game.locateElement(3, forbid, sg));
       ast_eq(16, game.locateElement(5, forbid, sg));
@@ -104,7 +104,7 @@ public:
     {
       std::set<int32_t> forbid;
       forbid.insert(10);
-      SlotGrid sg;
+      TSGrid sg;
       {
         EleChance ec;
         ec.weight = 5;
@@ -117,8 +117,8 @@ public:
         ec.eleID = 16;
         sg.elements.push_back(ec);
       }
-      SlotMachineConfig cfg;
-      SlotMachine1 game(cfg);
+      TSConfig cfg;
+      TemplePrincess game(cfg);
       ast_eq(16, game.locateElement(0, forbid, sg));
       ast_eq(16, game.locateElement(3, forbid, sg));
       ast_eq(16, game.locateElement(5, forbid, sg));
@@ -131,7 +131,7 @@ public:
       std::set<int32_t> forbid;
       forbid.insert(10);
       forbid.insert(16);
-      SlotGrid sg;
+      TSGrid sg;
       {
         EleChance ec;
         ec.weight = 5;
@@ -144,8 +144,8 @@ public:
         ec.eleID = 16;
         sg.elements.push_back(ec);
       }
-      SlotMachineConfig cfg;
-      SlotMachine1 game(cfg);
+      TSConfig cfg;
+      TemplePrincess game(cfg);
       ast_eq(-1, game.locateElement(0, forbid, sg));
       ast_eq(-1, game.locateElement(3, forbid, sg));
       ast_eq(-1, game.locateElement(5, forbid, sg));

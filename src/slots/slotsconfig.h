@@ -7,7 +7,7 @@
 #include <stdint.h>
 #include <util/common_define.h>
 #include <slots/data/gamecontext.h>
-#include <slots/data/slotmachineconfig.h>
+#include <slots/themes/tsconfig.h>
 #include <slots/sql/slotsdb.h>
 
 
@@ -34,7 +34,7 @@ class SlotsConfig{
     VipConfigs vipSetting;
     LevelConfigs levelConfig;
     Bet2ExpConfigs bet2Exp;
-    SlotMachineConfig slotConfig;
+    TSConfig tsConfig;
 
 private:
     bool getSlotMachineConfig();

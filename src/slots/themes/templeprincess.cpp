@@ -1,31 +1,28 @@
-#include "slotmachine1.h"
+#include "templeprincess.h"
 #include <time.h>
 #include <stdlib.h>
 
-
 BEGIN_NAMESPACE(slots)
 
-SlotMachine1::SlotMachine1(SlotMachineConfig &cfg):_cfg(cfg) {
+TemplePrincess::TemplePrincess(TSConfig &cfg):_cfg(cfg) {
 }
 
-SlotMachine1::~SlotMachine1(){
+TemplePrincess::~TemplePrincess(){
 }
 
 // return bool
-void SlotMachine1::play(GameResultData &data) const {
+bool TemplePrincess::play(GameResultData &data) const {
     size_t i = 0;
     for (int32_t i = 0; i < _cfg.maxColumn; ++i) {
-        chooseElementInColumn(i, data);
+        if (!chooseElementInColumn(i, data)) {
+            return false;
+        }
     }
-    // for (auto &item: _cfg.grids) {
-    //     chooseElement(item.first, item.second, data);
-    //     ++i;
-    // }
     countLines(data);
-    collectSpecial(data);
+    return true;
 }
 
-void SlotMachine1::chooseElementInColumn(int32_t column, GameResultData &data) const
+bool TemplePrincess::chooseElementInColumn(int32_t column, GameResultData &data) const
 {
     auto maxRow = _cfg.maxRow;
     std::set<int32_t> forbidPool;
@@ -39,15 +36,19 @@ void SlotMachine1::chooseElementInColumn(int32_t column, GameResultData &data) c
         rd = rand() % grid.totalWeight;
 
         auto eleID = locateElement(rd, forbidPool, grid);
+        if (eleID < 0) {
+            return false;
+        }
         if (!_cfg.bEleRepeatInCol) {
             forbidPool.insert(eleID);
         }
         data.gridsData[index] = eleID;
     }
+    return true;
 }
 
-int32_t SlotMachine1::locateElement(
-    int32_t rd, std::set<int32_t> &forbid, SlotGrid &grid) const
+int32_t TemplePrincess::locateElement(
+    int32_t rd, std::set<int32_t> &forbid, TSGrid &grid) const
 {
     static const int32_t forceStopRound = 3;
     int32_t curSum = 0;
@@ -72,7 +73,7 @@ int32_t SlotMachine1::locateElement(
     return -1;
 }
 
-void SlotMachine1::countLines(GameResultData &data) const {
+void TemplePrincess::countLines(GameResultData &data) const {
     auto &lines = data.lines;
     auto col = _cfg.maxColumn;
     for (auto &item: _cfg.lines) {
@@ -91,11 +92,6 @@ void SlotMachine1::countLines(GameResultData &data) const {
             lines[item.first].count = i;
         }
     }
-}
-
-void SlotMachine1::collectSpecial(GameResultData &data) const {
-    // TODO: big win, megawin
-    return;
 }
 
 END_NAMESPACE
