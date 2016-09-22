@@ -73,25 +73,39 @@ int32_t TemplePrincess::locateElement(
     return -1;
 }
 
+#define GET_ELEID_TYPE(ele_id, ele_type)        \
+    ele_id = data.gridsData[line[i]];           \
+    ele_type = es[ele_id].type;
+
 void TemplePrincess::countLines(GameResultData &data) const {
     auto &lines = data.lines;
     auto col = _cfg.maxColumn;
+    auto &es = _cfg.elements;
+    int32_t preID, preType, curID, curType;
     for (auto &item: _cfg.lines) {
         auto &line = item.second;
         auto len = line.size();
-        if (len != col) {
+        if (len != col || col == 0) {
             CLOG(INFO) << "Invalid column number";
             continue;
         }
         size_t i = 0;
-        int32_t eleID = data.gridsData[line[i++]];
-        // make sure that item.line.size() > item.line[i]
-        for (; i < len && eleID == data.gridsData[line[i]]; ++i) {;}
+        GET_ELEID_TYPE(preID, preType);
+        for (i = 1; i < len; ++i) {
+            GET_ELEID_TYPE(curID, curType);
+            if (preType == WILD_ELEMENT_TYPE) {
+                preType = curType;
+                preID = curID;
+            }else if (curType != WILD_ELEMENT_TYPE && curID != preID) {
+                break;
+            }
+        }
         if (i > 1) {
-            lines[item.first].eleID = eleID;
+            lines[item.first].eleID = preID;
             lines[item.first].count = i;
         }
     }
 }
+#undef GET_ELEID_TYPE
 
 END_NAMESPACE

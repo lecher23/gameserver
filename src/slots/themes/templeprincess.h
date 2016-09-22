@@ -7,6 +7,8 @@
 
 BEGIN_NAMESPACE(slots)
 
+#define WILD_ELEMENT_TYPE 2
+
 class TemplePrincess{
 public:
   explicit TemplePrincess(TSConfig &cfg);
