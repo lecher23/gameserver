@@ -2,6 +2,7 @@
 #define SLOTMACHINECONFIG_H
 
 #include <util/common_define.h>
+#include <slots/model/lineconfig.h>
 
 BEGIN_NAMESPACE(slots)
 
@@ -17,7 +18,7 @@ struct SlotGrid {
  SlotGrid():totalWeight(0){}
 };
 
-/* struct LineConfig { */
+/* struct SlotLine { */
 /*   std::vector<int32_t> line;// line[0] = ele_position */
 /* }; */
 typedef std::vector<int32_t> SlotLine;
@@ -32,7 +33,7 @@ struct SlotMachineConfig {
   int32_t maxRow;
   int32_t maxColumn;
   std::map<int32_t, SlotGrid> grids;
-  std::vector<SlotLine> lines; // line1, line2, line3
+  std::map<int32_t, SlotLine> lines; // key: lineID, val: lines
   std::map<int32_t, SlotElementRatio> elements; // key: elment id
   bool bEleRepeatInCol;
  SlotMachineConfig():maxRow(0), maxColumn(0),bEleRepeatInCol(false) {}

@@ -35,19 +35,25 @@ public:
       SlotMachineConfig cfg;
       std::vector<int32_t> line1 = {0,1,2,3};
       std::vector<int32_t> line2 = {8,5,2,7};
-      cfg.lines.push_back(line1);
-      cfg.lines.push_back(line2);
+      std::vector<int32_t> line3 = {8,5,10,11};
+      cfg.lines[21].swap(line1);
+      cfg.lines[38].swap(line2);
+      cfg.lines[66].swap(line3);
+      cfg.maxColumn = 4;
       SlotMachine1 game(cfg);
       std::map<int32_t, int32_t> result =
-              {{0,6}, {1,5}, {2,4}, {3,3},
-               {4,3}, {5,4}, {6,3}, {7,4},
+              {{0,6}, {1,1}, {2,4}, {3,3},
+               {4,3}, {5,4}, {6,3}, {7,9},
                {8,4}, {9,1}, {10,3}, {11,2}};
       GameResultData grd;
       grd.gridsData.swap(result);
       ast_eq(12, grd.gridsData.size());
       game.countLines(grd);
-      ast_eq(1, grd.lines.size());
-      ast_eq(1, grd.lines[4]);
+      ast_eq(2, grd.lines.size());
+      ast_eq(3, grd.lines[38].count);
+      ast_eq(4, grd.lines[38].eleID);
+      ast_eq(2, grd.lines[66].count);
+      ast_eq(4, grd.lines[66].eleID);
     }
 
     void test_play()
@@ -63,7 +69,8 @@ public:
         CLOG(INFO) << item.first << "," << item.second;
       }
       for (auto &item: data.lines) {
-        CLOG(INFO) << item.first << "," << item.second;
+        CLOG(INFO) <<"Line id:"<< item.first << ", Line count:"
+                   << item.second.count << ", Ele id:" << item.second.eleID;
       }
       CLOG(INFO) << "test play() done.";
     }

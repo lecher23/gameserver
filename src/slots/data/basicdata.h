@@ -196,10 +196,16 @@ class PersistenceBase{
 
 DF_SHARED_PTR(PersistenceBase);
 
+struct LineDetail{
+  int32_t eleID;
+  int32_t count;
+ LineDetail():eleID(0),count(0){}
+};
+
 struct GameResultData{
   int64_t earned;
   int64_t bet;
-  std::map<int32_t, int32_t> lines;
+  std::map<int32_t, LineDetail> lines; // key: eleID, val:lineID
   std::map<int32_t, int32_t> gridsData;
   std::vector<ResultType> special;
   bool bTinyGame;

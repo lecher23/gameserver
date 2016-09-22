@@ -146,7 +146,7 @@ bool SlotsConfig::getGridConfig(GridConfigs &gc) {
 
 bool SlotsConfig::getLinesConfig(LinesConfig &lc) {
     for (auto &line: lc) {
-        slotConfig.lines.push_back(line.line);
+        slotConfig.lines[line.lineID].swap(line.line);
     }
     return true;
 }

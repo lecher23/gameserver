@@ -75,7 +75,8 @@ int32_t SlotMachine1::locateElement(
 void SlotMachine1::countLines(GameResultData &data) const {
     auto &lines = data.lines;
     auto col = _cfg.maxColumn;
-    for (auto &line: _cfg.lines) {
+    for (auto &item: _cfg.lines) {
+        auto &line = item.second;
         auto len = line.size();
         if (len != col) {
             CLOG(INFO) << "Invalid column number";
@@ -85,13 +86,9 @@ void SlotMachine1::countLines(GameResultData &data) const {
         int32_t eleID = data.gridsData[line[i++]];
         // make sure that item.line.size() > item.line[i]
         for (; i < len && eleID == data.gridsData[line[i]]; ++i) {;}
-        if (i == len) {
-            auto itr = lines.find(eleID);
-            if (itr == lines.end()) {
-                lines[eleID] = 1;
-            } else {
-                ++(itr->second);
-            }
+        if (i > 1) {
+            lines[item.first].eleID = eleID;
+            lines[item.first].count = i;
         }
     }
 }
