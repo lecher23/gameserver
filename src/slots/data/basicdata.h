@@ -205,7 +205,7 @@ struct LineDetail{
 struct GameResultData{
   int64_t earned;
   int64_t bet;
-  std::map<int32_t, LineDetail> lines; // key: eleID, val:lineID
+  std::map<int32_t, LineDetail> lines; // key: lineID, val:count and eleid
   std::map<int32_t, int32_t> gridsData;
   std::vector<ResultType> special;
   bool bTinyGame;

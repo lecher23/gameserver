@@ -13,7 +13,8 @@ TemplePrincess::~TemplePrincess(){
 // return bool
 bool TemplePrincess::play(GameResultData &data) const {
     size_t i = 0;
-    for (int32_t i = 0; i < _cfg.maxColumn; ++i) {
+    auto row = _cfg.getRowNumber();
+    for (int32_t i = 0; i < row; ++i) {
         if (!chooseElementInColumn(i, data)) {
             return false;
         }
@@ -24,22 +25,21 @@ bool TemplePrincess::play(GameResultData &data) const {
 
 bool TemplePrincess::chooseElementInColumn(int32_t column, GameResultData &data) const
 {
-    auto maxRow = _cfg.maxRow;
+    auto maxRow = _cfg.getRowNumber();
     std::set<int32_t> forbidPool;
     int32_t index;
     int32_t rd;
     for (int32_t i = 0; i < maxRow; ++i) {
-        index = _cfg.toGridIdx(i, column);
-        auto &grid = _cfg.grids[index];
+        auto &grid = _cfg.getGrid(i, column);
 
         srand((int)time(0) + rd * 193);
-        rd = rand() % grid.totalWeight;
+        rd = rand() % grid.getTotalWeight();
 
         auto eleID = locateElement(rd, forbidPool, grid);
         if (eleID < 0) {
             return false;
         }
-        if (!_cfg.bEleRepeatInCol) {
+        if (!_cfg.repeatElementEnabled()) {
             forbidPool.insert(eleID);
         }
         data.gridsData[index] = eleID;
@@ -53,13 +53,14 @@ int32_t TemplePrincess::locateElement(
     static const int32_t forceStopRound = 3;
     int32_t curSum = 0;
     int32_t idx = 0;
-    int32_t len = grid.elements.size();
+    int32_t len = grid.getElementsCount();
     int32_t round = 0;
     while(true) {
-        auto &item = grid.elements[idx];
-        curSum += (forbid.count(item.eleID) > 0 ? 0: item.weight);
+        auto weight = grid.getElementWeight(idx);
+        auto eleID = grid.getElementID(idx);
+        curSum += (forbid.count(eleID) > 0 ? 0: weight);
         if(rd < curSum) {
-            return item.eleID;
+            return eleID;
         }
         if (++idx == len) {
             idx = 0;
@@ -74,26 +75,26 @@ int32_t TemplePrincess::locateElement(
 }
 
 #define GET_ELEID_TYPE(ele_id, ele_type)        \
-    ele_id = data.gridsData[line[i]];           \
-    ele_type = es[ele_id].type;
+    ele_id = data.gridsData[line.getPoint(pointPos)];       \
+    ele_type = _cfg.getElementType(ele_id);
 
 #define VALID_ELEMENT_TYPE(ele_type) (ele_type == WILD_ELEMENT || ele_type == NORMAL_ELEMENT)
 
 void TemplePrincess::countLines(GameResultData &data) const {
     auto &lines = data.lines;
-    auto col = _cfg.maxColumn;
-    auto &es = _cfg.elements;
+    auto col = _cfg.getColumnNumber();
     int32_t preID, preType, curID, curType;
-    for (auto &item: _cfg.lines) {
-        auto &line = item.second;
-        auto len = line.size();
-        if (len != col || col == 0) {
+    int32_t linesCount = _cfg.getLinesCount();
+    for (size_t i = 0; i < linesCount; ++i) {
+        auto &line = _cfg.getLine(i);
+        auto pointCount = line.getPointCount();
+        if (pointCount != col || col == 0) {
             CLOG(INFO) << "Invalid column number";
             continue;
         }
-        size_t i = 0;
+        size_t pointPos = 0;
         GET_ELEID_TYPE(preID, preType);
-        for (i = 1; i < len && VALID_ELEMENT_TYPE(preType); ++i) {
+        for (pointPos = 1; pointPos < pointCount && VALID_ELEMENT_TYPE(preType); ++pointPos) {
             GET_ELEID_TYPE(curID, curType);
             if (!VALID_ELEMENT_TYPE(curType)) {
                 break;
@@ -105,12 +106,13 @@ void TemplePrincess::countLines(GameResultData &data) const {
                 break;
             }
         }
-        if (i > 1 && preType == NORMAL_ELEMENT) {
-            lines[item.first].eleID = preID;
-            lines[item.first].count = i;
+        if (pointPos > 1 && preType == NORMAL_ELEMENT) {
+            lines[line.getID()].eleID = preID;
+            lines[line.getID()].count = pointPos;
         }
     }
 }
+#undef VALID_ELEMENT_TYPE
 #undef GET_ELEID_TYPE
 
 END_NAMESPACE

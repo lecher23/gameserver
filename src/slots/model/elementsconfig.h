@@ -26,7 +26,7 @@ struct SlotElement{
 struct ElementConfig {
   int32_t eleID;
   int32_t lineNum;
-  int64_t value;
+  int32_t value;
   bool deserialize(std::vector<std::string> &row) {
     if(row.size() < 4) {
       CLOG(ERROR) << "invalid fields num";
@@ -34,7 +34,7 @@ struct ElementConfig {
     }
     bool ret = cgserver::StringUtil::StrToInt32(row[1].c_str(), eleID);
     ret = ret && cgserver::StringUtil::StrToInt32(row[2].c_str(), lineNum);
-    ret = ret && cgserver::StringUtil::StrToInt64(row[3].c_str(), value);
+    ret = ret && cgserver::StringUtil::StrToInt32(row[3].c_str(), value);
     return ret;
   }
 };

@@ -17,7 +17,7 @@ public:
   int32_t locateElement(int32_t rd, std::set<int32_t> &forbid, TSGrid &grid) const;
 
   void countLines(GameResultData &data) const;
-
+  void caculateMoney(GameResultData &data) const;
 private:
   TSConfig &_cfg;
 };

@@ -36,20 +36,16 @@ public:
       // wild element: 4, 5
       // other element:6, 7
       TSConfig cfg;
-      cfg.elements[1].type = 0;
-      cfg.elements[2].type = 0;
-      cfg.elements[3].type = 0;
-      cfg.elements[4].type = 0;
-      cfg.elements[5].type = 0;
-      cfg.elements[6].type = 0;
-      cfg.elements[7].type = 0;
+      for (int i = 1; i < 8; ++i) {
+        cfg.addElement(i, NORMAL_ELEMENT);
+      }
       std::vector<int32_t> line1 = {0,1,2,3};
       std::vector<int32_t> line2 = {8,5,2,7};
       std::vector<int32_t> line3 = {8,5,10,11};
-      cfg.lines[21].swap(line1);
-      cfg.lines[38].swap(line2);
-      cfg.lines[66].swap(line3);
-      cfg.maxColumn = 4;
+      cfg.addLine(21, line1);
+      cfg.addLine(38, line2);
+      cfg.addLine(66, line3);
+      cfg.setColumnNumber(4);
       TemplePrincess game(cfg);
       std::map<int32_t, int32_t> result =
               {{0,6}, {1,1}, {2,4}, {3,3},
@@ -92,20 +88,20 @@ public:
       // wild element: 4, 5
       // other element:6, 7
       TSConfig cfg;
-      cfg.elements[0].type = NORMAL_ELEMENT;
-      cfg.elements[1].type = NORMAL_ELEMENT;
-      cfg.elements[2].type = NORMAL_ELEMENT;
-      cfg.elements[3].type = NORMAL_ELEMENT;
+      cfg.addElement(0, NORMAL_ELEMENT);
+      cfg.addElement(1, NORMAL_ELEMENT);
+      cfg.addElement(2, NORMAL_ELEMENT);
+      cfg.addElement(3, NORMAL_ELEMENT);
 
-      cfg.elements[4].type = WILD_ELEMENT;
-      cfg.elements[5].type = WILD_ELEMENT;
-      cfg.elements[6].type = WILD_ELEMENT;
+      cfg.addElement(4, WILD_ELEMENT);
+      cfg.addElement(5, WILD_ELEMENT);
+      cfg.addElement(6, WILD_ELEMENT);
 
-      cfg.elements[7].type = (WILD_ELEMENT + NORMAL_ELEMENT) * 2;
+      cfg.addElement(7, (WILD_ELEMENT + NORMAL_ELEMENT) * 2);
 
       std::vector<int32_t> line1 = {0,1,2,3,4};
-      cfg.lines[21].swap(line1);
-      cfg.maxColumn = 5;
+      cfg.addLine(21, line1);
+      cfg.setColumnNumber(5);
       TemplePrincess game(cfg);
       GameResultData grd;
 
@@ -150,21 +146,21 @@ public:
     void test_countLine_all_wild()
     {
       TSConfig cfg;
-      cfg.elements[0].type = NORMAL_ELEMENT;
-      cfg.elements[1].type = NORMAL_ELEMENT;
-      cfg.elements[2].type = NORMAL_ELEMENT;
-      cfg.elements[3].type = NORMAL_ELEMENT;
+      cfg.addElement(0, NORMAL_ELEMENT);
+      cfg.addElement(1, NORMAL_ELEMENT);
+      cfg.addElement(2, NORMAL_ELEMENT);
+      cfg.addElement(3, NORMAL_ELEMENT);
 
-      cfg.elements[4].type = WILD_ELEMENT;
-      cfg.elements[5].type = WILD_ELEMENT;
-      cfg.elements[6].type = WILD_ELEMENT;
+      cfg.addElement(4, WILD_ELEMENT);
+      cfg.addElement(5, WILD_ELEMENT);
+      cfg.addElement(6, WILD_ELEMENT);
 
-      cfg.elements[7].type = (WILD_ELEMENT + NORMAL_ELEMENT) * 2;
+      cfg.addElement(7, (WILD_ELEMENT + NORMAL_ELEMENT) * 2);
       GameResultData grd;
 
       std::vector<int32_t> line1 = {0,1,2,3,4};
-      cfg.lines[21].swap(line1);
-      cfg.maxColumn = 5;
+      cfg.addLine(21, line1);
+      cfg.setColumnNumber(5);
       TemplePrincess game(cfg);
       std::map<int32_t, int32_t> result7 =
           {{0,W1}, {1,W1}, {2,W1}, {3,W1},{4,W1}};
@@ -194,18 +190,8 @@ public:
     {
       std::set<int32_t> forbid;
       TSGrid sg;
-      {
-        EleChance ec;
-        ec.weight = 5;
-        ec.eleID = 10;
-        sg.elements.push_back(ec);
-      }
-      {
-        EleChance ec;
-        ec.weight = 8;
-        ec.eleID = 16;
-        sg.elements.push_back(ec);
-      }
+      sg.addElement(10, 5);
+      sg.addElement(16, 8);
       TSConfig cfg;
       TemplePrincess game(cfg);
       ast_eq(10, game.locateElement(0, forbid, sg));
@@ -220,18 +206,8 @@ public:
       std::set<int32_t> forbid;
       forbid.insert(10);
       TSGrid sg;
-      {
-        EleChance ec;
-        ec.weight = 5;
-        ec.eleID = 10;
-        sg.elements.push_back(ec);
-      }
-      {
-        EleChance ec;
-        ec.weight = 8;
-        ec.eleID = 16;
-        sg.elements.push_back(ec);
-      }
+      sg.addElement(10, 5);
+      sg.addElement(16, 8);
       TSConfig cfg;
       TemplePrincess game(cfg);
       ast_eq(16, game.locateElement(0, forbid, sg));
@@ -247,18 +223,8 @@ public:
       forbid.insert(10);
       forbid.insert(16);
       TSGrid sg;
-      {
-        EleChance ec;
-        ec.weight = 5;
-        ec.eleID = 10;
-        sg.elements.push_back(ec);
-      }
-      {
-        EleChance ec;
-        ec.weight = 8;
-        ec.eleID = 16;
-        sg.elements.push_back(ec);
-      }
+      sg.addElement(10, 5);
+      sg.addElement(16, 8);
       TSConfig cfg;
       TemplePrincess game(cfg);
       ast_eq(-1, game.locateElement(0, forbid, sg));

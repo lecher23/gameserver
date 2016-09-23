@@ -47,47 +47,35 @@ bool ThemeConfig::getTemplePrincessConfig() {
 }
 
 bool ThemeConfig::getGridConfig(GridConfigs &gc) {
-    tsConfig.maxRow = gc.rowNum;
-    tsConfig.maxColumn = gc.columnNum;
+    tsConfig.setRowNumber(gc.rowNum);
+    tsConfig.setColumnNumber(gc.columnNum);
 
     std::map<int32_t, TSGrid> grids;
     int32_t index;
     int len = gc.grids.size();
     for (size_t i = 0; i < len; ++i) {
-        auto &item = gc.grids[i];
-        EleChance eChance;
-        eChance.eleID = item.eleID;
-        eChance.weight = item.weight;
-        index = tsConfig.toGridIdx(item.row, item.column);
-        grids[index].elements.push_back(eChance);
-        grids[index].totalWeight += item.weight;
+        auto &item = gc.grids[i]; // row, colum, eleID, weight,
+        auto &grid = tsConfig.getGrid(item.row, item.column);
+        grid.addElement(item.eleID, item.weight);
     }
     // check
-    for (int32_t i = 0; i < tsConfig.maxRow; ++i) {
-        for (int32_t j = 0; j < tsConfig.maxColumn; ++j) {
-            index = tsConfig.toGridIdx(i, j);
-            if(grids.find(index) == grids.end()) {
-                return false;
-            }
-        }
+    if (!tsConfig.checkGrids()) {
+        return false;
     }
-    tsConfig.grids.swap(grids);
     return true;
 }
 
 bool ThemeConfig::getLinesConfig(LinesConfig &lc) {
     for (auto &line: lc) {
-        tsConfig.lines[line.lineID].swap(line.line);
+        tsConfig.addLine(line.lineID, line.line);
     }
     return true;
 }
 
 bool ThemeConfig::getElements(SlotElements &elements, ElementsConfig &cfg) {
     for (auto &se: cfg) {
-        TSElementRatio ec;
-        ec.type = elements[se.eleID];
-        ec.ratio[se.lineNum] = se.value;
-        tsConfig.elements[se.eleID] = ec;
+        tsConfig.addElement(se.eleID, elements[se.eleID]);
+        tsConfig.setElementRatio(se.eleID, se.lineNum, se.value);
     }
     return true;
 }
