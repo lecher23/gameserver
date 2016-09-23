@@ -30,7 +30,8 @@ bool TemplePrincess::chooseElementInColumn(int32_t column, GameResultData &data)
     int32_t index;
     int32_t rd;
     for (int32_t i = 0; i < maxRow; ++i) {
-        auto &grid = _cfg.getGrid(i, column);
+        index = _cfg.getGridIndex(i, column);
+        auto &grid = _cfg.getGrid(index);
 
         srand((int)time(0) + rd * 193);
         rd = rand() % grid.getTotalWeight();

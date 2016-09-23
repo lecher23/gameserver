@@ -99,14 +99,18 @@ public:
     return grids[gridIdx];
   }
 
+  int32_t getGridIndex(int32_t row, int32_t col) {
+    return row * maxColumn + col;
+  }
+
   TSGrid &getGrid(int32_t row, int32_t col) {
-    return grids[row * maxColumn + col];
+    return grids[getGridIndex(row, col)];
   }
 
   bool checkGrids() {
     for (int32_t i = 0; i < maxRow; ++i) {
       for (int32_t j = 0; j < maxColumn; ++j) {
-        auto index = i * maxColumn + j;
+        auto index = getGridIndex(i, j);
         if(grids.find(index) == grids.end()) {
           return false;
         }
