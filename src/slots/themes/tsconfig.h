@@ -6,6 +6,9 @@
 
 BEGIN_NAMESPACE(slots)
 
+#define  NORMAL_ELEMENT 0
+#define  WILD_ELEMENT 1
+
 struct EleChance {
   int32_t eleID;
   int32_t weight;

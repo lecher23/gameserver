@@ -32,7 +32,17 @@ public:
     }
 
     void test_countLines () {
+      // normal element: 1, 2, 3
+      // wild element: 4, 5
+      // other element:6, 7
       TSConfig cfg;
+      cfg.elements[1].type = 0;
+      cfg.elements[2].type = 0;
+      cfg.elements[3].type = 0;
+      cfg.elements[4].type = 0;
+      cfg.elements[5].type = 0;
+      cfg.elements[6].type = 0;
+      cfg.elements[7].type = 0;
       std::vector<int32_t> line1 = {0,1,2,3};
       std::vector<int32_t> line2 = {8,5,2,7};
       std::vector<int32_t> line3 = {8,5,10,11};
@@ -43,7 +53,7 @@ public:
       TemplePrincess game(cfg);
       std::map<int32_t, int32_t> result =
               {{0,6}, {1,1}, {2,4}, {3,3},
-               {4,3}, {5,4}, {6,3}, {7,9},
+               {4,3}, {5,4}, {6,3}, {7,1},
                {8,4}, {9,1}, {10,3}, {11,2}};
       GameResultData grd;
       grd.gridsData.swap(result);
@@ -54,6 +64,111 @@ public:
       ast_eq(4, grd.lines[38].eleID);
       ast_eq(2, grd.lines[66].count);
       ast_eq(4, grd.lines[66].eleID);
+    }
+#define N0 0
+#define N1 1
+#define W1 5
+#define W2 4
+#define O 7
+#define O3 7
+#define ASSERT_ZERO_RESULT(input)               \
+    grd.gridsData.swap(input);                \
+    ast_eq(5, grd.gridsData.size());            \
+    game.countLines(grd);                       \
+    ast_eq(0, grd.lines.size());                \
+    grd.lines.clear();
+
+#define ASSERT_ONE_RESULT(input, cnt, id)     \
+    grd.gridsData.swap(input);                  \
+    ast_eq(5, grd.gridsData.size());            \
+    game.countLines(grd);                       \
+    ast_eq(1, grd.lines.size());                \
+    ast_eq(cnt, grd.lines[21].count);         \
+    ast_eq(id, grd.lines[21].eleID);            \
+    grd.lines.clear();
+
+    void test_countLines_with_wild() {
+      // normal element: 1, 2, 3
+      // wild element: 4, 5
+      // other element:6, 7
+      TSConfig cfg;
+      cfg.elements[0].type = NORMAL_ELEMENT;
+      cfg.elements[1].type = NORMAL_ELEMENT;
+      cfg.elements[2].type = NORMAL_ELEMENT;
+      cfg.elements[3].type = NORMAL_ELEMENT;
+
+      cfg.elements[4].type = WILD_ELEMENT;
+      cfg.elements[5].type = WILD_ELEMENT;
+      cfg.elements[6].type = WILD_ELEMENT;
+
+      cfg.elements[7].type = (WILD_ELEMENT + NORMAL_ELEMENT) * 2;
+
+      std::vector<int32_t> line1 = {0,1,2,3,4};
+      cfg.lines[21].swap(line1);
+      cfg.maxColumn = 5;
+      TemplePrincess game(cfg);
+      GameResultData grd;
+
+      // start with NORMAL
+      std::map<int32_t, int32_t> result1 =
+          {{0,N0}, {1,N1}, {2,W2}, {3,N1},{4,O}};
+      std::map<int32_t, int32_t> result2 =
+          {{0,N0}, {1,W2}, {2,N0}, {3,W2},{4,O}};
+      std::map<int32_t, int32_t> result3 =
+          {{0,N0}, {1,W2}, {2,N1}, {3,W2},{4,O}};
+      std::map<int32_t, int32_t> result4 =
+          {{0,N0}, {1,W2}, {2,W2}, {3,N1},{4,O}};
+
+      ASSERT_ZERO_RESULT(result1);
+
+      ASSERT_ONE_RESULT(result2, 4, N0);
+      ASSERT_ONE_RESULT(result3, 2, N0);
+      ASSERT_ONE_RESULT(result4, 3, N0);
+
+      // start with wild
+      std::map<int32_t, int32_t> result5 =
+          {{0,W1}, {1,N0}, {2,N1}, {3,N0},{4,O}};
+      std::map<int32_t, int32_t> result6 =
+          {{0,W1}, {1,W1}, {2,N0}, {3,N0},{4,N1}};
+
+      ASSERT_ONE_RESULT(result5, 2, N0);
+      ASSERT_ONE_RESULT(result6, 4, N0);
+
+      // start with other
+      std::map<int32_t, int32_t> result8 =
+          {{0,O3}, {1,W1}, {2,N0}, {3,N0},{4,N0}};
+      std::map<int32_t, int32_t> result9 =
+          {{0,O3}, {1,N0}, {2,N0}, {3,N0},{4,N0}};
+      std::map<int32_t, int32_t> result10 =
+          {{0,O3}, {1,O3}, {2,O3}, {3,O3},{4,O3}};
+
+      ASSERT_ZERO_RESULT(result8);
+      ASSERT_ZERO_RESULT(result9);
+      ASSERT_ZERO_RESULT(result10);
+    }
+
+    void test_countLine_all_wild()
+    {
+      TSConfig cfg;
+      cfg.elements[0].type = NORMAL_ELEMENT;
+      cfg.elements[1].type = NORMAL_ELEMENT;
+      cfg.elements[2].type = NORMAL_ELEMENT;
+      cfg.elements[3].type = NORMAL_ELEMENT;
+
+      cfg.elements[4].type = WILD_ELEMENT;
+      cfg.elements[5].type = WILD_ELEMENT;
+      cfg.elements[6].type = WILD_ELEMENT;
+
+      cfg.elements[7].type = (WILD_ELEMENT + NORMAL_ELEMENT) * 2;
+      GameResultData grd;
+
+      std::vector<int32_t> line1 = {0,1,2,3,4};
+      cfg.lines[21].swap(line1);
+      cfg.maxColumn = 5;
+      TemplePrincess game(cfg);
+      std::map<int32_t, int32_t> result7 =
+          {{0,W1}, {1,W1}, {2,W1}, {3,W1},{4,W1}};
+      ASSERT_ZERO_RESULT(result7);
     }
 
     void test_play()

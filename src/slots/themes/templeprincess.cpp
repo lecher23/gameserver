@@ -77,6 +77,8 @@ int32_t TemplePrincess::locateElement(
     ele_id = data.gridsData[line[i]];           \
     ele_type = es[ele_id].type;
 
+#define VALID_ELEMENT_TYPE(ele_type) (ele_type == WILD_ELEMENT || ele_type == NORMAL_ELEMENT)
+
 void TemplePrincess::countLines(GameResultData &data) const {
     auto &lines = data.lines;
     auto col = _cfg.maxColumn;
@@ -91,16 +93,19 @@ void TemplePrincess::countLines(GameResultData &data) const {
         }
         size_t i = 0;
         GET_ELEID_TYPE(preID, preType);
-        for (i = 1; i < len; ++i) {
+        for (i = 1; i < len && VALID_ELEMENT_TYPE(preType); ++i) {
             GET_ELEID_TYPE(curID, curType);
-            if (preType == WILD_ELEMENT_TYPE) {
+            if (!VALID_ELEMENT_TYPE(curType)) {
+                break;
+            }
+            if (preType == WILD_ELEMENT) {
                 preType = curType;
                 preID = curID;
-            }else if (curType != WILD_ELEMENT_TYPE && curID != preID) {
+            } else if (curType == NORMAL_ELEMENT && curID != preID) {
                 break;
             }
         }
-        if (i > 1) {
+        if (i > 1 && preType == NORMAL_ELEMENT) {
             lines[item.first].eleID = preID;
             lines[item.first].count = i;
         }
