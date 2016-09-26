@@ -117,16 +117,16 @@ public:
 
   int32_t getColumnNumber() {return maxColumn;}
 
-  TSGrid &getGrid(int32_t gridIdx) {
-    return grids[gridIdx];
+  TSGrid &getGrid(int32_t gridIdx, bool freeGame) {
+    return freeGame? freeGameGrids[gridIdx]: grids[gridIdx];
   }
 
   int32_t getGridIndex(int32_t row, int32_t col) {
     return row * maxColumn + col;
   }
 
-  TSGrid &getGrid(int32_t row, int32_t col) {
-    return grids[getGridIndex(row, col)];
+  TSGrid &getGrid(int32_t row, int32_t col, bool freeGame) {
+    return freeGame? freeGameGrids[getGridIndex(row, col)]: grids[getGridIndex(row, col)];
   }
 
   bool checkGrids() {
@@ -202,13 +202,33 @@ public:
 
   bool isSuperwin(int32_t dest) {return (dest >= superwin);}
 
+  void setJackpot1Limit(int32_t limit) {
+    jackpot1Limit = limit;
+  }
+
+  int32_t getJackpot1Limit() {
+    return jackpot1Limit;
+  }
+
   void setJackpot1(int32_t eleID, int32_t count) {
     jackpot1ID = eleID;
     jackpot1Count = count;
   }
 
+  int32_t getJackpot1EleID() {
+    return jackpot1ID;
+  }
+
   bool isJackpot1(int32_t dest, int32_t count) {
     return (dest == jackpot1ID && count == jackpot1Count);
+  }
+
+  void setJackpot2Limit(int32_t limit) {
+    jackpot2Limit = limit;
+  }
+
+  int32_t getJackpot2Limit() {
+    return jackpot2Limit;
   }
 
   void setJackpot2(int32_t eleID, int32_t count) {
@@ -216,29 +236,35 @@ public:
     jackpot2Count = count;
   }
 
+  int32_t getJackpot2EleID() {
+    return jackpot2ID;
+  }
+
   bool isJackpot2(int32_t dest, int32_t count) {
     return (dest == jackpot2ID && count == jackpot2Count);
   }
 
-TSConfig():maxRow(0), maxColumn(0),bEleRepeatInCol(false) {}
 private:
   std::map<int32_t, TSGrid> grids;
+  std::map<int32_t, TSGrid> freeGameGrids;
   std::vector<TSLine> lines; // key: lineID, val: lines
   std::map<int32_t, TSElementRatio> elements; // key: elment id
 
   FreeGameConfig freeGameConfig;
-  int32_t tinyGameID;
-  int32_t megawin;
-  int32_t bigwin;
-  int32_t superwin;
-  int32_t jackpot1ID;
-  int32_t jackpot1Count;
-  int32_t jackpot2ID;
-  int32_t jackpot2Count;
+  int32_t tinyGameID{0};
+  int32_t megawin{0};
+  int32_t bigwin{0};
+  int32_t superwin{0};
+  int32_t jackpot1Limit{5000};
+  int32_t jackpot1ID{0};
+  int32_t jackpot1Count{100};
+  int32_t jackpot2Limit{10000};
+  int32_t jackpot2ID{0};
+  int32_t jackpot2Count{100};
 
-  int32_t maxRow;
-  int32_t maxColumn;
-  bool bEleRepeatInCol;
+  int32_t maxRow{0};
+  int32_t maxColumn{0};
+  bool bEleRepeatInCol{false};
 };
 
 END_NAMESPACE

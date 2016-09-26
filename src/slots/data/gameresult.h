@@ -26,6 +26,7 @@ struct GameResult{
   bool bSuperwin{false};
   bool bJackpot1{false};
   bool bJackpot2{false};
+  bool bFreeGame{false};
   int64_t earned{0};
   int64_t bet{0}; // total_bet = bet * lineNumber
   std::vector<LineDetail> lines; // key: lineID, val:count and eleid

@@ -13,6 +13,13 @@ TemplePrincess::~TemplePrincess(){
 // return bool
 bool TemplePrincess::play(TSResult &data) const {
     size_t i = 0;
+    auto tBet = data.bet * data.lineNumber;
+    if (tBet >= _cfg.getJackpot1Limit()) {
+        data.bJackpot1 = true;
+    }
+    if (tBet >= _cfg.getJackpot2Limit()) {
+        data.bJackpot2 = true;
+    }
     auto row = _cfg.getRowNumber();
     for (int32_t i = 0; i < row; ++i) {
         if (!chooseElementInColumn(i, data)) {
@@ -29,11 +36,17 @@ bool TemplePrincess::chooseElementInColumn(int32_t column, TSResult &data) const
 {
     auto maxRow = _cfg.getRowNumber();
     std::set<int32_t> forbidPool;
+    if(!data.bJackpot1) {
+        forbidPool.insert(_cfg.getJackpot1EleID());
+    }
+    if(!data.bJackpot2) {
+        forbidPool.insert(_cfg.getJackpot2EleID());
+    }
     int32_t index;
     int32_t rd;
     for (int32_t i = 0; i < maxRow; ++i) {
         index = _cfg.getGridIndex(i, column);
-        auto &grid = _cfg.getGrid(index);
+        auto &grid = _cfg.getGrid(index, data.bFreeGame);
 
         srand((int)time(0) + rd * 193);
         rd = rand() % grid.getTotalWeight();
