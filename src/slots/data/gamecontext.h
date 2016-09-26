@@ -24,9 +24,8 @@ class GameContext{
     ~GameContext() {}
 
     SlotsUserPtr user;
-    GameResultData gameInfo;
+    GameResult gameInfo;
     std::vector<UserCJ> userCj;
-
     // to save all game event during game.
     std::vector<EventInfo> events;
 };

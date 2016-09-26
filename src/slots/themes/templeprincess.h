@@ -12,13 +12,15 @@ public:
   explicit TemplePrincess(TSConfig &cfg);
   ~TemplePrincess();
 
-  bool play(GameResultData &data) const ;
-  bool chooseElementInColumn(int32_t column, GameResultData &data) const;
-  int32_t locateElement(int32_t rd, std::set<int32_t> &forbid, TSGrid &grid) const;
+  bool play(TSResult &data) const ;
 
-  void countLines(GameResultData &data) const;
-  void caculateMoney(GameResultData &data) const;
 private:
+  bool chooseElementInColumn(int32_t column, TSResult &data) const;
+  int32_t locateElement(int32_t rd, std::set<int32_t> &forbid, TSGrid &grid) const;
+  void countLines(TSResult &data) const;
+  void processLines(TSResult &data) const;
+  void processSpecial(TSResult &data) const;
+
   TSConfig &_cfg;
 };
 

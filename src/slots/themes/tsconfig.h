@@ -85,6 +85,28 @@ struct TSElementRatio {
   std::map<int32_t, int32_t> _ratio;
 };
 
+#define FreeGameMaxCount 10
+struct FreeGameConfig {
+  void setElementId(int32_t id) { elementID = id;}
+  int32_t getElementID() { return elementID;}
+  void addFreeGameConfig(int32_t count, int32_t times) {
+    elementCount.push_back(count);
+    elementCount.push_back(times);
+  }
+  int32_t getFreeGameConfig(int32_t count) {
+    for (size_t i = 0; i < elementCount.size(); ++i) {
+      if (elementCount[i] == count) {
+        return freeTimes[i];
+      }
+    }
+    return 0;
+  }
+ private:
+  int32_t elementID{0};
+  std::vector<int32_t> elementCount;
+  std::vector<int32_t> freeTimes;
+};
+
 class TSConfig {
 public:
   void setRowNumber(int32_t row) {maxRow = row;}
@@ -162,11 +184,58 @@ public:
     return bEleRepeatInCol;
   }
 
+  FreeGameConfig &getFreeGameConfig() {return freeGameConfig;}
+
+  void setTinyGameID(int32_t id) {tinyGameID = id;}
+
+  int32_t getTinyGameID() {return tinyGameID;}
+
+  int32_t setMegawin(int32_t mWin) {megawin = mWin;}
+
+  bool isMegawin(int32_t dest) { return (dest >= megawin);}
+
+  int32_t setBigwin(int32_t mWin) {bigwin = mWin;}
+
+  bool isBigwin(int32_t dest) { return (dest >= bigwin);}
+
+  int32_t setSuperwin(int32_t swin) {superwin = swin;}
+
+  bool isSuperwin(int32_t dest) {return (dest >= superwin);}
+
+  void setJackpot1(int32_t eleID, int32_t count) {
+    jackpot1ID = eleID;
+    jackpot1Count = count;
+  }
+
+  bool isJackpot1(int32_t dest, int32_t count) {
+    return (dest == jackpot1ID && count == jackpot1Count);
+  }
+
+  void setJackpot2(int32_t eleID, int32_t count) {
+    jackpot2ID = eleID;
+    jackpot2Count = count;
+  }
+
+  bool isJackpot2(int32_t dest, int32_t count) {
+    return (dest == jackpot2ID && count == jackpot2Count);
+  }
+
 TSConfig():maxRow(0), maxColumn(0),bEleRepeatInCol(false) {}
 private:
   std::map<int32_t, TSGrid> grids;
   std::vector<TSLine> lines; // key: lineID, val: lines
   std::map<int32_t, TSElementRatio> elements; // key: elment id
+
+  FreeGameConfig freeGameConfig;
+  int32_t tinyGameID;
+  int32_t megawin;
+  int32_t bigwin;
+  int32_t superwin;
+  int32_t jackpot1ID;
+  int32_t jackpot1Count;
+  int32_t jackpot2ID;
+  int32_t jackpot2Count;
+
   int32_t maxRow;
   int32_t maxColumn;
   bool bEleRepeatInCol;

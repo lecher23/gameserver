@@ -11,7 +11,7 @@ TemplePrincess::~TemplePrincess(){
 }
 
 // return bool
-bool TemplePrincess::play(GameResultData &data) const {
+bool TemplePrincess::play(TSResult &data) const {
     size_t i = 0;
     auto row = _cfg.getRowNumber();
     for (int32_t i = 0; i < row; ++i) {
@@ -20,10 +20,12 @@ bool TemplePrincess::play(GameResultData &data) const {
         }
     }
     countLines(data);
+    processLines(data);
+    processSpecial(data);
     return true;
 }
 
-bool TemplePrincess::chooseElementInColumn(int32_t column, GameResultData &data) const
+bool TemplePrincess::chooseElementInColumn(int32_t column, TSResult &data) const
 {
     auto maxRow = _cfg.getRowNumber();
     std::set<int32_t> forbidPool;
@@ -81,7 +83,7 @@ int32_t TemplePrincess::locateElement(
 
 #define VALID_ELEMENT_TYPE(ele_type) (ele_type == WILD_ELEMENT || ele_type == NORMAL_ELEMENT)
 
-void TemplePrincess::countLines(GameResultData &data) const {
+void TemplePrincess::countLines(TSResult &data) const {
     auto &lines = data.lines;
     auto col = _cfg.getColumnNumber();
     int32_t preID, preType, curID, curType;
@@ -95,7 +97,9 @@ void TemplePrincess::countLines(GameResultData &data) const {
         }
         size_t pointPos = 0;
         GET_ELEID_TYPE(preID, preType);
-        for (pointPos = 1; pointPos < pointCount && VALID_ELEMENT_TYPE(preType); ++pointPos) {
+        for (pointPos = 1;
+             pointPos < pointCount && VALID_ELEMENT_TYPE(preType); ++pointPos)
+        {
             GET_ELEID_TYPE(curID, curType);
             if (!VALID_ELEMENT_TYPE(curType)) {
                 break;
@@ -108,12 +112,45 @@ void TemplePrincess::countLines(GameResultData &data) const {
             }
         }
         if (pointPos > 1 && preType == NORMAL_ELEMENT) {
-            lines[line.getID()].eleID = preID;
-            lines[line.getID()].count = pointPos;
+            lines.push_back(LineDetail(line.getID(), preID, pointPos));
         }
     }
 }
 #undef VALID_ELEMENT_TYPE
 #undef GET_ELEID_TYPE
+
+void TemplePrincess::processLines(TSResult &data) const {
+    for (auto &line: data.lines) {
+        data.totalRatio += _cfg.getElementRatio(line.eleID, line.count);
+        if (!data.bJackpot1)
+        {
+            data.bJackpot1 = _cfg.isJackpot1(line.lineID, line.count);
+        }
+        if (!data.bJackpot2) {
+            data.bJackpot2 = _cfg.isJackpot2(line.lineID, line.count);
+        }
+    }
+    data.earned = data.totalRatio * data.bet;
+}
+
+void TemplePrincess::processSpecial(TSResult &data) const {
+    auto &fgc = _cfg.getFreeGameConfig();
+    auto fid = fgc.getElementID();
+    auto tid = _cfg.getTinyGameID();
+    int32_t fCount = 0;
+    int32_t tCount = 0;
+    for(auto &item: data.gridsData) {
+        if (item.second == fid) {++fCount;}
+        else if (item.second == tid) {++tCount;}
+    }
+    data.freeGameTimes = fgc.getFreeGameConfig(fCount);
+    data.tinyGameEleID = tid;
+    data.tinyGameEleCount = tCount;
+
+    int32_t mid = data.earned/(data.bet + data.lineNumber);
+    data.bMegawin = _cfg.isMegawin(mid);
+    data.bBigwin = _cfg.isBigwin(mid);
+    data.bSuperwin = _cfg.isSuperwin(mid);
+}
 
 END_NAMESPACE
