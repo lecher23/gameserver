@@ -456,9 +456,14 @@ if __name__ == "__main__":
                 lbs.addColumn("ele_config", ["ele_id", "line_num", "value"],
                               [str(k) for k in item])
         elif second == "grid":
-            for item in gs.grid_cfg:
+            lbs.createTable2("grid_config")
+            for item in gs.get_grid_cfg():
                 lbs.addColumn("grid_config", ["col", "row", "ele_id", "weight"],
                               [str(k) for k in item])
+
+            lbs.createTable2("ele_info")
+            for item in gs.get_ele_info():
+                lbs.addColumn("ele_info", [], [str(k) for k in item])
         elif second == "line":
             for item in gs.format_line_cfg(gs.line_cfg):
                 lbs.addColumn("line_config", ["line"], [str(k) for k in item])

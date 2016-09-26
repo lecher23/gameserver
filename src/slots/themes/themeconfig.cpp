@@ -55,7 +55,7 @@ bool ThemeConfig::getGridConfig(GridConfigs &gc) {
     int len = gc.grids.size();
     for (size_t i = 0; i < len; ++i) {
         auto &item = gc.grids[i]; // row, colum, eleID, weight,
-        auto &grid = tsConfig.getGrid(item.row, item.column, true);
+        auto &grid = tsConfig.getGrid(item.row, item.column, false);
         grid.addElement(item.eleID, item.weight);
     }
     // check

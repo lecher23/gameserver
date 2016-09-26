@@ -5,6 +5,7 @@
 BEGIN_NAMESPACE(slots)
 
 TemplePrincess::TemplePrincess(TSConfig &cfg):_cfg(cfg) {
+    srand(time(nullptr));
 }
 
 TemplePrincess::~TemplePrincess(){
@@ -32,9 +33,9 @@ bool TemplePrincess::play(TSResult &data) const {
     return true;
 }
 
-bool TemplePrincess::chooseElementInColumn(int32_t column, TSResult &data) const
+bool TemplePrincess::chooseElementInColumn(int32_t row, TSResult &data) const
 {
-    auto maxRow = _cfg.getRowNumber();
+    auto maxColumn = _cfg.getColumnNumber();
     std::set<int32_t> forbidPool;
     if(!data.bJackpot1) {
         forbidPool.insert(_cfg.getJackpot1EleID());
@@ -44,11 +45,10 @@ bool TemplePrincess::chooseElementInColumn(int32_t column, TSResult &data) const
     }
     int32_t index;
     int32_t rd;
-    for (int32_t i = 0; i < maxRow; ++i) {
-        index = _cfg.getGridIndex(i, column);
+    for (int32_t i = 0; i < maxColumn; ++i) {
+        index = _cfg.getGridIndex(row, i);
         auto &grid = _cfg.getGrid(index, data.bFreeGame);
 
-        srand((int)time(0) + rd * 193);
         rd = rand() % grid.getTotalWeight();
 
         auto eleID = locateElement(rd, forbidPool, grid);

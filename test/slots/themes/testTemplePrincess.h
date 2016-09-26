@@ -51,15 +51,17 @@ public:
               {{0,6}, {1,1}, {2,4}, {3,3},
                {4,3}, {5,4}, {6,3}, {7,1},
                {8,4}, {9,1}, {10,3}, {11,2}};
-      GameResultData grd;
+      GameResult grd;
       grd.gridsData.swap(result);
       ast_eq(12, grd.gridsData.size());
       game.countLines(grd);
       ast_eq(2, grd.lines.size());
-      ast_eq(3, grd.lines[38].count);
-      ast_eq(4, grd.lines[38].eleID);
-      ast_eq(2, grd.lines[66].count);
-      ast_eq(4, grd.lines[66].eleID);
+      ast_eq(3, grd.lines[0].count);
+      ast_eq(4, grd.lines[0].eleID);
+      ast_eq(38, grd.lines[0].lineID);
+      ast_eq(2, grd.lines[1].count);
+      ast_eq(4, grd.lines[1].eleID);
+      ast_eq(66, grd.lines[1].lineID);
     }
 #define N0 0
 #define N1 1
@@ -79,8 +81,9 @@ public:
     ast_eq(5, grd.gridsData.size());            \
     game.countLines(grd);                       \
     ast_eq(1, grd.lines.size());                \
-    ast_eq(cnt, grd.lines[21].count);         \
-    ast_eq(id, grd.lines[21].eleID);            \
+    ast_eq(cnt, grd.lines[0].count);         \
+    ast_eq(id, grd.lines[0].eleID);            \
+    ast_eq(21, grd.lines[0].lineID);            \
     grd.lines.clear();
 
     void test_countLines_with_wild() {
@@ -103,7 +106,7 @@ public:
       cfg.addLine(21, line1);
       cfg.setColumnNumber(5);
       TemplePrincess game(cfg);
-      GameResultData grd;
+      GameResult grd;
 
       // start with NORMAL
       std::map<int32_t, int32_t> result1 =
@@ -156,7 +159,7 @@ public:
       cfg.addElement(6, WILD_ELEMENT);
 
       cfg.addElement(7, (WILD_ELEMENT + NORMAL_ELEMENT) * 2);
-      GameResultData grd;
+      GameResult grd;
 
       std::vector<int32_t> line1 = {0,1,2,3,4};
       cfg.addLine(21, line1);
@@ -165,25 +168,6 @@ public:
       std::map<int32_t, int32_t> result7 =
           {{0,W1}, {1,W1}, {2,W1}, {3,W1},{4,W1}};
       ASSERT_ZERO_RESULT(result7);
-    }
-
-    void test_play()
-    {
-      ast_true(Config::getInstance().initConfig(cfg_file));
-      ast_true(MysqlConnPool::getInstance().init());
-      ast_true(SlotsConfig::getInstance().init());
-      TemplePrincess game(SlotsConfig::getInstance().themeConfig.tsConfig);
-      GameResultData data;
-      game.play(data);
-      ast_true(data.gridsData.size() > 0);
-      for (auto &item: data.gridsData) {
-        CLOG(INFO) << item.first << "," << item.second;
-      }
-      for (auto &item: data.lines) {
-        CLOG(INFO) <<"Line id:"<< item.first << ", Line count:"
-                   << item.second.count << ", Ele id:" << item.second.eleID;
-      }
-      CLOG(INFO) << "test play() done.";
     }
 
     void test_locateElement_no_forbid()
@@ -232,6 +216,45 @@ public:
       ast_eq(-1, game.locateElement(5, forbid, sg));
       ast_eq(-1, game.locateElement(12, forbid, sg));
       ast_eq(-1, game.locateElement(13, forbid, sg));
+    }
+
+    void test_play()
+    {
+      ast_true(Config::getInstance().initConfig(cfg_file));
+      ast_true(MysqlConnPool::getInstance().init());
+      ast_true(SlotsConfig::getInstance().init());
+      TemplePrincess game(SlotsConfig::getInstance().themeConfig.tsConfig);
+      int32_t totalEarned = 0;
+      int32_t totalCost = 0;
+      std::map<int32_t, int32_t> ele;
+      for (int i = 0; i < 100; ++i) {
+          GameResult data;
+          data.bet = 100;
+          data.lineNumber = 10;
+          if (!game.play(data)) {
+            CLOG(ERROR) << "play meet error.";
+            break;
+          }
+          ast_true(data.gridsData.size() > 0);
+          for (auto &item: data.gridsData) {
+            if(item.second == 0) {
+              CLOG(ERROR) << "catch 0 on position:" << item.first;
+              auto y = 100/item.second;
+            }
+            auto itr = ele.find(item.second);
+            if(itr == ele.end()) {
+              ele[item.second] = 0;
+            }
+            ele[item.second] ++;
+          }
+          totalEarned += data.earned;
+          totalCost += data.bet * data.lineNumber;
+      }
+      CLOG(INFO) << "total earned:" << totalEarned;
+      CLOG(INFO) << "total cost  :" << totalCost;
+      for (auto &item: ele){
+        CLOG(INFO) << "ele :" << item.first << ", count:" << item.second;
+      }
     }
 private:
     bool _inited;
