@@ -97,6 +97,12 @@ ele_config = [
     ('value', 'INT NOT NULL')
 ]
 
+common_config = [
+    ('config_id', 'INT NOT NULL PRIMARY KEY'),
+    ('value', 'BIGINT NOT NULL'),
+    ('extra', 'BIGINT NOT NULL DEFAULT 0')
+]
+
 table_defines = {
     "cargo_info": cargo_info,
     "vip_config": vip_config,
@@ -105,7 +111,8 @@ table_defines = {
     'line_config': line_config,
     'grid_config': grid_config,
     'ele_info': ele_info,
-    'ele_config': ele_config
+    'ele_config': ele_config,
+    'common_config': common_config
 }
 
 def parse_dict_to_db_sql(table_name, table_define = []):
