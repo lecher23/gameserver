@@ -1,15 +1,15 @@
-#ifndef HISTORYPROCESSOR_H
-#define HISTORYPROCESSOR_H
+#ifndef GAMERESULTPROCESSOR_H
+#define GAMERESULTPROCESSOR_H
 
 #include <slots/data/basicdata.h>
 #include <slots/data/gamecontext.h>
 
 BEGIN_NAMESPACE(slots)
 
-class HistoryProcessor{
+class GameResultProcessor{
  public:
-    HistoryProcessor();
-    ~HistoryProcessor();
+    GameResultProcessor();
+    ~GameResultProcessor();
 
     bool process(GameContext &context) const;
  private:

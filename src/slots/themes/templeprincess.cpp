@@ -14,11 +14,10 @@ TemplePrincess::~TemplePrincess(){
 // return bool
 bool TemplePrincess::play(TSResult &data) const {
     size_t i = 0;
-    auto tBet = data.bet * data.lineNumber;
-    if (tBet >= _cfg.getJackpot1Limit()) {
+    if (data.bet >= _cfg.getJackpot1Limit()) {
         data.bJackpot1 = true;
     }
-    if (tBet >= _cfg.getJackpot2Limit()) {
+    if (data.bet >= _cfg.getJackpot2Limit()) {
         data.bJackpot2 = true;
     }
     auto row = _cfg.getRowNumber();
@@ -133,6 +132,7 @@ void TemplePrincess::countLines(TSResult &data) const {
 #undef GET_ELEID_TYPE
 
 void TemplePrincess::processLines(TSResult &data) const {
+    data.bJackpot1 = data.bJackpot2 = false;
     for (auto &line: data.lines) {
         data.totalRatio += _cfg.getElementRatio(line.eleID, line.count);
         if (!data.bJackpot1)
@@ -143,7 +143,7 @@ void TemplePrincess::processLines(TSResult &data) const {
             data.bJackpot2 = _cfg.isJackpot2(line.lineID, line.count);
         }
     }
-    data.earned = data.totalRatio * data.bet;
+    data.earned = data.totalRatio * data.bet / data.lineNumber;
 }
 
 void TemplePrincess::processSpecial(TSResult &data) const {
@@ -160,7 +160,7 @@ void TemplePrincess::processSpecial(TSResult &data) const {
     data.tinyGameEleID = tid;
     data.tinyGameEleCount = tCount;
 
-    int32_t mid = data.earned/(data.bet + data.lineNumber);
+    int32_t mid = data.earned/data.bet;
     data.bMegawin = _cfg.isMegawin(mid);
     data.bBigwin = _cfg.isBigwin(mid);
     data.bSuperwin = _cfg.isSuperwin(mid);

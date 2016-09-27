@@ -1,21 +1,20 @@
-#include "historyprocessor.h"
+#include "gameresultprocessor.h"
 #include <slots/slotsconfig.h>
 
 BEGIN_NAMESPACE(slots)
 
-HistoryProcessor::HistoryProcessor(){
+GameResultProcessor::GameResultProcessor(){
 }
 
-HistoryProcessor::~HistoryProcessor(){
+GameResultProcessor::~GameResultProcessor(){
 }
 
-bool HistoryProcessor::process(GameContext &context) const {
+bool GameResultProcessor::process(GameContext &context) const {
     context.events.push_back(EventInfo(EGE_PLAYED_GAME));
+    //processHall(); force to win prize.update hall prize pool
     processGameDetail(context, context.gameInfo);
     // is free to play
-    if (context.gameInfo.freeGameTimes == 0) {
-	context.gameInfo.bet = 0;
-    } else {
+    if (!context.gameInfo.bFreeGame) {
 	context.events.push_back(EventInfo(EGE_USE_BET, context.gameInfo.bet));
     }
     // update user fortune
@@ -26,7 +25,7 @@ bool HistoryProcessor::process(GameContext &context) const {
 }
 
 
-void HistoryProcessor::processGameDetail(GameContext &context, GameResult &data) const {
+void GameResultProcessor::processGameDetail(GameContext &context, GameResult &data) const {
     auto &udt = context.user->gDetail;
     auto gType = data.gType;
     // incr game times
@@ -58,24 +57,19 @@ void HistoryProcessor::processGameDetail(GameContext &context, GameResult &data)
     udt.changed = true;
 }
 
-void HistoryProcessor::processExp(GameContext &context, GameResult &data) const {
+void GameResultProcessor::processExp(GameContext &context, GameResult &data) const {
     auto &uRes = context.user->uRes;
     // if zero bet then exp will not change
-    if (data.bet == 0) {
+    if (data.bFreeGame) {
 	return;
     }
-    // TODO: exp got setting
-    auto expGot = data.bet;
+    auto &slotsConfig = SlotsConfig::getInstance();
+    auto expGot = slotsConfig.expGain(context, data.bet);
     uRes.incrExp(expGot);
-    auto &levelConfig = SlotsConfig::getInstance().levelConfig;
     int64_t expNeed = 0;
     while(true) {
-        auto itr = levelConfig.find(uRes.level);
-        if (itr == levelConfig.end()) {
-            return;
-        }
-        expNeed = itr->second.expNeed;
-        if (expNeed > uRes.exp ) {
+        expNeed = slotsConfig.expNeedForLevelUp(uRes.level);
+        if (expNeed < 0 || expNeed > uRes.exp ) {
             return;
         }
         uRes.levelUp();
@@ -83,13 +77,14 @@ void HistoryProcessor::processExp(GameContext &context, GameResult &data) const 
     }
 }
 
-void HistoryProcessor::processMoney(GameContext &context, GameResult &data) const {
+void GameResultProcessor::processMoney(GameContext &context, GameResult &data) const {
+    UserHistory &uHis = context.user->uHis;
+    uHis.incrBet(data.bet);
     int64_t actualEarned = data.earned - data.bet;
     if (actualEarned == 0) {
 	return;
     }
     UserResource &uRes = context.user->uRes;
-    UserHistory &uHis = context.user->uHis;
     uRes.incrFortune(actualEarned);
     // update max fortune
     uHis.newFortune(uRes.fortune);

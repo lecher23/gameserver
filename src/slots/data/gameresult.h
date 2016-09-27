@@ -28,7 +28,7 @@ struct GameResult{
   bool bJackpot2{false};
   bool bFreeGame{false};
   int64_t earned{0};
-  int64_t bet{0}; // total_bet = bet * lineNumber
+  int64_t bet{0}; // this is total bet, line bet is bet / lineNumber
   std::vector<LineDetail> lines; // key: lineID, val:count and eleid
   std::map<int32_t, int32_t> gridsData;
 };

@@ -17,7 +17,7 @@ namespace slots{
 	bool doMultiple(CPacket &packet);
 
         GameProcessor _gProcessor;
-        HistoryProcessor _hProcessor;
+        GameResultProcessor _hProcessor;
         AchievementProcessor _aProcessor;
     };
 }

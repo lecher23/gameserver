@@ -60,16 +60,24 @@ bool SlotsConfig::init(){
     }
 
 int64_t SlotsConfig::expGain(GameContext &context, int64_t resource) {
-    FIND_VAL_IN_MAP(bet2Exp, itr0, resource, 0);
+    auto exp = bet2Exp.getExp(resource);
     float ext = 0.0;
     FIND_VIP_CONFIG(context.user->uRes.vipLevel, ext, exp_ext, 0.0);
-    return itr0->second * (1.0 + ext);
+    return exp * (1.0 + ext);
 }
 
 int64_t SlotsConfig::earned(GameContext &context, int64_t src) {
     float ext = 0.0;
     FIND_VIP_CONFIG(context.user->uRes.vipLevel, ext, bounus_ext, 0.0);
     return src * (1.0 + ext);
+}
+
+int64_t SlotsConfig::expNeedForLevelUp(int32_t level) {
+    auto itr = levelConfig.find(level);
+    if (itr == levelConfig.end()) {
+        return -1;
+    }
+    return itr->second.expNeed;
 }
 
 int64_t SlotsConfig::vipLoginReward(int32_t level, int64_t src) {

@@ -5,7 +5,22 @@
 
 BEGIN_NAMESPACE(slots)
 
-typedef std::map<int64_t, int64_t> Bet2ExpConfigs;
+class Bet2ExpConfigs {
+public:
+  void addConfig(int64_t bet, int64_t exp) {
+    _cfg[bet] = exp;
+  }
+
+  int64_t getExp(int64_t bet) {
+    auto itr = _cfg.find(bet);
+    if(itr != _cfg.end()) {
+      return itr->second;
+    }
+    return bet;
+  }
+private:
+  std::map<int64_t, int64_t> _cfg;
+};
 
 class Bet2ExpConfig{
 public:
@@ -21,7 +36,7 @@ public:
     if (!ret) {
       CLOG(ERROR) << "Init level config failed.";
     }
-    out[key] = val;
+    out.addConfig(key, val);
     return ret;
   }
 };

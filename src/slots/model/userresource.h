@@ -6,15 +6,15 @@
 BEGIN_NAMESPACE(slots)
 
 struct UserResource{
-    std::string uid;
-    int32_t level;
-    int64_t exp;
-    int64_t fortune;
-    int32_t vipLevel;
-    int64_t vipPoint;
-    int32_t tmpVipLevel;
-    int64_t tmpVipEndTime;
-    bool changed;
+  std::string uid{0};
+  int32_t level{0};
+  int64_t exp{0};
+  int64_t fortune{0};
+  int32_t vipLevel{0};
+  int64_t vipPoint{0};
+  int32_t tmpVipLevel{0};
+  int64_t tmpVipEndTime{0};
+  bool changed{false};
 
     UserResource() {
         reset();
