@@ -85,18 +85,17 @@ struct TSElementRatio {
   std::map<int32_t, int32_t> _ratio;
 };
 
-#define FreeGameMaxCount 10
-struct FreeGameConfig {
+struct SpecialGameConfig {
   void setElementId(int32_t id) { elementID = id;}
   int32_t getElementID() { return elementID;}
-  void addFreeGameConfig(int32_t count, int32_t times) {
+  void addConfig(int32_t count, int32_t times) {
     elementCount.push_back(count);
-    elementCount.push_back(times);
+    values.push_back(times);
   }
-  int32_t getFreeGameConfig(int32_t count) {
+  int32_t getConfig(int32_t count) {
     for (size_t i = 0; i < elementCount.size(); ++i) {
       if (elementCount[i] == count) {
-        return freeTimes[i];
+        return values[i];
       }
     }
     return 0;
@@ -104,7 +103,7 @@ struct FreeGameConfig {
  private:
   int32_t elementID{0};
   std::vector<int32_t> elementCount;
-  std::vector<int32_t> freeTimes;
+  std::vector<int32_t> values;
 };
 
 class TSConfig {
@@ -184,7 +183,9 @@ public:
     return bEleRepeatInCol;
   }
 
-  FreeGameConfig &getFreeGameConfig() {return freeGameConfig;}
+  SpecialGameConfig &getFreeGameConfig() {return freeGameConfig;}
+
+  SpecialGameConfig &getTinyGameConfig() {return tinyGameConfig;}
 
   void setTinyGameID(int32_t id) {tinyGameID = id;}
 
@@ -250,7 +251,8 @@ private:
   std::vector<TSLine> lines; // key: lineID, val: lines
   std::map<int32_t, TSElementRatio> elements; // key: elment id
 
-  FreeGameConfig freeGameConfig;
+  SpecialGameConfig freeGameConfig;
+  SpecialGameConfig tinyGameConfig;;
   int32_t tinyGameID{0};
   int32_t megawin{0};
   int32_t bigwin{0};
