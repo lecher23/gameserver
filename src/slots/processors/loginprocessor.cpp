@@ -16,7 +16,7 @@ bool LoginProcessor::process(GameContext &context) const {
     auto now = cgserver::CTimeUtil::getCurrentTimeInSeconds();
     int64_t yesterday = thisMorning - 24 * 3600;
     auto &lastLogin = gHistory.lastLogin;
-    auto &loginDays = gHistory.consitiveLogin;
+    auto &loginDays = gHistory.loginDays;
     if (lastLogin < yesterday) {
         loginDays = 1;
         context.events.push_back(EventInfo(EGE_LOGIN, loginDays));

@@ -50,6 +50,7 @@ enum GameEvent {
     EGE_FREE_GAME,
     EGE_MEGA_WIN,
     EGE_BIG_WIN,
+    EGE_SUPER_WIN,
     EGE_JACKPOT,
     EGE_LINE,
     EGE_GAME_COUNT,

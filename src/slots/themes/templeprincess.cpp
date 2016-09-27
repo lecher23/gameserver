@@ -157,8 +157,8 @@ void TemplePrincess::processSpecial(TSResult &data) const {
         else if (item.second == tid) {++tCount;}
     }
     data.freeGameTimes = fgc.getFreeGameConfig(fCount);
-    data.tinyGameEleID = tid;
-    data.tinyGameEleCount = tCount;
+    data.tinyGame.eleID = tid;
+    data.tinyGame.eleCount = tCount;
 
     int32_t mid = data.earned/data.bet;
     data.bMegawin = _cfg.isMegawin(mid);

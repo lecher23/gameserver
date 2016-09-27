@@ -14,13 +14,19 @@ struct LineDetail{
  :lineID(lID), eleID(eID), count(cnt){}
 };
 
+struct TinyGame {
+  int32_t eleID{0};
+  int32_t eleCount{0};
+  int32_t tinyGameID{0};
+  bool enable{false};
+};
+
 struct GameResult{
   int32_t gType{0};
   int32_t lineNumber{0};
-  int32_t tinyGameEleID{0};
-  int32_t tinyGameEleCount{0};
   int32_t freeGameTimes{0};
   int32_t totalRatio{0};
+  TinyGame tinyGame;
   bool bMegawin{false};
   bool bBigwin{false};
   bool bSuperwin{false};

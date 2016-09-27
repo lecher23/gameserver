@@ -34,6 +34,7 @@ const std::string gElementConfig = "ele_config";
 const std::string gLineConfig = "line_config";
 const std::string gGridConfig = "grid_config";
 const std::string gSloteElement = "ele_info";
+const std::string gThemeHistory = "theme_history";
 
 class SlotsDB{
 public:

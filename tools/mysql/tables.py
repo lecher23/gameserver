@@ -9,7 +9,7 @@ cargo_info = [
     ("display", 'bool default "1"')
 ]
 
-f_history = [
+friend_history = [
     ("uid", "INT NOT NULL PRIMARY KEY"),
     ("invite_count", "int NOT NULL DEFAULT 0"),
     ("reward_total", "BIGINT DEFAULT 0"),
@@ -37,7 +37,7 @@ user_resource = [
     ('vip_tmp_end', 'BIGINT DEFAULT 0')
 ]
 
-history = [
+resource_history = [
     ('uid', 'INT NOT NULL'),
     ('max_fortune', 'BIGINT DEFAULT 0'),
     ('max_earned', 'BIGINT DEFAULT 0'),
@@ -48,6 +48,30 @@ history = [
     ('lw_level_sort', 'INT DEFAULT 9999'),
     ('lw_fortune_sort', 'INT DEFAULT 9999'),
     ('lw_acheivement_sort', 'INT DEFAULT 9999')
+]
+
+game_history = [
+    ('uid', 'INT NOT NULL PRIMARY KEY'),
+    ('friend_num', 'INT DEFAULT 0'),
+    ('friend_gifts_num', 'INT DEFAULT 0'),
+    ('last_login', 'BIGINT DEFAULT 0'),
+    ('login_days', 'INT DEFAULT 0'),
+    ('jackpot', 'INT DEFAULT 0'),
+]
+
+theme_history = [
+    ('uid', 'INT NOT NULL')
+    ('theme_id', 'INT NOT NULL'),
+    ('tag', 'INT NOT NULL'), # history type
+    ('value', 'INT DEFAULT(0)'),
+    ('', 'PRIMARY KEY(uid, theme_id, tag)')
+    # ('bigwin', 'VARCHAR(255) DEFAULT "0"'), 1
+    # ('megawin', 'VARCHAR(255) DEFAULT "0"'), 2
+    # ('superwin', 'VARCHAR(255) DEFAULT "0"'), 3
+    # ('free_times', 'VARCHAR(255) DEFAULT "0"'), 4
+    # ('tiny_games', 'VARCHAR(255) DEFAULT "0"'), 5
+    # ('jackpot', 'VARCHAR(255) DEFAULT "0"'), 6
+    # ('six_link', 'VARCHAR(255) DEFAULT "0"'), 7
 ]
 
 # table below is used for game config
@@ -112,7 +136,9 @@ table_defines = {
     'grid_config': grid_config,
     'ele_info': ele_info,
     'ele_config': ele_config,
-    'common_config': common_config
+    'common_config': common_config,
+    'game_history': game_history,
+    'theme_history': theme_history,
 }
 
 def parse_dict_to_db_sql(table_name, table_define = []):

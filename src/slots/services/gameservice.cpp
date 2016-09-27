@@ -36,7 +36,7 @@ bool GameService::doJob(CPacket &packet, CResponse &resp) {
 
 bool GameService::doSlots1(CPacket &packet, ResultFormatter &rf)
 {
-    const static SlotsStyle style = ESS_SLOTS_1;
+    const static SlotsStyle style = ESS_TEMPLE_PRINCESS;
     std::string detail;
     bool ret = false;
     do {

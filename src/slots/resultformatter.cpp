@@ -320,7 +320,7 @@ void ResultFormatter::formatFriendList(const FriendsList &friends) {
 void ResultFormatter::formatLoginInfo(const SlotsUser &su) {
     _writer.StartObject();
     _writer.Key("days");
-    _writer.Int(su.gDetail.consitiveLogin);
+    _writer.Int(su.gDetail.loginDays);
     _writer.Key("recv_reward");
     _writer.Bool(su.loginReward.recved);
     _writer.Key("level_bonus");

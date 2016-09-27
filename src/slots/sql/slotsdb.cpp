@@ -36,7 +36,7 @@ bool SlotsDB::getUserInfo(MysqlOperationBase * mob, SlotsUser &su) const {
 	uh.reset();
 	uh.uid = ui.uid;
 	gd.reset();
-	gd.uid = ui.uid;
+	gd.uid = cgserver::StringUtil::StrToInt32WithDefault(ui.uid.c_str(), 0);
 	return true;
     }
     if (!su.deserialize(res[0])) {
@@ -175,44 +175,44 @@ bool SlotsDB::update(SlotsUserPtr su) const {
 }
 
 bool SlotsDB::updateGameHistory(GameHistory &gh) const {
-    MysqlSimpleUpdate msu;
-    msu.setTable(gGameHistory);
-    msu.setUpdateValue("friend_num", StringUtil::toString(gh.friendNum));
-    msu.addUpdateValue("friend_gifts_num", StringUtil::toString(gh.friendGiftsNum));   
-    msu.addUpdateValue("last_login", StringUtil::toString(gh.lastLogin));   
-    msu.addUpdateValue("consitive_login", StringUtil::toString(gh.consitiveLogin));   
-    msu.addUpdateValue("tiny_game_times", StringUtil::toString(gh.tinyGameTimes));
-    std::string tmp;
-    StringUtil::ArrayToStr(gh.bigwin, SLOTS_GAME_TYPES, ',', tmp);
-    msu.addUpdateValue("bigwin", tmp);
-    StringUtil::ArrayToStr(gh.megawin, SLOTS_GAME_TYPES, ',', tmp);
-    msu.addUpdateValue("megawin", tmp);   
-    StringUtil::ArrayToStr(gh.freeTimes, SLOTS_GAME_TYPES, ',', tmp);
-    msu.addUpdateValue("free_times", tmp);   
-    StringUtil::ArrayToStr(gh.gameTimes, SLOTS_GAME_TYPES, ',', tmp);
-    msu.addUpdateValue("game_times", tmp);   
-    StringUtil::ArrayToStr(gh.jackpotTimes, SLOTS_GAME_TYPES, ',', tmp);
-    msu.addUpdateValue("jackpot_times", tmp);   
-    msu.addUpdateValue("g_jackpot_times", StringUtil::toString(gh.gJackpotTimes));
-    tmp.clear();
-    std::string multiAryOutFour = "";
-    std::string multiAryOutFive = "";
-    for (size_t i = 0; i < SLOTS_GAME_TYPES; ++i){
-	StringUtil::ArrayToStr(gh.fourLine[i], MAX_ELE_TYPES, ',', tmp);
-	multiAryOutFour += tmp;
-	multiAryOutFour += ";";
-	StringUtil::ArrayToStr(gh.fiveLine[i], MAX_ELE_TYPES, ',', tmp);
-	multiAryOutFive += tmp;
-	multiAryOutFive += ";";
-    }
-    msu.addUpdateValue("four_line_times", multiAryOutFour);
-    msu.addUpdateValue("five_line_times", multiAryOutFive);
-    msu.setCondition("uid", gh.uid, false);    
-    if (!_pool.doMysqlOperation((MysqlOperationBase *) &msu)) {
-	return false;
-    }
-    // important: if update success, it must flag to unchanged.
-    gh.changed = false;
+    // MysqlSimpleUpdate msu;
+    // msu.setTable(gGameHistory);
+    // msu.setUpdateValue("friend_num", StringUtil::toString(gh.friendNum));
+    // msu.addUpdateValue("friend_gifts_num", StringUtil::toString(gh.friendGiftsNum));   
+    // msu.addUpdateValue("last_login", StringUtil::toString(gh.lastLogin));   
+    // msu.addUpdateValue("consitive_login", StringUtil::toString(gh.loginDays));   
+    // msu.addUpdateValue("tiny_game_times", StringUtil::toString(gh.tinyGameTimes));
+    // std::string tmp;
+    // StringUtil::ArrayToStr(gh.bigwin, SLOTS_GAME_TYPES, ',', tmp);
+    // msu.addUpdateValue("bigwin", tmp);
+    // StringUtil::ArrayToStr(gh.megawin, SLOTS_GAME_TYPES, ',', tmp);
+    // msu.addUpdateValue("megawin", tmp);   
+    // StringUtil::ArrayToStr(gh.freeTimes, SLOTS_GAME_TYPES, ',', tmp);
+    // msu.addUpdateValue("free_times", tmp);   
+    // StringUtil::ArrayToStr(gh.gameTimes, SLOTS_GAME_TYPES, ',', tmp);
+    // msu.addUpdateValue("game_times", tmp);   
+    // StringUtil::ArrayToStr(gh.jackpotTimes, SLOTS_GAME_TYPES, ',', tmp);
+    // msu.addUpdateValue("jackpot_times", tmp);   
+    // msu.addUpdateValue("g_jackpot_times", StringUtil::toString(gh.gJackpotTimes));
+    // tmp.clear();
+    // std::string multiAryOutFour = "";
+    // std::string multiAryOutFive = "";
+    // for (size_t i = 0; i < SLOTS_GAME_TYPES; ++i){
+    //     StringUtil::ArrayToStr(gh.fourLine[i], MAX_ELE_TYPES, ',', tmp);
+    //     multiAryOutFour += tmp;
+    //     multiAryOutFour += ";";
+    //     StringUtil::ArrayToStr(gh.fiveLine[i], MAX_ELE_TYPES, ',', tmp);
+    //     multiAryOutFive += tmp;
+    //     multiAryOutFive += ";";
+    // }
+    // msu.addUpdateValue("four_line_times", multiAryOutFour);
+    // msu.addUpdateValue("five_line_times", multiAryOutFive);
+    // msu.setCondition("uid", gh.uid, false);    
+    // if (!_pool.doMysqlOperation((MysqlOperationBase *) &msu)) {
+    //     return false;
+    // }
+    // // important: if update success, it must flag to unchanged.
+    // gh.changed = false;
     return true;
 }
 
@@ -555,7 +555,18 @@ bool SlotsDB::getGameHistory(const std::string &uid, GameHistory &gd) const {
         CLOG(WARNING) << "No game history found for user: " << uid;
 	return false;
     }
-    return gd.deserialize(mss.result[0]);
+    if (!gd.deserialize(mss.result[0])){
+        return false;
+    }
+    MysqlSimpleSelect mss1;
+    mss1.setField("*");
+    mss1.setTable(gThemeHistory);
+    mss1.setCondition("uid", uid, false);
+    if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss1)) {
+	CLOG(WARNING) << "Get game history from mysql failed.";
+	return false;
+    }
+    return gd.themeHistory.deserialize(mss1.result);
 }
 
 bool SlotsDB::add(const UserCJ &cj) {
