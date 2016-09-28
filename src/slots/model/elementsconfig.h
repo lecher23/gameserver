@@ -5,11 +5,16 @@
 
 BEGIN_NAMESPACE(slots)
 
-typedef std::map<int32_t, int32_t> SlotElements;
+struct ElementMetaInfo{
+  int32_t type{0};
+  bool bRepeat{true};
+};
+
+typedef std::map<int32_t, ElementMetaInfo> SlotElements;
 
 struct SlotElement{
   static bool deserialize(std::vector<std::string> &row, SlotElements &out) {
-    if (row.size() < 2) {
+    if (row.size() < 3) {
       CLOG(ERROR) << "invalid fields num";
       return false;
     }
@@ -17,7 +22,8 @@ struct SlotElement{
     bool ret = cgserver::StringUtil::StrToInt32(row[0].c_str(), id);
     ret = ret && cgserver::StringUtil::StrToInt32(row[1].c_str(), type);
     if (ret) {
-      out[id] = type;
+      out[id].type = type;
+      out[id].bRepeat = !(row[2] == "0");
     }
     return ret;
   }

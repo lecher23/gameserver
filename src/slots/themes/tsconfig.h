@@ -69,6 +69,9 @@ struct TSElementRatio {
   void setType(int32_t t) { _type = t;}
   int32_t getType() { return _type;}
 
+  void setRepeatable(bool val) {_bRepeat = val;}
+  bool repeatable() {return _bRepeat;}
+
   void setRatio(int32_t lineCount, int32_t ratio) {
     _ratio[lineCount] = ratio;
   }
@@ -80,7 +83,8 @@ struct TSElementRatio {
     return 0;
   }
  private:
-  int32_t _type;
+  int32_t _type{0};
+  bool _bRepeat{false};
   /*key: line number, value: reward. */
   std::map<int32_t, int32_t> _ratio;
 };
@@ -155,8 +159,9 @@ public:
     return lines.size();
   }
 
-  void addElement(int32_t eleID, int32_t type) {
+  void addElement(int32_t eleID, int32_t type, bool repeatable) {
     elements[eleID].setType(type);
+    elements[eleID].setRepeatable(repeatable);
   }
 
   void setElementType(int32_t eleID, int32_t type) {
@@ -165,6 +170,10 @@ public:
 
   int32_t getElementType(int32_t eleID) {
     return elements[eleID].getType();
+  }
+
+  bool elementRepeatable(int32_t eleID) {
+    return elements[eleID].repeatable();
   }
 
   void setElementRatio(int32_t eleID, int32_t lineCount, int32_t ratio) {

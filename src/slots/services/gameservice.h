@@ -13,7 +13,7 @@ namespace slots{
 	virtual bool doJob(CPacket &packet, CResponse &resp);
 
     private:
-	bool doSlots1(CPacket &packet, ResultFormatter &rf);
+	bool doTemplePrincess(CPacket &packet, ResultFormatter &rf);
 	bool doMultiple(CPacket &packet);
 
         GameProcessor _gProcessor;

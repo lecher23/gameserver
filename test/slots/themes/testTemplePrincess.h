@@ -229,7 +229,7 @@ public:
       std::map<int32_t, int32_t> ele;
       for (int i = 0; i < 100; ++i) {
           GameResult data;
-          data.bet = 100;
+          data.bet = 1000;
           data.lineNumber = 10;
           if (!game.play(data)) {
             CLOG(ERROR) << "play meet error.";
@@ -247,8 +247,8 @@ public:
             }
             ele[item.second] ++;
           }
-          totalEarned += data.earned;
-          totalCost += data.bet * data.lineNumber;
+          totalEarned += data.earned.normal;
+          totalCost += data.bet;
       }
       CLOG(INFO) << "total earned:" << totalEarned;
       CLOG(INFO) << "total cost  :" << totalCost;

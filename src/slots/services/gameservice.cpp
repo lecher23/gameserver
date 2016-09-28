@@ -16,7 +16,7 @@ bool GameService::doJob(CPacket &packet, CResponse &resp) {
 
     bool ret = false;
     if (gType == "0"){
-	ret = doSlots1(packet, rf);
+	ret = doTemplePrincess(packet, rf);
 	if (!ret) {
 	    rf.formatSimpleResult(ret, "");
 	}
@@ -34,7 +34,7 @@ bool GameService::doJob(CPacket &packet, CResponse &resp) {
     }
 
 
-bool GameService::doSlots1(CPacket &packet, ResultFormatter &rf)
+bool GameService::doTemplePrincess(CPacket &packet, ResultFormatter &rf)
 {
     const static SlotsStyle style = ESS_TEMPLE_PRINCESS;
     std::string detail;

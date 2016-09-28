@@ -81,7 +81,8 @@ bool ThemeConfig::getLinesConfig(LinesConfig &lc) {
 
 bool ThemeConfig::getElements(SlotElements &elements, ElementsConfig &cfg) {
     for (auto &se: cfg) {
-        tsConfig.addElement(se.eleID, elements[se.eleID]);
+        tsConfig.addElement(
+            se.eleID, elements[se.eleID].type, elements[se.eleID].bRepeat);
         tsConfig.setElementRatio(se.eleID, se.lineNum, se.value);
     }
     return true;

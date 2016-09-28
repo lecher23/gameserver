@@ -54,7 +54,7 @@ bool TemplePrincess::chooseElementInColumn(int32_t row, TSResult &data) const
         if (eleID < 0) {
             return false;
         }
-        if (!_cfg.repeatElementEnabled()) {
+        if (!_cfg.elementRepeatable(eleID)) {
             forbidPool.insert(eleID);
         }
         data.gridsData[index] = eleID;
