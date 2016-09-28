@@ -28,9 +28,8 @@ bool GameResultProcessor::process(GameContext &context) const {
 void GameResultProcessor::processHall(GameContext &context, GameResult &data) const {
     auto &hall = SlotsDataCenter::instance().getHall(context.hallID);
     auto &cfg = SlotsConfig::getInstance().themeConfig.tsConfig;
-    auto totalBet = data.bet * data.lineNumber;
-    hall.incrPrize(cfg.getTax4Hall(totalBet));
-    hall.incrPrize(context.roomID, cfg.getTax4Hall(totalBet));
+    hall.incrPrize(cfg.getTax4Hall(data.bet));
+    hall.incrPrize(context.roomID, cfg.getTax4Hall(data.bet));
     if (!data.bJackpot2 && cfg.isForceWinHallPrize(hall.getGameCount())) {
         data.bJackpot2 = true;
         data.earned.hallPrize = hall.takeHallPrize();
