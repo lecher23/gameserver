@@ -28,7 +28,8 @@ class GameContext{
     std::vector<UserCJ> userCj;
     // to save all game event during game.
     std::vector<EventInfo> events;
+    int32_t hallID{0};
+    int32_t roomID{0};
 };
-
 END_NAMESPACE
 #endif

@@ -1,5 +1,6 @@
 #include "gameresultprocessor.h"
 #include <slots/slotsconfig.h>
+#include <slots/data/slotsdatacenter.h>
 
 BEGIN_NAMESPACE(slots)
 
@@ -11,7 +12,7 @@ GameResultProcessor::~GameResultProcessor(){
 
 bool GameResultProcessor::process(GameContext &context) const {
     context.events.push_back(EventInfo(EGE_PLAYED_GAME));
-    //processHall(); force to win prize.update hall prize pool
+    processHall(context, context.gameInfo);
     processGameDetail(context, context.gameInfo);
     // is free to play
     if (!context.gameInfo.bFreeGame) {
@@ -22,6 +23,24 @@ bool GameResultProcessor::process(GameContext &context) const {
     // update user exp&level
     processExp(context, context.gameInfo);
     return true;
+}
+
+void GameResultProcessor::processHall(GameContext &context, GameResult &data) const {
+    auto &hall = SlotsDataCenter::instance().getHall(context.hallID);
+    auto &cfg = SlotsConfig::getInstance().themeConfig.tsConfig;
+    auto totalBet = data.bet * data.lineNumber;
+    hall.incrPrize(cfg.getTax4Hall(totalBet));
+    hall.incrPrize(context.roomID, cfg.getTax4Hall(totalBet));
+    if (!data.bJackpot2 && cfg.isForceWinHallPrize(hall.getGameCount())) {
+        data.bJackpot2 = true;
+        data.earned.hallPrize = hall.takeHallPrize();
+    }
+    if (!data.bJackpot1 && cfg.isForceWinRoomPrize(hall.getGameCount(context.roomID))) {
+        data.bJackpot1 = true;
+        data.earned.roomPrize = hall.takeRoomPrize(context.roomID);
+    }
+    hall.incrGameCount();
+    hall.incrGameCount(context.roomID);
 }
 
 #define INCR_TAG_VALUE(mThemeTag, mEvent, value)                        \
@@ -46,6 +65,10 @@ void GameResultProcessor::processGameDetail(GameContext &context, GameResult &da
         INCR_TAG_VALUE(SUPER_WIN_TAG, EGE_SUPER_WIN, 1);
     }
     if(data.bJackpot1) {
+        INCR_TAG_VALUE(JACKPOT_TAG, EGE_JACKPOT, 1);
+        ++context.user->gDetail.jackpot;
+    }
+    if(data.bJackpot2) {
         INCR_TAG_VALUE(JACKPOT_TAG, EGE_JACKPOT, 1);
         ++context.user->gDetail.jackpot;
     }
@@ -78,7 +101,7 @@ void GameResultProcessor::processExp(GameContext &context, GameResult &data) con
 void GameResultProcessor::processMoney(GameContext &context, GameResult &data) const {
     UserHistory &uHis = context.user->uHis;
     uHis.incrBet(data.bet);
-    int64_t actualEarned = data.earned - data.bet;
+    int64_t actualEarned = data.earned.sum() - data.bet;
     if (actualEarned == 0) {
 	return;
     }
@@ -87,10 +110,10 @@ void GameResultProcessor::processMoney(GameContext &context, GameResult &data) c
     // update max fortune
     uHis.newFortune(uRes.fortune);
     // update max earned
-    uHis.newEarned(data.earned);
+    uHis.newEarned(data.earned.normal);
     // update earned (include this week and total)
     auto pre = uHis.totalEarned;
-    uHis.incrEarned(data.earned);
+    uHis.incrEarned(data.earned.sum());
     if (pre != uHis.totalEarned) {
 	// if total earned changed, create event.
 	context.events.push_back(EventInfo(EGE_EARNED_INCR, pre, uHis.totalEarned));

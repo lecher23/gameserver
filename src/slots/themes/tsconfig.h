@@ -187,10 +187,6 @@ public:
 
   SpecialGameConfig &getTinyGameConfig() {return tinyGameConfig;}
 
-  void setTinyGameID(int32_t id) {tinyGameID = id;}
-
-  int32_t getTinyGameID() {return tinyGameID;}
-
   int32_t setMegawin(int32_t mWin) {megawin = mWin;}
 
   bool isMegawin(int32_t dest) { return (dest >= megawin);}
@@ -245,6 +241,33 @@ public:
     return (dest == jackpot2ID && count == jackpot2Count);
   }
 
+  void setRoomReserveTime(int32_t val) {roomReserveTime = val;}
+
+  int32_t getRoomReserveTime() {return roomReserveTime;}
+
+  void setForceWinHallPrize(int32_t val) {forceWinHallPrize = val;}
+
+  bool isForceWinHallPrize(int32_t factor) {return factor == forceWinHallPrize;}
+
+  void setMinHallPrizePool(int32_t val) {minHallPrizePool = val;}
+
+  bool getMinHallPrizePool() {return minHallPrizePool;}
+
+  void setTax4Hall(int32_t val) {tax4Hall = val/100.0;}
+
+  int64_t getTax4Hall(int64_t val) { return val * tax4Hall;}
+
+  void setForceWinRoomPrize(int32_t val) {forceWinRoomPrize = val;}
+
+  bool isForceWinRoomPrize(int32_t factor) {return factor == forceWinRoomPrize;}
+
+  void setMinRoomPrizePool(int32_t val) {minRoomPrizePool = val;}
+
+  bool getMinRoomPrizePool() {return minRoomPrizePool;}
+
+  void setTax4Room(int32_t val) {tax4Room = val/100.0;}
+
+  int64_t getTax4Room(int64_t val) { return val * tax4Room;}
 private:
   std::map<int32_t, TSGrid> grids;
   std::map<int32_t, TSGrid> freeGameGrids;
@@ -253,16 +276,25 @@ private:
 
   SpecialGameConfig freeGameConfig;
   SpecialGameConfig tinyGameConfig;;
-  int32_t tinyGameID{0};
   int32_t megawin{0};
   int32_t bigwin{0};
   int32_t superwin{0};
+  /* jackpot1: room*/
   int32_t jackpot1Limit{5000};
   int32_t jackpot1ID{0};
   int32_t jackpot1Count{100};
+  /* jackpot2: hall*/
   int32_t jackpot2Limit{10000};
   int32_t jackpot2ID{0};
   int32_t jackpot2Count{100};
+
+  int32_t roomReserveTime{600};
+  int32_t forceWinHallPrize{10000};
+  int32_t minHallPrizePool;
+  float tax4Hall{0.01};
+  int32_t forceWinRoomPrize{10000};
+  int32_t minRoomPrizePool;
+  float tax4Room{0.05};
 
   int32_t maxRow{0};
   int32_t maxColumn{0};

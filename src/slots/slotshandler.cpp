@@ -39,10 +39,6 @@ bool SlotsHandler::init() {
 	CLOG(ERROR) << "Init slots cache failed.";
 	return false;
     }
-    if(!SlotsConfig::getInstance().init()){
-	CLOG(ERROR) << "Init game config failed.";
-	return false;
-    }
     CLOG(INFO) << "Init slots cache success.";
     return true;
 }

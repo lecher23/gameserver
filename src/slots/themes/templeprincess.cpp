@@ -143,29 +143,30 @@ void TemplePrincess::processLines(TSResult &data) const {
             data.bJackpot2 = _cfg.isJackpot2(line.lineID, line.count);
         }
     }
-    data.earned = data.totalRatio * data.bet / data.lineNumber;
+    data.earned.normal = data.totalRatio * data.bet / data.lineNumber;
 }
 
 void TemplePrincess::processSpecial(TSResult &data) const {
     auto &fgc = _cfg.getFreeGameConfig();
     auto fid = fgc.getElementID();
-    auto tid = _cfg.getTinyGameID();
+    auto &tGameCfg = _cfg.getTinyGameConfig();
+    auto tEleID = tGameCfg.getElementID();
     int32_t fCount = 0;
     int32_t tCount = 0;
     for(auto &item: data.gridsData) {
         if (item.second == fid) {++fCount;}
-        else if (item.second == tid) {++tCount;}
+        else if (item.second == tEleID) {++tCount;}
     }
     data.freeGameTimes = fgc.getConfig(fCount);
-    data.tinyGame.eleID = tid;
+    data.tinyGame.eleID = tEleID;
     data.tinyGame.eleCount = tCount;
-    auto tinyGameID = _cfg.getTinyGameConfig().getConfig(tCount);
+    auto tinyGameID = tGameCfg.getConfig(tCount);
     if (tinyGameID > 0) {
         data.tinyGame.enable = true;
         data.tinyGame.tinyGameID = tinyGameID;
     }
 
-    int32_t mid = data.earned/data.bet;
+    int32_t mid = data.earned.normal/data.bet;
     data.bMegawin = _cfg.isMegawin(mid);
     data.bBigwin = _cfg.isBigwin(mid);
     data.bSuperwin = _cfg.isSuperwin(mid);

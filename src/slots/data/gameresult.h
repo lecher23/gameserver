@@ -21,6 +21,15 @@ struct TinyGame {
   bool enable{false};
 };
 
+// TODO: struct TinyGameResult
+
+struct Profit{
+  int64_t normal{0};
+  int64_t roomPrize{0};
+  int64_t hallPrize{0};
+  int64_t sum() {return normal + roomPrize + hallPrize;}
+};
+
 struct GameResult{
   int32_t gType{0};
   int32_t lineNumber{0};
@@ -33,7 +42,7 @@ struct GameResult{
   bool bJackpot1{false};
   bool bJackpot2{false};
   bool bFreeGame{false};
-  int64_t earned{0};
+  Profit earned;
   int64_t bet{0}; // this is total bet, line bet is bet / lineNumber
   std::vector<LineDetail> lines; // key: lineID, val:count and eleid
   std::map<int32_t, int32_t> gridsData;

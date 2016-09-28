@@ -4,7 +4,7 @@
 BEGIN_NAMESPACE(slots)
 GameService::GameService(){
 }
-    
+
 GameService::~GameService(){
 }
 
@@ -13,7 +13,7 @@ bool GameService::doJob(CPacket &packet, CResponse &resp) {
     GET_PARAM("type", gType, true);
     SBuf bf;
     ResultFormatter rf(bf);
-	
+
     bool ret = false;
     if (gType == "0"){
 	ret = doSlots1(packet, rf);
@@ -64,7 +64,7 @@ bool GameService::doSlots1(CPacket &packet, ResultFormatter &rf)
 	    break;
 	}
 	ret = true;
-	rf.formatGameResult(gc.user->uRes, gc.gameInfo.earned, "None");
+	rf.formatGameResult(gc.user->uRes, gc.gameInfo.earned.normal, "None");
     } while (false);
     if (!ret) {
 	rf.formatSimpleResult(ret, "");

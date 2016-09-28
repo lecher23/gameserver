@@ -7,6 +7,8 @@
 #include <slots/data/sqlqueue.h>
 #include <slots/data/cjqueue.h>
 #include <slots/data/giftsdata.h>
+#include <slots/themes/tshall.h>
+#include <slots/slotsconfig.h>
 #include <util/timeutil.h>
 
 BEGIN_NAMESPACE(slots)
@@ -31,6 +33,15 @@ public:
 	// add slots user data.
 	_persisThread.addData(slotsUserData);
         _persisThread.addData(cjQueue);
+        auto &slotsConfig = SlotsConfig::getInstance();
+        if(!slotsConfig.init()){
+          CLOG(ERROR) << "Init game config failed.";
+          return false;
+        }
+        auto &tsConfig = slotsConfig.themeConfig.tsConfig;
+        ret = ret && hall.init(tsConfig.getMinHallPrizePool(),
+                               tsConfig.getMinRoomPrizePool(),
+                               tsConfig.getRoomReserveTime());
 	return ret && _gifts->init();
     }
 
@@ -84,6 +95,10 @@ public:
 	return _persisThread.getUnusedGameRecord();
     }
 
+    TSHall &getHall(int32_t hallID) {
+      return hall;
+    }
+
     /* User data*/
     SlotsUserDataPtr slotsUserData;
     CjQueuePtr cjQueue;
@@ -118,6 +133,9 @@ private:
 
     /* Data */
     PersistenceThread _persisThread;
+
+    /* Hall */
+    TSHall hall;
 };
 END_NAMESPACE
 #endif

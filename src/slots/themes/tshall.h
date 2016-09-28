@@ -3,7 +3,6 @@
 
 #include <util/common_define.h>
 #include <slots/data/basicdata.h>
-#include <themes/tsconfig.h>
 
 BEGIN_NAMESPACE(slots)
 
@@ -40,36 +39,40 @@ public:
   TSHall();
   ~TSHall();
 
-  /* Read config, prepare to use.*/
-  bool init();
+  bool init(int32_t hallPrize, int32_t roomPrize, int32_t rTime);
 
-  bool process(GameResultData &data);
+  bool useRoom(int32_t userID, int32_t roomID);
+  void incrPrize(int64_t bet);/*add prize to hall*/
+  void incrPrize(int32_t roomID, int64_t bet);/*add prize to room*/
+  bool getRooms(TSRooms &out);
+  bool takeRoomTotalPrize(int32_t roomID, int64_t refill, int64_t &totalPrize);
+  int64_t takeRoomPrize(int32_t roomID);
+  int64_t takeHallPrize();
+  bool reserveRoom(int32_t userID, int32_t roomID);
+  bool incrRoomTotalPrize(int32_t roomID, int64_t totalPrize);
+  int32_t getGameCount(int32_t roomID);
+  int32_t getGameCount();
+  void incrGameCount(int32_t roomID);
+  void incrGameCount();
 
 private:
-  /*add prize to big prize pool*/
-  void incrPrize(int64_t bet);
-  /*add prize to specified machine*/
-  void incrPrize(int32_t roomID, int64_t bet);
   bool getRoomByUserId(int32_t userID, TSRoomPtr &pRoom);
   bool getRoom(int32_t roomID, TSRoomPtr &room);
-  bool getRooms(TSRooms &out);
   bool createRoom(int32_t roomID, int64_t refill, TSRoomPtr &pRoom);
   bool createRoom(int32_t roomID, int64_t refill);
 
-  bool incrRoomTotalPrize(int32_t roomID, int64_t totalPrize);
-  bool takeRoomTotalPrize(int32_t roomID, int64_t refill, int64_t &totalPrize);
-  bool useRoom(int32_t userID, int32_t roomID);
-  bool reserveRoom(int32_t userID, int32_t roomID);
   bool leavingRoom(int32_t userID, TSRoomPtr pRoom);
   bool leavingRoom(int32_t userID, int32_t roomID);
 
   std::mutex _lock;
   std::map<int32_t, TSRoomPtr> _rooms;
   std::map<int32_t, int32_t> _user2room;
-  TSConfig _cfg;
 
   int64_t spinCount{0};
-  int64_t poolSize{0};
+  int64_t totalPrize{0};
+  int32_t minRoomPrize{0};
+  int32_t minHallPrize{0};
+  int32_t reserveTime{600};
 };
 
 END_NAMESPACE

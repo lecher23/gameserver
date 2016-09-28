@@ -10,6 +10,13 @@ TSHall::TSHall(){
 TSHall::~TSHall(){
 }
 
+bool TSHall::init(int32_t hallPrize, int32_t roomPrize, int32_t rTime) {
+    minHallPrize = hallPrize;
+    minRoomPrize = roomPrize;
+    reserveTime = rTime;
+    return true;
+}
+
 bool TSHall::getRoomByUserId(int32_t userID, TSRoomPtr &pRoom) {
     auto itr = _user2room.find(userID);
     if (itr == _user2room.end() || itr->second == BLANK_ROOM_ID) {
@@ -60,23 +67,34 @@ bool TSHall::createRoom(int32_t roomID, int64_t refill, TSRoomPtr &pRoom) {
     return false;
 }
 
-bool TSHall::incrRoomTotalPrize(int32_t roomID, int64_t totalPrize) {
-    TSRoomPtr pRoom;
-    if (!getRoom(roomID, pRoom)) {
-        return false;
-    }
-    pRoom->totalPrize += totalPrize;
-    return true;
+void TSHall::incrPrize(int64_t prize) {
+    MUTEX_GUARD(_lock);
+    totalPrize += prize;
 }
 
-bool TSHall::takeRoomTotalPrize(int32_t roomID, int64_t refill, int64_t &totalPrize) {
+void TSHall::incrPrize(int32_t roomID, int64_t totalPrize) {
+    TSRoomPtr pRoom;
+    if (getRoom(roomID, pRoom)) {
+        pRoom->totalPrize += totalPrize;
+    }
+}
+
+int64_t TSHall::takeRoomPrize(int32_t roomID) {
+    MUTEX_GUARD(_lock);
     TSRoomPtr pRoom;
     if(!getRoom(roomID, pRoom)) {
-        return false;
+        return 0;
     }
-    totalPrize = pRoom->totalPrize;
-    pRoom->totalPrize = refill;
-    return true;
+    auto tmp = pRoom->totalPrize;
+    pRoom->totalPrize = minRoomPrize;
+    return tmp;
+}
+
+int64_t TSHall::takeHallPrize() {
+    MUTEX_GUARD(_lock);
+    auto tmp = totalPrize;
+    totalPrize = minHallPrize;
+    return tmp;
 }
 
 bool TSHall::useRoom(int32_t userID, int32_t roomID) {
@@ -84,29 +102,26 @@ bool TSHall::useRoom(int32_t userID, int32_t roomID) {
     do {
         auto itr = _user2room.find(userID);
         if(itr != _user2room.end() && itr->second != 0) {
-            CLOG(INFO) << "leaving room " << itr->second;
-            // leaving old room
+            //CLOG(INFO) << "leaving room " << itr->second;
             leavingRoom(userID, itr->second);
         }
         TSRoomPtr pRoom;
         auto now = cgserver::CTimeUtil::getCurrentTimeInSeconds();
         if(!getRoom(roomID, pRoom)) {
-            CLOG(INFO) << "Room "<< roomID <<" not exist ";
-            // room not exist, create it
-            ret = createRoom(roomID, _cfg.rMinPoolSize, pRoom);
+            //CLOG(INFO) << "Room "<< roomID <<" not exist ";
+            ret = createRoom(roomID, minRoomPrize, pRoom);
         } else if (pRoom->status != ERS_ROOM_FREE){
-            CLOG(INFO) << "Room "<< roomID <<" not free ";
-            if (now - pRoom->lastActive < _cfg.rRoomReserveTime) {
-                CLOG(INFO) << "Room "<< roomID <<" not expire. ";
+            //CLOG(INFO) << "Room "<< roomID <<" not free ";
+            if (now - pRoom->lastActive < reserveTime) {
+                CLOG(ERROR) << "Room "<< roomID <<" in use. ";
                 // room in using
                 break;
             }
-            CLOG(INFO) << "force user " << pRoom->userID << " leaving room " << pRoom->roomID;
+            //CLOG(INFO) << "force user " << pRoom->userID << " leaving room " << pRoom->roomID;
             // force dead user leaving
             leavingRoom(pRoom->userID, pRoom);
             pRoom->lastActive = now;
         }
-        CLOG(INFO) << "user " << userID << " take room " << pRoom->roomID;
         // take this room
         pRoom->status = ERS_ROOM_BUSY;
         pRoom->userID = userID;
@@ -145,5 +160,32 @@ bool TSHall::leavingRoom(int32_t userID, int32_t roomID) {
     leavingRoom(userID, pRoom);
     return true;
 }
+
+int32_t TSHall::getGameCount(int32_t roomID) {
+    TSRoomPtr pRoom;
+    if (!getRoom(roomID, pRoom)) {
+        CLOG(WARNING) << "Invalid room id:" << roomID;
+        return 0;
+    }
+    return pRoom->spinCount;
+}
+
+int32_t TSHall::getGameCount() {
+    return spinCount;
+}
+
+void TSHall::incrGameCount(int32_t roomID) {
+    MUTEX_GUARD(_lock);
+    TSRoomPtr pRoom;
+    if (getRoom(roomID, pRoom)) {
+        ++pRoom->spinCount;
+    }
+}
+
+void TSHall::incrGameCount() {
+    MUTEX_GUARD(_lock);
+    ++spinCount;
+}
+
 
 END_NAMESPACE
