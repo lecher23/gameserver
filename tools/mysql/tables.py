@@ -122,9 +122,9 @@ ele_config = [
 ]
 
 common_config = [
-    ('config_id', 'INT NOT NULL PRIMARY KEY'),
+    ('code', 'INT NOT NULL PRIMARY KEY'),
     ('value', 'BIGINT NOT NULL'),
-    ('extra', 'BIGINT NOT NULL DEFAULT 0')
+    ('extra', 'BIGINT DEFAULT 0')
 ]
 
 table_defines = {

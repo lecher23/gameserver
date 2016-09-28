@@ -179,6 +179,10 @@ public:
     return 0;
   }
 
+  void setRepeatElementEnabled(bool val) {
+    bEleRepeatInCol = val;
+  }
+
   bool repeatElementEnabled() {
     return bEleRepeatInCol;
   }
@@ -212,12 +216,28 @@ public:
     jackpot1Count = count;
   }
 
+  void setJackpot1EleID(int32_t eleID) {
+    jackpot1ID = eleID;
+  }
+
+  void setJackpot1Count(int32_t count) {
+    jackpot1Count = count;
+  }
+
   int32_t getJackpot1EleID() {
     return jackpot1ID;
   }
 
   bool isJackpot1(int32_t dest, int32_t count) {
     return (dest == jackpot1ID && count == jackpot1Count);
+  }
+
+  void setJackpot2EleID(int32_t eleID) {
+    jackpot2ID = eleID;
+  }
+
+  void setJackpot2Count(int32_t count) {
+    jackpot2Count = count;
   }
 
   void setJackpot2Limit(int32_t limit) {

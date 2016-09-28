@@ -186,6 +186,7 @@ common_cfg = [
     (30004, 8, 0), # free times when element repeat 4(30004 - 30000) times
     (30005, 12, 0),
     (40000, 1002, 0), # element id for tigger tiny game
+    (40003, 1, 0), # tiny game id when element repeat 3 times
     (50001, 5, 0), # big win
     (50002, 10, 0), # mega win
     (50003, 15, 0), # super win

@@ -4,6 +4,16 @@
 
 using namespace cgserver;
 BEGIN_NAMESPACE(slots)
+
+#define SELECT_ALL_FROM_TABLE(var, table_name)                  \
+    MysqlSimpleSelect var;                                      \
+    var.setField("*");                                          \
+    var.setTable(table_name);                                   \
+    if (!_pool.doMysqlOperation((MysqlOperationBase *) &var)) { \
+	return false;                                           \
+    }
+
+
 SlotsDB::SlotsDB():_pool(cgserver::MysqlConnPool::getInstance()){
 }
 
@@ -628,13 +638,7 @@ bool SlotsDB::collectAchievements(const MysqlRows &result, Achievements &out) co
 }
 
 bool SlotsDB::getAchivementSetting(CjSettingMap &out) {
-    MysqlSimpleSelect mss;
-    mss.setField("*");
-    mss.setTable(gAchievementDetail);
-    if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss)) {
-	CLOG(WARNING) << "Get achievement setting from mysql failed.";
-	return false;
-    }
+    SELECT_ALL_FROM_TABLE(mss, gAchievementDetail);
     for (auto &row: mss.result) {
 	CjSettingPtr item(new CjSetting);
 	if (!item->deserialize(row)) {
@@ -647,13 +651,7 @@ bool SlotsDB::getAchivementSetting(CjSettingMap &out) {
 }
 
 bool SlotsDB::getVipSetting(VipConfigs &out) const {
-    MysqlSimpleSelect mss;
-    mss.setField("*");
-    mss.setTable(gVipSetting);
-    if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss)) {
-	CLOG(WARNING) << "Get vip setting from mysql failed.";
-	return false;
-    }
+    SELECT_ALL_FROM_TABLE(mss, gVipSetting);
     for (auto &row: mss.result) {
 	VipConfigItem item;
 	if (!item.deserialize(row)) {
@@ -664,15 +662,8 @@ bool SlotsDB::getVipSetting(VipConfigs &out) const {
     }
     return true;
 }
-
 bool SlotsDB::getLevelSetting(LevelConfigs &out) const {
-    MysqlSimpleSelect mss;
-    mss.setField("*");
-    mss.setTable(gLevelSetting);
-    if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss)) {
-	CLOG(WARNING) << "Get level setting from mysql failed.";
-	return false;
-    }
+    SELECT_ALL_FROM_TABLE(mss, gLevelSetting);
     for (auto &row: mss.result) {
 	LevelConfig item;
 	if (!item.deserialize(row)) {
@@ -685,13 +676,7 @@ bool SlotsDB::getLevelSetting(LevelConfigs &out) const {
 }
 
 bool SlotsDB::getBet2ExpSetting(Bet2ExpConfigs &out) const {
-    MysqlSimpleSelect mss;
-    mss.setField("*");
-    mss.setTable(gBetExpSetting);
-    if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss)) {
-	CLOG(WARNING) << "Get level setting from mysql failed.";
-	return false;
-    }
+    SELECT_ALL_FROM_TABLE(mss, gBetExpSetting);
     for (auto &row: mss.result) {
 	if (!Bet2ExpConfig::deserialize(row, out)) {
 	    CLOG(WARNING) << "Init row setting from db failed.";
@@ -702,12 +687,7 @@ bool SlotsDB::getBet2ExpSetting(Bet2ExpConfigs &out) const {
 }
 
 bool SlotsDB::getGridsConfig(GridConfigs &out) const {
-    MysqlSimpleSelect mss;
-    mss.setField("*");
-    mss.setTable(gGridConfig);
-    if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss)) {
-	return false;
-    }
+    SELECT_ALL_FROM_TABLE(mss, gGridConfig);
     for (auto &row: mss.result) {
         GridConfig gc;
 	if (!gc.deserialize(row)) {
@@ -724,12 +704,7 @@ bool SlotsDB::getGridsConfig(GridConfigs &out) const {
 }
 
 bool SlotsDB::getLinesConfig(LinesConfig &out) const {
-    MysqlSimpleSelect mss;
-    mss.setField("*");
-    mss.setTable(gLineConfig);
-    if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss)) {
-	return false;
-    }
+    SELECT_ALL_FROM_TABLE(mss, gLineConfig);
     for (auto &row: mss.result) {
         LineConfig lc;
 	if (!lc.deserialize(row)) {
@@ -741,12 +716,7 @@ bool SlotsDB::getLinesConfig(LinesConfig &out) const {
 }
 
 bool SlotsDB::getElementsConfig(ElementsConfig &out) const {
-    MysqlSimpleSelect mss;
-    mss.setField("*");
-    mss.setTable(gElementConfig);
-    if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss)) {
-	return false;
-    }
+    SELECT_ALL_FROM_TABLE(mss, gElementConfig);
     for (auto &row: mss.result) {
         ElementConfig ec;
 	if (!ec.deserialize(row)) {
@@ -758,12 +728,7 @@ bool SlotsDB::getElementsConfig(ElementsConfig &out) const {
 }
 
 bool SlotsDB::getSlotsElements(SlotElements &out) const {
-    MysqlSimpleSelect mss;
-    mss.setField("*");
-    mss.setTable(gSloteElement);
-    if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss)) {
-	return false;
-    }
+    SELECT_ALL_FROM_TABLE(mss, gSloteElement);
     for (auto &row: mss.result) {
 	if (!SlotElement::deserialize(row, out)) {
 	    return false;
@@ -772,6 +737,18 @@ bool SlotsDB::getSlotsElements(SlotElements &out) const {
     return true;
 }
 
+bool SlotsDB::getThemeCommonConfig(ThemeCommonConfig &out) const {
+    SELECT_ALL_FROM_TABLE(mss, gThemeCommonConfig);
+    for (auto &row: mss.result) {
+        ThemeCommonConfigItem item;
+        if (!item.deserialize(row)) {
+            return false;
+        }
+        out.push_back(item);
+    }
+    return true;
+}
 
+#undef SELECT_ALL_FROM_TABLE
 
 END_NAMESPACE

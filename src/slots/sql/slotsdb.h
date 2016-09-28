@@ -12,6 +12,7 @@
 #include <slots/model/gridconfig.h>
 #include <slots/model/lineconfig.h>
 #include <slots/model/elementsconfig.h>
+#include <slots/model/themecommonconfig.h>
 
 BEGIN_NAMESPACE(slots)
 const std::string gAchievement = "user_achievement";
@@ -35,6 +36,7 @@ const std::string gLineConfig = "line_config";
 const std::string gGridConfig = "grid_config";
 const std::string gSloteElement = "ele_info";
 const std::string gThemeHistory = "theme_history";
+const std::string gThemeCommonConfig = "theme_common_cfg";
 
 class SlotsDB{
 public:
@@ -66,6 +68,7 @@ public:
     bool getLinesConfig(LinesConfig &out) const;
     bool getElementsConfig(ElementsConfig &out) const;
     bool getSlotsElements(SlotElements &out) const;
+    bool getThemeCommonConfig(ThemeCommonConfig &out) const;
 
     bool addUser(const std::string &mid, std::string &uid)const ;
     bool add(const UserCJ &cj);
