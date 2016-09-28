@@ -76,7 +76,11 @@ def get_obj_from_file(fpath):
 def get_line_cfg():
     path = os.path.join(CUR_PATH, "game_config/TemplePrincess/LineConfig.json")
     obj = get_obj_from_file(path)
-    return [('%d,%d,%d,%d,%d,%d' % (i["Column0"],i["Column1"],i["Column2"], i["Column3"],i["Column4"],i["Column5"]), ) for i in obj]
+    ret = []
+    for line in obj:
+        sk = sorted([key for key in line.keys() if key.startswith("Column")])
+        ret.append((','.join([str(line[key]) for key in sk]),))
+    return ret
 
 def format_line_cfg(line):
     result = []
@@ -129,7 +133,7 @@ def check_grid(x):
 def get_ele_info():
     path = os.path.join(CUR_PATH, "game_config/TemplePrincess/LineBonus.json")
     obj = get_obj_from_file(path)
-    return [(i["ID"], i["Type"] if i["Type"] < 4 else 0) for i in obj]
+    return [(i["ID"], i["Type"] if i["Type"] < 4 else 0, i["Repeat"]) for i in obj]
 
 '''element id| line number| value'''
 def get_line_bouns():
@@ -137,11 +141,10 @@ def get_line_bouns():
     obj = get_obj_from_file(path)
     ret = []
     for i in obj:
-        ret.append((i["ID"], 2, i["Link2"]))
-        ret.append((i["ID"], 3, i["Link2"]))
-        ret.append((i["ID"], 4, i["Link2"]))
-        ret.append((i["ID"], 5, i["Link2"]))
-        ret.append((i["ID"], 6, i["Link2"]))
+        for key, value in i.items():
+            if key.startswith("Link"):
+                count = int(key.replace("Link", ""))
+                ret.append((i['ID'], count, value))
     return ret;
 
 '''config id|value|extra'''
@@ -194,4 +197,4 @@ def get_theme_common_cfg():
     ]
     return theme_common_cfg
 if __name__ == "__main__":
-    print get_common_cfg()
+    print get_ele_info()
