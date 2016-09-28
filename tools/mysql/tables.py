@@ -60,7 +60,7 @@ game_history = [
 ]
 
 theme_history = [
-    ('uid', 'INT NOT NULL')
+    ('uid', 'INT NOT NULL'),
     ('theme_id', 'INT NOT NULL'),
     ('tag', 'INT NOT NULL'), # history type
     ('value', 'INT DEFAULT(0)'),
@@ -136,7 +136,7 @@ table_defines = {
     'grid_config': grid_config,
     'ele_info': ele_info,
     'ele_config': ele_config,
-    'common_config': common_config,
+    'theme_common_cfg': common_config,
     'game_history': game_history,
     'theme_history': theme_history,
 }

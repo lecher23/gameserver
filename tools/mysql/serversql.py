@@ -463,6 +463,10 @@ if __name__ == "__main__":
         elif second == "line":
             for item in gs.format_line_cfg(gs.line_cfg):
                 lbs.addColumn("line_config", ["line"], [str(k) for k in item])
+        elif second == "common":
+            for item in gs.get_theme_common_cfg():
+                lbs.addColumn("theme_common_cfg", ["code", "value", "extra"], [str(k) for k in item])
+        exit(0)
 
     if cmd == "debug":
         nxt = sys.argv[2]

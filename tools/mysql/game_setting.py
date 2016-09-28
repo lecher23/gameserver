@@ -166,30 +166,32 @@ def get_common_cfg():
         exit(1)
     return ret
 
-common_cfg = [
-    (10001, 5, 0), # tax for prize pool
-    (10002, 5000, 0), # min prize pool
-    (10003, 1013, 0), # element id for roll prize
-    (10004, 6, 0), # element count for roll prize
-    (10005, 0, 0), # enable repeat element, 0:false, 1:true
-    (10006, 600, 0),# reserve room time: 600s
-    (10007, 17280, 0), # force hit count
-    (10008, 1000, 0), # min bet need to roll
-    (20001, 1, 0), # tax for big prize pool
-    (20002, 10000, 0), # min prize pool
-    (20003, 1014, 0), # element id for roll big prize
-    (20004, 6, 0), # element count for roll big prize
-    (20005, 17280, 0), # force hit count for big prize
-    (20008, 100, 0), # min bet need to roll
-    (30000, 10001, 0), # element id for trigger free game
-    (30003, 5, 0), # free times when element repeat 3 times
-    (30004, 8, 0), # free times when element repeat 4(30004 - 30000) times
-    (30005, 12, 0),
-    (40000, 1002, 0), # element id for tigger tiny game
-    (40003, 1, 0), # tiny game id when element repeat 3 times
-    (50001, 5, 0), # big win
-    (50002, 10, 0), # mega win
-    (50003, 15, 0), # super win
-]
+def get_theme_common_cfg():
+    theme_common_cfg = [
+        (10001, 5, 0), # tax for prize pool
+        (10002, 5000, 0), # min prize pool
+        (10003, 1013, 0), # element id for roll prize
+        (10004, 6, 0), # element count for roll prize
+        (10005, 0, 0), # enable repeat element, 0:false, 1:true
+        (10006, 600, 0),# reserve room time: 600s
+        (10007, 17280, 0), # force hit count
+        (10008, 1000, 0), # min bet need to roll
+        (20001, 1, 0), # tax for big prize pool
+        (20002, 10000, 0), # min prize pool
+        (20003, 1014, 0), # element id for roll big prize
+        (20004, 6, 0), # element count for roll big prize
+        (20005, 17280, 0), # force hit count for big prize
+        (20008, 100, 0), # min bet need to roll
+        (30000, 10001, 0), # element id for trigger free game
+        (30003, 5, 0), # free times when element repeat 3 times
+        (30004, 8, 0), # free times when element repeat 4(30004 - 30000) times
+        (30005, 12, 0),
+        (40000, 1002, 0), # element id for tigger tiny game
+        (40003, 1, 0), # tiny game id when element repeat 3 times
+        (50001, 5, 0), # big win
+        (50002, 10, 0), # mega win
+        (50003, 15, 0), # super win
+    ]
+    return theme_common_cfg
 if __name__ == "__main__":
     print get_common_cfg()
