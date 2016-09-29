@@ -444,8 +444,7 @@ if __name__ == "__main__":
             for item in gs.line_cfg:
                 lbs.addColumn("line_config", ["line"], [str(k) for k in item])
             for item in gs.grid_cfg:
-                lbs.addColumn("grid_config", ["grid_idx", "ele_id", "weight"],
-                              [str(k) for k in item])
+                lbs.addColumn("free_grid_config", [], [str(k) for k in item])
             for item in gs.ele_info:
                 lbs.addColumn("ele_info", [], [str(k) for k in item])
             for item in gs.ele_cfg:
@@ -466,6 +465,21 @@ if __name__ == "__main__":
         elif second == "common":
             for item in gs.get_theme_common_cfg():
                 lbs.addColumn("theme_common_cfg", ["code", "value", "extra"], [str(k) for k in item])
+        elif second == "tp":
+            tmap = {
+                "ele_info": gs.get_ele_info(),
+                "ele_config": gs.get_line_bouns(),
+                "tiny_game_config": gs.get_tiny_game_cfg(),
+                "free_grid_config": gs.get_free_game_grid_cfg(),
+                "grid_config": gs.get_grid_cfg(),
+                "line_config": gs.get_line_cfg(),
+                "theme_common_cfg": gs.get_common_cfg()
+            }
+            for k, v in tmap.items():
+                print "Add config for table: %s" % k
+                lbs.createTable2(k)
+                for item in v:
+                    lbs.addColumn(k, [], [str(val) for val in item])
         exit(0)
 
     if cmd == "debug":

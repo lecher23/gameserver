@@ -6,6 +6,7 @@ cur_dir = os.path.split(os.path.realpath(__file__))[0]
 
 svn_path = "/home/licheng/Documents/slotdesign"
 
+config_root_path = "配置表"
 temple_princess_path = "配置表/主题配置/TemplePrincess"
 temple_princess_config_file = ["*.json"]
 
@@ -25,3 +26,5 @@ if __name__ == "__main__":
     for f in temple_princess_config_file:
         copy_file(os.path.join(cp, temple_princess_path, f),
                   os.path.join(cur_dir, config_dest, "TemplePrincess"))
+    copy_file(os.path.join(cp, config_root_path, "*.json"),
+              os.path.join(cur_dir, config_dest))

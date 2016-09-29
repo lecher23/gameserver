@@ -102,29 +102,38 @@ line_config = [
 ]
 
 grid_config = [
-    ('_id', 'INT AUTO_INCREMENT PRIMARY KEY'),
     ('row', 'INT NOT NULL'),
     ('col', 'INT NOT NULL'),
     ('ele_id', 'INT NOT NULL'),
-    ('weight', 'INT NOT NULL')
+    ('weight', 'INT NOT NULL'),
+    ('', 'PRIMARY KEY(row, col, ele_id)')
 ]
 
 ele_info = [
     ('id', 'INT NOT NULL PRIMARY KEY'),
-    ('type', 'TINYINT DEFAULT 0')
+    ('type', 'TINYINT DEFAULT 0'),
+    ('repeatable', 'BOOL NOT NULL')
 ]
 
 ele_config = [
-    ('_id', 'INT AUTO_INCREMENT PRIMARY KEY'),
     ('ele_id', 'INT NOT NULL'),
     ('line_num', 'INT NOT NULL'),
-    ('value', 'INT NOT NULL')
+    ('value', 'INT NOT NULL'),
+    ('', 'PRIMARY KEY(ele_id, line_num)')
 ]
 
 common_config = [
     ('code', 'INT NOT NULL PRIMARY KEY'),
     ('value', 'BIGINT NOT NULL'),
     ('extra', 'BIGINT DEFAULT 0')
+]
+
+tiny_game_config = [
+    ('game_id', 'INT NOT NULL'),
+    ('cfg_tag', 'INT NOT NULL'),
+    ('cfg_val', 'BIGINT NOT NULL'),
+    ('descript', 'CHAR(24) NOT NULL DEFAULT ""'),
+    ('', 'PRIMARY KEY(game_id, cfg_tag)')
 ]
 
 table_defines = {
@@ -134,11 +143,13 @@ table_defines = {
     'bet_exp_cfg': bet_exp_config,
     'line_config': line_config,
     'grid_config': grid_config,
+    'free_grid_config': grid_config,
     'ele_info': ele_info,
     'ele_config': ele_config,
     'theme_common_cfg': common_config,
     'game_history': game_history,
     'theme_history': theme_history,
+    'tiny_game_config': tiny_game_config
 }
 
 def parse_dict_to_db_sql(table_name, table_define = []):

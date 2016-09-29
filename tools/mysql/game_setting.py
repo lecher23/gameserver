@@ -79,7 +79,7 @@ def get_line_cfg():
     ret = []
     for line in obj:
         sk = sorted([key for key in line.keys() if key.startswith("Column")])
-        ret.append((','.join([str(line[key]) for key in sk]),))
+        ret.append((line['ID'], ','.join([str(line[key]) for key in sk]),))
     return ret
 
 def format_line_cfg(line):
@@ -99,6 +99,14 @@ def format_line_cfg(line):
 '''column|row|element id|weight'''
 def get_grid_cfg():
     path = os.path.join(CUR_PATH, "game_config/TemplePrincess/LineRate.json")
+    obj = get_obj_from_file(path)
+    ret = [(i["Col"], i["Row"], i["Ele_ID"], i["Pro"]) for i in obj]
+    check_grid(ret)
+    return ret
+
+'''column|row|element id|weight'''
+def get_free_game_grid_cfg():
+    path = os.path.join(CUR_PATH, "game_config/TemplePrincess/FreeRate.json")
     obj = get_obj_from_file(path)
     ret = [(i["Col"], i["Row"], i["Ele_ID"], i["Pro"]) for i in obj]
     check_grid(ret)
@@ -129,13 +137,13 @@ def check_grid(x):
                 print "(col[%d], row[%d]) not exist!" % (i, j)
                 exit(1)
 
-'''element id| element type'''
+'''element id| element type| repeatable'''
 def get_ele_info():
     path = os.path.join(CUR_PATH, "game_config/TemplePrincess/LineBonus.json")
     obj = get_obj_from_file(path)
     return [(i["ID"], i["Type"] if i["Type"] < 4 else 0, i["Repeat"]) for i in obj]
 
-'''element id| line number| value'''
+'''element id| link value| reward'''
 def get_line_bouns():
     path = os.path.join(CUR_PATH, "game_config/TemplePrincess/LineBonus.json")
     obj = get_obj_from_file(path)
@@ -150,23 +158,76 @@ def get_line_bouns():
 '''config id|value|extra'''
 def get_common_cfg():
     ret = []
+    # game element setting
+    FREE_ELE_TYPE = 3
+    TINY_ELE_TYPE = 2
+    ROOM_ELE_TYPE = 4
+    HALL_ELE_TYPE = 5
+    special_ele_type = {
+        FREE_ELE_TYPE: None,
+        TINY_ELE_TYPE: None,
+        ROOM_ELE_TYPE: None,
+        HALL_ELE_TYPE: None
+    }
+    FREE_CODE_START = 30000
+
+    path = os.path.join(CUR_PATH, "game_config/TemplePrincess/LineBonus.json")
+    obj = get_obj_from_file(path)
+    max_link = 0;
+    for item in obj:
+        ele_type = item["Type"]
+        if ele_type in special_ele_type:
+            special_ele_type[ele_type]  = item["ID"]
+        x = [int(tag.replace("Link", "")) for tag in item.keys() if tag.startswith("Link")]
+        max_link = sorted(x)[-1]
+    for k, v in special_ele_type.items():
+        assert v is not None
+    assert max_link > 0
+    ret.append((10003, special_ele_type[ROOM_ELE_TYPE], 0))
+    ret.append((10004, max_link, 0))
+    ret.append((10006, 600, 0))
+    ret.append((20003, special_ele_type[HALL_ELE_TYPE], 0))
+    ret.append((20004, max_link, 0))
+    ret.append((40000, special_ele_type[TINY_ELE_TYPE], 0))
+    ret.append((FREE_CODE_START, special_ele_type[FREE_ELE_TYPE], 0))
     # free game times setting
     path = os.path.join(CUR_PATH, "game_config/TemplePrincess/Scatter.json")
     obj = get_obj_from_file(path)
     for item in obj:
-        ret.append((30000 + item["Counts"], item["Numbers"]))
+        ret.append((FREE_CODE_START + item["Counts"], item["Numbers"], 0))
     # config for prize pool
     path = os.path.join(CUR_PATH, "game_config/TemplePrincess/Special.json")
     obj = get_obj_from_file(path)
     idx = 10000
     for item in obj:
-        ret.append((idx + 1, item["PerBonus"]))
-        ret.append((idx + 2, item["BaseBonus"]))
-        ret.append((idx + 8, item["LimitBet"]))
+        ret.append((idx + 1, item["PerBonus"], 0))
+        ret.append((idx + 2, item["BaseBonus"], 0))
+        ret.append((idx + 8, item["LimitBet"], 0))
         idx += 10000
-    if idx > 30000:
-        print "Error. invalid idx: %d" % idx
-        exit(1)
+    assert idx == 30000
+    # get win show config
+    path = os.path.join(CUR_PATH, "game_config/Config.json")
+    obj = get_obj_from_file(path)
+    for item in obj:
+        ret.append((50001, item["BigWin"], 0))
+        ret.append((50002, item["MegaWin"], 0))
+        ret.append((50003, item["SuperWin"], 0))
+    return ret
+
+# id| key| value| explain
+def get_tiny_game_cfg():
+    ret = []
+    path = os.path.join(CUR_PATH, "game_config/TemplePrincess/Bonus.json")
+    obj = get_obj_from_file(path)
+    for item in obj:
+        gid = item["ID"]
+        idx = 0
+        order_keys = sorted(item.keys())
+        for k in order_keys:
+            if k == "ID":
+                continue
+            ret.append((gid, idx, item[k], k))
+            idx += 1
     return ret
 
 def get_theme_common_cfg():
@@ -175,7 +236,7 @@ def get_theme_common_cfg():
         (10002, 5000, 0), # min prize pool
         (10003, 1013, 0), # element id for roll prize
         (10004, 6, 0), # element count for roll prize
-        (10005, 0, 0), # enable repeat element, 0:false, 1:true
+        #(10005, 0, 0), # enable repeat element, 0:false, 1:true
         (10006, 600, 0),# reserve room time: 600s
         (10007, 17280, 0), # force hit count
         (10008, 1000, 0), # min bet need to roll
@@ -197,4 +258,4 @@ def get_theme_common_cfg():
     ]
     return theme_common_cfg
 if __name__ == "__main__":
-    print get_ele_info()
+    print get_common_cfg()
