@@ -34,13 +34,13 @@ struct ElementConfig {
   int32_t lineNum;
   int32_t value;
   bool deserialize(std::vector<std::string> &row) {
-    if(row.size() < 4) {
+    if(row.size() < 3) {
       CLOG(ERROR) << "invalid fields num";
       return false;
     }
-    bool ret = cgserver::StringUtil::StrToInt32(row[1].c_str(), eleID);
-    ret = ret && cgserver::StringUtil::StrToInt32(row[2].c_str(), lineNum);
-    ret = ret && cgserver::StringUtil::StrToInt32(row[3].c_str(), value);
+    bool ret = cgserver::StringUtil::StrToInt32(row[0].c_str(), eleID);
+    ret = ret && cgserver::StringUtil::StrToInt32(row[1].c_str(), lineNum);
+    ret = ret && cgserver::StringUtil::StrToInt32(row[2].c_str(), value);
     return ret;
   }
 };

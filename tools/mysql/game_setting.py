@@ -79,7 +79,13 @@ def get_line_cfg():
     ret = []
     for line in obj:
         sk = sorted([key for key in line.keys() if key.startswith("Column")])
-        ret.append((line['ID'], ','.join([str(line[key]) for key in sk]),))
+        col = len(sk)
+        tmp = []
+        idx = 0
+        for item in sk:
+            tmp.append(str(line[item] * col + idx))
+            idx += 1
+        ret.append((line['ID'], ','.join(tmp)))
     return ret
 
 def format_line_cfg(line):
@@ -100,7 +106,7 @@ def format_line_cfg(line):
 def get_grid_cfg():
     path = os.path.join(CUR_PATH, "game_config/TemplePrincess/LineRate.json")
     obj = get_obj_from_file(path)
-    ret = [(i["Col"], i["Row"], i["Ele_ID"], i["Pro"]) for i in obj]
+    ret = [(i["Row"], i["Col"], i["Ele_ID"], i["Pro"]) for i in obj]
     check_grid(ret)
     return ret
 
@@ -108,7 +114,7 @@ def get_grid_cfg():
 def get_free_game_grid_cfg():
     path = os.path.join(CUR_PATH, "game_config/TemplePrincess/FreeRate.json")
     obj = get_obj_from_file(path)
-    ret = [(i["Col"], i["Row"], i["Ele_ID"], i["Pro"]) for i in obj]
+    ret = [(i["Row"], i["Col"], i["Ele_ID"], i["Pro"]) for i in obj]
     check_grid(ret)
     return ret
 

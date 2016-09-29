@@ -37,7 +37,7 @@ public:
       // other element:6, 7
       TSConfig cfg;
       for (int i = 1; i < 8; ++i) {
-        cfg.addElement(i, NORMAL_ELEMENT);
+        cfg.addElement(i, NORMAL_ELEMENT, false);
       }
       std::vector<int32_t> line1 = {0,1,2,3};
       std::vector<int32_t> line2 = {8,5,2,7};
@@ -86,21 +86,25 @@ public:
     ast_eq(21, grd.lines[0].lineID);            \
     grd.lines.clear();
 
+    void init_tsconfig(TSConfig &cfg) {
+      cfg.addElement(0, NORMAL_ELEMENT, false);
+      cfg.addElement(1, NORMAL_ELEMENT, false);
+      cfg.addElement(2, NORMAL_ELEMENT, false);
+      cfg.addElement(3, NORMAL_ELEMENT, false);
+
+      cfg.addElement(4, WILD_ELEMENT, false);
+      cfg.addElement(5, WILD_ELEMENT, false);
+      cfg.addElement(6, WILD_ELEMENT, false);
+
+      cfg.addElement(7, (WILD_ELEMENT + NORMAL_ELEMENT) * 2, false);
+    }
+
     void test_countLines_with_wild() {
       // normal element: 1, 2, 3
       // wild element: 4, 5
       // other element:6, 7
       TSConfig cfg;
-      cfg.addElement(0, NORMAL_ELEMENT);
-      cfg.addElement(1, NORMAL_ELEMENT);
-      cfg.addElement(2, NORMAL_ELEMENT);
-      cfg.addElement(3, NORMAL_ELEMENT);
-
-      cfg.addElement(4, WILD_ELEMENT);
-      cfg.addElement(5, WILD_ELEMENT);
-      cfg.addElement(6, WILD_ELEMENT);
-
-      cfg.addElement(7, (WILD_ELEMENT + NORMAL_ELEMENT) * 2);
+      init_tsconfig(cfg);
 
       std::vector<int32_t> line1 = {0,1,2,3,4};
       cfg.addLine(21, line1);
@@ -149,16 +153,7 @@ public:
     void test_countLine_all_wild()
     {
       TSConfig cfg;
-      cfg.addElement(0, NORMAL_ELEMENT);
-      cfg.addElement(1, NORMAL_ELEMENT);
-      cfg.addElement(2, NORMAL_ELEMENT);
-      cfg.addElement(3, NORMAL_ELEMENT);
-
-      cfg.addElement(4, WILD_ELEMENT);
-      cfg.addElement(5, WILD_ELEMENT);
-      cfg.addElement(6, WILD_ELEMENT);
-
-      cfg.addElement(7, (WILD_ELEMENT + NORMAL_ELEMENT) * 2);
+      init_tsconfig(cfg);
       GameResult grd;
 
       std::vector<int32_t> line1 = {0,1,2,3,4};
@@ -174,15 +169,29 @@ public:
     {
       std::set<int32_t> forbid;
       TSGrid sg;
-      sg.addElement(10, 5);
-      sg.addElement(16, 8);
+      sg.addElement(1, 3);
+      sg.addElement(2, 1);
+      sg.addElement(3, 1);
+      sg.addElement(4, 7);
+      sg.addElement(5, 6);
+      sg.addElement(6, 6);
+      sg.addElement(7, 6);
+      sg.addElement(8, 2);
+      sg.addElement(9, 2);
+      sg.addElement(10, 2);
+      sg.addElement(11, 1);
+      sg.addElement(12, 1);
+      CLOG(INFO) << "Total weight:" << sg.getTotalWeight();
       TSConfig cfg;
       TemplePrincess game(cfg);
-      ast_eq(10, game.locateElement(0, forbid, sg));
-      ast_eq(10, game.locateElement(3, forbid, sg));
-      ast_eq(16, game.locateElement(5, forbid, sg));
-      ast_eq(16, game.locateElement(12, forbid, sg));
-      ast_eq(10, game.locateElement(13, forbid, sg));
+      ast_eq(1, game.locateElement(0, forbid, sg));
+      ast_eq(1, game.locateElement(1, forbid, sg));
+      ast_eq(1, game.locateElement(2, forbid, sg));
+      ast_eq(2, game.locateElement(3, forbid, sg));
+      ast_eq(3, game.locateElement(4, forbid, sg));
+      ast_eq(11, game.locateElement(36, forbid, sg));
+      ast_eq(12, game.locateElement(37, forbid, sg));
+      ast_eq(1, game.locateElement(38, forbid, sg));
     }
 
     void test_locateElement_has_forbid()
@@ -218,6 +227,25 @@ public:
       ast_eq(-1, game.locateElement(13, forbid, sg));
     }
 
+    void append_dict(std::map<int32_t, std::map<int32_t, int32_t>> &dict,
+                     int32_t index, int32_t eleID)
+    {
+        auto itr1 = dict[index].find(eleID);
+        if (itr1 == dict[index].end()) {
+            dict[index][eleID] = 0;
+        }
+        ++dict[index][eleID];
+    }
+
+    void print_dict(std::map<int32_t, std::map<int32_t, int32_t>> &dict) {
+        for (auto &grid: dict) {
+            printf("-------INDEX[%d]-------\n", grid.first);
+            for (auto &ele: grid.second) {
+                printf("%5d, %5d\n", ele.first, ele.second);
+            }
+        }
+    }
+
     void test_play()
     {
       ast_true(Config::getInstance().initConfig(cfg_file));
@@ -227,7 +255,8 @@ public:
       int32_t totalEarned = 0;
       int32_t totalCost = 0;
       std::map<int32_t, int32_t> ele;
-      for (int i = 0; i < 100; ++i) {
+      std::map<int32_t, std::map<int32_t, int32_t>> gridInfo;
+      for (int i = 0; i < 1000; ++i) {
           GameResult data;
           data.bet = 1000;
           data.lineNumber = 10;
@@ -237,19 +266,21 @@ public:
           }
           ast_true(data.gridsData.size() > 0);
           for (auto &item: data.gridsData) {
-            if(item.second == 0) {
-              CLOG(ERROR) << "catch 0 on position:" << item.first;
-              auto y = 100/item.second;
-            }
-            auto itr = ele.find(item.second);
-            if(itr == ele.end()) {
-              ele[item.second] = 0;
-            }
-            ele[item.second] ++;
+              append_dict(gridInfo, item.first, item.second);
+              if(item.second == 0) {
+                  CLOG(ERROR) << "catch 0 on position:" << item.first;
+                  auto y = 100/item.second;
+              }
+              auto itr = ele.find(item.second);
+              if(itr == ele.end()) {
+                  ele[item.second] = 0;
+              }
+              ele[item.second] ++;
           }
           totalEarned += data.earned.normal;
           totalCost += data.bet;
       }
+      print_dict(gridInfo);
       CLOG(INFO) << "total earned:" << totalEarned;
       CLOG(INFO) << "total cost  :" << totalCost;
       for (auto &item: ele){

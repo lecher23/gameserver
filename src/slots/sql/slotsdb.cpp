@@ -655,7 +655,7 @@ bool SlotsDB::getVipSetting(VipConfigs &out) const {
     for (auto &row: mss.result) {
 	VipConfigItem item;
 	if (!item.deserialize(row)) {
-	    CLOG(WARNING) << "Init row setting from db failed.";
+	    CLOG(WARNING) << "Init vip setting from db failed.";
 	    return false;
 	}
 	out[item.level] = item;
@@ -667,7 +667,7 @@ bool SlotsDB::getLevelSetting(LevelConfigs &out) const {
     for (auto &row: mss.result) {
 	LevelConfig item;
 	if (!item.deserialize(row)) {
-	    CLOG(WARNING) << "Init row setting from db failed.";
+	    CLOG(WARNING) << "Init level setting from db failed.";
 	    return false;
 	}
 	out[item.level] = item;
@@ -679,7 +679,7 @@ bool SlotsDB::getBet2ExpSetting(Bet2ExpConfigs &out) const {
     SELECT_ALL_FROM_TABLE(mss, gBetExpSetting);
     for (auto &row: mss.result) {
 	if (!Bet2ExpConfig::deserialize(row, out)) {
-	    CLOG(WARNING) << "Init row setting from db failed.";
+	    CLOG(WARNING) << "Init bet2exp setting from db failed.";
 	    return false;
 	}
     }
@@ -691,7 +691,7 @@ bool SlotsDB::getGridsConfig(GridConfigs &out) const {
     for (auto &row: mss.result) {
         GridConfig gc;
 	if (!gc.deserialize(row)) {
-	    CLOG(WARNING) << "Init row setting from db failed.";
+	    CLOG(WARNING) << "Init grid setting from db failed.";
 	    return false;
 	}
         if (out.rowNum < gc.row) { out.rowNum = gc.row;}

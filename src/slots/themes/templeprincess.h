@@ -15,7 +15,7 @@ public:
   bool play(TSResult &data) const ;
 
 private:
-  bool chooseElementInColumn(int32_t column, TSResult &data) const;
+  bool chooseElementInColumn(int32_t column, int32_t maxRow, TSResult &data) const;
   int32_t locateElement(int32_t rd, std::set<int32_t> &forbid, TSGrid &grid) const;
   void countLines(TSResult &data) const;
   void processLines(TSResult &data) const;

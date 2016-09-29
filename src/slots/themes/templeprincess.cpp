@@ -20,9 +20,10 @@ bool TemplePrincess::play(TSResult &data) const {
     if (data.bet >= _cfg.getJackpot2Limit()) {
         data.bJackpot2 = true;
     }
+    auto col = _cfg.getColumnNumber();
     auto row = _cfg.getRowNumber();
-    for (int32_t i = 0; i < row; ++i) {
-        if (!chooseElementInColumn(i, data)) {
+    for (int32_t i = 0; i < col; ++i) {
+        if (!chooseElementInColumn(i, row, data)) {
             return false;
         }
     }
@@ -32,9 +33,8 @@ bool TemplePrincess::play(TSResult &data) const {
     return true;
 }
 
-bool TemplePrincess::chooseElementInColumn(int32_t row, TSResult &data) const
+bool TemplePrincess::chooseElementInColumn(int32_t col, int32_t maxRow, TSResult &data) const
 {
-    auto maxColumn = _cfg.getColumnNumber();
     std::set<int32_t> forbidPool;
     if(!data.bJackpot1) {
         forbidPool.insert(_cfg.getJackpot1EleID());
@@ -44,8 +44,8 @@ bool TemplePrincess::chooseElementInColumn(int32_t row, TSResult &data) const
     }
     int32_t index;
     int32_t rd;
-    for (int32_t i = 0; i < maxColumn; ++i) {
-        index = _cfg.getGridIndex(row, i);
+    for (int32_t i = 0; i < maxRow; ++i) {
+        index = _cfg.getGridIndex(i, col);
         auto &grid = _cfg.getGrid(index, data.bFreeGame);
 
         rd = rand() % grid.getTotalWeight();
@@ -89,8 +89,8 @@ int32_t TemplePrincess::locateElement(
     return -1;
 }
 
-#define GET_ELEID_TYPE(ele_id, ele_type)        \
-    ele_id = data.gridsData[line.getPoint(pointPos)];       \
+#define GET_ELEID_TYPE(ele_id, ele_type)                \
+    ele_id = data.gridsData[line.getPoint(pointPos)];   \
     ele_type = _cfg.getElementType(ele_id);
 
 #define VALID_ELEMENT_TYPE(ele_type) (ele_type == WILD_ELEMENT || ele_type == NORMAL_ELEMENT)

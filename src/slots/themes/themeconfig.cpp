@@ -18,34 +18,43 @@ bool ThemeConfig::getTemplePrincessConfig() {
     do {
         GridConfigs gc;
         if (!db.getGridsConfig(gc)){
+            CLOG(ERROR) << "get grid config from db failed.";
             break;
         }
         if(!getGridConfig(gc)) {
+            CLOG(ERROR) << "parse grid config from db failed.";
             break;
         }
         LinesConfig lc;
         if (!db.getLinesConfig(lc)){
+            CLOG(ERROR) << "get line config from db failed.";
             break;
         }
         if(!getLinesConfig(lc)) {
+            CLOG(ERROR) << "parse line config from db failed.";
             break;
         }
         ElementsConfig ec;
         if (!db.getElementsConfig(ec)){
+            CLOG(ERROR) << "get element config from db failed.";
             break;
         }
         SlotElements se;
         if (!db.getSlotsElements(se)){
+            CLOG(ERROR) << "get element meta from db failed.";
             break;
         }
         if(!getElements(se, ec)) {
+            CLOG(ERROR) << "parse element config from db failed.";
             break;
         }
         ThemeCommonConfig tcc;
         if (!db.getThemeCommonConfig(tcc)) {
+            CLOG(ERROR) << "get theme config from db failed.";
             break;
         }
         if (!getCommonConfig(tcc)) {
+            CLOG(ERROR) << "parse theme config failed.";
             break;
         }
         ret = true;
