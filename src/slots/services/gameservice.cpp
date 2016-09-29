@@ -10,12 +10,12 @@ GameService::~GameService(){
 
 bool GameService::doJob(CPacket &packet, CResponse &resp) {
     std::string gType;
-    GET_PARAM("type", gType, true);
+    GET_PARAM(sType, gType, true);
     SBuf bf;
     ResultFormatter rf(bf);
 
     bool ret = false;
-    if (gType == "0"){
+    if (gType == "2"){
 	ret = doTemplePrincess(packet, rf);
 	if (!ret) {
 	    rf.formatSimpleResult(ret, "");
@@ -41,19 +41,40 @@ bool GameService::doTemplePrincess(CPacket &packet, ResultFormatter &rf)
     bool ret = false;
     do {
 	std::string uid;
-	std::string bet;
-	GET_PARAM_WITH_BREAK("uid", uid, true);
-	GET_PARAM_WITH_BREAK("bet", bet, true);
+        int32_t iUid;
+        GET_PARAM_WITH_BREAK(sUserID, uid, true);
+        if (!cgserver::StringUtil::StrToInt32(uid.c_str(), iUid)) {
+            break;
+        }
+        int64_t bet;
+        if (!getIntVal(packet, sTotalBet, bet)) {
+            break;
+        }
+        int32_t lineNumber;
+        if (!getIntVal(packet, sLineNumber, lineNumber)) {
+            break;
+        }
+        int32_t roomID;
+        if (!getIntVal(packet, sRoomID, roomID)) {
+            break;
+        }
+        int32_t hallID;
+        if (!getIntVal(packet, sHallID, hallID)) {
+            break;
+        }
+        CLOG(INFO) << "u:" << uid << ", r:" << roomID << ", b:" << bet;
 
-	int64_t betVal;
-	if (!cgserver::StringUtil::StrToInt64(bet.c_str(), betVal) || betVal < 0) {
-	    CLOG(WARNING) << "Invalid bet value: " << bet;
-	    break;
-	}
 	GameContext gc;
-	gc.gameInfo.bet = betVal;
-	gc.gameInfo.gType = style;
-	GET_SLOTS_USER_WITH_BREAK(uid, gc.user);
+	gc.gameInfo.bet = bet;
+        gc.gameInfo.lineNumber = lineNumber;
+        gc.gameInfo.gType = style;
+        gc.uid = iUid;
+        gc.hallID = hallID;
+        gc.roomID = roomID;
+
+        if (!SlotsDataCenter::instance().slotsUserData->getByUid(uid, gc.user)) {
+            break;
+        }
 	if (!_gProcessor.process(gc)) {
 	    break;
 	}

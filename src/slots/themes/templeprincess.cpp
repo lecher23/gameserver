@@ -157,7 +157,7 @@ void TemplePrincess::processSpecial(TSResult &data) const {
         if (item.second == fid) {++fCount;}
         else if (item.second == tEleID) {++tCount;}
     }
-    data.freeGameTimes = fgc.getConfig(fCount);
+    data.freeGameTimes += fgc.getConfig(fCount);
     data.tinyGame.eleID = tEleID;
     data.tinyGame.eleCount = tCount;
     auto tinyGameID = tGameCfg.getConfig(tCount);

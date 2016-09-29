@@ -18,18 +18,15 @@ class EventInfo{
 	: e(e_), curData(cur_) {}
 };
 
-class GameContext{
- public:
-    GameContext() {}
-    ~GameContext() {}
-
-    SlotsUserPtr user;
-    GameResult gameInfo;
-    std::vector<UserCJ> userCj;
-    // to save all game event during game.
-    std::vector<EventInfo> events;
-    int32_t hallID{0};
-    int32_t roomID{0};
+struct GameContext{
+  int32_t hallID{0};
+  int32_t roomID{0};
+  int32_t uid;
+  SlotsUserPtr user;
+  GameResult gameInfo;
+  std::vector<UserCJ> userCj;
+  // to save all game event during game.
+  std::vector<EventInfo> events;
 };
 END_NAMESPACE
 #endif

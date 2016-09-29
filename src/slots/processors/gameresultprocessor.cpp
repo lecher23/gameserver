@@ -11,17 +11,23 @@ GameResultProcessor::~GameResultProcessor(){
 }
 
 bool GameResultProcessor::process(GameContext &context) const {
+    auto &gInfo = context.gameInfo;
     context.events.push_back(EventInfo(EGE_PLAYED_GAME));
-    processHall(context, context.gameInfo);
-    processGameDetail(context, context.gameInfo);
+    processHall(context, gInfo);
+    processGameDetail(context, gInfo);
     // is free to play
-    if (!context.gameInfo.bFreeGame) {
-	context.events.push_back(EventInfo(EGE_USE_BET, context.gameInfo.bet));
+    if (!gInfo.bFreeGame) {
+	context.events.push_back(EventInfo(EGE_USE_BET, gInfo.bet));
+    } else {
+        // reduce freeGameTimes
+        --gInfo.freeGameTimes;
     }
     // update user fortune
-    processMoney(context, context.gameInfo);
+    processMoney(context, gInfo);
     // update user exp&level
-    processExp(context, context.gameInfo);
+    processExp(context, gInfo);
+    // save this result to history
+    context.user->gSt.result = gInfo;
     return true;
 }
 
@@ -100,7 +106,7 @@ void GameResultProcessor::processExp(GameContext &context, GameResult &data) con
 void GameResultProcessor::processMoney(GameContext &context, GameResult &data) const {
     UserHistory &uHis = context.user->uHis;
     uHis.incrBet(data.bet);
-    int64_t actualEarned = data.earned.sum() - data.bet;
+    int64_t actualEarned = data.earned.sum() - (data.bFreeGame ? 0: data.bet);
     if (actualEarned == 0) {
 	return;
     }

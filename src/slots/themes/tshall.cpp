@@ -102,6 +102,10 @@ bool TSHall::useRoom(int32_t userID, int32_t roomID) {
     do {
         auto itr = _user2room.find(userID);
         if(itr != _user2room.end() && itr->second != 0) {
+            if (itr->second == roomID) {
+                // user already in this room.
+                return true;
+            }
             //CLOG(INFO) << "leaving room " << itr->second;
             leavingRoom(userID, itr->second);
         }

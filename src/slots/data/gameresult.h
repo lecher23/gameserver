@@ -30,7 +30,8 @@ struct Profit{
   int64_t sum() {return normal + roomPrize + hallPrize;}
 };
 
-struct GameResult{
+class GameResult{
+public:
   int32_t gType{0};
   int32_t lineNumber{0};
   int32_t freeGameTimes{0};
@@ -46,6 +47,25 @@ struct GameResult{
   int64_t bet{0}; // this is total bet, line bet is bet / lineNumber
   std::vector<LineDetail> lines; // key: lineID, val:count and eleid
   std::map<int32_t, int32_t> gridsData;
+};
+
+class GameResultHistory{
+public:
+    int32_t lineNumber{0};
+    int32_t freeGameTimes{0};
+    int32_t totalRatio{0};
+    TinyGame tinyGame;
+    Profit earned;
+    int64_t bet{0};
+    GameResultHistory &operator = (const GameResult &right) {
+        lineNumber = right.lineNumber;
+        freeGameTimes = right.freeGameTimes;
+        totalRatio = right.totalRatio;
+        tinyGame = right.tinyGame;
+        earned = right.earned;
+        bet = right.bet;
+        return *this;
+    }
 };
 
 typedef GameResult TSResult;

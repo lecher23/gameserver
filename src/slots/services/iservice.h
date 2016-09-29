@@ -38,35 +38,43 @@ namespace slots{
 #define MAX_PAGE_SIZE 30    
     
     class IService{
-    public:
-        virtual ~IService() {}
-	virtual bool doJob(CPacket &packet,CResponse &resp) =0;
+   public:
+      static const std::string sRoomID;
+      static const std::string sHallID;
+      static const std::string sUserID;
+      static const std::string sType;
+      virtual ~IService() {}
+      virtual bool doJob(CPacket &packet,CResponse &resp) =0;
 
-	bool getIntVal(CPacket &packet, const std::string &key, uint32_t &val) {
-	    std::string strVal;
-	    GET_PARAM(key, strVal, true);
-	    return cgserver::StringUtil::StrToUInt32(strVal.c_str(), val);
-	}
+      bool getIntVal(CPacket &packet, const std::string &key, uint32_t &val) {
+        std::string strVal;
+        GET_PARAM(key, strVal, true);
+        return cgserver::StringUtil::StrToUInt32(strVal.c_str(), val);
+      }
 
-	bool getIntVal(CPacket &packet, const std::string &key, uint64_t &val) {
-	    std::string strVal;
-	    GET_PARAM(key, strVal, true);
-	    return cgserver::StringUtil::StrToUInt64(strVal.c_str(), val);
-	}
+      bool getIntVal(CPacket &packet, const std::string &key, uint64_t &val) {
+        std::string strVal;
+        GET_PARAM(key, strVal, true);
+        return cgserver::StringUtil::StrToUInt64(strVal.c_str(), val);
+      }
 
-	bool getIntVal(CPacket &packet, const std::string &key, int32_t &val) {
-	    std::string strVal;
-	    GET_PARAM(key, strVal, true);
-	    return cgserver::StringUtil::StrToInt32(strVal.c_str(), val);
-	}
+      bool getIntVal(CPacket &packet, const std::string &key, int32_t &val) {
+        std::string strVal;
+        GET_PARAM(key, strVal, true);
+        return cgserver::StringUtil::StrToInt32(strVal.c_str(), val);
+      }
 
-	bool getIntVal(CPacket &packet, const std::string &key, int64_t &val) {
-	    std::string strVal;
-	    GET_PARAM(key, strVal, true);
-	    return cgserver::StringUtil::StrToInt64(strVal.c_str(), val);
-	}
+      bool getIntVal(CPacket &packet, const std::string &key, int64_t &val) {
+        std::string strVal;
+        GET_PARAM(key, strVal, true);
+        return cgserver::StringUtil::StrToInt64(strVal.c_str(), val);
+      }
 
     };
+    const std::string IService::sRoomID = "r";
+    const std::string IService::sHallID = "h";
+    const std::string IService::sUserID = "u";
+    const std::string IService::sType = "t";
     DF_SHARED_PTR(IService);
 }
 #endif
