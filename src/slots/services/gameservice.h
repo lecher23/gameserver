@@ -22,7 +22,5 @@ namespace slots{
         GameResultProcessor _hProcessor;
         AchievementProcessor _aProcessor;
     };
-    const std::string GameService::sTotalBet = "b";
-    const std::string GameService::sLineNumber = "l";
 }
 #endif

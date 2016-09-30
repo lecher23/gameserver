@@ -10,16 +10,13 @@ GameService::~GameService(){
 
 bool GameService::doJob(CPacket &packet, CResponse &resp) {
     std::string gType;
-    GET_PARAM(sType, gType, true);
+    GET_PARAM(slotconstants::sType, gType, true);
     SBuf bf;
     ResultFormatter rf(bf);
 
     bool ret = false;
     if (gType == "2"){
 	ret = doTemplePrincess(packet, rf);
-	if (!ret) {
-	    rf.formatSimpleResult(ret, "");
-	}
     }else if (gType == "1"){
 	ret = doMultiple(packet);
 	rf.formatSimpleResult(ret, "");
@@ -42,24 +39,24 @@ bool GameService::doTemplePrincess(CPacket &packet, ResultFormatter &rf)
     do {
 	std::string uid;
         int32_t iUid;
-        GET_PARAM_WITH_BREAK(sUserID, uid, true);
+        GET_PARAM_WITH_BREAK(slotconstants::sUserID, uid, true);
         if (!cgserver::StringUtil::StrToInt32(uid.c_str(), iUid)) {
             break;
         }
         int64_t bet;
-        if (!getIntVal(packet, sTotalBet, bet)) {
+        if (!getIntVal(packet, slotconstants::sTotalBet, bet)) {
             break;
         }
         int32_t lineNumber;
-        if (!getIntVal(packet, sLineNumber, lineNumber)) {
+        if (!getIntVal(packet, slotconstants::sLineNumber, lineNumber)) {
             break;
         }
         int32_t roomID;
-        if (!getIntVal(packet, sRoomID, roomID)) {
+        if (!getIntVal(packet, slotconstants::sRoomID, roomID)) {
             break;
         }
         int32_t hallID;
-        if (!getIntVal(packet, sHallID, hallID)) {
+        if (!getIntVal(packet, slotconstants::sHallID, hallID)) {
             break;
         }
         CLOG(INFO) << "u:" << uid << ", r:" << roomID << ", b:" << bet;
@@ -76,16 +73,19 @@ bool GameService::doTemplePrincess(CPacket &packet, ResultFormatter &rf)
             break;
         }
 	if (!_gProcessor.process(gc)) {
+            CLOG(WARNING) << "generate game result failed";
 	    break;
 	}
 	if (!_hProcessor.process(gc)) {
+            CLOG(WARNING) << "process game result failed";
 	    break;
 	}
 	if (!_aProcessor.process(gc)) {
+            CLOG(WARNING) << "process achivement failed";
 	    break;
 	}
 	ret = true;
-	rf.formatGameResult(gc.user->uRes, gc.gameInfo.earned.normal, "None");
+	rf.formatGameResult(gc);
     } while (false);
     if (!ret) {
 	rf.formatSimpleResult(ret, "");

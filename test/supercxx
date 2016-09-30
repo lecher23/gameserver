@@ -54,12 +54,15 @@ class SuperCxx:
         f.write(h_code)
         f.close()
         common_tpl = Template('''#include <string>
+#include "${common_tool_path}"
 namespace cxx{
     const std::string lua_file = "${lua_file_path}";
     const std::string cfg_file = "${config_file_path}";
 }''')
-        common_code = common_tpl.safe_substitute(lua_file_path = self.lua_file_path,
-                                                 config_file_path = self.config_file_path)
+        common_code = common_tpl.safe_substitute(
+            common_tool_path = os.path.join(CUR_PATH, "common_tools.h"),
+            lua_file_path = self.lua_file_path,
+            config_file_path = self.config_file_path)
         f = open(self.test_common_header, "w")
         f.write(common_code)
         f.close()

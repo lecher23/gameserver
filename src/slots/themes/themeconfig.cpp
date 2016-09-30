@@ -120,10 +120,6 @@ bool ThemeConfig::getCommonConfig(ThemeCommonConfig &cfg) {
                 tsConfig.setJackpot1Count(sCfg.value);
                 break;
             }
-            case ROOM_ENABLE_REPEAT_ELE_CODE: {
-                tsConfig.setRepeatElementEnabled(sCfg.value != 0);
-                break;
-            }
             case ROOM_RESERVE_TIME_CODE:{
                 tsConfig.setRoomReserveTime(sCfg.value);
                 break;

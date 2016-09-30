@@ -96,19 +96,40 @@ void ResultFormatter::formatSimpleResult(
     _writer.EndObject();
 }
 
-void ResultFormatter::formatGameResult(
-    const UserResource &sr, int64_t earned, const std::string &detail)
+void ResultFormatter::formatGameResult(GameContext &gc)
 {
     _writer.StartObject();
     formatStatus(true);
-    _writer.Key("uid");
-    _writer.String(sr.uid.c_str());
-    _writer.Key("user_resource");
-    formatUserResource(sr);
-    _writer.Key("earned");
-    _writer.Int64(earned);
-    _writer.Key("detail");
-    _writer.String(detail.c_str());
+
+    auto &uRes = gc.user->uRes;
+    auto &ret = gc.gameInfo;
+    _writer.Key("cf");
+    _writer.Int64(uRes.fortune);
+
+    _writer.Key("ei");
+    _writer.StartArray();
+    _writer.Int64(ret.earned.normal);
+    _writer.Int64(ret.earned.roomPrize);
+    _writer.Int64(ret.earned.hallPrize);
+    _writer.EndArray();
+
+    _writer.Key("rs");
+    formatUserResource(uRes);
+
+    _writer.Key("rto");
+    _writer.Int(ret.totalRatio);
+
+    _writer.Key("gds");
+    _writer.StartArray();
+    auto len = ret.gridsData.size();
+    for (size_t i = 0; i < len; ++i) {
+        _writer.Int(ret.gridsData[i]);
+    }
+    _writer.EndArray();
+
+    _writer.Key("ft");
+    _writer.Int(ret.freeGameTimes);
+
     _writer.EndObject();
 }
 

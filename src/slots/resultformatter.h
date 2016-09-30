@@ -24,7 +24,7 @@ namespace slots{
 	void formatSimpleResult(bool ok, const std::string &key, int32_t value);
 	void formatSimpleResult(bool ok, const std::string &key, const std::string &value);
 	void formatSimpleResult(bool ok, const std::string &key, bool value);
-	void formatGameResult(const UserResource &sr, int64_t earned, const std::string &detail);
+	void formatGameResult(GameContext &gc);
 	void formatFriendsInfo(const FriendsList &friends);
 	void formatFullFriendInfo(const FriendsList &friends, const FHistory &history);
 	void formatGiftsInfo(const Gifts &gifts, int64_t giftsVal);

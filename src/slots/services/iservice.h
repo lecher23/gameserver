@@ -11,7 +11,16 @@
 #include <slots/data/slotsdatacenter.h>
 
 namespace slots{
-    
+
+  namespace slotconstants{
+    const std::string sRoomID = "r";
+    const std::string sHallID = "h";
+    const std::string sUserID = "u";
+    const std::string sType = "t";
+    const std::string sTotalBet = "b";
+    const std::string sLineNumber = "l";
+  }
+
 #define GET_PARAM(key, dest, required)					\
     if (!packet.getParamValue(key, dest)) {				\
 	if (required) {							\
@@ -31,18 +40,14 @@ namespace slots{
 	    dest.clear();						\
 	}								\
     }
-    
-    typedef cgserver::HTTPPacket CPacket;
-    typedef cgserver::HttpResponsePacket CResponse;
 
-#define MAX_PAGE_SIZE 30    
-    
-    class IService{
+  typedef cgserver::HTTPPacket CPacket;
+  typedef cgserver::HttpResponsePacket CResponse;
+
+#define MAX_PAGE_SIZE 30
+
+  class IService{
    public:
-      static const std::string sRoomID;
-      static const std::string sHallID;
-      static const std::string sUserID;
-      static const std::string sType;
       virtual ~IService() {}
       virtual bool doJob(CPacket &packet,CResponse &resp) =0;
 
@@ -71,10 +76,6 @@ namespace slots{
       }
 
     };
-    const std::string IService::sRoomID = "r";
-    const std::string IService::sHallID = "h";
-    const std::string IService::sUserID = "u";
-    const std::string IService::sType = "t";
     DF_SHARED_PTR(IService);
 }
 #endif

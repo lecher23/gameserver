@@ -63,7 +63,7 @@ theme_history = [
     ('uid', 'INT NOT NULL'),
     ('theme_id', 'INT NOT NULL'),
     ('tag', 'INT NOT NULL'), # history type
-    ('value', 'INT DEFAULT(0)'),
+    ('value', 'INT DEFAULT 0'),
     ('', 'PRIMARY KEY(uid, theme_id, tag)')
     # ('bigwin', 'VARCHAR(255) DEFAULT "0"'), 1
     # ('megawin', 'VARCHAR(255) DEFAULT "0"'), 2
