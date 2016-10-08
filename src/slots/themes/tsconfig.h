@@ -121,8 +121,7 @@ public:
   int32_t getColumnNumber() {return maxColumn;}
 
   TSGrid &getGrid(int32_t gridIdx, bool freeGame) {
-    return grids[gridIdx];
-    //TODO:return freeGame? freeGameGrids[gridIdx]: grids[gridIdx];
+    return freeGame? freeGameGrids[gridIdx]: grids[gridIdx];
   }
 
   int32_t getGridIndex(int32_t row, int32_t col) {

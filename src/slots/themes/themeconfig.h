@@ -47,7 +47,7 @@ public:
 
 private:
     bool getTemplePrincessConfig();
-    bool getGridConfig(GridConfigs &gc);
+    bool getGridConfig(GridConfigs &gc, bool isFree);
     bool getLinesConfig(LinesConfig &lc);
     bool getElements(SlotElements &elements, ElementsConfig &cfg);
     bool getCommonConfig(ThemeCommonConfig &cfg);

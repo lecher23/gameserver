@@ -703,6 +703,23 @@ bool SlotsDB::getGridsConfig(GridConfigs &out) const {
     return true;
 }
 
+bool SlotsDB::getFreeGridsConfig(GridConfigs &out) const {
+    SELECT_ALL_FROM_TABLE(mss, gFreeGridConfig);
+    for (auto &row: mss.result) {
+        GridConfig gc;
+	if (!gc.deserialize(row)) {
+	    CLOG(WARNING) << "Init grid setting from db failed.";
+	    return false;
+	}
+        if (out.rowNum < gc.row) { out.rowNum = gc.row;}
+        if (out.columnNum < gc.column) { out.columnNum = gc.column;}
+        out.grids.push_back(gc);
+    }
+    ++out.rowNum;
+    ++out.columnNum;
+    return true;
+}
+
 bool SlotsDB::getLinesConfig(LinesConfig &out) const {
     SELECT_ALL_FROM_TABLE(mss, gLineConfig);
     for (auto &row: mss.result) {

@@ -34,6 +34,7 @@ const std::string gBetExpSetting = "bet_exp_cfg";
 const std::string gElementConfig = "ele_config";
 const std::string gLineConfig = "line_config";
 const std::string gGridConfig = "grid_config";
+const std::string gFreeGridConfig = "free_grid_config";
 const std::string gSloteElement = "ele_info";
 const std::string gThemeHistory = "theme_history";
 const std::string gThemeCommonConfig = "theme_common_cfg";
@@ -64,7 +65,8 @@ public:
     bool getVipSetting(VipConfigs &out) const;
     bool getLevelSetting(LevelConfigs &out) const;
     bool getBet2ExpSetting(Bet2ExpConfigs &out) const;
-    bool getGridsConfig(GridConfigs &out) const ;
+    bool getGridsConfig(GridConfigs &out) const;
+    bool getFreeGridsConfig(GridConfigs &out) const;
     bool getLinesConfig(LinesConfig &out) const;
     bool getElementsConfig(ElementsConfig &out) const;
     bool getSlotsElements(SlotElements &out) const;

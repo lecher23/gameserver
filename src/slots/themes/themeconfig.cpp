@@ -21,7 +21,17 @@ bool ThemeConfig::getTemplePrincessConfig() {
             CLOG(ERROR) << "get grid config from db failed.";
             break;
         }
-        if(!getGridConfig(gc)) {
+        if(!getGridConfig(gc, false)) {
+            CLOG(ERROR) << "parse grid config from db failed.";
+            break;
+        }
+        // free game grid setting
+        GridConfigs fgc;
+        if (!db.getFreeGridsConfig(fgc)){
+            CLOG(ERROR) << "get grid config from db failed.";
+            break;
+        }
+        if(!getGridConfig(gc, true)) {
             CLOG(ERROR) << "parse grid config from db failed.";
             break;
         }
@@ -62,7 +72,7 @@ bool ThemeConfig::getTemplePrincessConfig() {
     return ret;
 }
 
-bool ThemeConfig::getGridConfig(GridConfigs &gc) {
+bool ThemeConfig::getGridConfig(GridConfigs &gc, bool isFree) {
     tsConfig.setRowNumber(gc.rowNum);
     tsConfig.setColumnNumber(gc.columnNum);
 
@@ -71,7 +81,7 @@ bool ThemeConfig::getGridConfig(GridConfigs &gc) {
     int len = gc.grids.size();
     for (size_t i = 0; i < len; ++i) {
         auto &item = gc.grids[i]; // row, colum, eleID, weight,
-        auto &grid = tsConfig.getGrid(item.row, item.column, false);
+        auto &grid = tsConfig.getGrid(item.row, item.column, isFree);
         grid.addElement(item.eleID, item.weight);
     }
     // check
