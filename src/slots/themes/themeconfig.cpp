@@ -1,4 +1,5 @@
 #include "themeconfig.h"
+#include <util/config.h>
 
 BEGIN_NAMESPACE(slots)
 
@@ -65,6 +66,13 @@ bool ThemeConfig::getTemplePrincessConfig() {
         }
         if (!getCommonConfig(tcc)) {
             CLOG(ERROR) << "parse theme config failed.";
+            break;
+        }
+        auto &butterfly = tsConfig.getButterfly();
+        auto butterflyCfgPath =
+            cgserver::Config::getInstance().getConfigValue("slots", "butterfly_cfg");
+        if (!butterfly.initFromJsonFile(butterflyCfgPath)) {
+            CLOG(ERROR) << "init tiny game for tp failed.";
             break;
         }
         ret = true;

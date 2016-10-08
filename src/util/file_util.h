@@ -2,6 +2,7 @@
 #define _UTIL_FILE_UTIL_H_
 
 #include <string>
+#include <functional>
 
 namespace cgserver {
     std::string getRealpath(const char * path);
@@ -11,5 +12,7 @@ namespace cgserver {
     int cmpPath(const char * p1, const char * p2);
     std::string joinFilePath(const std::string &path,
                              const std::string &file);
+    bool processFile(const std::string &path,
+                     std::function<bool(const char *)> processor);
 }
 #endif //_UTIL_FILE_UTIL_H_

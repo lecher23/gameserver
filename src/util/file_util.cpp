@@ -2,9 +2,11 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
+#include <fstream>
 #include <linux/limits.h>
+#include <util/common_define.h>
 
-namespace cgserver {
+BEGIN_NAMESPACE(cgserver)
 
 static int split_path(char * path, char ** pathes)
 {
@@ -100,4 +102,43 @@ std::string joinFilePath(const std::string &path, const std::string &file)
     return path + '/' + file;
 }
 
+bool processFile(const std::string &path,
+                 std::function<bool(const char *)> processor)
+{
+    std::ifstream is(path, std::ifstream::in);
+    bool ret = false;
+    if (!is) {
+        CLOG(ERROR) << "open file:" << path << " failed.";
+        return false;
+    }
+    char *buffer = nullptr;
+    do{
+        is.seekg(0, is.end);
+        int len = is.tellg();
+        is.seekg(0, is.beg);
+
+        buffer = new char[len + 1];
+        is.read(buffer, len);
+        if (is) {
+            CLOG(INFO) << "read json file: "<< path << " success.";
+        } else {
+            CLOG(INFO) << "err, only read " << is.gcount() << " bytes in file: " << path;
+            break;
+        }
+        buffer[len] = '\0';
+        if (!processor(buffer)) {
+            CLOG(ERROR) << "process file content failed.";
+            break;
+        }
+
+        ret = true;
+        break;
+    } while (false);
+    is.close();
+    if (buffer) {
+        delete buffer;
+    }
+    return ret;
 }
+
+END_NAMESPACE

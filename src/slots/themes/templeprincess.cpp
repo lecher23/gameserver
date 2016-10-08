@@ -30,6 +30,7 @@ bool TemplePrincess::play(TSResult &data) const {
     countLines(data);
     processLines(data);
     processSpecial(data);
+    playTinyGame(data);
     return true;
 }
 
@@ -170,6 +171,20 @@ void TemplePrincess::processSpecial(TSResult &data) const {
     data.bMegawin = _cfg.isMegawin(mid);
     data.bBigwin = _cfg.isBigwin(mid);
     data.bSuperwin = _cfg.isSuperwin(mid);
+}
+
+void TemplePrincess::playTinyGame(TSResult &ret) const {
+    auto tg = ret.tinyGame;
+    if (!tg.enable) {
+        return;
+    }
+    auto selectCount = ret.tinyGame.tinyGameID;
+    int32_t multiple = false;
+    ret.tinyResult.clear();
+    auto factor = _cfg.getButterfly().play(selectCount, multiple, ret.tinyResult);
+    // if no multiple: vector end with 1
+    ret.tinyResult.push_back(multiple);
+    ret.earned.tinyGame = ret.bet * factor;
 }
 
 END_NAMESPACE

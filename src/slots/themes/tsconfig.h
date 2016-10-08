@@ -3,6 +3,7 @@
 
 #include <util/common_define.h>
 #include <slots/model/lineconfig.h>
+#include <slots/themes/butterfly.h>
 
 BEGIN_NAMESPACE(slots)
 
@@ -200,6 +201,8 @@ public:
 
   SpecialGameConfig &getTinyGameConfig() {return tinyGameConfig;}
 
+  Butterfly &getButterfly() {return butterfly;}
+
   int32_t setMegawin(int32_t mWin) {megawin = mWin;}
 
   bool isMegawin(int32_t dest) { return (dest >= megawin);}
@@ -304,7 +307,9 @@ private:
   std::map<int32_t, TSElementRatio> elements; // key: elment id
 
   SpecialGameConfig freeGameConfig;
-  SpecialGameConfig tinyGameConfig;;
+  SpecialGameConfig tinyGameConfig;
+  Butterfly butterfly;
+
   int32_t megawin{0};
   int32_t bigwin{0};
   int32_t superwin{0};

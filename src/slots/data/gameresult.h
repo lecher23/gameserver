@@ -25,14 +25,16 @@ struct TinyGame {
 };
 
 // TODO: struct TinyGameResult
+typedef std::vector<int32_t> TinyGameResult;
 
 struct Profit{
   int64_t normal{0};
   int64_t roomPrize{0};
   int64_t hallPrize{0};
+  int64_t tinyGame{0};
   int64_t sum() {return normal + roomPrize + hallPrize;}
   void reset() {
-    roomPrize = hallPrize = normal = 0;
+    tinyGame = roomPrize = hallPrize = normal = 0;
   }
 };
 
@@ -43,6 +45,7 @@ public:
   int32_t freeGameTimes{0};
   int32_t totalRatio{0};
   TinyGame tinyGame;
+  TinyGameResult tinyResult;
   bool bMegawin{false};
   bool bBigwin{false};
   bool bSuperwin{false};

@@ -20,6 +20,7 @@ private:
   void countLines(TSResult &data) const;
   void processLines(TSResult &data) const;
   void processSpecial(TSResult &data) const;
+  void playTinyGame(TSResult &data) const;
 
   TSConfig &_cfg;
 };

@@ -23,7 +23,12 @@ const std::string cfg_file = cxx::cfg_file;
 class testTemplePrincess: public CxxTest::TestSuite 
 {
 public:
-    testTemplePrincess():_inited(false){}
+    testTemplePrincess():_inited(false){
+	if (!_inited){
+	    ast_true(Config::getInstance().initConfig(cfg_file));
+	    _inited = true;
+	}
+    }
 
     virtual void setUp(){
     }

@@ -132,7 +132,7 @@ if __name__ == "__main__":
     sc.test_root = os.path.join(root, "test")
     sc.tmp_h_file = os.path.join(root, "tools/h.tpl")
     sc.lua_file_path = os.path.join(root, "lua/main.lua")
-    sc.config_file_path = os.path.join(root, "server.cfg")
+    sc.config_file_path = os.path.join(root, "test/config_files/server.cfg")
     sc.test_common_header = os.path.join(root, "test/common.h")
     sc.workspace = root
 
