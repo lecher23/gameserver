@@ -27,7 +27,7 @@ bool GameResultProcessor::process(GameContext &context) const {
     // update user exp&level
     processExp(context, gInfo);
     // save this result to history
-    context.user->gSt.result = gInfo;
+    context.user->gSt.getGameResult(context.hallID, context.roomID) = gInfo;
     return true;
 }
 

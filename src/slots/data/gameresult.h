@@ -19,6 +19,9 @@ struct TinyGame {
   int32_t eleCount{0};
   int32_t tinyGameID{0};
   bool enable{false};
+  void reset(){
+    eleID = eleCount = tinyGameID = 0;
+  }
 };
 
 // TODO: struct TinyGameResult
@@ -28,6 +31,9 @@ struct Profit{
   int64_t roomPrize{0};
   int64_t hallPrize{0};
   int64_t sum() {return normal + roomPrize + hallPrize;}
+  void reset() {
+    roomPrize = hallPrize = normal = 0;
+  }
 };
 
 class GameResult{
@@ -66,9 +72,32 @@ public:
         bet = right.bet;
         return *this;
     }
+
+    void reset() {
+      totalRatio = freeGameTimes = lineNumber = 0;
+      tinyGame.reset();
+      earned.reset();
+      bet = 0;
+    }
 };
 
 typedef GameResult TSResult;
+
+class GameStatus {
+public:
+  GameResultHistory &getGameResult(int32_t hall_id, int32_t room_id) {
+    if (hallID != hall_id || roomID != room_id) {
+      hallID = hall_id;
+      roomID = room_id;
+      result.reset();
+    }
+    return result;
+  }
+private:
+  int32_t hallID{0};
+  int32_t roomID{0};
+  GameResultHistory result;
+};
 
 END_NAMESPACE
 #endif

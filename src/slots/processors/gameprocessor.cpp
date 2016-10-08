@@ -13,15 +13,11 @@ GameProcessor::~GameProcessor(){
 
 bool GameProcessor::process(GameContext &context) const {
     // by default, we can get hall from datacenter just by hallID
-    auto &hall = SlotsDataCenter::instance().getHall(context.hallID);
+    auto hallID = context.hallID;
+    auto roomID = context.roomID;
+    auto &hall = SlotsDataCenter::instance().getHall(hallID);
     auto &preGame = context.user->gSt;
-    if (!hall.useRoom(context.uid, context.roomID))
-    {
-        CLOG(WARNING) << "User:"<< context.user->uInfo.uid
-                      << " use room " << context.roomID << "failed.";
-        return false;
-    }
-    auto &preGameResult = preGame.result;
+    auto &preGameResult = preGame.getGameResult(hallID, roomID);
     auto &gameInfo = context.gameInfo;
     // if this time is free game
     if (preGameResult.freeGameTimes > 0) {
@@ -30,9 +26,18 @@ bool GameProcessor::process(GameContext &context) const {
         gameInfo.lineNumber = preGameResult.lineNumber;
         gameInfo.freeGameTimes = preGameResult.freeGameTimes;
     }
-    // update current room info.
-    preGame.roomID = context.roomID;
-    preGame.hallID = context.hallID;
+    if (!gameInfo.bFreeGame && gameInfo.bet > context.user->uRes.fortune) {
+        CLOG(WARNING) << "User:"<< context.user->uInfo.uid
+                      << " has not enough money: cur[ " << context.user->uRes.fortune
+                      << "], bet[" << gameInfo.bet << "]";
+        return false;
+    }
+    if (!hall.useRoom(context.uid, roomID))
+    {
+        CLOG(WARNING) << "User:"<< context.user->uInfo.uid
+                      << " use room " << roomID << "failed.";
+        return false;
+    }
     // generate game result
     TemplePrincess tp(SlotsConfig::getInstance().themeConfig.tsConfig);
     if (!tp.play(context.gameInfo)) {

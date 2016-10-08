@@ -93,12 +93,6 @@ LoginReward():runnerReward(0),daysReward(0),specialReward(0),timestamp(0){}
     }
 };
 
-struct GameStatus {
-  int32_t hallID{0};
-  int32_t roomID{0};
-  GameResultHistory result;
-};
-
 struct SlotsUser{
   UserInfo uInfo;
   UserResource uRes;
