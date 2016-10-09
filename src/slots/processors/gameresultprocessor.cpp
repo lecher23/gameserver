@@ -56,7 +56,7 @@ void GameResultProcessor::processHall(GameContext &context, GameResult &data) co
 
 
 void GameResultProcessor::processGameDetail(GameContext &context, GameResult &data) const {
-    auto &udt = context.user->gDetail.themeHistory;
+    auto &udt = context.user->uHis.themeHistory;
     auto gType = data.gType;
     // incr game times
     INCR_TAG_VALUE(NORMAL_GAME_TAG, EGE_GAME_COUNT, 1);
@@ -71,16 +71,16 @@ void GameResultProcessor::processGameDetail(GameContext &context, GameResult &da
     }
     if(data.bJackpot1) {
         INCR_TAG_VALUE(JACKPOT_TAG, EGE_JACKPOT, 1);
-        ++context.user->gDetail.jackpot;
+        ++context.user->uHis.jackpot;
     }
     if(data.bJackpot2) {
         INCR_TAG_VALUE(JACKPOT_TAG, EGE_JACKPOT, 1);
-        ++context.user->gDetail.jackpot;
+        ++context.user->uHis.jackpot;
     }
     if (data.tinyGame.enable) {
         INCR_TAG_VALUE(TINY_GAME_TAG, EGE_TINY_GAME, 1);
     }
-    context.user->gDetail.changed = true;
+    context.user->uHis.changed = true;
 }
 
 void GameResultProcessor::processExp(GameContext &context, GameResult &data) const {
@@ -104,7 +104,7 @@ void GameResultProcessor::processExp(GameContext &context, GameResult &data) con
 }
 
 void GameResultProcessor::processMoney(GameContext &context, GameResult &data) const {
-    UserHistory &uHis = context.user->uHis;
+    auto &uHis = context.user->uHis;
     uHis.incrBet(data.bet);
     int64_t actualEarned = data.earned.sum() - (data.bFreeGame ? 0: data.bet);
     if (actualEarned == 0) {

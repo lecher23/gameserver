@@ -17,10 +17,8 @@ bool SlotsUserData::getByMid(const std::string &mid, SlotsUserPtr &out) {
     SlotsDB &db = SlotsDB::getInstance();
     // this user exist
     if(db.getUserIdByMachineId(mid, uid)) {
-        std::cout << "User mid:" << mid << " exist.\n";
         return getByUid(uid, out);
     }
-    std::cout << "User mid:" << mid << " not exist.\n";
     if (out.get() == nullptr) {
         out.reset(new SlotsUser);
     }
@@ -39,7 +37,6 @@ bool SlotsUserData::getByUid(const std::string &uid, SlotsUserPtr &out){
 	out->uInfo.changed = false;
 	out->uRes.changed = false;
 	out->uHis.changed = false;
-	out->gDetail.changed = false;
 	set(out->uInfo.uid, out);
 	return true;
     }

@@ -12,7 +12,7 @@ LoginProcessor::~LoginProcessor(){
 
 bool LoginProcessor::process(GameContext &context) const {
     auto thisMorning = cgserver::CTimeUtil::getMorningTime();
-    auto &gHistory = context.user->gDetail;
+    auto &gHistory = context.user->uHis;
     auto now = cgserver::CTimeUtil::getCurrentTimeInSeconds();
     int64_t yesterday = thisMorning - 24 * 3600;
     auto &lastLogin = gHistory.lastLogin;

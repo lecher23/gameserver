@@ -28,8 +28,7 @@ SlotsDB &SlotsDB::getInstance(){
 bool SlotsDB::getUserInfo(MysqlOperationBase * mob, SlotsUser &su) const {
     UserInfo &ui = su.uInfo;
     UserResource &ur = su.uRes;
-    UserHistory &uh = su.uHis;
-    auto &gd = su.gDetail;
+    auto &uh = su.uHis;
     if (!_pool.doMysqlOperation(mob)) {
 	return false;
     }
@@ -44,24 +43,14 @@ bool SlotsDB::getUserInfo(MysqlOperationBase * mob, SlotsUser &su) const {
 	ur.reset();
 	ur.uid = ui.uid;
 	uh.reset();
-	uh.uid = ui.uid;
-	gd.reset();
-	gd.uid = cgserver::StringUtil::StrToInt32WithDefault(ui.uid.c_str(), 0);
+	//uh.uid = ui.uid;
+	uh.uid = cgserver::StringUtil::StrToInt32WithDefault(ui.uid.c_str(), 0);
 	return true;
     }
     if (!su.deserialize(res[0])) {
 	return false;
     }
-    MysqlSimpleSelect mss;
-    mss.setField("*");
-    mss.setTable(gLifeHistory);
-    mss.setCondition("uid", su.uInfo.uid, true);
-    if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss)
-        || !getGameHistory(ui.uid, gd))
-    {
-	return false;
-    }
-    return collectUserHistory(mss.result, su.uHis);
+    return getGameHistory(ui.uid, uh);
 }
 
 bool SlotsDB::getUserInfoByMachineId(const std::string &mid, SlotsUser &su) const
@@ -176,10 +165,7 @@ bool SlotsDB::update(SlotsUserPtr su) const {
 	ret = (updateUserResource(su->uRes) && ret);
     }
     if (su->uHis.changed) {
-	ret = (updateUserHistory(su->uHis) && ret);
-    }
-    if (su->gDetail.changed) {
-	ret = (updateGameHistory(su->gDetail) && ret);
+	ret = (updateGameHistory(su->uHis) && ret);
     }
     return ret;
 }
@@ -263,21 +249,6 @@ bool SlotsDB::updateUserInfo(UserInfo &ui) const {
 	return false;
     }
     ui.changed = false;
-    return true;
-}
-
-bool SlotsDB::updateUserHistory(UserHistory &uhis) const {
-    MysqlSimpleUpdate msu;
-    msu.setTable(gLifeHistory);
-    msu.setUpdateValue("max_fortune", StringUtil::toString(uhis.maxFortune));
-    msu.addUpdateValue("max_earned", StringUtil::toString(uhis.maxEarned));
-    msu.addUpdateValue("total_earned", StringUtil::toString(uhis.totalEarned));
-    msu.addUpdateValue("tw_earned", StringUtil::toString(uhis.twEarned));
-    msu.setCondition("uid", uhis.uid, true);
-    if (!_pool.doMysqlOperation((MysqlOperationBase *) &msu)) {
-	return false;
-    }
-    uhis.changed = false;
     return true;
 }
 
@@ -473,14 +444,6 @@ bool SlotsDB::collectSlotsUsers(const cgserver::MysqlRows &rows, SlotsUsers &out
 	}
     }
     return true;
-}
-
-bool SlotsDB::collectUserHistory(const cgserver::MysqlRows &rows, UserHistory &uh) const{
-    if (rows.empty()) {
-        CLOG(WARNING) << "No row in result";
-        return false;
-    }
-    return uh.deserialize(rows[0]);
 }
 
 bool SlotsDB::removeFriend(const std::string &uidStr, const std::string &tidStr){

@@ -57,6 +57,8 @@ grid_config = [
     ('', 'PRIMARY KEY(row, col, ele_id)')
 ]
 
+free_grid_config = grid_config
+
 ele_info = [
     ('id', 'INT NOT NULL PRIMARY KEY'),
     ('type', 'TINYINT DEFAULT 0'),
@@ -70,16 +72,8 @@ ele_config = [
     ('', 'PRIMARY KEY(ele_id, line_num)')
 ]
 
-common_config = [
+theme_common_config = [
     ('code', 'INT NOT NULL PRIMARY KEY'),
     ('value', 'BIGINT NOT NULL'),
     ('extra', 'BIGINT DEFAULT 0')
-]
-
-tiny_game_config = [
-    ('game_id', 'INT NOT NULL'),
-    ('cfg_tag', 'INT NOT NULL'),
-    ('cfg_val', 'BIGINT NOT NULL'),
-    ('descript', 'CHAR(24) NOT NULL DEFAULT ""'),
-    ('', 'PRIMARY KEY(game_id, cfg_tag)')
 ]

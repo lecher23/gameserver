@@ -15,9 +15,9 @@ enum ThemeHistoryTag {
   BIG_WIN_TAG = 1,
   MEGA_WIN_TAG,
   SUPER_WIN_TAG,
+  NORMAL_GAME_TAG,
   FREE_GAME_TAG,
   TINY_GAME_TAG,
-  NORMAL_GAME_TAG,
   SIX_LINK_TAG,
   JACKPOT_TAG,
   INVALID_THEME_TAG
@@ -29,6 +29,10 @@ enum ThemeHistoryTag {
 class ThemeHistory {
  public:
   ThemeHistory() {
+    reset();
+  }
+
+  void reset() {
     for (int i = 0; i < THEME_HISTORY_TAGS; ++i) {
       for (int j = 0; j < SLOTS_GAME_TYPES; ++j) {
         history[j][i] = 0;
@@ -91,32 +95,66 @@ class ThemeHistory {
 
 struct GameHistory{
   int32_t uid{0};
-  int32_t friendNum{0};
-  int32_t friendGiftsNum{0};
+  int64_t maxFortune{0};
+  int64_t maxEarned{0};
+  int64_t totalEarned{0};
+  int64_t totalBet{0};
+  int64_t lastLogin{0};
   int32_t loginDays{0};
   int32_t jackpot{0};
-  int64_t lastLogin{0};
   ThemeHistory themeHistory;
-  bool changed;
+  bool changed{false};
+
   void reset() {
-    friendNum = 0;
-    friendGiftsNum = 0;
+    maxFortune = 0;
+    maxEarned = 0;
+    totalEarned = 0;
+    totalBet = 0;
     lastLogin = 0;
     loginDays = 0;
     jackpot = 0;
-    changed = true;
+    themeHistory.reset();
   }
 
   bool deserialize(std::vector<std::string> &row) {
-    if (row.size() < 6) return false;
+    if (row.size() < 8) return false;
     bool ret = cgserver::StringUtil::StrToInt32(row[0].c_str(), uid);
-    ret = ret && cgserver::StringUtil::StrToInt32(row[1].c_str(), friendNum);
-    ret = ret && cgserver::StringUtil::StrToInt32(row[2].c_str(), friendGiftsNum);
-    ret = ret && cgserver::StringUtil::StrToInt64(row[3].c_str(), lastLogin);
-    ret = ret && cgserver::StringUtil::StrToInt32(row[4].c_str(), loginDays);
-    ret = ret && cgserver::StringUtil::StrToInt32(row[5].c_str(), jackpot);
+    ret = ret && cgserver::StringUtil::StrToInt64(row[1].c_str(), maxFortune);
+    ret = ret && cgserver::StringUtil::StrToInt64(row[2].c_str(), maxEarned);
+    ret = ret && cgserver::StringUtil::StrToInt64(row[3].c_str(), totalEarned);
+    ret = ret && cgserver::StringUtil::StrToInt64(row[4].c_str(), totalBet);
+    ret = ret && cgserver::StringUtil::StrToInt64(row[5].c_str(), lastLogin);
+    ret = ret && cgserver::StringUtil::StrToInt32(row[6].c_str(), loginDays);
+    ret = ret && cgserver::StringUtil::StrToInt32(row[7].c_str(), jackpot);
     return ret;
+
   }
+
+  void incrBet(int64_t bet) {
+    totalBet += bet;
+    changed = true;
+  }
+
+  void newFortune(int64_t fortune) {
+    if (fortune > maxFortune) {
+      maxFortune = fortune;
+      changed = true;
+    }
+  }
+
+  void newEarned(int64_t earned) {
+    if (maxEarned < earned) {
+      maxEarned = earned;
+      changed = true;
+    }
+  }
+
+  void incrEarned(int64_t earned) {
+    if (earned == 0) return;
+    totalEarned += earned;
+    changed = true;
+  }
+
 };
 DF_SHARED_PTR(GameHistory);
 

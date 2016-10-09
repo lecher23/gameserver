@@ -16,28 +16,31 @@
 
 BEGIN_NAMESPACE(slots)
 const std::string gAchievement = "user_achievement";
-const std::string gAchievementDetail = "achievement_item";
-const std::string gGameHistory = "g_history";
+const std::string gAchievementDetail = "cj_config";
 const std::string gFriends = "friends";
-const std::string gFriendHistory = "f_history";
 const std::string gUserInfo = "user_info";
 const std::string gUserResource = "user_resource";
-const std::string gAttachment = "m_attachment";
+const std::string gAttachment = "attachment";
 const std::string gUserMails = "user_mails";
 const std::string gMailDetail = "mail_detail";
-const std::string gLifeHistory = "history";
-const std::string gCargoInfo = "cargo_info";
+
+const std::string gCargoInfo = "cargo_config";
 const std::string gLoginConfig = "login_config";
 const std::string gVipSetting = "vip_config";
 const std::string gLevelSetting = "level_config";
 const std::string gBetExpSetting = "bet_exp_cfg";
-const std::string gElementConfig = "ele_config";
 const std::string gLineConfig = "line_config";
 const std::string gGridConfig = "grid_config";
 const std::string gFreeGridConfig = "free_grid_config";
 const std::string gSloteElement = "ele_info";
-const std::string gThemeHistory = "theme_history";
+const std::string gElementConfig = "ele_config";
 const std::string gThemeCommonConfig = "theme_common_cfg";
+
+const std::string gFriendHistory = "friend_history";
+const std::string gGameHistory = "game_history";
+const std::string gLifeHistory = "history";
+const std::string gThemeHistory = "theme_history";
+const std::string gCargoHistory = "cargo_history";
 
 class SlotsDB{
 public:
@@ -78,7 +81,7 @@ public:
     bool updateGameHistory(GameHistory &gh) const;
     bool updateUserInfo(UserInfo &ui) const;
     bool updateUserResource(UserResource &ur) const;
-    bool updateUserHistory(UserHistory &uhis) const;
+    //bool updateUserHistory(UserHistory &uhis) const;
     bool update(SlotsUserPtr su) const;
     bool updateFHistory(const std::string &uid, const std::string &key,
                         const std::string &value);
@@ -95,7 +98,7 @@ private:
     bool collectMailInfo(const cgserver::MysqlRows &mails, UserMails &out);
     /* collect multi result from table user_info and user_resource*/
     bool collectSlotsUsers(const cgserver::MysqlRows &rows, SlotsUsers &out) const;
-    bool collectUserHistory(const cgserver::MysqlRows &rows, UserHistory &uh) const;
+    //bool collectUserHistory(const cgserver::MysqlRows &rows, UserHistory &uh) const;
     bool collectAchievements(const cgserver::MysqlRows &result, Achievements &out) const;
 
     SlotsDB();

@@ -4,7 +4,6 @@
 #include <util/common_define.h>
 #include <util/stringutil.h>
 #include <slots/model/userinfo.h>
-#include <slots/model/userhistory.h>
 #include <slots/model/userresource.h>
 #include <slots/model/gamehistory.h>
 #include <slots/model/usermail.h>
@@ -96,8 +95,7 @@ LoginReward():runnerReward(0),daysReward(0),specialReward(0),timestamp(0){}
 struct SlotsUser{
   UserInfo uInfo;
   UserResource uRes;
-  UserHistory uHis;
-  GameHistory gDetail;
+  GameHistory uHis;
   LoginReward loginReward;
   GameStatus gSt;
 
