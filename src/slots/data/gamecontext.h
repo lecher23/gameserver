@@ -15,7 +15,7 @@ class EventInfo{
     EventInfo(GameEvent e_, int64_t pre_, int64_t cur_)
 	: e(e_), preData(pre_), curData(cur_) {}
     EventInfo(GameEvent e_, int64_t cur_)
-	: e(e_), curData(cur_) {}
+        : e(e_), preData(0), curData(cur_) {}
 };
 
 struct GameContext{

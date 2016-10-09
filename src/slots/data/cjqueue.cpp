@@ -29,31 +29,37 @@ void CjQueue::addCj(std::vector<UserCJ> &newCJ) {
   }
 }
 
+void CjQueue::addCj(UserCJ &newCJ) {
+  MUTEX_GUARD(_lock);
+  _queue[_curWrite].push(newCJ);
+}
+
 void CjQueue::getSqls(std::vector<std::string> &sqls) {
   auto &q = _queue[_curRead];
   while(!q.empty()) {
     auto &i = q.front();
-    // delete first and insert it.
-    MysqlSimpleDelete msd;
-    msd.setTable(UserCJStr::sTableName);
-    msd.setCondition(UserCJStr::sUid, i.uid, false);
-    msd.addCondition(UserCJStr::sAid, i.aid, true, false);
-    sqls.push_back(msd.getQuery());
-    MysqlSimpleInsert msi;
-    msi.setTable(UserCJStr::sTableName);
-    msi.setField(UserCJStr::sUid);
-    msi.addField(UserCJStr::sAid);
-    msi.addField(UserCJStr::sRecv);
-    msi.addField(UserCJStr::sProgress);
-    msi.addField(UserCJStr::sIsGain);
-    msi.addField(UserCJStr::sTime);
-    msi.setValue(i.uid);
-    msi.addValue(i.aid);
-    msi.addValue(i.isRecvReward ? sMysqlTrue : sMysqlFalse);
-    msi.addValue(StringUtil::toString(i.progress));
-    msi.addValue(i.isGain ? sMysqlTrue : sMysqlFalse);
-    msi.addValue(StringUtil::toString(i.time));
-    sqls.push_back(msi.getQuery());
+    if (i.status == CJS_NEW){
+        // this achievement has not been saved to db
+        MysqlSimpleInsert msi;
+        msi.setTable(UserCJStr::sTableName);
+        msi.setField(UserCJStr::sUid);
+        msi.addField(UserCJStr::sAid);
+        msi.addField(UserCJStr::sRecv);
+        msi.addField(UserCJStr::sTime);
+        msi.setValue(StringUtil::toString(i.uid));
+        msi.addValue(StringUtil::toString(i.aid));
+        msi.addValue(i.isRecvReward ? sMysqlTrue : sMysqlFalse);
+        msi.addValue(StringUtil::toString(i.time));
+        sqls.push_back(msi.getQuery());
+    }else if (i.status == CJS_CHANGED) {
+        // we should update this achievement, just record it recved
+        MysqlSimpleUpdate msu;
+        msu.setTable(UserCJStr::sTableName);
+        msu.setUpdateValue(UserCJStr::sRecv, i.isRecvReward ? sMysqlTrue : sMysqlFalse);
+        msu.setCondition(UserCJStr::sAid, StringUtil::toString(i.aid), false);
+        msu.addCondition(UserCJStr::sUid, StringUtil::toString(i.uid), true, false);
+        sqls.push_back(msu.getQuery());
+    }
     q.pop();
   }
 }

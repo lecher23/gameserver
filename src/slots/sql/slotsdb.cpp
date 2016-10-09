@@ -579,24 +579,6 @@ bool SlotsDB::getGameHistory(const std::string &uid, GameHistory &gd) const {
     return gd.themeHistory.deserialize(mss1.result);
 }
 
-bool SlotsDB::add(const UserCJ &cj) {
-    MysqlSimpleInsert msi;
-    msi.setTable(gAchievement);
-    msi.setField("uid");
-    msi.addField("uaid");
-    msi.addField("is_recv_reward");
-    msi.addField("progress");
-    msi.addField("is_gain");
-    msi.addField("time");
-    msi.setValue(cj.uid);
-    msi.addValue(cj.aid);
-    msi.addValue(cj.isRecvReward ? "1" : "0");
-    msi.addValue(StringUtil::toString(cj.progress));
-    msi.addValue(cj.isGain ? "1" : "0");
-    msi.addValue(StringUtil::toString(cj.time));
-    return _pool.doMysqlOperation((MysqlOperationBase *) &msi);
-}
-
 bool SlotsDB::getUserAchievement(const std::string &uid, Achievements &out) {
     MysqlSimpleSelect mss;
     mss.setField("*");
@@ -640,12 +622,12 @@ bool SlotsDB::collectAchievements(const MysqlRows &result, Achievements &out) co
 bool SlotsDB::getAchivementSetting(CjSettingMap &out) {
     SELECT_ALL_FROM_TABLE(mss, gAchievementDetail);
     for (auto &row: mss.result) {
-	CjSettingPtr item(new CjSetting);
-	if (!item->deserialize(row)) {
+	CjSetting item;
+	if (!item.deserialize(row)) {
 	    CLOG(WARNING) << "Init achievement setting from db failed.";
 	    return false;
 	}
-	out[item->type].push_back(item);
+	out[item.type].push_back(item);
     }
     return true;
 }

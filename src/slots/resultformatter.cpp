@@ -306,11 +306,7 @@ void ResultFormatter::formatUserAchievement(const Achievements &cj) {
 	auto &iCj = **itr;
 	_writer.StartObject();
 	_writer.Key("id");
-	_writer.String(iCj.aid.c_str());
-	_writer.Key("progress");
-	_writer.Int64(iCj.progress);
-	_writer.Key("gained");
-	_writer.Bool(iCj.isGain);
+	_writer.Int(iCj.aid);
 	_writer.Key("recved");
 	_writer.Bool(iCj.isRecvReward);
 	_writer.Key("time");

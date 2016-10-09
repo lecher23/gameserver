@@ -13,6 +13,7 @@ public:
     virtual void save2MySQL(uint64_t factor);
 
     void addCj(std::vector<UserCJ> &newCj);
+    void addCj(UserCJ &newCj);
 
 private:
     void swapQueue();

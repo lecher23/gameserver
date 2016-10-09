@@ -1,3 +1,11 @@
+user_achievement = [
+    ("uid","INT NOT NULL"),
+    ("aid", "INT NOT NULL"),
+    ("is_recv_reward", "BOOL DEFAULT 0"),
+    ("time", "BIGINT DEFAULT 0"),
+    ("", "PRIMARY KEY(uid, uaid)")
+]
+
 cargo_info = [
     ("cargo_id", "int not null primary key"),
     ("price", "bigint not null"),
@@ -149,7 +157,8 @@ table_defines = {
     'theme_common_cfg': common_config,
     'game_history': game_history,
     'theme_history': theme_history,
-    'tiny_game_config': tiny_game_config
+    'tiny_game_config': tiny_game_config,
+    'user_achievement': user_achievement
 }
 
 def parse_dict_to_db_sql(table_name, table_define = []):
