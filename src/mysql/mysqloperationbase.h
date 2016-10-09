@@ -87,6 +87,9 @@ protected:
 	void strJoin(const MysqlStr &left, const MysqlStr &right, const MysqlStr &seq);
 	void quoteValue(const MysqlStr &val, bool quote);
 
+        void setTable(const MysqlStr &table, MysqlStr &query);
+        void quoteValue(const MysqlStr &val, bool quote, MysqlStr &query);
+
 	MysqlStr _query;
 };
 END_NAMESPACE

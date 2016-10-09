@@ -29,7 +29,7 @@ void ResultFormatter::formatResult(const SlotsUser &su)  {
     _writer.EndObject();
 }
 
-void ResultFormatter::formatResult(const SlotsUser &su, const Achievements &cj) {
+void ResultFormatter::formatResultWithCj(const SlotsUser &su) {
     _writer.StartObject();
     formatStatus(true);
     _writer.Key("user_info");
@@ -39,7 +39,7 @@ void ResultFormatter::formatResult(const SlotsUser &su, const Achievements &cj) 
     formatUserResource(su.uRes);
 
     _writer.Key("user_achievement");
-    formatUserAchievement(cj);
+    formatUserAchievement(su.uCj);
 
     _writer.Key("login_info");
     formatLoginInfo(su);
@@ -302,8 +302,7 @@ void ResultFormatter::formatUserResource(const UserResource &uRes) {
 
 void ResultFormatter::formatUserAchievement(const Achievements &cj) {
     _writer.StartArray();
-    for (auto itr = cj.begin(); itr != cj.end(); ++itr) {
-	auto &iCj = **itr;
+    for (auto &iCj: cj) {
 	_writer.StartObject();
 	_writer.Key("id");
 	_writer.Int(iCj.aid);

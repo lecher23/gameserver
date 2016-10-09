@@ -64,7 +64,7 @@ struct UserAchievement{
 
 #define UserCJ UserAchievement
 DF_SHARED_PTR(UserCJ);
-typedef std::vector<UserCJPtr> UserCJs;
+typedef std::vector<UserCJ> Achievements;
 
 END_NAMESPACE
 #endif

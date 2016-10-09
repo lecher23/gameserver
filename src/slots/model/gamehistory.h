@@ -5,6 +5,10 @@
 
 BEGIN_NAMESPACE(slots)
 
+namespace GameHistoryStr{
+  const std::string sTableName = "game_history";
+};
+
 enum SlotsStyle{
   ESS_UNKNOW = 0,
   ESS_TEMPLE_PRINCESS = 1,

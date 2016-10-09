@@ -10,10 +10,9 @@ namespace slots{
     bool LoginService::doJob(CPacket &packet, CResponse &resp){
 	bool pOk = false;
 	SlotsUserPtr sUser;
-	Achievements cj;
         GameContext context;
 	do {
-	    if (!getUserInfo(packet, sUser, cj)){
+	    if (!getUserInfo(packet, sUser)){
 		break;
 	    }
             context.user = sUser;
@@ -25,7 +24,7 @@ namespace slots{
 	SBuf buf;
 	ResultFormatter rf(buf);
 	if (pOk) {
-	    rf.formatResult(*sUser, cj);
+	    rf.formatResultWithCj(*sUser);
 	} else {
 	    rf.formatSimpleResult(pOk, "");
 	}
@@ -35,19 +34,13 @@ namespace slots{
     }
 
     bool LoginService::getUserInfo(
-        CPacket &packet, SlotsUserPtr &su, Achievements &cj) const
+        CPacket &packet, SlotsUserPtr &su) const
     {
 	std::string mid;
 	if (!packet.getParamValue("mid", mid)) {
 	    return false;
 	}
-	auto &slotsUserData = SlotsDataCenter::instance().slotsUserData;
-	//get user info from db.
-	SlotsDB &db = SlotsDB::getInstance();
-	if (slotsUserData->getByMid(mid, su)) {
-	    return db.getUserAchievement(su->uInfo.uid, cj);
-	}
-	return false;
+	return SlotsDataCenter::instance().slotsUserData->getByMid(mid, su);
     }
 
 }

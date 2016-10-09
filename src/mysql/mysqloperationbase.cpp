@@ -265,4 +265,19 @@ void MysqlOperationBase::strJoin(
     _query += seq;
     _query += right;
 }
+
+void MysqlOperationBase::setTable(const MysqlStr &table, MysqlStr &query){
+    query += table;
+}
+
+void MysqlOperationBase::quoteValue(const MysqlStr &val, bool quote, MysqlStr &query) {
+    if (quote) {
+        query += StrQuote;
+        query += val;
+        query += StrQuote;
+    }else {
+        query += val;
+    }
+}
+
 END_NAMESPACE

@@ -220,22 +220,6 @@ def get_common_cfg():
         ret.append((50003, item["SuperWin"], 0))
     return ret
 
-# id| key| value| explain
-def get_tiny_game_cfg():
-    ret = []
-    path = os.path.join(CUR_PATH, "game_config/TemplePrincess/Bonus.json")
-    obj = get_obj_from_file(path)
-    for item in obj:
-        gid = item["ID"]
-        idx = 0
-        order_keys = sorted(item.keys())
-        for k in order_keys:
-            if k == "ID":
-                continue
-            ret.append((gid, idx, item[k], k))
-            idx += 1
-    return ret
-
 def get_theme_common_cfg():
     theme_common_cfg = [
         (10001, 5, 0), # tax for prize pool

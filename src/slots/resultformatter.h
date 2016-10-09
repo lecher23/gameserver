@@ -18,7 +18,7 @@ namespace slots{
 
 	void formatResult(const UserMails &uMails);
 	void formatResult(const SlotsUser &su);
-	void formatResult(const SlotsUser &su, const Achievements &cj);
+	void formatResultWithCj(const SlotsUser &su);
 	void formatSimpleResult(bool ok, const std::string &err);
 	void formatSimpleResult(bool ok, const std::string &key, int64_t value);
 	void formatSimpleResult(bool ok, const std::string &key, int32_t value);

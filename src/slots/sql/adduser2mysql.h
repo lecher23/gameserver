@@ -21,11 +21,11 @@ namespace slots{
 	void setMid(const std::string &mid);
 	void setType(SlotsMysqlOpType type);
 	void setSlotsUser(SlotsUserPtr input);
-	
+
 	bool initSlotsUser(MYSQL *conn);
 	bool dumpSlotsUser(MYSQL *conn);
 	bool selectSlotsUser(MYSQL *conn);
-	
+
 	std::string getUid();
 	SlotsUserPtr getSlotsUser();
 

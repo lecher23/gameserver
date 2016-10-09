@@ -3,6 +3,7 @@ import os
 from optparse import OptionParser
 from serversql import ServerSql
 from tables import table_defines
+import game_setting as gs
 
 def init_db(obj):
     for k in table_defines.keys():
@@ -168,7 +169,7 @@ if __name__ == "__main__":
             lbs.addColumn("bet_exp_cfg", [], [str(k) for k in item])
 
     if cmd == "sgs":
-        second = sys.argv[2]
+        second = options.param
         if second == "all":
             for item in gs.line_cfg:
                 lbs.addColumn("line_config", ["line"], [str(k) for k in item])
@@ -198,7 +199,6 @@ if __name__ == "__main__":
             tmap = {
                 "ele_info": gs.get_ele_info(),
                 "ele_config": gs.get_line_bouns(),
-                "tiny_game_config": gs.get_tiny_game_cfg(),
                 "free_grid_config": gs.get_free_game_grid_cfg(),
                 "grid_config": gs.get_grid_cfg(),
                 "line_config": gs.get_line_cfg(),

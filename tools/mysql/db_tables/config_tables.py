@@ -39,7 +39,7 @@ level_config = [
     ('fortune_reward', 'BIGINT NOT NULL')
 ]
 
-bet_exp_config = [
+bet_exp_cfg = [
     ('bet', 'BIGINT NOT NULL PRIMARY KEY'),
     ('exp', 'BIGINT NOT NULL')
 ]
@@ -72,7 +72,7 @@ ele_config = [
     ('', 'PRIMARY KEY(ele_id, line_num)')
 ]
 
-theme_common_config = [
+theme_common_cfg = [
     ('code', 'INT NOT NULL PRIMARY KEY'),
     ('value', 'BIGINT NOT NULL'),
     ('extra', 'BIGINT DEFAULT 0')

@@ -12,7 +12,7 @@ namespace slots{
 
 	virtual bool doJob(CPacket &packet, CResponse &resp);
     private:
-	bool getUserInfo(CPacket &packet, SlotsUserPtr &su, Achievements &cj) const;
+	bool getUserInfo(CPacket &packet, SlotsUserPtr &su) const;
 
         LoginProcessor _lProcessor;
         AchievementProcessor _aProcessor;

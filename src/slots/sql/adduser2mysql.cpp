@@ -1,4 +1,7 @@
 #include "adduser2mysql.h"
+#include <mysql/mysqlsimpleselect.h>
+#include <mysql/mysqlsimpleinsert.h>
+
 namespace slots{
     AddUser2Mysql::AddUser2Mysql():_type(SMOT_INIT_USER){
     }
@@ -29,13 +32,18 @@ namespace slots{
 	    return false;
 	}
 
-	std::string iQuery = "INSERT INTO user_info (mid) VALUES (\"";
-	iQuery += _mid;
-	iQuery += "\")";
+        cgserver::MysqlSimpleInsert msi;
+        msi.setTable(UserInfoStr::sTableName);
+        msi.setField(UserInfoStr::sMid);
+        msi.setValue(_mid);
+        auto iQuery = msi.getQuery();
 
-	std::string sQuery = "SELECT uid FROM user_info WHERE mid=\"";
-	sQuery += _mid;
-	sQuery += "\"";
+        cgserver::MysqlSimpleSelect mss;
+        mss.setField(UserInfoStr::sUid);
+        mss.setTable(UserInfoStr::sTableName);
+        mss.setCondition(UserInfoStr::sMid, _mid, true);
+        auto sQuery = mss.getQuery();
+
 	bool ret = false;
 	do {
 	    if (!insertWithReturn(conn, iQuery, sQuery, result)
@@ -43,21 +51,14 @@ namespace slots{
 		CLOG(ERROR) << "Add new user failed.";
 		break;
 	    }
-	
 	    _uid = result[0][0];
-	    if (!addRow(conn, "user_resource", "uid", _uid)) {
+	    if (!addRow(conn, UserResourceStr::sTableName,
+                        UserResourceStr::sUid, _uid))
+            {
 		CLOG(WARNING) << "Add new user ["<< _mid << "] failed.";
 		break;
 	    }
-	    if (!addRow(conn, "f_history", "uid", _uid)) {
-		CLOG(WARNING) << "Add new user ["<< _mid << "] failed.";
-		break;
-	    }
-	    if (!addRow(conn, "history", "uid", _uid)) {
-		CLOG(WARNING) << "Add new user ["<< _mid << "] failed.";
-		break;
-	    }
-	    if (!addRow(conn, "g_history", "uid", _uid)) {
+	    if (!addRow(conn, GameHistoryStr::sTableName, UserInfoStr::sUid, _uid)) {
 		CLOG(WARNING) << "Add new user ["<< _mid << "] failed.";
 		break;
 	    }

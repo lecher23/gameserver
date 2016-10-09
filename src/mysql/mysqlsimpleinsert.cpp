@@ -34,4 +34,29 @@ void MysqlSimpleInsert::addValue(const std::string &value) {
     quoteValue(value, true);
     _query += StrRightBracket;
 }
+
+void MysqlSimpleInsert::setField(const std::string &field, std::string &query) {
+    query += StrLeftBracket;
+    query += field;
+}
+
+void MysqlSimpleInsert::addField(const std::string &field, std::string &query) {
+    query += StrComma;
+    query += field;
+}
+
+void MysqlSimpleInsert::setValue(const std::string &value, std::string &query) {
+    query += StrValues;
+    quoteValue(value, true, query);
+    query += StrRightBracket;
+}
+
+void MysqlSimpleInsert::addValue(const std::string &value, std::string &query) {
+    // remove last char: ")"
+    query.resize(query.size() - StrRightBracket.size());
+    query += StrComma;
+    quoteValue(value, true, query);
+    query += StrRightBracket;
+}
+
 END_NAMESPACE

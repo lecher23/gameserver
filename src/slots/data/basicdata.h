@@ -97,6 +97,7 @@ struct SlotsUser{
   UserResource uRes;
   GameHistory uHis;
   LoginReward loginReward;
+  Achievements uCj;
   GameStatus gSt;
 
   bool deserialize(const std::vector<std::string> &row) {
@@ -189,9 +190,6 @@ class PersistenceBase{
 };
 
 DF_SHARED_PTR(PersistenceBase);
-
-typedef UserCJPtr AchievementPtr;
-typedef std::vector<AchievementPtr> Achievements;
 
 END_NAMESPACE
 #endif

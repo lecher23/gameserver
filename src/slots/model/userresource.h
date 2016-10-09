@@ -5,6 +5,11 @@
 
 BEGIN_NAMESPACE(slots)
 
+namespace UserResourceStr{
+  const std::string sTableName = "user_resource";
+  const std::string sUid = "uid";
+};
+
 struct UserResource{
   std::string uid{0};
   int32_t level{0};

@@ -15,6 +15,11 @@ namespace cgserver{
 	void addField(const std::string &field);
 	void setValue(const std::string &value);
 	void addValue(const std::string &value);
+    protected:
+        void setField(const MysqlStr &field, MysqlStr &query);
+        void addField(const MysqlStr &field, MysqlStr &query);
+        void setValue(const MysqlStr &value, MysqlStr &query);
+        void addValue(const MysqlStr &value, MysqlStr &query);
     };
 }
 #endif

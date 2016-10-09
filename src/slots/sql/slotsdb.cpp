@@ -50,7 +50,7 @@ bool SlotsDB::getUserInfo(MysqlOperationBase * mob, SlotsUser &su) const {
     if (!su.deserialize(res[0])) {
 	return false;
     }
-    return getGameHistory(ui.uid, uh);
+    return getGameHistory(ui.uid, uh) && getUserAchievement(ui.uid, su.uCj);
 }
 
 bool SlotsDB::getUserInfoByMachineId(const std::string &mid, SlotsUser &su) const
@@ -542,11 +542,12 @@ bool SlotsDB::getGameHistory(const std::string &uid, GameHistory &gd) const {
     return gd.themeHistory.deserialize(mss1.result);
 }
 
-bool SlotsDB::getUserAchievement(const std::string &uid, Achievements &out) {
+bool SlotsDB::getUserAchievement(const std::string &uid, Achievements &out) const {
     MysqlSimpleSelect mss;
     mss.setField("*");
-    mss.innerJoin(gAchievement, gAchievementDetail, "uaid", "aiid");
-    mss.addCondition("uid", uid, true, false);
+    mss.setTable(gAchievement);
+    //mss.innerJoin(gAchievement, gAchievementDetail, "uaid", "aiid");
+    mss.setCondition(UserCJStr::sUid, uid, false);
     if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss)) {
 	CLOG(WARNING) << "Get achievement from mysql failed.";
 	return false;
@@ -574,9 +575,9 @@ bool SlotsDB::getUserAchievement(
 
 bool SlotsDB::collectAchievements(const MysqlRows &result, Achievements &out) const{
     for (auto &row: result) {
-	AchievementPtr ap(new UserCJ);
-	if (ap->deserialize(row)) {
-	    out.push_back(ap);
+	UserCJ cj;
+	if (cj.deserialize(row)) {
+	    out.push_back(cj);
 	}
     }
     return true;
