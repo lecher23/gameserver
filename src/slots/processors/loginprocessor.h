@@ -4,7 +4,7 @@
 #include <util/timeutil.h>
 #include <util/common_define.h>
 #include <slots/data/gamecontext.h>
-#include <slots/slotsconfig.h>
+#include <slots/config/slotsconfig.h>
 
 BEGIN_NAMESPACE(slots)
 

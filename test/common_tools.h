@@ -1,4 +1,4 @@
-#include <slots/slotsconfig.h>
+#include <slots/config/slotsconfig.h>
 #include <slots/data/slotsdatacenter.h>
 #include <mysql/mysqlconnpool.h>
 

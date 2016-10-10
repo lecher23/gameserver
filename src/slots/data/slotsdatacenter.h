@@ -8,7 +8,7 @@
 #include <slots/data/cjqueue.h>
 #include <slots/data/giftsdata.h>
 #include <slots/themes/tshall.h>
-#include <slots/slotsconfig.h>
+#include <slots/config/slotsconfig.h>
 #include <util/timeutil.h>
 
 BEGIN_NAMESPACE(slots)

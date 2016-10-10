@@ -1,5 +1,5 @@
 #include "gameprocessor.h"
-#include <slots/slotsconfig.h>
+#include <slots/config/slotsconfig.h>
 #include <slots/data/slotsdatacenter.h>
 #include <slots/themes/templeprincess.h>
 

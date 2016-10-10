@@ -7,7 +7,6 @@
 #include <mysql/mysqloperationbase.h>
 #include <slots/data/basicdata.h>
 #include <slots/model/vipconfig.h>
-#include <slots/model/levelconfig.h>
 #include <slots/model/bet2expconfig.h>
 #include <slots/model/gridconfig.h>
 #include <slots/model/lineconfig.h>
@@ -27,7 +26,6 @@ const std::string gMailDetail = "mail_detail";
 const std::string gCargoInfo = "cargo_config";
 const std::string gLoginConfig = "login_config";
 const std::string gVipSetting = "vip_config";
-const std::string gLevelSetting = "level_config";
 const std::string gBetExpSetting = "bet_exp_cfg";
 const std::string gLineConfig = "line_config";
 const std::string gGridConfig = "grid_config";
@@ -66,7 +64,6 @@ public:
     bool getCargoInfo(CargoInfos &out) const;
     bool getLoginSetting(LoginSetting &out) const;
     bool getVipSetting(VipConfigs &out) const;
-    bool getLevelSetting(LevelConfigs &out) const;
     bool getBet2ExpSetting(Bet2ExpConfigs &out) const;
     bool getGridsConfig(GridConfigs &out) const;
     bool getFreeGridsConfig(GridConfigs &out) const;

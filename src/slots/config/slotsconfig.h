@@ -9,6 +9,7 @@
 #include <slots/data/gamecontext.h>
 #include <slots/themes/themeconfig.h>
 #include <slots/sql/slotsdb.h>
+#include <slots/config/levelconfig.h>
 
 
 BEGIN_NAMESPACE(slots)
@@ -26,14 +27,13 @@ class SlotsConfig{
 
     int64_t expGain(GameContext &context, int64_t resource);
     int64_t earned(GameContext &context, int64_t src);
-    int64_t expNeedForLevelUp(int32_t level);
     int64_t vipLoginReward(int32_t level, int64_t src);
 
     CjSettingMap cjConfig;
     LoginSetting loginCfg;
     CargoInfos cargoInfo;
     VipConfigs vipSetting;
-    LevelConfigs levelConfig;
+    LevelConfig levelConfig;
     Bet2ExpConfigs bet2Exp;
     ThemeConfig themeConfig;
 

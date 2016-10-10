@@ -594,18 +594,6 @@ bool SlotsDB::getVipSetting(VipConfigs &out) const {
     }
     return true;
 }
-bool SlotsDB::getLevelSetting(LevelConfigs &out) const {
-    SELECT_ALL_FROM_TABLE(mss, gLevelSetting);
-    for (auto &row: mss.result) {
-	LevelConfig item;
-	if (!item.deserialize(row)) {
-	    CLOG(WARNING) << "Init level setting from db failed.";
-	    return false;
-	}
-	out[item.level] = item;
-    }
-    return true;
-}
 
 bool SlotsDB::getBet2ExpSetting(Bet2ExpConfigs &out) const {
     SELECT_ALL_FROM_TABLE(mss, gBetExpSetting);

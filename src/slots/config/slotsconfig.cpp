@@ -1,4 +1,5 @@
 #include "slotsconfig.h"
+#include <util/config.h>
 
 BEGIN_NAMESPACE(slots)
 
@@ -28,8 +29,11 @@ bool SlotsConfig::init(){
         return false;
     }
 
-    if(!db.getLevelSetting(levelConfig)) {
-        CLOG(ERROR) << "Get level config from db failed.";
+    auto levelCfgPath =
+        cgserver::Config::getInstance().getConfigValue("slots", "level_cfg");
+
+    if(!levelConfig.initFromJsonFile(levelCfgPath)) {
+        CLOG(ERROR) << "Get level config failed.";
         return false;
     }
 
@@ -70,14 +74,6 @@ int64_t SlotsConfig::earned(GameContext &context, int64_t src) {
     float ext = 0.0;
     FIND_VIP_CONFIG(context.user->uRes.vipLevel, ext, bounus_ext, 0.0);
     return src * (1.0 + ext);
-}
-
-int64_t SlotsConfig::expNeedForLevelUp(int32_t level) {
-    auto itr = levelConfig.find(level);
-    if (itr == levelConfig.end()) {
-        return -1;
-    }
-    return itr->second.expNeed;
 }
 
 int64_t SlotsConfig::vipLoginReward(int32_t level, int64_t src) {

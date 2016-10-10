@@ -1,5 +1,5 @@
 #include "gameresultprocessor.h"
-#include <slots/slotsconfig.h>
+#include <slots/config/slotsconfig.h>
 #include <slots/data/slotsdatacenter.h>
 
 BEGIN_NAMESPACE(slots)
@@ -116,7 +116,7 @@ void GameResultProcessor::processExp(GameContext &context, GameResult &data) con
     uRes.incrExp(expGot);
     int64_t expNeed = 0;
     while(true) {
-        expNeed = slotsConfig.expNeedForLevelUp(uRes.level);
+        expNeed = slotsConfig.levelConfig.expNeedForNextLevel(uRes.level);
         if (expNeed < 0 || expNeed > uRes.exp ) {
             return;
         }
