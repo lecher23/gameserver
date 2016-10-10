@@ -15,7 +15,11 @@ class EventInfo{
     EventInfo(GameEvent e_, int64_t pre_, int64_t cur_)
 	: e(e_), preData(pre_), curData(cur_) {}
     EventInfo(GameEvent e_, int64_t cur_)
-        : e(e_), preData(0), curData(cur_) {}
+    {
+      e = e_;
+      preData = cur_ - 1;
+      curData = cur_;
+    }
 };
 
 struct GameContext{
@@ -24,7 +28,7 @@ struct GameContext{
   int32_t uid;
   SlotsUserPtr user;
   GameResult gameInfo;
-  std::vector<UserCJ> userCj;
+  Achievements userCj;
   // to save all game event during game.
   std::vector<EventInfo> events;
 };

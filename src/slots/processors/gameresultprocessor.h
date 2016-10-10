@@ -15,6 +15,7 @@ class GameResultProcessor{
  private:
     void processHall(GameContext &context, GameResult &data) const;
     void processGameDetail(GameContext &context, GameResult &data) const;
+    void processLines(GameContext &context, GameResult &data) const;
     void processExp(GameContext &context, GameResult &data) const;
     void processMoney(GameContext &context, GameResult &data) const;
 };

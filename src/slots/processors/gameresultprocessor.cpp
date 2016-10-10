@@ -15,6 +15,7 @@ bool GameResultProcessor::process(GameContext &context) const {
     context.events.push_back(EventInfo(EGE_PLAYED_GAME));
     processHall(context, gInfo);
     processGameDetail(context, gInfo);
+    processLines(context, gInfo);
     // is free to play
     if (!gInfo.bFreeGame) {
 	context.events.push_back(EventInfo(EGE_USE_BET, gInfo.bet));
@@ -49,14 +50,16 @@ void GameResultProcessor::processHall(GameContext &context, GameResult &data) co
 }
 
 #define INCR_TAG_VALUE(mThemeTag, mEvent, value)                        \
-    udt.incrTagValue(gType, mThemeTag, 1);                              \
+    tHis.incrTagValue(gType, mThemeTag, 1);                              \
     context.events.push_back(                                           \
         EventInfo(mEvent, TO_GAME_CJ_VALUE(                             \
-                      gType, udt.getTagValue(gType, mThemeTag))));
+                      gType, tHis.getTagValue(gType, mThemeTag))));
 
 
-void GameResultProcessor::processGameDetail(GameContext &context, GameResult &data) const {
-    auto &udt = context.user->uHis.themeHistory;
+void GameResultProcessor::processGameDetail(
+    GameContext &context, GameResult &data) const
+{
+    auto &tHis = context.user->uHis.themeHistory;
     auto gType = data.gType;
     // incr game times
     INCR_TAG_VALUE(NORMAL_GAME_TAG, EGE_GAME_COUNT, 1);
@@ -69,6 +72,7 @@ void GameResultProcessor::processGameDetail(GameContext &context, GameResult &da
     if(data.bSuperwin) {
         INCR_TAG_VALUE(SUPER_WIN_TAG, EGE_SUPER_WIN, 1);
     }
+    // bug: if both jackpot trigger, it will jump one number.
     if(data.bJackpot1) {
         INCR_TAG_VALUE(JACKPOT_TAG, EGE_JACKPOT, 1);
         ++context.user->uHis.jackpot;
@@ -80,7 +84,25 @@ void GameResultProcessor::processGameDetail(GameContext &context, GameResult &da
     if (data.tinyGame.enable) {
         INCR_TAG_VALUE(TINY_GAME_TAG, EGE_TINY_GAME, 1);
     }
+    if (data.bFreeGame) {
+        tHis.incrTagValue(gType, FREE_GAME_TAG, 1);
+    }
     context.user->uHis.changed = true;
+}
+
+void GameResultProcessor::processLines(GameContext &context, GameResult &data) const {
+    auto &tHis = context.user->uHis.themeHistory;
+    auto gType = data.gType;
+    auto pre = tHis.getTagValue(gType, SIX_LINK_TAG);
+    for (auto &line: data.lines){
+        // six link
+        if (line.count == 6) {
+            tHis.incrTagValue(gType, SIX_LINK_TAG, 1);
+        }
+    }
+    context.events.push_back(
+        EventInfo(EGE_LINE, TO_GAME_CJ_VALUE(gType, pre),
+                  TO_GAME_CJ_VALUE(gType, tHis.getTagValue(gType, SIX_LINK_TAG))));
 }
 
 void GameResultProcessor::processExp(GameContext &context, GameResult &data) const {

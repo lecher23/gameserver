@@ -48,6 +48,9 @@ bool AchievementProcessor::process(GameContext &context) const {
     // save achievement
     auto &cjQueue = SlotsDataCenter::instance().cjQueue;
     cjQueue->addCj(context.userCj);
+    // add new achievement to suercj
+    auto &userCj = context.user->uCj;
+    userCj.insert(userCj.begin(), context.userCj.begin(), context.userCj.end());
     return true;
 }
 

@@ -40,8 +40,7 @@ void CjQueue::getSqls(std::vector<std::string> &sqls) {
   auto &q = _queue[_curRead];
   while(!q.empty()) {
     auto &i = q.front();
-    if (i.status == CJS_NEW){
-        // this achievement has not been saved to db
+    if (i.status != CJS_SAVED) {
         MysqlSimpleInsert msi;
         msi.setTable(UserCJStr::sTableName);
         msi.setField(UserCJStr::sUid);
@@ -52,15 +51,9 @@ void CjQueue::getSqls(std::vector<std::string> &sqls) {
         msi.addValue(StringUtil::toString(i.aid));
         msi.addValue(i.isRecvReward ? sMysqlTrue : sMysqlFalse);
         msi.addValue(StringUtil::toString(i.time));
+        msi.updateIfExist();
+        msi.setFieldValue(UserCJStr::sRecv, i.isRecvReward ? sMysqlTrue : sMysqlFalse);
         sqls.push_back(msi.getQuery());
-    }else if (i.status == CJS_CHANGED) {
-        // we should update this achievement, just record it recved
-        MysqlSimpleUpdate msu;
-        msu.setTable(UserCJStr::sTableName);
-        msu.setUpdateValue(UserCJStr::sRecv, i.isRecvReward ? sMysqlTrue : sMysqlFalse);
-        msu.setCondition(UserCJStr::sAid, StringUtil::toString(i.aid), false);
-        msu.addCondition(UserCJStr::sUid, StringUtil::toString(i.uid), true, false);
-        sqls.push_back(msu.getQuery());
     }
     q.pop();
   }
