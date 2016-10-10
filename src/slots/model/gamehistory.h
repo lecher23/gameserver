@@ -5,8 +5,17 @@
 
 BEGIN_NAMESPACE(slots)
 
+namespace ThemeHistoryStr{
+  const std::string sTableName = "theme_history";
+  const std::string sPriKey1 = "uid";
+  const std::string sPriKey2 = "theme_id";
+  const std::string sPriKey3 = "tag";
+  const std::string sValue = "value";
+}
+
 namespace GameHistoryStr{
   const std::string sTableName = "game_history";
+  const std::string sPriKey = "uid";
   const std::string sMaxFortune = "max_fortune";
   const std::string sMaxEarned = "max_earned";
   const std::string sTotalEarned = "total_earned";
@@ -16,13 +25,14 @@ namespace GameHistoryStr{
   const std::string sJackpot = "jackpot";
 };
 
-enum SlotsStyle{
+enum ThemeTypes{
   ESS_UNKNOW = 0,
   ESS_TEMPLE_PRINCESS = 1,
   ESS_END
 };
 
 enum ThemeHistoryTag {
+  THEME_TAG_BEGIN = 0,
   BIG_WIN_TAG = 1,
   MEGA_WIN_TAG,
   SUPER_WIN_TAG,
@@ -34,8 +44,8 @@ enum ThemeHistoryTag {
   INVALID_THEME_TAG
 };
 
-#define SLOTS_GAME_TYPES ESS_END
-#define THEME_HISTORY_TAGS 7
+#define THEME_TYPES ESS_END
+#define THEME_HISTORY_TAGS INVALID_THEME_TAG
 
 class ThemeHistory {
  public:
@@ -45,10 +55,18 @@ class ThemeHistory {
 
   void reset() {
     for (int i = 0; i < THEME_HISTORY_TAGS; ++i) {
-      for (int j = 0; j < SLOTS_GAME_TYPES; ++j) {
+      for (int j = 0; j < THEME_TYPES; ++j) {
         history[j][i] = 0;
       }
     }
+  }
+
+  int32_t getThemeCount() {
+    return THEME_TYPES;
+  }
+
+  int32_t getTagCount() {
+    return THEME_HISTORY_TAGS;
   }
 
   bool deserialize (const std::vector<std::vector<std::string>> &rows) {
@@ -81,27 +99,28 @@ class ThemeHistory {
   }
 
   void setTagValue(int32_t themeType, int32_t tag, int32_t val) {
-    if (tag >= THEME_HISTORY_TAGS || themeType >= SLOTS_GAME_TYPES ) {
+    if (tag >= THEME_HISTORY_TAGS || themeType >= THEME_TYPES ) {
       return;
     }
     history[themeType][tag] = val;
   }
 
   void incrTagValue(int32_t themeType, int32_t tag, int32_t val) {
-    if (tag >= THEME_HISTORY_TAGS || themeType >= SLOTS_GAME_TYPES ) {
+    if (tag >= THEME_HISTORY_TAGS || themeType >= THEME_TYPES ) {
       return;
     }
     history[themeType][tag] += val;
   }
 
   int32_t getTagValue(int32_t themeType, int32_t tag) {
-    if (tag >= THEME_HISTORY_TAGS || themeType >= SLOTS_GAME_TYPES ) {
+    if (tag >= THEME_HISTORY_TAGS || themeType >= THEME_TYPES ) {
       return 0;
     }
     return history[themeType][tag];
   }
  private:
-  int32_t history[SLOTS_GAME_TYPES][THEME_HISTORY_TAGS];
+  int32_t history[THEME_TYPES][THEME_HISTORY_TAGS];
+  bool changed{false};
 };
 
 struct GameHistory{

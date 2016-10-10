@@ -163,7 +163,7 @@ enum ResultType {
 
 struct GameRecord{
     std::string uid;
-    SlotsStyle gameType;
+    ThemeTypes gameType;
     int64_t time;
     std::string detail;
     int64_t bet;

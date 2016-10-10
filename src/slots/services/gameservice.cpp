@@ -33,7 +33,7 @@ bool GameService::doJob(CPacket &packet, CResponse &resp) {
 
 bool GameService::doTemplePrincess(CPacket &packet, ResultFormatter &rf)
 {
-    const static SlotsStyle style = ESS_TEMPLE_PRINCESS;
+    const static ThemeTypes style = ESS_TEMPLE_PRINCESS;
     std::string detail;
     bool ret = false;
     do {

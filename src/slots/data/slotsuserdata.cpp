@@ -1,5 +1,7 @@
 #include "slotsuserdata.h"
 
+#include <slots/sql/slotusersaver.h>
+
 BEGIN_NAMESPACE(slots)
 
 SlotsUserData::SlotsUserData(){
@@ -52,9 +54,13 @@ void SlotsUserData::set(const std::string &uid, SlotsUserPtr &in) {
 void SlotsUserData::save2MySQL(uint64_t factor){
     MUTEX_GUARD(_lock);
     CLOG(INFO) << "dump user info to db begin.";
-    SlotsDB &db = SlotsDB::getInstance();
+    SlotUserSaver saver;
+    auto &pool = cgserver::MysqlConnPool::getInstance();
     for (auto itr = _data.begin(); itr != _data.end(); ++itr) {
-	db.update(itr->second);
+        saver.setUser(itr->second);
+        if (!pool.doMysqlOperation((cgserver::MysqlOperationBase *) &saver)) {
+            CLOG(WARNING) << "save user" << itr->second->uInfo.uid << " info falied.";
+        }
     }
     CLOG(INFO) << "dump user info to db end.";
 }

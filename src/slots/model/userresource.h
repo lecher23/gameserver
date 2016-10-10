@@ -8,6 +8,11 @@ BEGIN_NAMESPACE(slots)
 namespace UserResourceStr{
   const std::string sTableName = "user_resource";
   const std::string sUid = "uid";
+  const std::string sLevel = "level";
+  const std::string sExp = "exp";
+  const std::string sFortune = "fortune";
+  const std::string sVipLevel = "vip_level";
+  const std::string sVipPoint = "vip_point";
 };
 
 struct UserResource{
