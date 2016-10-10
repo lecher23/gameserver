@@ -171,44 +171,30 @@ bool SlotsDB::update(SlotsUserPtr su) const {
 }
 
 bool SlotsDB::updateGameHistory(GameHistory &gh) const {
-    // MysqlSimpleUpdate msu;
-    // msu.setTable(gGameHistory);
-    // msu.setUpdateValue("friend_num", StringUtil::toString(gh.friendNum));
-    // msu.addUpdateValue("friend_gifts_num", StringUtil::toString(gh.friendGiftsNum));   
-    // msu.addUpdateValue("last_login", StringUtil::toString(gh.lastLogin));   
-    // msu.addUpdateValue("consitive_login", StringUtil::toString(gh.loginDays));   
-    // msu.addUpdateValue("tiny_game_times", StringUtil::toString(gh.tinyGameTimes));
-    // std::string tmp;
-    // StringUtil::ArrayToStr(gh.bigwin, SLOTS_GAME_TYPES, ',', tmp);
-    // msu.addUpdateValue("bigwin", tmp);
-    // StringUtil::ArrayToStr(gh.megawin, SLOTS_GAME_TYPES, ',', tmp);
-    // msu.addUpdateValue("megawin", tmp);   
-    // StringUtil::ArrayToStr(gh.freeTimes, SLOTS_GAME_TYPES, ',', tmp);
-    // msu.addUpdateValue("free_times", tmp);   
-    // StringUtil::ArrayToStr(gh.gameTimes, SLOTS_GAME_TYPES, ',', tmp);
-    // msu.addUpdateValue("game_times", tmp);   
-    // StringUtil::ArrayToStr(gh.jackpotTimes, SLOTS_GAME_TYPES, ',', tmp);
-    // msu.addUpdateValue("jackpot_times", tmp);   
-    // msu.addUpdateValue("g_jackpot_times", StringUtil::toString(gh.gJackpotTimes));
-    // tmp.clear();
-    // std::string multiAryOutFour = "";
-    // std::string multiAryOutFive = "";
-    // for (size_t i = 0; i < SLOTS_GAME_TYPES; ++i){
-    //     StringUtil::ArrayToStr(gh.fourLine[i], MAX_ELE_TYPES, ',', tmp);
-    //     multiAryOutFour += tmp;
-    //     multiAryOutFour += ";";
-    //     StringUtil::ArrayToStr(gh.fiveLine[i], MAX_ELE_TYPES, ',', tmp);
-    //     multiAryOutFive += tmp;
-    //     multiAryOutFive += ";";
-    // }
-    // msu.addUpdateValue("four_line_times", multiAryOutFour);
-    // msu.addUpdateValue("five_line_times", multiAryOutFive);
-    // msu.setCondition("uid", gh.uid, false);    
-    // if (!_pool.doMysqlOperation((MysqlOperationBase *) &msu)) {
-    //     return false;
-    // }
-    // // important: if update success, it must flag to unchanged.
-    // gh.changed = false;
+    MysqlSimpleUpdate msu;
+    msu.setTable(GameHistoryStr::sTableName);
+    msu.setUpdateValue(
+        GameHistoryStr::sMaxFortune, StringUtil::toString(gh.maxFortune));
+    msu.addUpdateValue(
+        GameHistoryStr::sMaxEarned, StringUtil::toString(gh.maxEarned));
+    msu.addUpdateValue(
+        GameHistoryStr::sTotalEarned, StringUtil::toString(gh.totalEarned));
+    msu.addUpdateValue(
+        GameHistoryStr::sTotalBet, StringUtil::toString(gh.totalBet));
+    msu.addUpdateValue(
+        GameHistoryStr::sLastLogin, StringUtil::toString(gh.lastLogin));
+    msu.addUpdateValue(
+        GameHistoryStr::sLoingDays, StringUtil::toString(gh.loginDays));
+    msu.addUpdateValue(
+        GameHistoryStr::sJackpot, StringUtil::toString(gh.jackpot));
+    msu.setCondition("uid", StringUtil::toString(gh.uid), false);
+    CLOG(INFO) << "update history " << msu.getQuery();
+    if (!_pool.doMysqlOperation((MysqlOperationBase *) &msu)) {
+        return false;
+    }
+    // important: if update success, it must flag to unchanged.
+    // and update theme_history is required.
+    gh.changed = false;
     return true;
 }
 

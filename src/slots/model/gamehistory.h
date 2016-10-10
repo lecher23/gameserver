@@ -7,6 +7,13 @@ BEGIN_NAMESPACE(slots)
 
 namespace GameHistoryStr{
   const std::string sTableName = "game_history";
+  const std::string sMaxFortune = "max_fortune";
+  const std::string sMaxEarned = "max_earned";
+  const std::string sTotalEarned = "total_earned";
+  const std::string sTotalBet = "total_bet";
+  const std::string sLastLogin = "last_login";
+  const std::string sLoingDays = "login_days";
+  const std::string sJackpot = "jackpot";
 };
 
 enum SlotsStyle{

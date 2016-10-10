@@ -12,6 +12,7 @@ CjQueue::~CjQueue(){
 
 void CjQueue::save2MySQL(uint64_t factor) {
   swapQueue();
+  CLOG(INFO) << "Dump achievement info to db begin.";
   std::vector<std::string> sqls;
   getSqls(sqls);
   BatchSql bs(sqls);
@@ -20,6 +21,7 @@ void CjQueue::save2MySQL(uint64_t factor) {
     // if there has error, we should get reason from log
     CLOG(WARNING) << "Save achievement to mysql failed.";
   }
+  CLOG(INFO) << "Dump achievement info to db end.";
 }
 
 void CjQueue::addCj(std::vector<UserCJ> &newCJ) {

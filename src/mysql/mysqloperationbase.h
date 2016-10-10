@@ -35,6 +35,7 @@ const std::string StrSelect = "SELECT ";
 const std::string StrUpdate = "UPDATE ";
 const std::string StrSet = " SET ";
 const std::string StrDelete = "DELETE FROM ";
+const std::string StrCall = "CALL ";
 
 #define MAKE_COND_SENTENCE(left, right, quote)	\
     _query += left;				\

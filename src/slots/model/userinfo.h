@@ -7,6 +7,7 @@ BEGIN_NAMESPACE(slots)
 
 namespace UserInfoStr{
     const std::string sTableName = "user_info";
+    const std::string sCreateUserProcedure = "create_user";
     const std::string sUid = "uid";
     const std::string sMid = "mid";
 };

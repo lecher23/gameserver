@@ -8,7 +8,9 @@ MysqlSimpleDelete::~MysqlSimpleDelete(){
 }
 
 bool MysqlSimpleDelete::doOperation(MYSQL *conn) {
-    return exeQuery(conn, _query);
+    bool ret = exeQuery(conn, _query);
+    endTransaction(conn, ret);
+    return ret;
 }
 
 END_NAMESPACE

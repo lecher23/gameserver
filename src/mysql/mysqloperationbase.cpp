@@ -23,7 +23,7 @@ bool MysqlOperationBase::exeQuery(MYSQL *conn, const MysqlStr &query) {
             CLOG(ERROR) << "ERROR:CR_SERVER_LOST" ;
             break;
         default:
-            CLOG(ERROR) << "Unknow error." ;
+            CLOG(ERROR) << "Unknow error.:"  << mysql_error(conn);
         }
         return false;
     }
@@ -68,6 +68,10 @@ bool MysqlOperationBase::getResult(MYSQL *conn, MysqlRow &out) {
     }
     // release result.
     mysql_free_result(res);
+    while (mysql_next_result(conn) == 0) {
+        res = mysql_store_result(conn);
+        mysql_free_result(res);
+    }
     return true;
 }
 
@@ -96,6 +100,10 @@ bool MysqlOperationBase::getResult(MYSQL *conn, MysqlRows &out) {
     }
     // release result.
     mysql_free_result(res);
+    while (mysql_next_result(conn) == 0) {
+        res = mysql_store_result(conn);
+        mysql_free_result(res);
+    }
     return true;
 }
 

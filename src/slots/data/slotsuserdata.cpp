@@ -51,12 +51,12 @@ void SlotsUserData::set(const std::string &uid, SlotsUserPtr &in) {
 
 void SlotsUserData::save2MySQL(uint64_t factor){
     MUTEX_GUARD(_lock);
-    //CLOG(INFO) << "dump data to db.";
+    CLOG(INFO) << "dump user info to db begin.";
     SlotsDB &db = SlotsDB::getInstance();
     for (auto itr = _data.begin(); itr != _data.end(); ++itr) {
 	db.update(itr->second);
     }
-    //CLOG(INFO) << "dump data to db finish.";	    
+    CLOG(INFO) << "dump user info to db end.";
 }
 
 END_NAMESPACE

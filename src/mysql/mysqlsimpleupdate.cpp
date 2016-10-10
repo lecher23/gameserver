@@ -9,7 +9,9 @@ MysqlSimpleUpdate::~MysqlSimpleUpdate(){
 }
 
 bool MysqlSimpleUpdate::doOperation(MYSQL *conn) {
-    return exeQuery(conn, _query);
+    bool ret = exeQuery(conn, _query);
+    endTransaction(conn, ret);
+    return ret;
 }
 
 void MysqlSimpleUpdate::setUpdateValue(

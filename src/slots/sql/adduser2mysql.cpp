@@ -27,45 +27,37 @@ namespace slots{
     }
 
     bool AddUser2Mysql::initSlotsUser(MYSQL *conn) {
-	if (!startTransaction(conn)) {
-	    CLOG(ERROR) << "Start transaction failed.";	    
-	    return false;
-	}
+        static const std::string strProcedureOut = "@x";
+        static const std::string strFailedUid = "0";
 
-        cgserver::MysqlSimpleInsert msi;
-        msi.setTable(UserInfoStr::sTableName);
-        msi.setField(UserInfoStr::sMid);
-        msi.setValue(_mid);
-        auto iQuery = msi.getQuery();
+        std::string query = cgserver::StrCall;
+        query += UserInfoStr::sCreateUserProcedure;
+        query += cgserver::StrLeftBracket;
+        quoteValue(_mid, true, query);
+        query += cgserver::StrComma;
+        query += strProcedureOut;
+        query += cgserver::StrRightBracket;
 
-        cgserver::MysqlSimpleSelect mss;
-        mss.setField(UserInfoStr::sUid);
-        mss.setTable(UserInfoStr::sTableName);
-        mss.setCondition(UserInfoStr::sMid, _mid, true);
-        auto sQuery = mss.getQuery();
+        cgserver::MysqlRow result;
 
-	bool ret = false;
-	do {
-	    if (!insertWithReturn(conn, iQuery, sQuery, result)
-		|| result.empty() || result[0].empty()) {
-		CLOG(ERROR) << "Add new user failed.";
-		break;
-	    }
-	    _uid = result[0][0];
-	    if (!addRow(conn, UserResourceStr::sTableName,
-                        UserResourceStr::sUid, _uid))
-            {
-		CLOG(WARNING) << "Add new user ["<< _mid << "] failed.";
-		break;
-	    }
-	    if (!addRow(conn, GameHistoryStr::sTableName, UserInfoStr::sUid, _uid)) {
-		CLOG(WARNING) << "Add new user ["<< _mid << "] failed.";
-		break;
-	    }
-	    ret = true;
-	}while(false);
-	endTransaction(conn, ret);
-	return true;
+        if (!queryWithResult(conn, query, result)) {
+            CLOG(WARNING) << "Create user " << _mid << " failed.";
+            return false;
+        }
+
+        if (result.size() == 0) {
+            CLOG(WARNING)<< "Cannot get user " << _mid << "'s uid.";
+            return false;
+        }
+
+        _uid = result[0];
+        if (_uid == strFailedUid) {
+            CLOG(WARNING)<< "Create get user " << _mid << " falied, rollback.";
+            return false;
+        }
+
+        endTransaction(conn, true);
+        return true;
     }
 
     void AddUser2Mysql::setType(SlotsMysqlOpType type) {

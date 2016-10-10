@@ -8,7 +8,9 @@ MysqlSimpleInsert::~MysqlSimpleInsert(){
 }
 
 bool MysqlSimpleInsert::doOperation(MYSQL *conn) {
-    return exeQuery(conn, _query);
+    bool ret = exeQuery(conn, _query);
+    endTransaction(conn, ret);
+    return ret;
 }
 
 void MysqlSimpleInsert::setField(const std::string &field) {
