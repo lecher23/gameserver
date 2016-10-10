@@ -37,6 +37,24 @@ void MysqlSimpleInsert::addValue(const std::string &value) {
     _query += StrRightBracket;
 }
 
+void MysqlSimpleInsert::updateIfExist() {
+    _query += StrOnDuplicat;
+}
+
+void MysqlSimpleInsert::setFieldValue(
+    const std::string &field, const std::string &value)
+{
+    MAKE_COND_SENTENCE(field, value, true);
+}
+
+void MysqlSimpleInsert::addFieldValue(
+    const std::string &field, const std::string &value)
+{
+    _query += StrComma;
+    MAKE_COND_SENTENCE(field, value, true);
+}
+
+
 void MysqlSimpleInsert::setField(const std::string &field, std::string &query) {
     query += StrLeftBracket;
     query += field;
