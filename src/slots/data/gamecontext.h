@@ -2,7 +2,7 @@
 #define GAMECONTEXT_H
 
 #include <slots/data/basicdata.h>
-#include <set>
+#include <slots/config/cjconfig.h>
 
 BEGIN_NAMESPACE(slots)
 

@@ -7,6 +7,28 @@ BEGIN_NAMESPACE(slots)
 
 #define POWERFUL_HALL_ID 0
 
+enum CjType{
+  ECT_BEGIN,
+  ECT_FORTUNE_SUM = 1,
+  ECT_BET_SUM,
+  ECT_BIGWIN,
+  ECT_MEGAWIN,
+  ECT_SUPERWIN,
+  ECT_LEVEL = 6,
+  ECT_FRIEND_NUM,
+  ECT_LOGIN_DAYS,
+  ECT_JACKPOT,
+  ECT_FREE_TIMES,
+  ECT_GAME_TIMES = 11,
+  ECT_SIX_LINK,
+  ECT_TINY_GAME,
+  ECT_SEND_GOLD,
+  ECT_RECV_GOLD,
+  ECT_END
+};
+
+typedef CjType GameEvent;
+
 struct CjConfigItem{
   int32_t cjID;
   int32_t hallID;

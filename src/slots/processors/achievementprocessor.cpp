@@ -14,30 +14,7 @@ AchievementProcessor::~AchievementProcessor(){
 bool AchievementProcessor::process(GameContext &context) const {
     std::vector<EventInfo> events(context.events.begin(), context.events.end());
     for (auto &item: events) {
-	switch(item.e){
-	case EGE_LEVEL_UP:
-	case EGE_NEW_FRIEND:
-	case EGE_SEND_GIFT:
-	case EGE_RECV_GIFT:
-	case EGE_TINY_GAME:
-	case EGE_FREE_GAME:
-	case EGE_MEGA_WIN:
-	case EGE_BIG_WIN:
-	case EGE_JACKPOT:
-	case EGE_GAME_COUNT:
-	case EGE_LOGIN:
-	case EGE_USE_BET:
-	case EGE_EARNED_INCR:
-	case EGE_LINE:
-	    processRangeCj(context, item);
-	    break;
-	case EGE_PLAYED_GAME:
-	    // do nothing
-	    break;
-	default:
-	    CLOG(WARNING) << "Invalid event type." ;
-	    break;
-	}
+        processRangeCj(context, item);
     }
     // save achievement
     auto &cjQueue = SlotsDataCenter::instance().cjQueue;

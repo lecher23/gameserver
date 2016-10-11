@@ -19,11 +19,11 @@ bool LoginProcessor::process(GameContext &context) const {
     auto &loginDays = gHistory.loginDays;
     if (lastLogin < yesterday) {
         loginDays = 1;
-        context.events.push_back(EventInfo(EGE_LOGIN, loginDays));
+        context.events.push_back(EventInfo(ECT_LOGIN_DAYS, loginDays));
         processReward(loginDays, context.user->uRes.vipLevel, context.user->loginReward);
     } else if (lastLogin >= yesterday && lastLogin < thisMorning) {
         ++loginDays;
-        context.events.push_back(EventInfo(EGE_LOGIN, loginDays));
+        context.events.push_back(EventInfo(ECT_LOGIN_DAYS, loginDays));
         processReward(loginDays, context.user->uRes.vipLevel, context.user->loginReward);
     }
     CLOG(INFO) << "User " << gHistory.uid << " login. Days:" << loginDays;

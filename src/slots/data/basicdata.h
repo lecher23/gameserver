@@ -35,25 +35,6 @@ struct BasicData {
     }
 };
 
-enum GameEvent {
-    EGE_LEVEL_UP = 0, // level up
-    EGE_EARNED_INCR, // increment total earned
-    EGE_USE_BET, // use bet
-    EGE_NEW_FRIEND, // add new friend success
-    EGE_RECV_GIFT, // get gift from user
-    EGE_SEND_GIFT, // send gift to user
-    EGE_PLAYED_GAME, // has play game
-    EGE_TINY_GAME,
-    EGE_FREE_GAME,
-    EGE_MEGA_WIN,
-    EGE_BIG_WIN,
-    EGE_SUPER_WIN,
-    EGE_JACKPOT,
-    EGE_LINE,
-    EGE_GAME_COUNT,
-    EGE_LOGIN
-};
-
 enum RankType{
     ERT_CUR_FORTUNE = 0,
     ERT_CUR_EARNED,
