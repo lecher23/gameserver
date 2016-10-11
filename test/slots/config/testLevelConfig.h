@@ -32,6 +32,10 @@ public:
         LevelConfig lc;
         ast_true(lc.initFromJsonFile("config_files/Level.json"));
         ast_eq(200, lc.config.size());
+        ast_eq(194, lc.config[194].level);
+        ast_eq(201401803930000, lc.config[194].expNeed);
+        ast_eq(10000000, lc.config[194].maxBet);
+        ast_eq(49000, lc.config[194].fortuneReward);
     }
 private:
     bool _inited;

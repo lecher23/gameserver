@@ -8,6 +8,20 @@
 
 BEGIN_NAMESPACE(slots)
 
+#define GET_MEMBER_IN_DOC(doc, itr, mem, dest)          \
+  itr = doc.FindMember(mem.c_str());                    \
+  if (itr == doc.MemberEnd()) {                         \
+    CLOG(ERROR) << "Member [" << mem << "] required.";  \
+    return false;                                       \
+  }                                                     \
+  rapidjson::Value &dest = itr->value;
+
+#define CHECK_MEMBER_IS_ARRAY(value, tag)               \
+  if (!value.IsArray()) {                               \
+    CLOG(ERROR) << "["<< tag <<"] should be array.";    \
+    return false;                                       \
+  }
+
 class JsonConfigBase{
 public:
   JsonConfigBase() {}
@@ -27,7 +41,7 @@ protected:
         CLOG(ERROR) << "parse config failed:" << doc.GetParseError();
         return false;
     }
-    if (doc.Size() == 0) {
+    if (doc.IsArray() && doc.Size() == 0) {
         CLOG(ERROR) << "no obj in config file";
         return false;
     }

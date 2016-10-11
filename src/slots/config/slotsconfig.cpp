@@ -3,6 +3,16 @@
 
 BEGIN_NAMESPACE(slots)
 
+#define GET_CONFIG_FROM_JSON_FILE(grp, section, dest)                   \
+    {                                                                   \
+        auto path =                                                     \
+            cgserver::Config::getInstance().getConfigValue(grp, section); \
+        if (!dest.initFromJsonFile(path)) {                             \
+            CLOG(ERROR) << "init config for "<< section <<" failed.";   \
+            return false;                                               \
+        }                                                               \
+    }
+
 bool SlotsConfig::init(){
     auto &db = SlotsDB::getInstance();
     // get achievement config from db
@@ -15,27 +25,14 @@ bool SlotsConfig::init(){
         return false;
     }
 
-    if (!db.getLoginSetting(loginCfg)) {
-        CLOG(ERROR) << "Get login config from db failed.";
-        return false;
-    }
-    int32_t preChance = 0;
-    for(auto &item: loginCfg.runnerBonus) {
-        item.second += preChance;
-        preChance = item.second;
-    }
+    GET_CONFIG_FROM_JSON_FILE("slots", "login_cfg", loginCfg);
+
     if (!db.getVipSetting(vipSetting)) {
         CLOG(ERROR) << "Get vip config from db failed.";
         return false;
     }
 
-    auto levelCfgPath =
-        cgserver::Config::getInstance().getConfigValue("slots", "level_cfg");
-
-    if(!levelConfig.initFromJsonFile(levelCfgPath)) {
-        CLOG(ERROR) << "Get level config failed.";
-        return false;
-    }
+    GET_CONFIG_FROM_JSON_FILE("slots", "level_cfg", levelConfig);
 
     if(!db.getBet2ExpSetting(bet2Exp)) {
         CLOG(ERROR) << "Get bet2exp config from db failed.";
@@ -48,6 +45,8 @@ bool SlotsConfig::init(){
     }
     return true;
 }
+
+#undef GET_CONFIG_FROM_JSON_FILE
 
 #define FIND_VAL_IN_MAP(mp, dest, key, rt)      \
     auto dest = mp.find(key);                   \

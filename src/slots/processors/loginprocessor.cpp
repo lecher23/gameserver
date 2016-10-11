@@ -40,34 +40,13 @@ void LoginProcessor::processReward(
         dayn = 7;
     }
 
-    auto itr1 = _config.loginDaysBonus.find(dayn);
-    if (itr1 == _config.loginDaysBonus.end()){
-        loginReward.setDaysReward(0);
-    } else {
-        loginReward.setDaysReward(itr1->second);
-    }
-
+    loginReward.setDaysReward(_config.getDayBonus(dayn));
     auto vExt = SlotsConfig::getInstance().vipLoginReward(
         vipLevel, loginReward.daysReward);
     loginReward.setSpecialReward(vExt);
-
-    srand((int)time(0));
-    int32_t val = rand() % CHANCE_MAX_POINT;
-    int64_t bonus = 0;
-    int32_t bonusId = 0;
-    size_t i = 0;
-    for (auto &item: _config.runnerBonus) {
-        if (val < item.second) {
-            bonus = item.first;
-            bonusId = _config.runnerIdx[i];
-            break;
-        }
-        i++;
-    }
-    loginReward.setRunnerReward(bonus, bonusId);
+    const auto &runnerBonus = _config.getRunnerBonus();
+    loginReward.setRunnerReward(runnerBonus.reward, runnerBonus.id);
     loginReward.setRecved(false);
 }
 
 END_NAMESPACE
-
-

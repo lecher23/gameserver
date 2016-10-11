@@ -10,6 +10,7 @@
 #include <slots/themes/themeconfig.h>
 #include <slots/sql/slotsdb.h>
 #include <slots/config/levelconfig.h>
+#include <slots/config/loginsetting.h>
 
 
 BEGIN_NAMESPACE(slots)

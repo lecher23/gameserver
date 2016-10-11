@@ -1,0 +1,25 @@
+{
+  "DaysBonus":[
+    {"ID":1,"Date":1,"Reward":5000},
+    {"ID":2,"Date":2,"Reward":5000},
+    {"ID":3,"Date":3,"Reward":8000},
+    {"ID":4,"Date":4,"Reward":8000},
+    {"ID":5,"Date":5,"Reward":9000},
+    {"ID":6,"Date":6,"Reward":9000},
+    {"ID":7,"Date":7,"Reward":10000}
+  ],
+  "RunnerBonus":[
+    {"ID":1,"Reward":10000,"Weight":10},
+    {"ID":2,"Reward":300,"Weight":1},
+    {"ID":3,"Reward":6000,"Weight":10},
+    {"ID":4,"Reward":500,"Weight":1},
+    {"ID":5,"Reward":8000,"Weight":10},
+    {"ID":6,"Reward":600,"Weight":1},
+    {"ID":7,"Reward":4000,"Weight":10},
+    {"ID":8,"Reward":1000,"Weight":1},
+    {"ID":9,"Reward":5000,"Weight":10},
+    {"ID":10,"Reward":700,"Weight":1},
+    {"ID":11,"Reward":1000,"Weight":10},
+    {"ID":12,"Reward":400,"Weight":1}
+  ]
+}
