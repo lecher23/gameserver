@@ -20,7 +20,7 @@ bool SlotsConfig::init(){
         return false;
     }
 
-    GET_CONFIG_FROM_JSON_FILE("slots", "achievement_cfg", loginCfg);
+    GET_CONFIG_FROM_JSON_FILE("slots", "achievement_cfg", cjConfig);
     GET_CONFIG_FROM_JSON_FILE("slots", "login_cfg", loginCfg);
     GET_CONFIG_FROM_JSON_FILE("slots", "level_cfg", levelConfig);
 
@@ -42,12 +42,6 @@ bool SlotsConfig::init(){
 }
 
 #undef GET_CONFIG_FROM_JSON_FILE
-
-#define FIND_VAL_IN_MAP(mp, dest, key, rt)      \
-    auto dest = mp.find(key);                   \
-    if (dest == mp.end()) {                     \
-        return rt;                              \
-    }
 
 #define FIND_VIP_CONFIG(key, val, dest, df)     \
     auto itr = vipSetting.find(key);            \
@@ -75,5 +69,7 @@ int64_t SlotsConfig::vipLoginReward(int32_t level, int64_t src) {
     FIND_VIP_CONFIG(level, ext, login_ext, 0.0);
     return src * ext;
 }
+
+#undef FIND_VIP_CONFIG
 
 END_NAMESPACE
