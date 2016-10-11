@@ -10,7 +10,6 @@
 #include <slots/model/mailinfo.h>
 #include <slots/model/rankinfo.h>
 #include <slots/model/userachievement.h>
-#include <slots/model/userachievementconfig.h>
 #include <slots/model/cargohistory.h>
 #include <slots/model/cargoinfo.h>
 #include <slots/data/gameresult.h>

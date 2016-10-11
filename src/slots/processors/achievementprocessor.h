@@ -21,7 +21,7 @@ class AchievementProcessor{
     void processRangeCj(GameContext &context, const EventInfo &e) const;    
     void processGame(GameContext &context, const EventInfo &e) const;
 
-    CjSettingMap &_config;
+    CjConfig &_config;
 };
 
 END_NAMESPACE

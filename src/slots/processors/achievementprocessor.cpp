@@ -10,12 +10,6 @@ AchievementProcessor::AchievementProcessor():_config(SlotsConfig::getInstance().
 AchievementProcessor::~AchievementProcessor(){
 }
 
-#define FIND_CJ_LIST(event, dest)		\
-    auto itr = _config.find(event.e);		\
-    if (itr == _config.end())			\
-	return;					\
-    auto &dest = itr->second;			\
-    if (dest.size() == 0) return;		\
 
 bool AchievementProcessor::process(GameContext &context) const {
     std::vector<EventInfo> events(context.events.begin(), context.events.end());
@@ -55,20 +49,15 @@ bool AchievementProcessor::process(GameContext &context) const {
 }
 
 void AchievementProcessor::processRangeCj(GameContext &context, const EventInfo &e) const {
-    FIND_CJ_LIST(e, setting);
-    CjSettingPtr curCj(NULL);
-    for (auto &item: setting) {
-	if (e.preData < item.target
-	    && e.curData >= item.target)
-	{
-	    UserCJ cj(context.user->uInfo.uid, item.id,
-                      false, cgserver::CTimeUtil::getCurrentTimeInSeconds());
-	    context.userCj.push_back(cj);
-	}
+    std::vector<int32_t> ret;
+    _config.getCjID(e.e, context.hallID, e.preData, e.curData, ret);
+    for (auto item: ret) {
+        context.userCj.push_back(
+            UserCJ(context.user->uInfo.uid, item,
+               false, cgserver::CTimeUtil::getCurrentTimeInSeconds()));
     }
 }
 
 #undef TAKE_ACHIEVEMENT
-#undef FIND_CJ_LIST
 
 END_NAMESPACE

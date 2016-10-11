@@ -530,19 +530,6 @@ bool SlotsDB::collectAchievements(const MysqlRows &result, Achievements &out) co
     return true;
 }
 
-bool SlotsDB::getAchivementSetting(CjSettingMap &out) {
-    SELECT_ALL_FROM_TABLE(mss, gAchievementDetail);
-    for (auto &row: mss.result) {
-	CjSetting item;
-	if (!item.deserialize(row)) {
-	    CLOG(WARNING) << "Init achievement setting from db failed.";
-	    return false;
-	}
-	out[item.type].push_back(item);
-    }
-    return true;
-}
-
 bool SlotsDB::getVipSetting(VipConfigs &out) const {
     SELECT_ALL_FROM_TABLE(mss, gVipSetting);
     for (auto &row: mss.result) {

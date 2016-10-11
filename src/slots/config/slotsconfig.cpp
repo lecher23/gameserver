@@ -15,24 +15,19 @@ BEGIN_NAMESPACE(slots)
 
 bool SlotsConfig::init(){
     auto &db = SlotsDB::getInstance();
-    // get achievement config from db
-    if (!db.getAchivementSetting(cjConfig)){
-        CLOG(ERROR) << "Get achievement setting from db failed";
-	return false;
-    }
     if (!db.getCargoInfo(cargoInfo)) {
         CLOG(ERROR) << "Get cargo info from db failed.";
         return false;
     }
 
+    GET_CONFIG_FROM_JSON_FILE("slots", "achievement_cfg", loginCfg);
     GET_CONFIG_FROM_JSON_FILE("slots", "login_cfg", loginCfg);
+    GET_CONFIG_FROM_JSON_FILE("slots", "level_cfg", levelConfig);
 
     if (!db.getVipSetting(vipSetting)) {
         CLOG(ERROR) << "Get vip config from db failed.";
         return false;
     }
-
-    GET_CONFIG_FROM_JSON_FILE("slots", "level_cfg", levelConfig);
 
     if(!db.getBet2ExpSetting(bet2Exp)) {
         CLOG(ERROR) << "Get bet2exp config from db failed.";

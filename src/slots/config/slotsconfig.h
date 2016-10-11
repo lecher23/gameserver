@@ -11,7 +11,7 @@
 #include <slots/sql/slotsdb.h>
 #include <slots/config/levelconfig.h>
 #include <slots/config/loginsetting.h>
-
+#include <slots/config/cjconfig.h>
 
 BEGIN_NAMESPACE(slots)
 
@@ -30,7 +30,7 @@ class SlotsConfig{
     int64_t earned(GameContext &context, int64_t src);
     int64_t vipLoginReward(int32_t level, int64_t src);
 
-    CjSettingMap cjConfig;
+    CjConfig cjConfig;
     LoginSetting loginCfg;
     CargoInfos cargoInfo;
     VipConfigs vipSetting;

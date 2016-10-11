@@ -60,7 +60,6 @@ public:
     bool getGameHistory(const std::string &uid, GameHistory &gd) const;
     bool getUserAchievement(const std::string &uid, Achievements &out) const;
     bool getUserAchievement(const std::string &uid, const std::string &cjID, UserCJ &out);
-    bool getAchivementSetting(CjSettingMap &out);
     bool getCargoInfo(CargoInfos &out) const;
     bool getVipSetting(VipConfigs &out) const;
     bool getBet2ExpSetting(Bet2ExpConfigs &out) const;

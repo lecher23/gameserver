@@ -130,6 +130,13 @@ void ResultFormatter::formatGameResult(GameContext &gc)
     _writer.Key("ft");
     _writer.Int(ret.freeGameTimes);
 
+    _writer.Key("cj");
+    _writer.StartArray();
+    for (auto &item: gc.userCj) {
+        _writer.Int(item.aid);
+    }
+    _writer.EndArray();
+
     _writer.EndObject();
 }
 

@@ -17,12 +17,6 @@ cj_config = [
     ('type', 'INT NOT NULL')
 ]
 
-login_config = [
-    ('id', 'INT NOT NULL PRIMARY KEY'),
-    ('val', 'BIGINT NOT NULL'),
-    ('extra_val', 'INT DEFAULT 0')
-]
-
 vip_config = [
     ('level', 'INT NOT NULL PRIMARY KEY'),
     ('exp_ext', 'INT NOT NULL'),
@@ -30,13 +24,6 @@ vip_config = [
     ('login_ext', 'INT NOT NULL'),
     ('exp_need', 'INT NOT NULL'),
     ('max_bet', 'INT NOT NULL')
-]
-
-level_config = [
-    ('level', 'INT NOT NULL PRIMARY KEY'),
-    ('exp_need', 'BIGINT NOT NULL'), # exp needed to level up
-    ('max_bet', 'BIGINT NOT NULL'), # each level can use bet
-    ('fortune_reward', 'BIGINT NOT NULL')
 ]
 
 bet_exp_cfg = [
