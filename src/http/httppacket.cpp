@@ -4,11 +4,12 @@
 #include <memory>
 #include <string>
 #include <stdio.h> 
-#include "../util/common_define.h"
+#include <util/common_define.h>
+#include <util/stringutil.h>
 
 using namespace std;
 
-namespace cgserver {
+BEGIN_NAMESPACE(cgserver)
 
 const char* HTTPPacket::empty = "";
 
@@ -514,6 +515,20 @@ bool HTTPPacket::getParamValue(const std::string &key, std::string &dest){
     dest.clear();
     dest.assign(it->second);
     return true;
-}    
-    
-}/*end namespace anet*/
+}
+
+bool HTTPPacket::getParamValue(const std::string &key, int32_t &dest){
+    KVMapItr it = _params.find(key);
+    if (it == _params.end())
+	return false;
+    return StringUtil::StrToInt32(it->second.data(), dest);
+}
+
+bool HTTPPacket::getParamValue(const std::string &key, int64_t &dest){
+    KVMapItr it = _params.find(key);
+    if (it == _params.end())
+	return false;
+    return StringUtil::StrToInt64(it->second.data(), dest);
+}
+
+END_NAMESPACE

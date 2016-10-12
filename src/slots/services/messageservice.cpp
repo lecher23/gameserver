@@ -9,20 +9,28 @@ MessageService::MessageService(){
 MessageService::~MessageService(){
 }
 
+#define MSG_RECV_DAILY_REWARD 1
+#define MSG_ENTER_ROOM 2
+#define MSG_QUERY_ROOM_PRIZE 3
+#define MSG_QUERY_HALL_STATUS 4
+#define MSG_FINISH_TINY_GAME 5
+
 bool MessageService::doJob(CPacket &packet, CResponse &resp) {
     static const std::string sFortune = "fortune";
-    int32_t gType;
-    if (!getIntVal(packet, "type", gType)) {
-        return false;
-    }
+
+    GET_INT32_PARAM_IN_PACKET(packet, slotconstants::sType, gType);
     SBuf bf;
     ResultFormatter rf(bf);
     bool ret = false;
     switch(gType){
-    case 1:{
+    case MSG_RECV_DAILY_REWARD:{
         int64_t newFortune;
         ret = getLoginReward(packet, newFortune);
         rf.formatSimpleResult(ret, sFortune, newFortune);
+        break;
+    }
+    case MSG_QUERY_HALL_STATUS:{
+        ret = queryAllRoomInHall(packet, rf);
         break;
     }
     default:
@@ -32,9 +40,44 @@ bool MessageService::doJob(CPacket &packet, CResponse &resp) {
     return ret;
 }
 
+
+bool MessageService::enterRoom(CPacket &packet, ResultFormatter &rf) {
+    GET_INT32_PARAM_IN_PACKET(packet, slotconstants::sHallID, hallID);
+    GET_INT32_PARAM_IN_PACKET(packet, slotconstants::sRoomID, roomID);
+    GET_INT32_PARAM_IN_PACKET(packet, slotconstants::sUserID, userID);
+    auto &hall = SlotsDataCenter::instance().getHall(hallID);
+    if (!hall.useRoom(userID, roomID))
+    {
+        CLOG(WARNING) << "User:"<< userID << " enter room " <<
+            roomID << " in "<< hallID << "failed.";
+        // failed situation sholud not format result in here
+        return false;
+    }
+    // format result
+    return true;
+}
+
+bool MessageService::queryRoomPrize(CPacket &packet, ResultFormatter &rf) {
+    GET_INT32_PARAM_IN_PACKET(packet, slotconstants::sHallID, hallID);
+    GET_INT32_PARAM_IN_PACKET(packet, slotconstants::sRoomID, roomID);
+    auto &hall = SlotsDataCenter::instance().getHall(hallID);
+    auto prize = hall.getRoomPrize(roomID);
+    // format result.
+    return true;
+}
+
+bool MessageService::queryAllRoomInHall(CPacket &packet, ResultFormatter &rf) {
+    GET_INT32_PARAM_IN_PACKET(packet, slotconstants::sHallID, hallID);
+    auto &hall = SlotsDataCenter::instance().getHall(hallID);
+    const auto &rooms = hall.getRooms();
+    // format result;
+    rf.formatRoomsInfo(rooms);
+    return true;
+}
+
 bool MessageService::getLoginReward(CPacket &packet, int64_t &newFortune) {
     std::string uid;
-    GET_PARAM("uid", uid, true);
+    GET_PARAM(slotconstants::sUserID, uid, true);
     SlotsUserPtr user;
     if (!SlotsDataCenter::instance().slotsUserData->getByUid(uid, user)) {
         return false;

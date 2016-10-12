@@ -7,8 +7,6 @@
 namespace slots{
     class GameService:IService{
     public:
-      static const std::string sTotalBet;
-      static const std::string sLineNumber;
         GameService();
         virtual ~GameService();
 

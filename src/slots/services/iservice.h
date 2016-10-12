@@ -21,6 +21,13 @@ namespace slots{
     const std::string sLineNumber = "l";
   }
 
+#define GET_INT32_PARAM_IN_PACKET(pack, key, dest)      \
+    int32_t dest;                                       \
+    if(!pack.getParamValue(key, dest)) {                \
+        return false;                                   \
+    }
+
+
 #define GET_PARAM(key, dest, required)					\
     if (!packet.getParamValue(key, dest)) {				\
 	if (required) {							\

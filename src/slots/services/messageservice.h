@@ -12,6 +12,9 @@ public:
     virtual bool doJob(CPacket &packet, CResponse &resp);
 
 private:
+    bool enterRoom(CPacket &packet, ResultFormatter &rf);
+    bool queryRoomPrize(CPacket &packet, ResultFormatter &rf);
+    bool queryAllRoomInHall(CPacket &packet, ResultFormatter &rf);
     bool getLoginReward(CPacket &packet, int64_t &newFortune);
     bool getCargoStatus(CPacket &packet);
 };

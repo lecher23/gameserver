@@ -17,6 +17,10 @@ namespace slots{
     const std::string sMsg = "msg";
     const std::string sLoginInfo = "li";
     const std::string sMails = "ms";
+    const std::string sRoomList = "rl";
+
+    // room info
+    const std::string sRoomPrize = "pz";
 
     // user mail info
     const std::string sMailID = "mi";
@@ -50,6 +54,7 @@ namespace slots{
 
     // rank info
     const std::string sValue = "v";
+    const std::string sID = "id";
     const std::string sMyRank = "mr";
 
     // user resource
@@ -90,6 +95,7 @@ namespace slots{
 	void formatRankResult
 	    (const LeaderBoardRank &rank, int64_t uid, uint32_t start, uint32_t end);
 	void formatUserAchievement(const Achievements &cj);
+        void formatRoomsInfo(const TSRooms &rooms);
 
 	void formatStatus(bool bOk);
 	void formatMailsInfo(const UserMails &uMails);
@@ -98,6 +104,7 @@ namespace slots{
 	void formatUserResource(const UserResource &uRes);
 	void formatFriendList(const FriendsList &friends);
         void formatLoginInfo(const SlotsUser &su);
+
     private:
 	JsonWriter _writer;
     };

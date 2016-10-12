@@ -7,11 +7,11 @@
 BEGIN_NAMESPACE(slots)
 
 enum RoomStats {
-  ERS_ROOM_FREE,
-  ERS_ROOM_BUSY,
-  ERS_ROOM_RESERVED,
-  ERS_ROOM_NOT_EXIST,
-  ERS_ROOM_UNKNOWN,
+  ERS_ROOM_FREE = 0,
+  ERS_ROOM_BUSY = 1,
+  ERS_ROOM_RESERVED = 2,
+  ERS_ROOM_NOT_EXIST = 3,
+  ERS_ROOM_UNKNOWN = 4
 };
 
 #define BLANK_USER_ID 0
@@ -32,7 +32,7 @@ struct TSRoom {
   RoomStats status{ERS_ROOM_FREE};
 };
 DF_SHARED_PTR(TSRoom);
-typedef std::vector<TSRoomPtr> TSRooms;
+typedef std::map<int32_t, TSRoomPtr> TSRooms;
 
 class TSHall{
 public:
@@ -42,18 +42,25 @@ public:
   bool init(int32_t hallPrize, int32_t roomPrize, int32_t rTime);
 
   bool useRoom(int32_t userID, int32_t roomID);
-  void incrPrize(int64_t bet);/*add prize to hall*/
-  void incrPrize(int32_t roomID, int64_t bet);/*add prize to room*/
-  bool getRooms(TSRooms &out);
+
+  const TSRooms &getRooms();
+  int64_t getRoomPrize(int32_t roomID);
+
   bool takeRoomTotalPrize(int32_t roomID, int64_t refill, int64_t &totalPrize);
   int64_t takeRoomPrize(int32_t roomID);
   int64_t takeHallPrize();
+
   bool reserveRoom(int32_t userID, int32_t roomID);
+
   bool incrRoomTotalPrize(int32_t roomID, int64_t totalPrize);
-  int32_t getGameCount(int32_t roomID);
-  int32_t getGameCount();
   void incrGameCount(int32_t roomID);
   void incrGameCount();
+  void incrPrize(int64_t bet);/*add prize to hall*/
+  void incrPrize(int32_t roomID, int64_t bet);/*add prize to room*/
+
+  int32_t getGameCount(int32_t roomID);
+  int32_t getGameCount();
+  void updateRoomStatus();
 
 private:
   bool getRoomByUserId(int32_t userID, TSRoomPtr &pRoom);
@@ -63,9 +70,10 @@ private:
 
   bool leavingRoom(int32_t userID, TSRoomPtr pRoom);
   bool leavingRoom(int32_t userID, int32_t roomID);
+  void freeRoom(TSRoom &room);
 
   std::mutex _lock;
-  std::map<int32_t, TSRoomPtr> _rooms;
+  TSRooms _rooms;
   std::map<int32_t, int32_t> _user2room;
 
   int64_t spinCount{0};

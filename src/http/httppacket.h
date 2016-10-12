@@ -87,7 +87,9 @@ public:
     const KVMap &getParams();
     const std::string &getParamValue(const std::string &key, bool &exist);
     bool getParamValue(const std::string &key, std::string &dest);
-    
+    bool getParamValue(const std::string &key, int32_t &dest);
+    bool getParamValue(const std::string &key, int64_t &dest);
+
     virtual ~HTTPPacket();
 
     bool encode(DataBuffer *output);
