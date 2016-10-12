@@ -6,6 +6,9 @@ ResultFormatter::ResultFormatter(SBuf &buffer):_writer(buffer){
 ResultFormatter::~ResultFormatter(){
 }
 
+#define JSON_KEY(str) _writer.Key(str.data(), str.size());
+#define JSON_STRING_VALUE(str) _writer.String(str.data(), str.size());
+
 void ResultFormatter::formatResult(const UserMails &uMails)  {
     _writer.StartObject();
     formatStatus(true);
@@ -17,13 +20,13 @@ void ResultFormatter::formatResult(const SlotsUser &su)  {
     _writer.StartObject();
     formatStatus(true);
 
-    _writer.Key("user_info");
+    JSON_KEY(ResultStr::sUserInfo);
     formatUserInfo(su.uInfo);
 
-    _writer.Key("user_resource");
+    JSON_KEY(ResultStr::sUserResource);
     formatUserResource(su.uRes);
 
-    _writer.Key("login_info");
+    JSON_KEY(ResultStr::sLoginInfo);
     formatLoginInfo(su);
 
     _writer.EndObject();
@@ -32,27 +35,27 @@ void ResultFormatter::formatResult(const SlotsUser &su)  {
 void ResultFormatter::formatResultWithCj(const SlotsUser &su) {
     _writer.StartObject();
     formatStatus(true);
-    _writer.Key("user_info");
+    JSON_KEY(ResultStr::sUserInfo);
     formatUserInfo(su.uInfo);
 
-    _writer.Key("user_resource");
+    JSON_KEY(ResultStr::sUserResource);
     formatUserResource(su.uRes);
 
-    _writer.Key("user_achievement");
+    JSON_KEY(ResultStr::sUserAchievement);
     formatUserAchievement(su.uCj);
 
-    _writer.Key("login_info");
+    JSON_KEY(ResultStr::sLoginInfo);
     formatLoginInfo(su);
 
     _writer.EndObject();
 }
-    
+
 void ResultFormatter::formatSimpleResult(bool success, const std::string &err)
 {
     _writer.StartObject();
     formatStatus(success);
-    _writer.Key("msg");
-    _writer.String(err.c_str());
+    JSON_KEY(ResultStr::sMsg);
+    JSON_STRING_VALUE(err);
     _writer.EndObject();
 }
 
@@ -61,7 +64,7 @@ void ResultFormatter::formatSimpleResult(
 {
     _writer.StartObject();
     formatStatus(success);
-    _writer.Key(key.c_str());
+    JSON_KEY(key);
     _writer.Int64(value);
     _writer.EndObject();
 }
@@ -71,7 +74,7 @@ void ResultFormatter::formatSimpleResult(
 {
     _writer.StartObject();
     formatStatus(success);
-    _writer.Key(key.c_str());
+    JSON_KEY(key);
     _writer.Int(value);
     _writer.EndObject();
 }
@@ -81,8 +84,8 @@ void ResultFormatter::formatSimpleResult(
 {
     _writer.StartObject();
     formatStatus(success);
-    _writer.Key(key.c_str());
-    _writer.String(value.c_str());
+    JSON_KEY(key);
+    JSON_STRING_VALUE(value);
     _writer.EndObject();
 }
 
@@ -91,7 +94,7 @@ void ResultFormatter::formatSimpleResult(
 {
     _writer.StartObject();
     formatStatus(success);
-    _writer.Key(key.c_str());
+    JSON_KEY(key);
     _writer.Bool(value);
     _writer.EndObject();
 }
@@ -103,23 +106,23 @@ void ResultFormatter::formatGameResult(GameContext &gc)
 
     auto &uRes = gc.user->uRes;
     auto &ret = gc.gameInfo;
-    _writer.Key("cf");
+    JSON_KEY(ResultStr::sFortune);
     _writer.Int64(uRes.fortune);
 
-    _writer.Key("ei");
+    JSON_KEY(ResultStr::sEarnedInfo);
     _writer.StartArray();
     _writer.Int64(ret.earned.normal);
     _writer.Int64(ret.earned.roomPrize);
     _writer.Int64(ret.earned.hallPrize);
     _writer.EndArray();
 
-    _writer.Key("rs");
+    JSON_KEY(ResultStr::sUserResource);
     formatUserResource(uRes);
 
-    _writer.Key("rto");
+    JSON_KEY(ResultStr::sRatio);
     _writer.Int(ret.totalRatio);
 
-    _writer.Key("gds");
+    JSON_KEY(ResultStr::sGridsInfo);
     _writer.StartArray();
     auto len = ret.gridsData.size();
     for (size_t i = 0; i < len; ++i) {
@@ -127,10 +130,10 @@ void ResultFormatter::formatGameResult(GameContext &gc)
     }
     _writer.EndArray();
 
-    _writer.Key("ft");
+    JSON_KEY(ResultStr::sFreeTimes);
     _writer.Int(ret.freeGameTimes);
 
-    _writer.Key("cj");
+    JSON_KEY(ResultStr::sUserAchievement);
     _writer.StartArray();
     for (auto &item: gc.userCj) {
         _writer.Int(item.aid);
@@ -153,33 +156,33 @@ void ResultFormatter::formatFullFriendInfo(
     _writer.StartObject();
     formatStatus(true);
     formatFriendList(friends);
-    _writer.Key("invite_count");
-    _writer.Int(history.inviteCount);
-    _writer.Key("total_reward");	
-    _writer.Int64(history.totalReward);
-    _writer.Key("cached_reward");	
-    _writer.Int64(history.rewardRemain);
+    // JSON_KEY("invite_count");
+    // _writer.Int(history.inviteCount);
+    // JSON_KEY("total_reward");	
+    // _writer.Int64(history.totalReward);
+    // JSON_KEY("cached_reward");	
+    // _writer.Int64(history.rewardRemain);
     _writer.EndObject();
 }    
 
 void ResultFormatter::formatGiftsInfo(const Gifts &gifts, int64_t giftsVal) {
     _writer.StartObject();
     formatStatus(true);
-    _writer.Key("gifts");
-    _writer.StartArray();
-    for (auto itr = gifts.begin(); itr != gifts.end(); ++itr) {
-	_writer.StartObject();
-	_writer.Key("uid");
-	_writer.Int64((int64_t)(*itr)->master);
-	_writer.Key("received");
-	_writer.Bool((int64_t)(*itr)->received);
-	_writer.Key("timestamp");
-	_writer.Int64((*itr)->timestamp);
-	_writer.EndObject();
-    }
-    _writer.EndArray();
-    _writer.Key("value");
-    _writer.Int64(giftsVal);
+    // JSON_KEY("gifts");
+    // _writer.StartArray();
+    // for (auto itr = gifts.begin(); itr != gifts.end(); ++itr) {
+    //     _writer.StartObject();
+    //     JSON_KEY("uid");
+    //     _writer.Int64((int64_t)(*itr)->master);
+    //     JSON_KEY("received");
+    //     _writer.Bool((int64_t)(*itr)->received);
+    //     JSON_KEY("timestamp");
+    //     _writer.Int64((*itr)->timestamp);
+    //     _writer.EndObject();
+    // }
+    // _writer.EndArray();
+    // JSON_KEY("value");
+    // _writer.Int64(giftsVal);
     _writer.EndObject();
 }
 
@@ -189,20 +192,20 @@ void ResultFormatter::formatRankResult(
 {
     _writer.StartObject();
     formatStatus(true);
-    _writer.Key("data");
+    JSON_KEY(ResultStr::sRankInfo);
     _writer.StartArray();
     uint32_t cur = 0;
     int32_t rankValue = 0;
     for (auto &itr: rank.data) {
 	if (cur >= start && cur < end) {
 	    _writer.StartObject();
-	    _writer.Key("uid");
+	    JSON_KEY(ResultStr::sUserID);
 	    _writer.Int64(itr->uid);
-	    _writer.Key("name");
-	    _writer.String(itr->name.c_str());
-	    _writer.Key("country");
+	    JSON_KEY(ResultStr::sUserName);
+	    JSON_STRING_VALUE(itr->name);
+	    JSON_KEY(ResultStr::sUserCountry);
 	    _writer.Int(itr->country);
-	    _writer.Key("value");
+	    JSON_KEY(ResultStr::sValue);
 	    _writer.Int64(itr->value);
 	    _writer.EndObject();
 	}
@@ -212,20 +215,24 @@ void ResultFormatter::formatRankResult(
 	}
     }
     _writer.EndArray();
-    _writer.Key("myrank");
+    JSON_KEY(ResultStr::sMyRank);
     _writer.Int(rankValue);
     _writer.EndObject();
 }
 
 void ResultFormatter::formatStatus(bool bOk) {
-    _writer.Key("status");
-    _writer.String( bOk ? "OK" : "ERROR" );	
+    JSON_KEY(ResultStr::sStatus);
+    if (bOk) {
+        JSON_STRING_VALUE(ResultStr::sStatusOK);
+    }else {
+        JSON_STRING_VALUE(ResultStr::sStatusError);
+    }
 }
 
-/*"mails":[{..mail info },{}..]*/    
+/*"mails":[{..mail info },{}..]*/
 void ResultFormatter::formatMailsInfo(const UserMails &uMails)
 {
-    _writer.Key("mails");
+    JSON_KEY(ResultStr::sMails);
     _writer.StartArray();
     for (auto itr = uMails.begin(); itr != uMails.end(); ++itr) {
 	formatMail(*(*itr));
@@ -233,38 +240,38 @@ void ResultFormatter::formatMailsInfo(const UserMails &uMails)
     _writer.EndArray();
 }
 
-/*{"id":xxx,...}*/    
+/*{"id":xxx,...}*/
 void ResultFormatter::formatMail(const UserMail &uMail) {
     auto &mi = uMail.mailInfo;
     _writer.StartObject();
-    _writer.Key("id");
-    _writer.String(mi.mailId.c_str());
-    _writer.Key("title");
-    _writer.String(mi.title.c_str());
-    _writer.Key("content");
-    _writer.String(mi.content.c_str());
-    // _writer.Key("attachment");
-    // _writer.String(uMail.mailInfo.attachment);
+    JSON_KEY(ResultStr::sMailID);
+    JSON_STRING_VALUE(mi.mailId);
+    JSON_KEY(ResultStr::sMailTitle);
+    JSON_STRING_VALUE(mi.title);
+    JSON_KEY(ResultStr::sMailContent);
+    JSON_STRING_VALUE(mi.content);
+    // JSON_KEY("attachment");
+    // JSON_STRING_VALUE(uMail.mailInfo.attachment);
     AttachmentPtr ap;
     bool exist;
     ap = SlotsDataCenter::instance().getAttach(mi.attachment, exist);
-    _writer.Key("type");
+    JSON_KEY(ResultStr::sMailType);
     _writer.Int(exist ? ap->type : 0);
     if (exist) {
-	_writer.Key("value");
+	JSON_KEY(ResultStr::sValue);
 	_writer.Int64(ap->value);
     }
-    _writer.Key("create_time");
-    _writer.String(uMail.mailInfo.createTime.c_str());
-    _writer.Key("keey_days");
+    JSON_KEY(ResultStr::sCreateTime);
+    JSON_STRING_VALUE(uMail.mailInfo.createTime);
+    JSON_KEY(ResultStr::sMailKeepDays);
     _writer.Int(uMail.mailInfo.keepDays);
-    _writer.Key("is_read");
+    JSON_KEY(ResultStr::sReadMail);
     _writer.Bool(uMail.bRead);
-    _writer.Key("is_get");
+    JSON_KEY(ResultStr::sGetMailAttchment);
     _writer.Bool(uMail.bGet);
-    _writer.Key("is_del");
+    JSON_KEY(ResultStr::sDelMail);
     _writer.Bool(uMail.bDel);
-    _writer.EndObject();	
+    _writer.EndObject();
 }
 
 /* 
@@ -272,38 +279,38 @@ void ResultFormatter::formatMail(const UserMail &uMail) {
 */
 void ResultFormatter::formatUserInfo(const UserInfo &uInfo) {
     _writer.StartObject();
-    _writer.Key("uid");
-    _writer.String(uInfo.uid.c_str());
-    _writer.Key("mid");
-    _writer.String(uInfo.mid.c_str());
-    _writer.Key("fname");
-    _writer.String(uInfo.fname.c_str());
-    _writer.Key("avatar");
-    _writer.String(uInfo.avatar.c_str());
-    _writer.Key("male");
-    _writer.String(uInfo.male.c_str());
-    _writer.Key("country");
-    _writer.String(uInfo.country.c_str());
-    _writer.EndObject();	
+    JSON_KEY(ResultStr::sUserID);
+    JSON_STRING_VALUE(uInfo.uid);
+    JSON_KEY(ResultStr::sUserMID);
+    JSON_STRING_VALUE(uInfo.mid);
+    JSON_KEY(ResultStr::sUserName);
+    JSON_STRING_VALUE(uInfo.fname);
+    JSON_KEY(ResultStr::sUserAvatar);
+    JSON_STRING_VALUE(uInfo.avatar);
+    JSON_KEY(ResultStr::sUserGender);
+    JSON_STRING_VALUE(uInfo.male);
+    JSON_KEY(ResultStr::sUserCountry);
+    JSON_STRING_VALUE(uInfo.country);
+    _writer.EndObject();
 }
 
 /* 
    {"uid": "uid",...}
 */
 void ResultFormatter::formatUserResource(const UserResource &uRes) {
-    _writer.StartObject();	
-    _writer.Key("uid");
-    _writer.String(uRes.uid.c_str());
-    _writer.Key("level");
+    _writer.StartObject();
+    JSON_KEY(ResultStr::sUserID);
+    JSON_STRING_VALUE(uRes.uid);
+    JSON_KEY(ResultStr::sLevel);
     _writer.Uint(uRes.level);
-    _writer.Key("exp");
+    JSON_KEY(ResultStr::sExp);
     _writer.Uint64(uRes.exp);
-    _writer.Key("fortune");
+    JSON_KEY(ResultStr::sFortune);
     _writer.Uint64(uRes.fortune);
-    _writer.Key("vip_level");
+    JSON_KEY(ResultStr::sVipLevel);
     _writer.Uint(uRes.vipLevel);
-    // _writer.Key("vip_point");
-    // _writer.String(uRes.vipPoint);
+    JSON_KEY(ResultStr::sVipPoint);
+    _writer.Int64(uRes.vipPoint);
     _writer.EndObject();
 }
 
@@ -311,11 +318,11 @@ void ResultFormatter::formatUserAchievement(const Achievements &cj) {
     _writer.StartArray();
     for (auto &iCj: cj) {
 	_writer.StartObject();
-	_writer.Key("id");
+	JSON_KEY(ResultStr::sAchievementID);
 	_writer.Int(iCj.aid);
-	_writer.Key("recved");
+	JSON_KEY(ResultStr::sRecvReward);
 	_writer.Bool(iCj.isRecvReward);
-	_writer.Key("time");
+	JSON_KEY(ResultStr::sCreateTime);
 	_writer.Int64(iCj.time);
 	_writer.EndObject();
     }
@@ -323,36 +330,39 @@ void ResultFormatter::formatUserAchievement(const Achievements &cj) {
 }
 
 void ResultFormatter::formatFriendList(const FriendsList &friends) {
-    _writer.Key("friends");
-    _writer.StartArray();
-    for (auto itr = friends.begin(); itr != friends.end(); ++itr) {
-	_writer.StartObject();
-	_writer.Key("uid");
-	_writer.String((*itr)->uInfo.uid.c_str());
-	_writer.Key("avatar");
-	_writer.String((*itr)->uInfo.uid.c_str());
-	_writer.Key("name");
-	_writer.String((*itr)->uInfo.fname.c_str());
-	_writer.Key("golds");
-	_writer.Int64((*itr)->uRes.fortune);
-	_writer.EndObject();	    
-    }
-    _writer.EndArray();
+    // JSON_KEY(ResultStr::friends);
+    // _writer.StartArray();
+    // for (auto itr = friends.begin(); itr != friends.end(); ++itr) {
+    //     _writer.StartObject();
+    //     JSON_KEY(ResultStr::sUserID);
+    //     JSON_STRING_VALUE((*itr)->uInfo.uid);
+    //     JSON_KEY(ResultStr::avatar);
+    //     JSON_STRING_VALUE((*itr)->uInfo.uid);
+    //     JSON_KEY(ResultStr::name);
+    //     JSON_STRING_VALUE((*itr)->uInfo.fname);
+    //     JSON_KEY(ResultStr::golds);
+    //     _writer.Int64((*itr)->uRes.fortune);
+    //     _writer.EndObject();
+    // }
+    // _writer.EndArray();
 }
 
 void ResultFormatter::formatLoginInfo(const SlotsUser &su) {
     _writer.StartObject();
-    _writer.Key("days");
+    JSON_KEY(ResultStr::sDayn);
     _writer.Int(su.uHis.loginDays);
-    _writer.Key("recv_reward");
+    JSON_KEY(ResultStr::sRecvReward);
     _writer.Bool(su.loginReward.recved);
-    _writer.Key("level_bonus");
+    JSON_KEY(ResultStr::sVipReward);
     _writer.Int64(su.loginReward.specialReward);
-    _writer.Key("runner_index");
+    JSON_KEY(ResultStr::sRunnerID);
     _writer.Int64(su.loginReward.runnerIdx);
-    _writer.Key("day_bonus");
+    JSON_KEY(ResultStr::sDayReward);
     _writer.Int64(su.loginReward.daysReward);
     _writer.EndObject();
 }
+
+#undef JSON_KEY
+#undef JSON_STRING_VALUE
 
 END_NAMESPACE

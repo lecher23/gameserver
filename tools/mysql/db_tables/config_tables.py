@@ -9,28 +9,6 @@ cargo_config = [
     ("display", 'bool default "1"')
 ]
 
-cj_config = [
-    ('aiid','INT AUTO_INCREMENT PRIMARY KEY'),
-    ('target', 'BIGINT NOT NULL'),
-    ('reward', 'BIGINT DEFAULT 0'),
-    ('reward_type', 'INT DEFAULT 0'),
-    ('type', 'INT NOT NULL')
-]
-
-vip_config = [
-    ('level', 'INT NOT NULL PRIMARY KEY'),
-    ('exp_ext', 'INT NOT NULL'),
-    ('bounus_ext', 'INT NOT NULL'),
-    ('login_ext', 'INT NOT NULL'),
-    ('exp_need', 'INT NOT NULL'),
-    ('max_bet', 'INT NOT NULL')
-]
-
-bet_exp_cfg = [
-    ('bet', 'BIGINT NOT NULL PRIMARY KEY'),
-    ('exp', 'BIGINT NOT NULL')
-]
-
 line_config = [
     ('id', 'INT AUTO_INCREMENT PRIMARY KEY'),
     ('line', 'CHAR(64) NOT NULL') # 0,0,0,0,0

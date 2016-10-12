@@ -87,86 +87,9 @@ if __name__ == "__main__":
         lbs.createTable2(table_name)
         exit(0)
 
-    if cmd == "runner_cfg":
-        nxt = sys.argv[2]
-        if nxt == "clear":
-            lbs.clearRunnerConfig()
-        elif nxt == "default":
-            lbs.clearRunnerConfig()
-            cfg = runner_cfg
-            sm = 0.0
-            for tp in cfg:
-                sm += tp[2]
-            sm2 = 0
-            for tp in cfg:
-                tp[2] = int(tp[2] / sm * 1000)
-                sm2 += tp[2]
-            if sm2 != 1000:
-                cfg[-1][2] = cfg[-1][2] + 1000 - sm2
-            for tp in cfg:
-                lbs.addRunnerConfig(tp[0], tp[1], tp[2])
-        else:
-            x = int(sys.argv[3])
-            y = int(sys.argv[4])
-            z = float(sys.argv[5])
-            lbs.addRunnerConfig(x, y, z)
-        exit(0)
-
-    if cmd == "dayrw_cfg":
-        nxt = sys.argv[2]
-        if nxt == "clear":
-            lbs.clearDayLoginReward()
-        elif nxt == "default":
-            lbs.clearDayLoginReward()
-            cfg = daily_reward_cfg
-            for tp in cfg:
-                lbs.addLoginRewardConfig(tp[0], tp[1])
-        exit(0)
-
-    if cmd == "viprw_cfg":
-        nxt = sys.argv[2]
-        if nxt == "clear":
-            lbs.clearVipRewardConfig()
-        elif nxt == "default":
-            lbs.clearVipRewardConfig()
-            cfg = [
-                (1, 10),
-                (2, 10),
-                (3, 10),
-                (4, 10),
-                (5, 10),
-                (6, 10),
-                (7, 10),
-                (8, 10),
-                (9, 10),
-            ]
-            for tp in cfg:
-                lbs.addVipRewardConfig(tp[0], tp[1])
-        exit(0)
-
-    if cmd == "vip_cfg":
-        nxt = sys.argv[2]
-        if nxt == "clear":
-            lbs.clearVipConfig()
-        elif nxt == "default":
-            lbs.clearVipConfig()
-            cfg = vip_cfg
-            for row in cfg:
-                lbs.addVipConfig(*row)
-        exit(0)
-
     if cmd == "initdb":
         lbs.initTables()
         exit(0)
-
-    if cmd == "level_cfg":
-        lc = gs.level_info;
-        for item in level_info:
-            lbs.addLevelInfos(*item)
-
-    if cmd == "bet_exp_cfg":
-        for item in gs.bet_2_exp:
-            lbs.addColumn("bet_exp_cfg", [], [str(k) for k in item])
 
     if cmd == "sgs":
         second = options.param

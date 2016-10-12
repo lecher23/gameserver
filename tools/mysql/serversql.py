@@ -5,10 +5,6 @@ import os
 import getopt
 import random
 
-# HOST = "139.196.148.39"
-# USER = "slot_master"
-# PASSWD = "111222"
-
 HOST = "localhost"
 USER = "root"
 PASSWD = "111222"

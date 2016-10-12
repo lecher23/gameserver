@@ -6,9 +6,68 @@
 #include <rapidjson/writer.h>
 #include <rapidjson/stringbuffer.h>
 #include <string>
-#include <sstream>
 
 namespace slots{
+  namespace ResultStr{
+    const std::string sUserInfo = "uif";
+    const std::string sUserResource = "rs";
+    const std::string sUserAchievement = "cj";
+    const std::string sRankInfo = "rk";
+    const std::string sStatus = "st";
+    const std::string sMsg = "msg";
+    const std::string sLoginInfo = "li";
+    const std::string sMails = "ms";
+
+    // user mail info
+    const std::string sMailID = "mi";
+    const std::string sMailTitle = "mt";
+    const std::string sMailContent = "mc";
+    const std::string sMailType = "tp";
+    const std::string sCreateTime = "ct";
+    const std::string sMailKeepDays = "kd";
+    const std::string sReadMail = "rm";
+    const std::string sGetMailAttchment = "gt";
+    const std::string sDelMail = "dm";
+
+    // status
+    const std::string sStatusOK = "OK";
+    const std::string sStatusError = "ER";
+
+    // user daily reward
+    const std::string sDayReward = "dr";
+    const std::string sDayn = "d";
+    const std::string sVipReward = "v";
+    const std::string sRecvReward = "r";
+    const std::string sRunnerID = "ri";
+
+    // user info
+    const std::string sUserID = "u";
+    const std::string sUserMID = "m";
+    const std::string sUserName = "un";
+    const std::string sUserAvatar = "ua";
+    const std::string sUserGender = "g";
+    const std::string sUserCountry = "uc";
+
+    // rank info
+    const std::string sValue = "v";
+    const std::string sMyRank = "mr";
+
+    // user resource
+    const std::string sExp = "e";
+    const std::string sFortune = "f";
+    const std::string sLevel = "l";
+    const std::string sVipLevel = "vl";
+    const std::string sVipPoint = "vp";
+
+    // user achievement
+    const std::string sAchievementID = "ai";
+
+    // game result info
+    const std::string sEarnedInfo = "ei";
+    const std::string sRatio = "rto";
+    const std::string sGridsInfo = "gds";
+    const std::string sFreeTimes = "ft";
+  };
     typedef rapidjson::StringBuffer SBuf;
     typedef rapidjson::Writer<SBuf> JsonWriter;
     class ResultFormatter{
