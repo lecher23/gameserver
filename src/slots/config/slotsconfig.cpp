@@ -25,11 +25,6 @@ bool SlotsConfig::init(){
     GET_CONFIG_FROM_JSON_FILE("slots", "level_cfg", levelConfig);
     GET_CONFIG_FROM_JSON_FILE("slots", "vip_cfg", vipSetting);
 
-    if(!db.getBet2ExpSetting(bet2Exp)) {
-        CLOG(ERROR) << "Get bet2exp config from db failed.";
-        return false;
-    }
-
     if(!(themeConfig.initConfig())) {
         CLOG(ERROR) << "Get Theme config from db failed.";
         return false;

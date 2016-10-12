@@ -32,7 +32,6 @@ class SlotsConfig{
     CargoInfos cargoInfo;
     VipConfig vipSetting;
     LevelConfig levelConfig;
-    Bet2ExpConfigs bet2Exp;
     ThemeConfig themeConfig;
 
 private:

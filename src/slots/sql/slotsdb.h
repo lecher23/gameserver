@@ -6,7 +6,6 @@
 #include <mysql/mysqlconnpool.h>
 #include <mysql/mysqloperationbase.h>
 #include <slots/data/basicdata.h>
-#include <slots/model/bet2expconfig.h>
 #include <slots/model/gridconfig.h>
 #include <slots/model/lineconfig.h>
 #include <slots/model/elementsconfig.h>
@@ -14,7 +13,6 @@
 
 BEGIN_NAMESPACE(slots)
 const std::string gAchievement = "user_achievement";
-const std::string gAchievementDetail = "cj_config";
 const std::string gFriends = "friends";
 const std::string gUserInfo = "user_info";
 const std::string gUserResource = "user_resource";
@@ -23,9 +21,6 @@ const std::string gUserMails = "user_mails";
 const std::string gMailDetail = "mail_detail";
 
 const std::string gCargoInfo = "cargo_config";
-const std::string gLoginConfig = "login_config";
-const std::string gVipSetting = "vip_config";
-const std::string gBetExpSetting = "bet_exp_cfg";
 const std::string gLineConfig = "line_config";
 const std::string gGridConfig = "grid_config";
 const std::string gFreeGridConfig = "free_grid_config";
@@ -60,7 +55,6 @@ public:
     bool getUserAchievement(const std::string &uid, Achievements &out) const;
     bool getUserAchievement(const std::string &uid, const std::string &cjID, UserCJ &out);
     bool getCargoInfo(CargoInfos &out) const;
-    bool getBet2ExpSetting(Bet2ExpConfigs &out) const;
     bool getGridsConfig(GridConfigs &out) const;
     bool getFreeGridsConfig(GridConfigs &out) const;
     bool getLinesConfig(LinesConfig &out) const;

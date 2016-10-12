@@ -530,17 +530,6 @@ bool SlotsDB::collectAchievements(const MysqlRows &result, Achievements &out) co
     return true;
 }
 
-bool SlotsDB::getBet2ExpSetting(Bet2ExpConfigs &out) const {
-    SELECT_ALL_FROM_TABLE(mss, gBetExpSetting);
-    for (auto &row: mss.result) {
-	if (!Bet2ExpConfig::deserialize(row, out)) {
-	    CLOG(WARNING) << "Init bet2exp setting from db failed.";
-	    return false;
-	}
-    }
-    return true;
-}
-
 bool SlotsDB::getGridsConfig(GridConfigs &out) const {
     SELECT_ALL_FROM_TABLE(mss, gGridConfig);
     for (auto &row: mss.result) {
