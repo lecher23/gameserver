@@ -12,6 +12,7 @@
 #include <slots/config/levelconfig.h>
 #include <slots/config/loginsetting.h>
 #include <slots/config/cjconfig.h>
+#include <slots/config/vipconfig.h>
 
 BEGIN_NAMESPACE(slots)
 
@@ -26,14 +27,10 @@ class SlotsConfig{
 	return cfg;
     }
 
-    int64_t expGain(GameContext &context, int64_t resource);
-    int64_t earned(GameContext &context, int64_t src);
-    int64_t vipLoginReward(int32_t level, int64_t src);
-
     CjConfig cjConfig;
     LoginSetting loginCfg;
     CargoInfos cargoInfo;
-    VipConfigs vipSetting;
+    VipConfig vipSetting;
     LevelConfig levelConfig;
     Bet2ExpConfigs bet2Exp;
     ThemeConfig themeConfig;

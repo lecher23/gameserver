@@ -41,11 +41,14 @@ void LoginProcessor::processReward(
     }
 
     loginReward.setDaysReward(_config.getDayBonus(dayn));
-    auto vExt = SlotsConfig::getInstance().vipLoginReward(
-        vipLevel, loginReward.daysReward);
-    loginReward.setSpecialReward(vExt);
     const auto &runnerBonus = _config.getRunnerBonus();
     loginReward.setRunnerReward(runnerBonus.reward, runnerBonus.id);
+
+    const auto &vipCfgItem =
+        SlotsConfig::getInstance().vipSetting.getVipConfigInfo(vipLevel);
+    auto vExt =
+        (loginReward.daysReward + loginReward.runnerReward) * vipCfgItem.loginExtra;
+    loginReward.setSpecialReward(vExt);
     loginReward.setRecved(false);
 }
 

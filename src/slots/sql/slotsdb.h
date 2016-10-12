@@ -6,7 +6,6 @@
 #include <mysql/mysqlconnpool.h>
 #include <mysql/mysqloperationbase.h>
 #include <slots/data/basicdata.h>
-#include <slots/model/vipconfig.h>
 #include <slots/model/bet2expconfig.h>
 #include <slots/model/gridconfig.h>
 #include <slots/model/lineconfig.h>
@@ -61,7 +60,6 @@ public:
     bool getUserAchievement(const std::string &uid, Achievements &out) const;
     bool getUserAchievement(const std::string &uid, const std::string &cjID, UserCJ &out);
     bool getCargoInfo(CargoInfos &out) const;
-    bool getVipSetting(VipConfigs &out) const;
     bool getBet2ExpSetting(Bet2ExpConfigs &out) const;
     bool getGridsConfig(GridConfigs &out) const;
     bool getFreeGridsConfig(GridConfigs &out) const;

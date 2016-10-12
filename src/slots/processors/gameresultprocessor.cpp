@@ -110,7 +110,8 @@ void GameResultProcessor::processExp(GameContext &context, GameResult &data) con
 	return;
     }
     auto &slotsConfig = SlotsConfig::getInstance();
-    auto expGot = slotsConfig.expGain(context, data.bet);
+    // exp = bet;
+    auto expGot = data.bet;
     uRes.incrExp(expGot);
     int64_t expNeed = 0;
     while(true) {

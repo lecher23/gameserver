@@ -27,7 +27,36 @@ bool LevelConfig::parseJsonDoc(rapidjson::Document &doc) {
 }
 
 int64_t LevelConfig::expNeedForNextLevel(int32_t curLevel) {
-    return 999;
+    auto itr = config.find(curLevel);
+    if (itr != config.end()) {
+        return itr->second.expNeed;
+    }
+    return 0;
+}
+
+int64_t LevelConfig::maxBetForLevel(int32_t curLevel) {
+    auto itr = config.find(curLevel);
+    if (itr != config.end()) {
+        return itr->second.maxBet;
+    }
+    return 0;
+}
+
+int64_t LevelConfig::fortuneRewardForLevel(int32_t curLevel) {
+    auto itr = config.find(curLevel);
+    if (itr != config.end()) {
+        return itr->second.fortuneReward;
+    }
+    return 0;
+}
+
+const LevelConfigItem &LevelConfig::getLevelInfo(int32_t curLevel) {
+    static const LevelConfigItem defaultConfigItem;
+    auto itr = config.find(curLevel);
+    if (itr != config.end()) {
+        return itr->second;
+    }
+    return defaultConfigItem;
 }
 
 END_NAMESPACE

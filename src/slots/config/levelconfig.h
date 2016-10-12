@@ -7,10 +7,10 @@
 BEGIN_NAMESPACE(slots)
 
 struct LevelConfigItem {
-  int32_t level;
-  int32_t fortuneReward;
-  int64_t expNeed;
-  int64_t maxBet;
+  int32_t level{0};
+  int32_t fortuneReward{0};
+  int64_t expNeed{0};
+  int64_t maxBet{0};
 };
 
 class LevelConfig: public JsonConfigBase{
@@ -19,6 +19,9 @@ class LevelConfig: public JsonConfigBase{
     ~LevelConfig();
 
     int64_t expNeedForNextLevel(int32_t curLevel);
+    int64_t maxBetForLevel(int32_t curLevel);
+    int64_t fortuneRewardForLevel(int32_t curLevel);
+    const LevelConfigItem &getLevelInfo(int32_t curLevel);
 
 protected:
   virtual bool parseJsonDoc(rapidjson::Document &doc);

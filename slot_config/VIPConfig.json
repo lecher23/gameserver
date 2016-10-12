@@ -1,0 +1,11 @@
+[
+{"ID":1,"Icon":"Vip.png","Level":1,"ExpPer":0.05,"GoldPer":0.5,"LogReward":0.10,"VipPoint":10,"Bet":10},
+{"ID":2,"Icon":"Vip.png","Level":2,"ExpPer":0.10,"GoldPer":0.10,"LogReward":0.10,"VipPoint":40,"Bet":15},
+{"ID":3,"Icon":"Vip.png","Level":3,"ExpPer":0.20,"GoldPer":0.20,"LogReward":0.10,"VipPoint":100,"Bet":20},
+{"ID":4,"Icon":"Vip.png","Level":4,"ExpPer":0.25,"GoldPer":0.25,"LogReward":0.10,"VipPoint":200,"Bet":25},
+{"ID":5,"Icon":"Vip.png","Level":5,"ExpPer":0.30,"GoldPer":0.30,"LogReward":0.10,"VipPoint":400,"Bet":30},
+{"ID":6,"Icon":"Vip.png","Level":6,"ExpPer":0.35,"GoldPer":0.35,"LogReward":0.10,"VipPoint":800,"Bet":35},
+{"ID":7,"Icon":"Vip.png","Level":7,"ExpPer":0.40,"GoldPer":0.40,"LogReward":0.10,"VipPoint":1600,"Bet":40},
+{"ID":8,"Icon":"Vip.png","Level":8,"ExpPer":0.45,"GoldPer":0.45,"LogReward":0.10,"VipPoint":3200,"Bet":45},
+{"ID":9,"Icon":"Vip.png","Level":9,"ExpPer":0.50,"GoldPer":0.50,"LogReward":0.10,"VipPoint":6400,"Bet":50}
+]

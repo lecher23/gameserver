@@ -530,19 +530,6 @@ bool SlotsDB::collectAchievements(const MysqlRows &result, Achievements &out) co
     return true;
 }
 
-bool SlotsDB::getVipSetting(VipConfigs &out) const {
-    SELECT_ALL_FROM_TABLE(mss, gVipSetting);
-    for (auto &row: mss.result) {
-	VipConfigItem item;
-	if (!item.deserialize(row)) {
-	    CLOG(WARNING) << "Init vip setting from db failed.";
-	    return false;
-	}
-	out[item.level] = item;
-    }
-    return true;
-}
-
 bool SlotsDB::getBet2ExpSetting(Bet2ExpConfigs &out) const {
     SELECT_ALL_FROM_TABLE(mss, gBetExpSetting);
     for (auto &row: mss.result) {
