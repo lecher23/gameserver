@@ -1,13 +1,18 @@
 #include "messageservice.h"
-#include <slots/data/slotsdatacenter.h>
 
 BEGIN_NAMESPACE(slots)
 
-MessageService::MessageService(){
+MessageService::MessageService(): _dataCenter(SlotsDataCenter::instance()){
 }
 
 MessageService::~MessageService(){
 }
+
+#define GET_SLOT_USER(uid, user)                                        \
+    SlotsUserPtr user;                                                     \
+    if (!_dataCenter.slotsUserData->getByUid(uid, user)) { \
+        return false;                                                   \
+    }
 
 #define MSG_RECV_DAILY_REWARD 1
 #define MSG_ENTER_ROOM 2
@@ -16,7 +21,6 @@ MessageService::~MessageService(){
 #define MSG_FINISH_TINY_GAME 5
 
 bool MessageService::doJob(CPacket &packet, CResponse &resp) {
-    static const std::string sFortune = "fortune";
 
     GET_INT32_PARAM_IN_PACKET(packet, slotconstants::sType, gType);
     SBuf bf;
@@ -26,15 +30,24 @@ bool MessageService::doJob(CPacket &packet, CResponse &resp) {
     case MSG_RECV_DAILY_REWARD:{
         int64_t newFortune;
         ret = getLoginReward(packet, newFortune);
-        rf.formatSimpleResult(ret, sFortune, newFortune);
+        if (ret) {
+            rf.formatSimpleResultWithFortune(newFortune);
+        }
         break;
     }
     case MSG_QUERY_HALL_STATUS:{
         ret = queryAllRoomInHall(packet, rf);
         break;
     }
+    case MSG_FINISH_TINY_GAME: {
+        ret = finishTinyGame(packet, rf);
+        // format result
+    }
     default:
         break;
+    }
+    if (!ret) {
+        rf.formatSimpleResult(false, "");
     }
     resp.setBody(bf.GetString());
     return ret;
@@ -45,7 +58,7 @@ bool MessageService::enterRoom(CPacket &packet, ResultFormatter &rf) {
     GET_INT32_PARAM_IN_PACKET(packet, slotconstants::sHallID, hallID);
     GET_INT32_PARAM_IN_PACKET(packet, slotconstants::sRoomID, roomID);
     GET_INT32_PARAM_IN_PACKET(packet, slotconstants::sUserID, userID);
-    auto &hall = SlotsDataCenter::instance().getHall(hallID);
+    auto &hall = _dataCenter.getHall(hallID);
     if (!hall.useRoom(userID, roomID))
     {
         CLOG(WARNING) << "User:"<< userID << " enter room " <<
@@ -60,7 +73,7 @@ bool MessageService::enterRoom(CPacket &packet, ResultFormatter &rf) {
 bool MessageService::queryRoomPrize(CPacket &packet, ResultFormatter &rf) {
     GET_INT32_PARAM_IN_PACKET(packet, slotconstants::sHallID, hallID);
     GET_INT32_PARAM_IN_PACKET(packet, slotconstants::sRoomID, roomID);
-    auto &hall = SlotsDataCenter::instance().getHall(hallID);
+    auto &hall = _dataCenter.getHall(hallID);
     auto prize = hall.getRoomPrize(roomID);
     // format result.
     return true;
@@ -68,7 +81,7 @@ bool MessageService::queryRoomPrize(CPacket &packet, ResultFormatter &rf) {
 
 bool MessageService::queryAllRoomInHall(CPacket &packet, ResultFormatter &rf) {
     GET_INT32_PARAM_IN_PACKET(packet, slotconstants::sHallID, hallID);
-    auto &hall = SlotsDataCenter::instance().getHall(hallID);
+    auto &hall = _dataCenter.getHall(hallID);
     const auto &rooms = hall.getRooms();
     // format result;
     rf.formatRoomsInfo(rooms);
@@ -78,10 +91,7 @@ bool MessageService::queryAllRoomInHall(CPacket &packet, ResultFormatter &rf) {
 bool MessageService::getLoginReward(CPacket &packet, int64_t &newFortune) {
     std::string uid;
     GET_PARAM(slotconstants::sUserID, uid, true);
-    SlotsUserPtr user;
-    if (!SlotsDataCenter::instance().slotsUserData->getByUid(uid, user)) {
-        return false;
-    }
+    GET_SLOT_USER(uid, user);
     auto &loginReward = user->loginReward;
     if (loginReward.recved) {
         newFortune = user->uRes.fortune;
@@ -97,7 +107,7 @@ bool MessageService::getLoginReward(CPacket &packet, int64_t &newFortune) {
 
 bool MessageService::getCargoStatus(CPacket &packet) {
     std::string uid;
-    GET_PARAM("uid", uid, true);
+    GET_PARAM(slotconstants::sUserID, uid, true);
     std::string cargoId;
     GET_PARAM("cargo", cargoId, true);
     // TODO
@@ -106,5 +116,17 @@ bool MessageService::getCargoStatus(CPacket &packet) {
     // if has record, return value
     return false;
 }
+
+bool MessageService::finishTinyGame(CPacket &packet, ResultFormatter &rf) {
+    std::string uid;
+    GET_PARAM(slotconstants::sUserID, uid, true);
+    GET_SLOT_USER(uid, user);
+    auto &gameStatus = user->gSt;
+    user->uRes.incrFortune(gameStatus.tinyGameEarned());
+    rf.formatSimpleResultWithFortune(user->uRes.fortune);
+    return true;
+}
+
+#undef GET_SLOT_USER
 
 END_NAMESPACE

@@ -96,6 +96,14 @@ public:
     }
     return result;
   }
+
+  int64_t tinyGameEarned() {
+    if (!result.tinyGame.enable) {
+      return 0;
+    }
+    return result.earned.tinyGame;
+  }
+
 private:
   int32_t hallID{0};
   int32_t roomID{0};

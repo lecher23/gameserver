@@ -99,6 +99,14 @@ void ResultFormatter::formatSimpleResult(
     _writer.EndObject();
 }
 
+void ResultFormatter::formatSimpleResultWithFortune(int64_t fortune) {
+    _writer.StartObject();
+    formatStatus(true);
+    JSON_KEY(ResultStr::sFortune);
+    _writer.Int64(fortune);
+    _writer.EndObject();
+}
+
 void ResultFormatter::formatGameResult(GameContext &gc)
 {
     _writer.StartObject();

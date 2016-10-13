@@ -94,4 +94,8 @@ public:
         // hall pool, room pool, reserve time
         sdc.getHall(1).init(10000, 5000, 1);
     }
+
+    static void add_slots_user(const std::string &userID, SlotsUserPtr &user) {
+        slots::SlotsDataCenter::instance().slotsUserData->set(userID, user);
+    }
 };

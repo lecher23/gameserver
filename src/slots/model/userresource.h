@@ -27,7 +27,6 @@ struct UserResource{
   bool changed{false};
 
     UserResource() {
-        reset();
     }
 
     void reset() {
