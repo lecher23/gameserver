@@ -10,6 +10,14 @@ BOOST_GIT = "https://github.com/boostorg"
 INCLUDE_DIR = os.path.join(CUR, "depend/include")
 LIB_DIR = os.path.join(CUR, "depend/lib")
 
+def exe_cmd_no_exit(cmd):
+    s, o = commands.getstatusoutput(cmd)
+    if s != 0:
+        print "Exe cmd [%s] failed: [%s]" % (cmd, o)
+        return False
+    print "Exe cmd [%s] done." % cmd
+    return True
+
 def exe_cmd(cmd):
     s, o = commands.getstatusoutput(cmd)
     if s != 0:
@@ -17,17 +25,24 @@ def exe_cmd(cmd):
         exit(0)
     print "Exe cmd [%s] done." % cmd
 
+def exe_cmd_with_retry(cmd, retry_times = 4):
+    times = 0
+    while not exe_cmd_no_exit(cmd):
+        times += 1
+        if times >= retry_times:
+            exit(1)
+
 def clone_from_git(git, version, dest):
     cmd = "git clone %s %s" % (git, dest)
-    exe_cmd(cmd)
+    exe_cmd_with_retry(cmd)
     cmd = "cd %s && git checkout %s" % (dest, version)
-    exe_cmd(cmd)
+    exe_cmd_with_retry(cmd)
 
 def get_boost_hpp_lib(lib_name, version):
     cmd = "git clone %s/%s %s/%s" % (BOOST_GIT, lib_name, TMP_DIR, lib_name)
-    exe_cmd(cmd)
+    exe_cmd_with_retry(cmd)
     cmd = "cd %s && git checkout %s" % (os.path.join(TMP_DIR, lib_name), version)
-    exe_cmd(cmd)
+    exe_cmd_with_retry(cmd)
     cmd = "cp -r %s/include/boost/* %s" % (os.path.join(TMP_DIR, lib_name), os.path.join(INCLUDE_DIR, "boost"))
     exe_cmd(cmd)
 
@@ -91,26 +106,13 @@ def resolve_rapid_json():
 
 def resolve_lua():
     # easy install : apt-get install lua5.1 lua5.1-dev
-    exe_cmd("apt-get install lua5.1 lua5.1-dev")
-    return
-    # below is useless
-    # 5.1 or other version
-    # before make, we should use cmd:
-    # sudo apt-get install libreadline6 libreadline6-dev
-    tgz = "http://www.lua.org/ftp/lua-5.3.3.tar.gz"
-    fname = os.path.basename(tgz)
-    exe_cmd("cd %s && wget %s" % (TMP_DIR, tgz))
-    exe_cmd("cd %s && tar -zxf %s" % (TMP_DIR, fname))
-    exe_cmd("apt-get install libreadline6 libreadline6-dev")
-    lua_dir = os.path.join(TMP_DIR, fname.replace(".tar.gz", ""))
-    exe_cmd("cd %s && make linux" % lua_dir)
-    exe_cmd("cp %s %s" %(os.path.join(lua_dir, "src/liblua.a") , LIB_DIR))
+    exe_cmd_with_retry("apt-get install lua5.1 lua5.1-dev")
 
 def resolve_mysql_client():
     # for some reason, we use c connector rather than cpp connector
     tgz = "http://dev.mysql.com/get/Downloads/Connector-C/mysql-connector-c-6.1.6-linux-glibc2.5-x86_64.tar.gz"
     fname = os.path.basename(tgz)
-    exe_cmd("cd %s && wget %s" % (TMP_DIR, tgz))
+    exe_cmd_with_retry("cd %s && wget %s" % (TMP_DIR, tgz))
     exe_cmd("cd %s && tar -zxf %s" % (TMP_DIR, fname))
     exe_cmd("cp -r %s/include/*  %s" %
             (os.path.join(TMP_DIR, fname.replace(".tar.gz", "")), INCLUDE_DIR))
