@@ -152,7 +152,6 @@ if __name__ == "__main__":
     if options.target not in libs_to_resolve:
         print "Invalid target value, expected: [%s]" % ", ".join(libs_to_resolve.keys())
         exit(1)
-    os.system("rm -rf %s" % TMP_DIR)
     os.system("mkdir %s" % TMP_DIR)
     create_dir()
     libs_to_resolve[options.target]()
