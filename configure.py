@@ -12,6 +12,7 @@ INCLUDE_DIR = os.path.join(CUR, "depend/include")
 LIB_DIR = os.path.join(CUR, "depend/lib")
 
 def exe_cmd_no_exit(cmd):
+    print "Begin cmd [%s]" % cmd
     s, o = commands.getstatusoutput(cmd)
     if s != 0:
         print "Exe cmd [%s] failed: [%s]" % (cmd, o)
@@ -20,6 +21,7 @@ def exe_cmd_no_exit(cmd):
     return True
 
 def exe_cmd(cmd):
+    print "Begin cmd [%s]" % cmd
     s, o = commands.getstatusoutput(cmd)
     if s != 0:
         print "Exe cmd [%s] failed: [%s]" % (cmd, o)
@@ -40,6 +42,7 @@ def clone_from_git(git, version, dest):
     exe_cmd_with_retry(cmd)
 
 def get_boost_hpp_lib(lib_name, version):
+    print "Get lib:[%s]" % lib_name
     cmd = "git clone %s/%s.git %s/%s" % (BOOST_GIT, lib_name, TMP_DIR, lib_name)
     exe_cmd_with_retry(cmd)
     cmd = "cd %s && git checkout %s" % (os.path.join(TMP_DIR, lib_name), version)
