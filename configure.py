@@ -39,7 +39,7 @@ def clone_from_git(git, version, dest):
     exe_cmd_with_retry(cmd)
 
 def get_boost_hpp_lib(lib_name, version):
-    cmd = "git clone %s/%s %s/%s" % (BOOST_GIT, lib_name, TMP_DIR, lib_name)
+    cmd = "git clone %s/%s.git %s/%s" % (BOOST_GIT, lib_name, TMP_DIR, lib_name)
     exe_cmd_with_retry(cmd)
     cmd = "cd %s && git checkout %s" % (os.path.join(TMP_DIR, lib_name), version)
     exe_cmd_with_retry(cmd)
