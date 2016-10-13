@@ -115,6 +115,10 @@ def resolve_mysql_client():
     exe_cmd("cp -r %s/include/*  %s" %
             (os.path.join(TMP_DIR, fname.replace(".tar.gz", "")), INCLUDE_DIR))
 
+def create_dir():
+    os.system("mkdir -p %s" % os.path.join(CUR, "depend/include/boost"))
+    os.system("mkdir -p %s" % os.path.join(CUR, "depend/lib"))
+
 if __name__ == "__main__":
     if os.geteuid() != 0:
         print "This script must be run as root."
@@ -124,6 +128,7 @@ if __name__ == "__main__":
     # exit(0)
     os.system("rm -rf %s" % TMP_DIR)
     os.system("mkdir %s" % TMP_DIR)
+    create_dir()
     resolve_boost_dependency()
     resolve_mysql_client()
     resolve_rapid_json()
