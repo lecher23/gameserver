@@ -92,7 +92,7 @@ def resolve_glog_dependency():
 
 def resolve_redis_client():
     git_dir = os.path.join(TMP_DIR, "hiredis")
-    clone_from_git("https://github.com/redis/hiredis.git", "v.13.3", git_dir)
+    clone_from_git("https://github.com/redis/hiredis.git", "v0.13.3", git_dir)
     exe_cmd("cd %s && make" % git_dir)
     exe_cmd("cd %s && cp *.so %s" % (git_dir, LIB_DIR))
     h_dir = os.path.join(INCLUDE_DIR, "hiredis")
