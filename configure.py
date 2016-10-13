@@ -3,6 +3,7 @@
 import sys
 import commands
 import os
+from optparse import OptionParser
 
 CUR = os.path.split(os.path.realpath(__file__))[0]
 TMP_DIR = os.path.join(CUR, ".cgservertmp")
@@ -95,7 +96,7 @@ def resolve_redis_client():
     exe_cmd("cd %s && make" % git_dir)
     exe_cmd("cd %s && cp *.so %s" % (git_dir, LIB_DIR))
     h_dir = os.path.join(INCLUDE_DIR, "hiredis")
-    os.system("mkdir %s" )
+    os.system("mkdir -p %s" )
     exe_cmd("cd %s && cp *.h %s" % (git_dir, h_dir))
 
 def resolve_rapid_json():
@@ -121,20 +122,38 @@ def create_dir():
     os.system("mkdir -p %s" % os.path.join(CUR, "depend/include/boost"))
     os.system("mkdir -p %s" % os.path.join(CUR, "depend/lib"))
 
-if __name__ == "__main__":
-    if os.geteuid() != 0:
-        print "This script must be run as root."
-        exit(1)
-    # os.system("mkdir -p %s" % INCLUDE_DIR)
-    # os.system("mkdir -p %s" % LIB_DIR)
-    # exit(0)
-    os.system("rm -rf %s" % TMP_DIR)
-    os.system("mkdir %s" % TMP_DIR)
-    create_dir()
+def resolve_all():
     resolve_boost_dependency()
     resolve_mysql_client()
     resolve_rapid_json()
     resolve_glog_dependency()
     resolve_redis_client()
     resolve_lua()
+
+if __name__ == "__main__":
+    if os.geteuid() != 0:
+        print "This script must be run as root."
+        exit(1)
+
+    libs_to_resolve = {
+        "all": resolve_all,
+        "lua": resolve_lua,
+        "boost": resolve_boost_dependency,
+        "mysql": resolve_mysql_client,
+        "rapidjson": resolve_rapid_json,
+        "glog": resolve_glog_dependency,
+        "redis": resolve_redis_client,
+    }
+
+    parser = OptionParser()
+    parser.add_option("-t", "--target", dest = "target",
+                      help = "target=[%s]" % ", ".join(libs_to_resolve.keys()))
+    (options, args) = parser.parse_args()
+    if options.target not in libs_to_resolve:
+        print "Invalid target value, expected: [%s]" % ", ".join(libs_to_resolve.keys())
+        exit(1)
+    os.system("rm -rf %s" % TMP_DIR)
+    os.system("mkdir %s" % TMP_DIR)
+    create_dir()
+    libs_to_resolve[options.target]()
     exit(0)
