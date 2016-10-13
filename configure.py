@@ -65,7 +65,6 @@ def resolve_boost_dependency():
     get_boost_hpp_lib("io", "boost-1.61.0")
     get_boost_hpp_lib("utility", "boost-1.61.0")
     get_boost_hpp_lib("regex", "boost-1.61.0")
-    get_boost_hpp_lib("bind", "boost-1.61.0")
     get_boost_hpp_lib("type_traits", "boost-1.61.0")
     get_boost_hpp_lib("preprocessor", "boost-1.61.0")
     get_boost_hpp_lib("mpl", "boost-1.61.0")
