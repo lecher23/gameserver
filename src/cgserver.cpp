@@ -13,8 +13,9 @@
 namespace cgserver{
     const std::string CgServer::ConfigFilePath = "server.cfg";
 
-  CgServer::CgServer(){
+    CgServer::CgServer(){
     }
+
     CgServer::~CgServer(){
 	;
     }
@@ -28,13 +29,17 @@ namespace cgserver{
     void CgServer::start(){
 	/*Read config file.*/
 	Config &cfg = Config::getInstance();
-	int port;
 	if (!cfg.initConfig(ConfigFilePath)){
 	    std::cout << "Init config failed." << std::endl;
 	    return;
 	}
+        initGLog();
+        int port = cfg.getServerPort();
+	CLOG(INFO) << "Starting server on port["<< port <<"]" ;
+	_server.startServer(port);
+    }
 
-        port = cfg.getServerPort();
+    bool CgServer::initGLog() {
 	/*Init Logger*/
 	google::InitGoogleLogging("CgServer");
 	/*Level can be INFO(0)/WARNNING(1)/ERROR(2)/FATAL(3).*/
@@ -55,8 +60,6 @@ namespace cgserver{
             logFilePrefix.append("/log");
         }
         google::SetLogDestination(level, logFilePrefix.c_str());
-	CLOG(INFO) << "Starting server on port["<< port <<"]" ;
-	_server.startServer(port);
     }
 }
 

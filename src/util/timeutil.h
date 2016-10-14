@@ -29,6 +29,15 @@ public:
     {
         return getCurrentTime() + usecOffset;
     }
+
+    inline static int64_t getYesterdayMorning() {
+        return getMorningTime() - 24 * 3600;
+    }
+
+    inline static int64_t getTomorrowMorning() {
+        return getMorningTime() + 24 * 3600;
+    }
+
     static int64_t getMorningTime();
     static time_t getTime();
 

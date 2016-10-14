@@ -1,8 +1,10 @@
-#include <util/timeutil.h>
 #include "slotshandler.h"
+#include <util/config.h>
+#include <util/timeutil.h>
 #include <slots/services/serviceprovider.h>
 #include <slots/data/slotsdatacenter.h>
 #include <slots/config/slotsconfig.h>
+#include <cache/redisclientfactory.h>
 
 BEGIN_NAMESPACE(slots)
 SlotsHandler::SlotsHandler(){
@@ -38,6 +40,15 @@ bool SlotsHandler::init() {
     if(!SlotsDataCenter::instance().init()){
 	CLOG(ERROR) << "Init slots cache failed.";
 	return false;
+    }
+    auto &redisClient = cgserver::RedisClientFactory::getClient();
+    auto &cfg = cgserver::Config::getInstance();
+    // timeout:2, pool_size:3
+    if (cfg.enableRedis() &&
+        !redisClient.Initialize(cfg.getRedisHost(), cfg.getRedisPort(), 2, 3))
+    {
+        CLOG(ERROR) << "Init Redis client failed.";
+        return false;
     }
     CLOG(INFO) << "Init slots cache success.";
     return true;
