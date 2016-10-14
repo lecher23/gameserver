@@ -3,15 +3,12 @@
 
 BEGIN_NAMESPACE(slots)
 
-#define GET_CONFIG_FROM_JSON_FILE(grp, section, dest)                   \
-    {                                                                   \
-        auto path =                                                     \
-            cgserver::Config::getInstance().getConfigValue(grp, section); \
-        if (!dest.initFromJsonFile(path)) {                             \
-            CLOG(ERROR) << "init config for "<< section <<" failed.";   \
-            return false;                                               \
-        }                                                               \
-    }
+#define GET_CONFIG_FROM_JSON_FILE(path, dest)                           \
+    if (!dest.initFromJsonFile(path)) {                                 \
+        CLOG(ERROR) << "Init config for "<< path <<" failed.";     \
+        return false;                                                   \
+    }                                                                   \
+    CLOG(INFO) << "Initilize config for " << path << " scuccess";
 
 bool SlotsConfig::init(){
     auto &db = SlotsDB::getInstance();
@@ -20,15 +17,17 @@ bool SlotsConfig::init(){
         return false;
     }
 
-    GET_CONFIG_FROM_JSON_FILE("slots", "achievement_cfg", cjConfig);
-    GET_CONFIG_FROM_JSON_FILE("slots", "login_cfg", loginCfg);
-    GET_CONFIG_FROM_JSON_FILE("slots", "level_cfg", levelConfig);
-    GET_CONFIG_FROM_JSON_FILE("slots", "vip_cfg", vipSetting);
-
     if(!(themeConfig.initConfig())) {
         CLOG(ERROR) << "Get Theme config from db failed.";
         return false;
     }
+
+    auto &cfg = cgserver::Config::getInstance();
+    GET_CONFIG_FROM_JSON_FILE(cfg.getAchievementConfigPath(), cjConfig);
+    GET_CONFIG_FROM_JSON_FILE(cfg.getLoginConfigPath(), loginCfg);
+    GET_CONFIG_FROM_JSON_FILE(cfg.getLevelConfigPath(), levelConfig);
+    GET_CONFIG_FROM_JSON_FILE(cfg.getVipConfigPath(), vipSetting);
+
     return true;
 }
 

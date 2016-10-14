@@ -2,7 +2,6 @@
 #define HANDLERFACTORY_H
 
 #include "ihandler.h"
-#include "packethandler.h"
 #include "../slots/slotshandler.h"
 
 namespace cgserver{

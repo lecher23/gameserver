@@ -29,26 +29,16 @@ namespace cgserver{
 	/*Read config file.*/
 	Config &cfg = Config::getInstance();
 	int port;
-	if (!cfg.initConfig(ConfigFilePath) || (port = cfg.getListenPort()) < 0) {
+	if (!cfg.initConfig(ConfigFilePath)){
 	    std::cout << "Init config failed." << std::endl;
 	    return;
 	}
 
+        port = cfg.getServerPort();
 	/*Init Logger*/
 	google::InitGoogleLogging("CgServer");
 	/*Level can be INFO(0)/WARNNING(1)/ERROR(2)/FATAL(3).*/
-	const std::string logLevel =
-	    Config::getInstance().getConfigValue("server", "log_level");
-	const std::string logDir =
-	    Config::getInstance().getConfigValue("server", "log_dir");
-	int level = 0;
-	if (logLevel == "WARNNING") {
-	    level = 1;
-	}else if (logLevel == "ERROR") {
-	    level = 2;
-	}else if (logLevel == "FATAL") {
-	    level = 3;
-	}
+	int level = Config::getInstance().getLogLevel();
 	for (int i = 0; i < 4; ++i) {
 	    // close link function
 	    google::SetLogSymlink(i, "");
@@ -56,16 +46,15 @@ namespace cgserver{
 	google::SetStderrLogging(4); 
 	//error will flush to file
 	google::FlushLogFiles(2);
-	if (!logDir.empty()) {
-	    std::string logFilePrefix = logDir;
-	    // set log min level.
-	    if (logDir[logDir.size() - 1] == '/') {
-		logFilePrefix.append("log");
-	    }else {
-		logFilePrefix.append("/log");
-	    }
-	    google::SetLogDestination(level, logFilePrefix.c_str());
-	}
+        auto logDir = Config::getInstance().getLogDir();
+        std::string logFilePrefix = logDir;
+        // set log min level.
+        if (logDir[logDir.size() - 1] == '/') {
+            logFilePrefix.append("log");
+        }else {
+            logFilePrefix.append("/log");
+        }
+        google::SetLogDestination(level, logFilePrefix.c_str());
 	CLOG(INFO) << "Starting server on port["<< port <<"]" ;
 	_server.startServer(port);
     }

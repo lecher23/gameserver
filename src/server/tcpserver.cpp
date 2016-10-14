@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include <netinet/in.h>
 #include <iostream>
-#include <handlers/packethandler.h>
 #include <socket/socketprocessor.h>
 #include <util/task.h>
 #include <util/processorfactory.h>
@@ -53,17 +52,14 @@ bool TcpServer::initServer(int port) {
     if (!_processor->init((void *)_handler)) {
 	return false;
     }
-    int poolSize;
-    if (!Config::getInstance().getIntValue("server", "threadpool_size", poolSize) ||
-	poolSize < 0)
-    {
-	CLOG(ERROR) << "Invalid threadpoll size:" << poolSize;
-	return false;
-    }
-    std::string file = Config::getInstance().getConfigValue("lua", "path");
-    if (!file.empty() && !LuaToolFactory::getInstance().init(poolSize + 2, file)) {
-	CLOG(ERROR) << "Init lua factory failed.";
-	return false;
+    auto &cfg = Config::getInstance();
+    int poolSize = cfg.getServerThreadPoolSize();
+
+    if (cfg.enableLua()) {
+        if (!LuaToolFactory::getInstance().init(poolSize + 2, cfg.getLuaPath())) {
+            CLOG(ERROR) << "Init lua factory failed.";
+            return false;
+        }
     }
 
     CLOG(INFO) << "Init server success.";
@@ -88,14 +84,10 @@ void TcpServer::startServer(int port) {
 	LOG(ERROR) << "Init Server failed.!";
 	return;
     }
-    int use_asio;
-    if (!Config::getInstance().getIntValue("server", "use_asio", use_asio)) {
-        use_asio = 1;
-    }
-    if (use_asio == 0) {
-        startRawServer(port);
-    }else {
+    if (Config::getInstance().useAsio()) {
         startAsyncServer(port);
+    }else {
+        startRawServer(port);
     }
 }
 

@@ -29,7 +29,7 @@ public:
     void test_main( void )
     {
         auto &client = RedisClientFactory::getClient();
-        if (!client.Initialize("139.196.148.39", 6379, 2, 3)) {
+        if (!client.Initialize("127.0.0.1", 6379, 2, 3)) {
             CLOG(ERROR) << "connect to redis failed";
             ast_true(false);
             return;

@@ -25,10 +25,10 @@ namespace cgserver{
 	if (_handler != NULL) {
 	    delete _handler;
 	}
-	std::string secret = Config::getInstance().getConfigValue("server", "secret");	
-	std::string need_check = Config::getInstance().getConfigValue("server", "need_check");	
-	_secret = secret;
-	_needCheck = (need_check == "true");
+        _needCheck = Config::getInstance().needCheckNet();
+        if (_needCheck) {
+            _secret = Config::getInstance().getNetSecret();
+        }
 	_handler = (IHandler *)resource;
 	return _handler->init();
     }

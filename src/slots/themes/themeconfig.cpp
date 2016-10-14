@@ -69,9 +69,9 @@ bool ThemeConfig::getTemplePrincessConfig() {
             break;
         }
         auto &butterfly = tsConfig.getButterfly();
-        auto butterflyCfgPath =
-            cgserver::Config::getInstance().getConfigValue("slots", "butterfly_cfg");
-        if (!butterfly.initFromJsonFile(butterflyCfgPath)) {
+        if (!butterfly.initFromJsonFile(
+                cgserver::Config::getInstance().getButterflyConfigPath()))
+        {
             CLOG(ERROR) << "init tiny game for tp failed.";
             break;
         }

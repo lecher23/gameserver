@@ -20,6 +20,10 @@ public:
 
   // [begin, end)
   int32_t randGap(int32_t begin, int32_t end) {
+    if (begin == end) {
+      CLOG(WARNING) << "Invalid rand param:" << begin;
+      return 0;
+    }
     return rand() % (end - begin) + begin;
   }
 

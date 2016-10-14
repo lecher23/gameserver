@@ -23,24 +23,15 @@ namespace cgserver{
     bool MysqlConnPool::init()
     {
 	/*Init db*/
-	_mysqlHost = Config::getInstance().getConfigValue("db", "addr");
-	_userName = Config::getInstance().getConfigValue("db", "user_name");
-	_userPassword = Config::getInstance().getConfigValue("db", "user_pwd");
-	_databaseName = Config::getInstance().getConfigValue("db", "db_name");
-	if (!Config::getInstance().getIntValue("db", "poll_size", _connPoolSize) ||
-	    _connPoolSize < 1 || _connPoolSize > MAX_POOL_SIZE)
+	_mysqlHost = Config::getInstance().getDBHost();
+	_userName = Config::getInstance().getDBUserName();
+	_userPassword = Config::getInstance().getDBPassword();
+	_databaseName = Config::getInstance().getDBName();
+        _mysqlPort = Config::getInstance().getDBPort();
+        _connPoolSize = Config::getInstance().getDBConnPoolSize();
+	if (_connPoolSize > MAX_POOL_SIZE)
 	{
 	    _connPoolSize = MAX_POOL_SIZE;
-	}
-
-	if (!Config::getInstance().getIntValue("db", "port", _mysqlPort) || _mysqlPort < 1)
-	{
-	    _mysqlPort = 3306;
-	}
-
-	if (_mysqlHost.empty() || _userName.empty() || _databaseName.empty()) {
-	    CLOG(ERROR) << "Mysql connection info not set under section [db]";
-	    return false;
 	}
 
 	for (int i = 0; i < _connPoolSize; ++i) {
