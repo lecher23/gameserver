@@ -8,8 +8,11 @@ BEGIN_NAMESPACE(slots)
 
 namespace SlotCacheStr{
   const std::string sDailyKeyPrefix = "L";
-  const std::string sLRunnerKey = "runner";
+  const std::string sLRunnerIdKey = "rID";
+  const std::string sLRunnerRewardKey = "rRwd";
   const std::string sLRecvKey = "recv";
+  const std::string sLVipKey = "vip";
+  const std::string sLDayKey = "dRwd";
   const std::string sLRecvTrue = "1";
   const std::string sLRecvFalse = "0";
 };
@@ -25,9 +28,9 @@ class SlotsUserData: public PersistenceBase{
     bool getByMid(const std::string &mid, SlotsUserPtr &out);
     void set(const std::string &uid, SlotsUserPtr &in);
 
-    void setDailyReward(const std::string &userID, int32_t runnerIdx, bool recved);
+    void setDailyReward(const std::string &userID, const LoginReward &in);
     void updateDailyReward(const std::string &userID, bool recved);
-    bool getDailyReward(const std::string &userID, int32_t &runnerIdx, bool &recved);
+    bool getDailyReward(const std::string &userID, LoginReward &out);
 
 private:
     std::map<std::string, SlotsUserPtr> _data;

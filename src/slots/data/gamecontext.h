@@ -29,6 +29,7 @@ struct GameContext{
   SlotsUserPtr user;
   GameResult gameInfo;
   Achievements userCj;
+  LoginReward dailyReward;
   // to save all game event during game.
   std::vector<EventInfo> events;
 };

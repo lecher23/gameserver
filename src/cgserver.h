@@ -16,6 +16,8 @@ namespace cgserver{
 	void start();
 	void stop();
     private:
+        void initGLog();
+
 	static const std::string ConfigFilePath;
 	TcpServer _server;
   };

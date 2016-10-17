@@ -24,7 +24,7 @@ namespace slots{
 	SBuf buf;
 	ResultFormatter rf(buf);
 	if (pOk) {
-	    rf.formatResultWithCj(*sUser);
+	    rf.formatResultWithCj(context);
 	} else {
 	    rf.formatSimpleResult(pOk, "");
 	}

@@ -16,24 +16,7 @@ void ResultFormatter::formatResult(const UserMails &uMails)  {
     _writer.EndObject();
 }
 
-void ResultFormatter::formatResult(const SlotsUser &su)  {
-    _writer.StartObject();
-    formatStatus(true);
-
-    JSON_KEY(ResultStr::sUserInfo);
-    formatUserInfo(su.uInfo);
-
-    JSON_KEY(ResultStr::sUserResource);
-    formatUserResource(su.uRes);
-
-    JSON_KEY(ResultStr::sLoginInfo);
-    formatLoginInfo(su);
-
-    _writer.EndObject();
-}
-
-void ResultFormatter::formatResultWithCj(const SlotsUser &su) {
-    _writer.StartObject();
+void ResultFormatter::formatUser(const SlotsUser &su) {
     formatStatus(true);
     JSON_KEY(ResultStr::sUserInfo);
     formatUserInfo(su.uInfo);
@@ -43,9 +26,16 @@ void ResultFormatter::formatResultWithCj(const SlotsUser &su) {
 
     JSON_KEY(ResultStr::sUserAchievement);
     formatUserAchievement(su.uCj);
+}
+
+void ResultFormatter::formatResultWithCj(const GameContext &context) {
+    _writer.StartObject();
+    formatStatus(true);
+
+    formatUser(*context.user);
 
     JSON_KEY(ResultStr::sLoginInfo);
-    formatLoginInfo(su);
+    formatLoginInfo(context);
 
     _writer.EndObject();
 }
@@ -376,18 +366,20 @@ void ResultFormatter::formatFriendList(const FriendsList &friends) {
     // _writer.EndArray();
 }
 
-void ResultFormatter::formatLoginInfo(const SlotsUser &su) {
+void ResultFormatter::formatLoginInfo(const GameContext &context) {
     _writer.StartObject();
     JSON_KEY(ResultStr::sDayn);
-    _writer.Int(su.uHis.loginDays);
+    _writer.Int(context.user->uHis.loginDays);
     JSON_KEY(ResultStr::sRecvReward);
-    _writer.Bool(su.loginReward.recved);
+    _writer.Bool(context.dailyReward.recved);
     JSON_KEY(ResultStr::sVipReward);
-    _writer.Int64(su.loginReward.specialReward);
+    _writer.Int64(context.dailyReward.vipExtra);
     JSON_KEY(ResultStr::sRunnerID);
-    _writer.Int64(su.loginReward.runnerIdx);
+    _writer.Int64(context.dailyReward.runnerIdx);
+    JSON_KEY(ResultStr::sRunnerVal);
+    _writer.Int64(context.dailyReward.runnerReward);
     JSON_KEY(ResultStr::sDayReward);
-    _writer.Int64(su.loginReward.daysReward);
+    _writer.Int64(context.dailyReward.dayReward);
     _writer.EndObject();
 }
 

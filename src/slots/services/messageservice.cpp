@@ -92,16 +92,20 @@ bool MessageService::getLoginReward(CPacket &packet, int64_t &newFortune) {
     std::string uid;
     GET_PARAM(slotconstants::sUserID, uid, true);
     GET_SLOT_USER(uid, user);
-    auto &loginReward = user->loginReward;
+    LoginReward loginReward;
+    if (!SlotsDataCenter::instance().slotsUserData->getDailyReward(uid, loginReward)) {
+        return false;
+    }
     if (loginReward.recved) {
         newFortune = user->uRes.fortune;
         return true;
     }
     int64_t total = loginReward.runnerReward +
-        loginReward.daysReward + loginReward.specialReward;
+        loginReward.dayReward + loginReward.vipExtra;
     user->uRes.incrFortune(total);
     loginReward.recved = true;
     newFortune = user->uRes.fortune;
+    SlotsDataCenter::instance().slotsUserData->updateDailyReward(uid, true);
     return true;
 }
 

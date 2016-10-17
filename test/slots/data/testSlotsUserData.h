@@ -33,20 +33,29 @@ public:
 
     void test_main( void )
     {
+        LoginReward reward;
+        reward.runnerIdx = 12;
+        reward.runnerReward = 1000;
+        reward.vipExtra = 2000;
+        reward.recved = false;
+        reward.dayReward = 3000;
         SlotsUserData sud;
-        sud.setDailyReward("123", 12, false);
+        sud.setDailyReward("123", reward);
 
-        int32_t runnerIdx;
-        bool recved;
-        ast_true(sud.getDailyReward("123", runnerIdx, recved));
-        ast_eq(12, runnerIdx);
-        ast_true(!recved);
+        LoginReward result;
+        ast_true(sud.getDailyReward("123", result));
+        ast_eq(12, result.runnerIdx);
+        ast_eq(1000, result.runnerReward);
+        ast_eq(2000, result.vipExtra);
+        ast_eq(3000, result.dayReward);
+        ast_true(!result.recved);
 
         sud.updateDailyReward("123", true);
-        ast_true(sud.getDailyReward("123", runnerIdx, recved));
-        ast_eq(12, runnerIdx);
-        ast_true(recved);
+        ast_true(sud.getDailyReward("123", result));
+        ast_eq(12, result.runnerIdx);
+        ast_true(result.recved);
     }
 private:
     bool _inited;
 };
+

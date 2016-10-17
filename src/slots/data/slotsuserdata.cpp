@@ -104,13 +104,17 @@ void SlotsUserData::save2MySQL(uint64_t factor){
     }
 
 void SlotsUserData::setDailyReward(
-    const std::string &userID, int32_t runnerIdx, bool recved)
+    const std::string &userID, const LoginReward &lR)
 {
     GENERATE_LOGIN_KEY(key, userID);
     std::map<std::string, std::string> cacheInfo;
     cacheInfo[SlotCacheStr::sLRecvKey] =
-        recved ? SlotCacheStr::sLRecvTrue: SlotCacheStr::sLRecvFalse;
-    cacheInfo[SlotCacheStr::sLRunnerKey] = cgserver::StringUtil::toString(runnerIdx);
+        lR.recved ? SlotCacheStr::sLRecvTrue: SlotCacheStr::sLRecvFalse;
+    cacheInfo[SlotCacheStr::sLRunnerIdKey] = cgserver::StringUtil::toString(lR.runnerIdx);
+    cacheInfo[SlotCacheStr::sLRunnerRewardKey] =
+        cgserver::StringUtil::toString(lR.runnerReward);
+    cacheInfo[SlotCacheStr::sLVipKey] = cgserver::StringUtil::toString(lR.vipExtra);
+    cacheInfo[SlotCacheStr::sLDayKey] = cgserver::StringUtil::toString(lR.dayReward);
 
     REDIS_EASY_HMSET(key, cacheInfo);
     REDIS_EASY_EXPIREAT(key, cgserver::CTimeUtil::getTomorrowMorning());
@@ -123,9 +127,18 @@ void SlotsUserData::updateDailyReward(const std::string &userID, bool recved)
                     recved ? SlotCacheStr::sLRecvTrue: SlotCacheStr::sLRecvFalse);
 }
 
+#define PARSE_CACHE_VAL_TO_INT32(key, dest)                             \
+    if (!cgserver::StringUtil::StrToInt32(                              \
+            out[key].data(), dest))                                     \
+    {                                                                   \
+        CLOG(WARNING) << "Invalid " << key << ":" << out[key];          \
+        return false;                                                   \
+    }
+
+
 // return key exist
 bool SlotsUserData::getDailyReward(
-    const std::string &userID, int32_t &runnerIdx, bool &recved)
+    const std::string &userID, LoginReward &reward)
 {
     std::map<std::string, std::string> out;
     GENERATE_LOGIN_KEY(key, userID);
@@ -134,15 +147,14 @@ bool SlotsUserData::getDailyReward(
         CLOG(INFO) << "Get daily reward info failed, code:" << ret;
         return false;
     }
-    recved = (out[SlotCacheStr::sLRecvKey] == SlotCacheStr::sLRecvTrue);
-    if (!cgserver::StringUtil::StrToInt32(
-            out[SlotCacheStr::sLRunnerKey].data(), runnerIdx))
-    {
-        CLOG(WARNING) << "Invalid runnerIdx:" << out[SlotCacheStr::sLRunnerKey];
-        return false;
-    }
+    reward.recved = (out[SlotCacheStr::sLRecvKey] == SlotCacheStr::sLRecvTrue);
+    PARSE_CACHE_VAL_TO_INT32(SlotCacheStr::sLRunnerIdKey, reward.runnerIdx);
+    PARSE_CACHE_VAL_TO_INT32(SlotCacheStr::sLRunnerRewardKey, reward.runnerReward);
+    PARSE_CACHE_VAL_TO_INT32(SlotCacheStr::sLVipKey, reward.vipExtra);
+    PARSE_CACHE_VAL_TO_INT32(SlotCacheStr::sLDayKey, reward.dayReward);
     return true;
 }
+#undef PARSE_CACHE_VAL_TO_INT32
 
 #undef GENERATE_LOGIN_KEY
 #undef REDIS_EASY_HSET

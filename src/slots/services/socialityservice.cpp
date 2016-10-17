@@ -179,7 +179,7 @@ namespace slots{
 	    return false;
 	}
 	user->uRes.incrFortune((int64_t)gData->getGiftValue());
-	rf.formatResult(*user);
+	//rf.formatResult(*user);
 	return true;
     }
 

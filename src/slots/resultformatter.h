@@ -44,6 +44,7 @@ namespace ResultStr{
   const std::string sVipReward = "v";
   const std::string sRecvReward = "r";
   const std::string sRunnerID = "ri";
+  const std::string sRunnerVal = "rv";
 
   // user info
   const std::string sUserID = "u";
@@ -84,8 +85,8 @@ public:
   ~ResultFormatter();
 
   void formatResult(const UserMails &uMails);
-  void formatResult(const SlotsUser &su);
-  void formatResultWithCj(const SlotsUser &su);
+  void formatUser(const SlotsUser &su);
+  void formatResultWithCj(const GameContext &context);
   void formatSimpleResult(bool ok, const std::string &err);
   void formatSimpleResult(bool ok, const std::string &key, int64_t value);
   void formatSimpleResult(bool ok, const std::string &key, int32_t value);
@@ -107,7 +108,7 @@ public:
   void formatUserInfo(const UserInfo &uInfo);
   void formatUserResource(const UserResource &uRes);
   void formatFriendList(const FriendsList &friends);
-  void formatLoginInfo(const SlotsUser &su);
+  void formatLoginInfo(const GameContext &context);
 
 private:
   JsonWriter _writer;

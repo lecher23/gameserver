@@ -39,7 +39,7 @@ namespace cgserver{
 	_server.startServer(port);
     }
 
-    bool CgServer::initGLog() {
+    void CgServer::initGLog() {
 	/*Init Logger*/
 	google::InitGoogleLogging("CgServer");
 	/*Level can be INFO(0)/WARNNING(1)/ERROR(2)/FATAL(3).*/

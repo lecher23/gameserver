@@ -49,32 +49,18 @@ enum RankType{
 };
 
 struct LoginReward {
-    int64_t runnerReward{0};
-    int64_t daysReward{0};
-    int64_t specialReward{0};
-    int64_t timestamp{0};
     int32_t runnerIdx{0};
-    bool recved;
-    void setRunnerReward(int64_t val, int32_t idx) {
-        runnerReward = val;
-        runnerIdx = idx;
-    }
-    void setDaysReward(int64_t val) {
-        daysReward = val;
-    }
-    void setSpecialReward(int64_t val) {
-        specialReward = val;
-    }
-    void setRecved(bool val){
-        recved = val;
-    }
+    int32_t runnerReward{0};
+    int32_t vipExtra{0};
+    bool recved{false};
+    int32_t dayReward{0};
+    int32_t dayN{0};
 };
 
 struct SlotsUser{
   UserInfo uInfo;
   UserResource uRes;
   GameHistory uHis;
-  LoginReward loginReward;
   Achievements uCj;
   GameStatus gSt;
 
