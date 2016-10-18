@@ -283,7 +283,7 @@ public:
 
   void setMinHallPrizePool(int32_t val) {minHallPrizePool = val;}
 
-  bool getMinHallPrizePool() {return minHallPrizePool;}
+  int32_t getMinHallPrizePool() {return minHallPrizePool;}
 
   void setTax4Hall(int32_t val) {tax4Hall = val/100.0;}
 
@@ -295,7 +295,7 @@ public:
 
   void setMinRoomPrizePool(int32_t val) {minRoomPrizePool = val;}
 
-  bool getMinRoomPrizePool() {return minRoomPrizePool;}
+  int32_t getMinRoomPrizePool() {return minRoomPrizePool;}
 
   void setTax4Room(int32_t val) {tax4Room = val/100.0;}
 

@@ -3,6 +3,7 @@
 
 #include <slots/data/basicdata.h>
 #include <slots/config/cjconfig.h>
+#include <slots/themes/hallbase.h>
 
 BEGIN_NAMESPACE(slots)
 
@@ -30,6 +31,7 @@ struct GameContext{
   GameResult gameInfo;
   Achievements userCj;
   LoginReward dailyReward;
+  RoomInfo room;
   // to save all game event during game.
   std::vector<EventInfo> events;
 };

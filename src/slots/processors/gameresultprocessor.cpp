@@ -32,20 +32,23 @@ bool GameResultProcessor::process(GameContext &context) const {
 }
 
 void GameResultProcessor::processHall(GameContext &context, GameResult &data) const {
-    auto &hall = SlotsDataCenter::instance().getHall(context.hallID);
+    auto &hall = SlotsDataCenter::instance().hallOperator;
     auto &cfg = SlotsConfig::getInstance().themeConfig.tsConfig;
-    hall.incrPrize(cfg.getTax4Hall(data.bet));
-    hall.incrPrize(context.roomID, cfg.getTax4Hall(data.bet));
-    if (!data.bJackpot2 && cfg.isForceWinHallPrize(hall.getGameCount())) {
+    auto curHallPrize = hall.incrHallPrize(context.hallID, cfg.getTax4Hall(data.bet));
+    auto curHallGameCount = hall.incrHallGameCount(context.hallID);
+    context.room.incrSpin();
+    context.room.incrPrize(cfg.getTax4Room(data.bet));
+    //hall.incrPrize(context.roomID, );
+    if (!data.bJackpot2 && cfg.isForceWinHallPrize(curHallGameCount)) {
         data.bJackpot2 = true;
-        data.earned.hallPrize = hall.takeHallPrize();
+        data.earned.hallPrize = curHallPrize;
+        hall.incrHallPrize(context.hallID, cfg.getMinHallPrizePool()-curHallPrize);
     }
-    if (!data.bJackpot1 && cfg.isForceWinRoomPrize(hall.getGameCount(context.roomID))) {
+    if (!data.bJackpot1 && cfg.isForceWinRoomPrize(context.room.spinCount)) {
         data.bJackpot1 = true;
-        data.earned.roomPrize = hall.takeRoomPrize(context.roomID);
+        data.earned.roomPrize = context.room.totalPrize;
+        context.room.takePrize(cfg.getMinRoomPrizePool());
     }
-    hall.incrGameCount();
-    hall.incrGameCount(context.roomID);
 }
 
 #define INCR_TAG_VALUE(mThemeTag, mEvent, value)                        \

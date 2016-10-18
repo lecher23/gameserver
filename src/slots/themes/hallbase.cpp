@@ -114,6 +114,52 @@ void HallBase::updateRoomResource(int32_t hallID, const RoomInfo &room) {
     EASY_REDIS_HMSET(key, cacheInfo);
 }
 
+int64_t HallBase::incrHallPrize(int32_t hallID, int64_t val){
+    auto hallIDStr = cgserver::StringUtil::toString(hallID);
+    double newVal;
+    auto ret = _client.Zincrby(SlotCacheStr::sHallPrize, val, hallIDStr, &newVal);
+    if (ret != RC_SUCCESS) {
+        CLOG(WARNING) << "Incr hall[" << hallIDStr << "] prize with val:"
+                      << val << " falied:" << ret;
+        return 0;
+    }
+    return newVal;
+}
+
+int32_t HallBase::incrHallGameCount(int32_t hallID, int32_t incr) {
+    auto hallIDStr = cgserver::StringUtil::toString(hallID);
+    double newVal;
+    auto ret = _client.Zincrby(SlotCacheStr::sHallGameCount, incr, hallIDStr, &newVal);
+    if (ret != RC_SUCCESS) {
+        CLOG(WARNING) << "Incr hall[" << hallIDStr << "] game count with val:"
+                      << incr << " falied:" << ret;
+        return 0;
+    }
+    return newVal;
+}
+
+int64_t HallBase::getHallPrize(int32_t hallID) {
+    auto hallIDStr = cgserver::StringUtil::toString(hallID);
+    double newVal;
+    auto ret = _client.Zscore(SlotCacheStr::sHallPrize, hallIDStr, &newVal);
+    if (ret != RC_SUCCESS) {
+        CLOG(WARNING) << "get hall[" << hallIDStr << "] prize failed:" << ret;
+        return 0;
+    }
+    return newVal;
+}
+
+int32_t HallBase::getHallGameCount(int32_t hallID) {
+    auto hallIDStr = cgserver::StringUtil::toString(hallID);
+    double newVal;
+    auto ret = _client.Zscore(SlotCacheStr::sHallGameCount, hallIDStr, &newVal);
+    if (ret != RC_SUCCESS) {
+        CLOG(WARNING) << "get hall[" << hallIDStr << "] game count failed:" << ret;
+        return 0;
+    }
+    return newVal;
+}
+
 bool HallBase::getCurrentRoomID(int32_t userID, int32_t hallID, int32_t &roomID) {
     std::string key = cgserver::StringUtil::toString(userID);
     std::string roomIDStr;

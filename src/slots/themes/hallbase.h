@@ -8,6 +8,8 @@ BEGIN_NAMESPACE(slots)
 
 namespace SlotCacheStr{
   const std::string sHallRoomJoiner = ".";
+  const std::string sHallPrize = "H:prz";
+  const std::string sHallGameCount = "H:gc";
   const std::string sRoomUserID = "uid";
   const std::string sRoomPrize = "prz";
   const std::string sRoomLastHeartBeat = "lhb";
@@ -24,19 +26,19 @@ namespace SlotCacheStr{
 class RoomInfo {
 public:
   void update(int64_t now, int64_t reserveTime) {
-    if (userID != BLANK_ROOM_ID &&
-        now - lastActive > reserveTime)
-    {
+    if (userID != BLANK_ROOM_ID && now - lastActive > reserveTime)
       userID = BLANK_USER_ID;
-    }
   }
+  void takePrize(int64_t remain) {totalPrize = remain;++winnigCount;}
+  void incrSpin() {++spinCount;}
+  void incrPrize(int64_t incr) {totalPrize += incr;}
 
   int32_t roomID{0};
   int32_t userID{0};
   int64_t lastActive{0};
   int64_t totalPrize{0};
   int32_t spinCount{0};
-  /* int32_t totalLotteryCount{0}; */
+  int32_t winnigCount{0};
   /* int32_t dayLotteryCount{0}; */
   /* int64_t totalOut{0}; */
   /* int64_t dayOut{0}; */
@@ -53,6 +55,10 @@ class HallBase{
     bool getRoomInfo(int32_t hallID, RoomInfo &room);
     void setRoomInfo(int32_t hallID, const RoomInfo &room);
     void updateRoomResource(int32_t hallID, const RoomInfo &room);
+    int64_t incrHallPrize(int32_t hallID, int64_t val);
+    int32_t incrHallGameCount(int32_t hallID, int32_t incr = 1);
+    int64_t getHallPrize(int32_t hallID);
+    int32_t getHallGameCount(int32_t hallID);
 
 protected:
     bool getCurrentRoomID(int32_t userID, int32_t hallID, int32_t &roomID);
