@@ -54,6 +54,9 @@ public:
         ast_true(sud.getDailyReward("123", result));
         ast_eq(12, result.runnerIdx);
         ast_true(result.recved);
+
+        // anoter test
+        ast_true(sud.getDailyReward("999", result));
     }
 private:
     bool _inited;

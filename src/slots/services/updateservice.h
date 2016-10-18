@@ -3,16 +3,16 @@
 
 #include "iservice.h"
 
-namespace slots{
-    class UpdateService{
-    public:
-        UpdateService();
-        virtual ~UpdateService();
+BEGIN_NAMESPACE(slots)
+class UpdateService{
+public:
+  UpdateService();
+  virtual ~UpdateService();
 
-	virtual bool doJob(CPacket &packet, CResponse &resp);
-    private:
-	bool updateUserInfo(CPacket &packet);
-	void formatResult(bool status, const std::string &msg, std::string &out);	
-    };
-}
+  virtual bool doJob(CPacket &packet, CResponse &resp);
+private:
+  bool updateUserInfo(CPacket &packet);
+  void formatResult(bool status, const std::string &msg, std::string &out);	
+};
+END_NAMESPACE
 #endif
