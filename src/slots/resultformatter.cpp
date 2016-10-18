@@ -325,6 +325,26 @@ void ResultFormatter::formatUserAchievement(const Achievements &cj) {
     _writer.EndArray();
 }
 
+void ResultFormatter::formatRoomList(const RoomInfos &rooms) {
+    _writer.StartObject();
+    JSON_KEY(ResultStr::sRoomList);
+    _writer.StartArray();
+    for(auto &room: rooms) {
+        _writer.StartObject();
+        JSON_KEY(ResultStr::sID);
+        _writer.Int(room.roomID);
+        JSON_KEY(ResultStr::sRoomPrize);
+        _writer.Int64(room.totalPrize);
+        JSON_KEY(ResultStr::sUserID);
+        _writer.Int(room.userID);
+        _writer.EndObject();
+    }
+    _writer.EndArray();
+    JSON_KEY(ResultStr::sStatus);
+    JSON_STRING_VALUE(ResultStr::sStatusOK);
+    _writer.EndObject();
+}
+
 void ResultFormatter::formatRoomsInfo(const TSRooms &rooms) {
     _writer.StartObject();
     JSON_KEY(ResultStr::sRoomList);

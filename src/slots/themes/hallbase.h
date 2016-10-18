@@ -21,7 +21,16 @@ namespace SlotCacheStr{
 #define HALL_FACTOR 1000000
 #define ROOM_RESERVE_TIME 600
 
-struct RoomInfo {
+class RoomInfo {
+public:
+  void update(int64_t now, int64_t reserveTime) {
+    if (userID != BLANK_ROOM_ID &&
+        now - lastActive > reserveTime)
+    {
+      userID = BLANK_USER_ID;
+    }
+  }
+
   int32_t roomID{0};
   int32_t userID{0};
   int64_t lastActive{0};
@@ -33,7 +42,7 @@ struct RoomInfo {
   /* int64_t dayOut{0}; */
 };
 DF_SHARED_PTR(RoomInfo);
-typedef std::map<int32_t, RoomInfoPtr> RoomInfos;
+typedef std::vector<RoomInfo> RoomInfos;
 
 class HallBase{
  public:

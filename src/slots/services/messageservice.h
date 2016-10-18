@@ -19,6 +19,7 @@ private:
     bool getLoginReward(CPacket &packet, int64_t &newFortune);
     bool getCargoStatus(CPacket &packet);
     bool finishTinyGame(CPacket &packet, ResultFormatter &rf);
+    bool getRoomInfoInList(CPacket &packet, ResultFormatter &rf);
 
     SlotsDataCenter &_dataCenter;
 };

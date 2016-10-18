@@ -37,7 +37,7 @@ namespace slots{
         CPacket &packet, SlotsUserPtr &su) const
     {
 	std::string mid;
-	if (!packet.getParamValue("mid", mid)) {
+	if (!packet.getParamValue(slotconstants::sMachineID, mid)) {
 	    return false;
 	}
 	return SlotsDataCenter::instance().slotsUserData->getByMid(mid, su);

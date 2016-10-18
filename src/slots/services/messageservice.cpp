@@ -1,4 +1,7 @@
 #include "messageservice.h"
+#include <util/timeutil.h>
+#include <slots/config/slotsconfig.h>
+#include <slots/data/slotsdatacenter.h>
 
 BEGIN_NAMESPACE(slots)
 
@@ -19,6 +22,7 @@ MessageService::~MessageService(){
 #define MSG_QUERY_ROOM_PRIZE 3
 #define MSG_QUERY_HALL_STATUS 4
 #define MSG_FINISH_TINY_GAME 5
+#define MSG_QUERY_ROOMS_INFO 6
 
 bool MessageService::doJob(CPacket &packet, CResponse &resp) {
 
@@ -42,6 +46,11 @@ bool MessageService::doJob(CPacket &packet, CResponse &resp) {
     case MSG_FINISH_TINY_GAME: {
         ret = finishTinyGame(packet, rf);
         // format result
+        break;
+    }
+    case MSG_QUERY_ROOMS_INFO: {
+        ret = getRoomInfoInList(packet, rf);
+        break;
     }
     default:
         break;
@@ -128,6 +137,34 @@ bool MessageService::finishTinyGame(CPacket &packet, ResultFormatter &rf) {
     auto &gameStatus = user->gSt;
     user->uRes.incrFortune(gameStatus.tinyGameEarned());
     rf.formatSimpleResultWithFortune(user->uRes.fortune);
+    return true;
+}
+
+bool MessageService::getRoomInfoInList(CPacket &packet, ResultFormatter &rf) {
+    GET_INT32_PARAM_IN_PACKET(packet, slotconstants::sHallID, hallID);
+    std::string roomListStr;
+    GET_PARAM(slotconstants::sRoomList, roomListStr, true);
+    std::vector<int32_t> roomList;
+    if (!cgserver::StringUtil::StrToIntVector(roomListStr, roomList, ',')) {
+        return false;
+    }
+
+    std::vector<RoomInfo> rooms(roomList.size());
+    auto &hall = SlotsDataCenter::instance().hallOperator;
+    auto now = cgserver::CTimeUtil::getCurrentTimeInSeconds();
+    auto reserveTime =
+        SlotsConfig::getInstance().themeConfig.tsConfig.getRoomReserveTime();
+    int32_t curRoomIdx = 0;
+    for(auto &roomID: roomList) {
+        rooms[curRoomIdx].roomID = roomID;
+        if (!hall.getRoomInfo(hallID, rooms[curRoomIdx])) {
+            CLOG(WARNING) << "Get room list failed. room id: " << roomID;
+            return false;
+        }
+        rooms[curRoomIdx].update(now, reserveTime);
+        ++curRoomIdx;
+    }
+    rf.formatRoomList(rooms);
     return true;
 }
 

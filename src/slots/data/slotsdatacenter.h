@@ -8,6 +8,7 @@
 #include <slots/data/cjqueue.h>
 #include <slots/data/giftsdata.h>
 #include <slots/themes/tshall.h>
+#include <slots/themes/hallbase.h>
 #include <slots/config/slotsconfig.h>
 #include <util/timeutil.h>
 
@@ -102,6 +103,7 @@ public:
     /* User data*/
     SlotsUserDataPtr slotsUserData;
     CjQueuePtr cjQueue;
+    HallBase hallOperator;
 
 private:
     bool rankDataExpired(int64_t ts) {

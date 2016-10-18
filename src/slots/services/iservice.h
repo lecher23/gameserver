@@ -16,6 +16,7 @@ namespace slots{
     const std::string sRoomID = "r";
     const std::string sHallID = "h";
     const std::string sUserID = "u";
+    const std::string sMachineID = "mid";
     const std::string sType = "t";
     const std::string sTotalBet = "b";
     const std::string sLineNumber = "l";
@@ -26,6 +27,7 @@ namespace slots{
     const std::string sName = "n";
     const std::string sAvatar = "a";
     const std::string sCountry = "c";
+    const std::string sRoomList = "rl";
   }
 
 #define GET_INT32_PARAM_IN_PACKET(pack, key, dest)      \

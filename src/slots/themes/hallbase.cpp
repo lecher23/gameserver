@@ -82,6 +82,7 @@ bool HallBase::getRoomInfo(int32_t hallID, RoomInfo &room) {
     GENERATE_ROOM_KEY(hallID, room.roomID, key);
     auto ret = _client.Hgetall(key, &out);
     if (ret != RC_SUCCESS) {
+        CLOG(WARNING) << "Get room info from cache failed, code:" << ret;
         room.userID = BLANK_USER_ID;
         return false;
     }

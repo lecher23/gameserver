@@ -100,6 +100,7 @@ public:
   void formatRankResult
       (const LeaderBoardRank &rank, int64_t uid, uint32_t start, uint32_t end);
   void formatUserAchievement(const Achievements &cj);
+  void formatRoomList(const RoomInfos &rooms);
   void formatRoomsInfo(const TSRooms &rooms);
 
   void formatStatus(bool bOk);

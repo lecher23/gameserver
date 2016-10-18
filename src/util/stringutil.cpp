@@ -763,17 +763,19 @@ void StringUtil::StrToIntArray(
     }
 }
 
-void StringUtil::StrToIntVector(
+bool StringUtil::StrToIntVector(
     const std::string &src, std::vector<int32_t> &out, const char delimiter)
 {
     if(src.empty()) {
-        return;
+        return true;
     }
     int32_t x = 0;
     for (auto ch: src){
         if(delimiter == ch) {
             out.push_back(x);
             x = 0;
+        } else if (ch > '9' || ch < '0') {
+            return false;
         } else {
             x = x * 10 + (ch - '0');
         }
@@ -781,6 +783,7 @@ void StringUtil::StrToIntVector(
     if (src[src.size() - 1] != delimiter) {
         out.push_back(x);
     }
+    return true;
 }
 
 unsigned char StringUtil::toHex(const unsigned char &x) {

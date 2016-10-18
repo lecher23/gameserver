@@ -7,6 +7,8 @@
 #include <slots/services/messageservice.h>
 #undef private
 #include "/home/licheng/workspace/CgServerPlus/test/common.h"
+#include <util/stringutil.h>
+#include <util/timeutil.h>
 
 #define ast_eq(x, y) TS_ASSERT_EQUALS(x, y);
 #define ast_true(x) TS_ASSERT(x);
@@ -20,7 +22,13 @@ const std::string cfg_file = cxx::cfg_file;
 class testMessageService: public CxxTest::TestSuite 
 {
 public:
-    testMessageService():_inited(false){}
+    testMessageService():_inited(false){
+        if (!_inited) {
+            ast_true(RedisClientFactory::getClient().Initialize(
+                         "127.0.0.1", 6379, 2, 3));
+            _inited = true;
+        }
+    }
 
     virtual void setUp(){
         CommonTools::init_slots_data_center_data();
@@ -92,6 +100,31 @@ public:
         ast_true(ms.finishTinyGame(packet, rf));
         ast_eq(100, user->uRes.fortune);
         ast_eq("{\"st\":\"OK\",\"f\":100}", bf.GetString());
+    }
+
+    void test_getRoomInfoInList() {
+        CPacket packet;
+        packet.addParam(slotconstants::sType, "6");
+        packet.addParam(slotconstants::sHallID, "1");
+        packet.addParam(slotconstants::sRoomList, "2,3");
+        auto &client = RedisClientFactory::getClient();
+        auto now = CTimeUtil::getCurrentTimeInSeconds();
+        ast_eq(0, client.Hset("1.2", "prz", "1000"));
+        ast_eq(0, client.Hset("1.2", "uid", "35"));
+        ast_eq(0, client.Hset("1.2", "lhb", StringUtil::toString(now)));
+
+        auto pre = now - 10000;
+        ast_eq(0, client.Hset("1.3", "prz", "3219"));
+        ast_eq(0, client.Hset("1.3", "uid", "23"));
+        ast_eq(0, client.Hset("1.3", "lhb", StringUtil::toString(pre)));
+
+        MessageService ms;
+        SBuf bf;
+        ResultFormatter rf(bf);
+        bool ret = ms.getRoomInfoInList(packet, rf);
+        ast_true(ret);
+        ast_eq("{\"rl\":[{\"id\":2,\"pz\":1000,\"u\":35},{\"id\":3,\"pz\":3219,\"u\":0}],\"st\":\"OK\"}",
+               bf.GetString());
     }
 
 private:
