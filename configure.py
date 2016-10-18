@@ -87,7 +87,7 @@ def resolve_boost_dependency():
 def resolve_glog_dependency():
     clone_from_git("https://github.com/google/glog", "v0.3.4",
                    os.path.join(TMP_DIR, "glog"))
-    exe_cmd("cd %s && ./configure --prefix=%s" %
+    exe_cmd("cd %s && autoreconf --force --install && ./configure --prefix=%s" %
             (os.path.join(TMP_DIR, "glog"), os.path.join(CUR, "depend")))
     exe_cmd("cd %s && make && make install" %
             os.path.join(TMP_DIR, "glog"))
