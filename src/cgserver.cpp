@@ -63,58 +63,16 @@ namespace cgserver{
     }
 }
 
-void err_quit(const std::string &str) {
-    CLOG(INFO) << str ;
-    exit(1);
-}
-
-void daemonize(){
-    int fd0, fd1, fd2;
-    pid_t pid;
-    struct rlimit rl;
-    //struct sigaction sa;
-    umask(0);
-    if(getrlimit(RLIMIT_NOFILE, &rl) < 0) {
-	err_quit("can't get file limit.");
-    }
-
-    if((pid = fork()) < 0) {
-	err_quit("fork failed.");
-    }else if(pid != 0) {
-	exit(0);
-    }
-
+void daemonize() {
+    int fd;
+    if (fork() != 0) exit(0);
     setsid();
 
-    // sa.sa_handler = SIG_IGN;
-    // sigmeptyset(&sa.sa_mask);
-    // sa.sa_flags = 0;
-    // if (sigaction(SIGHUP, &sa, NULL) < 0) {
-    // 	err_quit("cannot ignore SIGHUP");
-    // }
-    if ((pid = fork()) < 0) {
-	err_quit("second fork failed.");
-    }else if (pid != 0) {
-	exit(0);
-    }
-
-    if (chdir("/") < 0)
-	err_quit("can not chdir to /");
-
-    // if (rl.rlim_max == RLIM_INFINITY) {
-    // 	rl.rlim_max = 1024;
-    // }
-
-    // for(int i = 0; i < rl.rlim_max; ++i) {
-    // 	close(i);
-    // }
-
-    fd0 = open("/logs", O_RDWR);
-    fd1 = dup(0);
-    fd2 = dup(0);
-
-    if (fd0 != 0 || fd1 != 1 || fd2 != 2) {
-	exit(1);
+    if ((fd = open("/def/null", O_RDWR, 0)) != -1) {
+        dup2(fd, STDIN_FILENO);
+        dup2(fd, STDOUT_FILENO);
+        dup2(fd, STDERR_FILENO);
+        if (fd > STDERR_FILENO) close(fd);
     }
 }
 
@@ -129,8 +87,10 @@ static void sig_func(int signo) {
     }
 }
 
-int main(int len, char ** args) {
-    //daemonize(); 
+int main(int argc, char ** argv) {
+    if (argc == 2 && !strcasecmp(argv[1], "--daemonize")) {
+        daemonize();
+    }
     /*regester signal SIGQUIT*/
     if (signal(SIGUSR1, sig_func) == SIG_ERR) {
 	std::cout << "Can not catch SIGKILL.\n";
@@ -140,7 +100,6 @@ int main(int len, char ** args) {
 	std::cout << "Can not catch SIGKILL.\n";
 	return 1;
     }
-    
     g_server.start();
     return 0;
 }

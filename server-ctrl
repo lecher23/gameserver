@@ -1,14 +1,13 @@
 #!/bin/sh 
 
 BASE_PATH=$(cd `dirname $0`; pwd)
-PORT=9876
+PORT="`head ${BASE_PATH}/server.cfg -n 3|grep port|awk -F= '{print $2}'`"
 SERVER_PID="`netstat -apn | grep ${PORT} | grep LISTEN | awk '{print $7}'|sed 's/\/server//g'`"
 LOG_DIR="/root/logs"
 TAG="`date +%Y-%m-%d`"
 EXT_LIB_PATH="${BASE_PATH}/depend/lib"
 SERVER_BIN="${BASE_PATH}/build/release/server"
-echo $SERVER_PID
-echo $TAG
+echo Server PID: [$SERVER_PID]
 
 exe_cmd(){
 $cmd
@@ -49,7 +48,7 @@ then
     if [ -z ${SERVER_PID} ];
     then
 	# ...
-	cd ${BASE_PATH} && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${EXT_LIB_PATH};nohup ${SERVER_BIN} > server.out 2>&1 &
+	cd ${BASE_PATH} && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${EXT_LIB_PATH};${SERVER_BIN} --daemonize
     else
 	echo "Start stopped. Server is running."
     fi
