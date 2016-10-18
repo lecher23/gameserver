@@ -9,7 +9,7 @@ ResultFormatter::~ResultFormatter(){
 #define JSON_KEY(str) _writer.Key(str.data(), str.size());
 #define JSON_STRING_VALUE(str) _writer.String(str.data(), str.size());
 
-void ResultFormatter::formatResult(const UserMails &uMails)  {
+void ResultFormatter::formatMailList(const UserMails &uMails)  {
     _writer.StartObject();
     formatStatus(true);
     formatMailsInfo(uMails);
@@ -248,8 +248,6 @@ void ResultFormatter::formatMail(const UserMail &uMail) {
     JSON_STRING_VALUE(mi.title);
     JSON_KEY(ResultStr::sMailContent);
     JSON_STRING_VALUE(mi.content);
-    // JSON_KEY("attachment");
-    // JSON_STRING_VALUE(uMail.mailInfo.attachment);
     AttachmentPtr ap;
     bool exist;
     ap = SlotsDataCenter::instance().getAttach(mi.attachment, exist);

@@ -84,7 +84,7 @@ public:
   explicit ResultFormatter(SBuf &buffer);
   ~ResultFormatter();
 
-  void formatResult(const UserMails &uMails);
+  void formatMailList(const UserMails &uMails);
   void formatUser(const SlotsUser &su);
   void formatResultWithCj(const GameContext &context);
   void formatSimpleResult(bool ok, const std::string &err);

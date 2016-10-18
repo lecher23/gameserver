@@ -12,19 +12,19 @@ namespace slots{
 	std::string uid;
 	std::string body;
 	std::string errMsg;
-	GET_PARAM("type", type, true);
-	GET_PARAM("uid", uid, true);
+	GET_PARAM(slotconstants::sType, type, true);
+	GET_PARAM(slotconstants::sUserID, uid, true);
 
 	SlotsDB &db = SlotsDB::getInstance();
 	SBuf bf;
 	ResultFormatter rf(bf);
 	bool ret = false;
 	do {
-	    if (type == "0") {
+	    if (type == "1") {
 		std::string page;
 		std::string pageSize;
-		GET_PARAM("page", page, false);
-		GET_PARAM("pageSize", pageSize, false);
+		GET_PARAM(slotconstants::sPage, page, false);
+		GET_PARAM(slotconstants::sPageSize, pageSize, false);
 		page = page.empty() ? "0":page;
 		pageSize = pageSize.empty() ? "10":pageSize;
 		UserMails uMails;
@@ -33,10 +33,10 @@ namespace slots{
 		    rf.formatSimpleResult(false, "Internal error.");
 		    break;
 		}
-		rf.formatResult(uMails);
-	    }else if (type == "3") {
+		rf.formatMailList(uMails);
+	    }else if (type == "2") {
 		std::string mailId;
-		GET_PARAM("mailid", mailId, true);
+		GET_PARAM(slotconstants::sMailID, mailId, true);
 		// use async?
 		if (!db.delMail(uid, mailId)) {
 		    CLOG(WARNING) << "delete mail from mysql failed";

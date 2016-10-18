@@ -19,6 +19,9 @@ namespace slots{
     const std::string sType = "t";
     const std::string sTotalBet = "b";
     const std::string sLineNumber = "l";
+    const std::string sPageSize = "ps";
+    const std::string sPage = "p";
+    const std::string sMailID = "m";
   }
 
 #define GET_INT32_PARAM_IN_PACKET(pack, key, dest)      \
