@@ -28,6 +28,7 @@ namespace slots{
     const std::string sAvatar = "a";
     const std::string sCountry = "c";
     const std::string sRoomList = "rl";
+    const std::string sCjID = "a";
   }
 
 #define GET_INT32_PARAM_IN_PACKET(pack, key, dest)      \

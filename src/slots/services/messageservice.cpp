@@ -11,16 +11,17 @@ MessageService::MessageService(): _dataCenter(SlotsDataCenter::instance()){
 MessageService::~MessageService(){
 }
 
-#define GET_SLOT_USER(uid, user)                                        \
-    SlotsUserPtr user;                                                     \
-    if (!_dataCenter.slotsUserData->getByUid(uid, user)) { \
-        return false;                                                   \
+#define GET_SLOT_USER(uid, user)                                \
+    SlotsUserPtr user;                                          \
+    if (!_dataCenter.slotsUserData->getByUid(uid, user)) {      \
+        return false;                                           \
     }
 
 #define MSG_RECV_DAILY_REWARD 1
 #define MSG_ENTER_ROOM 2
 #define MSG_FINISH_TINY_GAME 5
 #define MSG_QUERY_ROOMS_INFO 6
+#define MSG_GET_CJ_REWARD 7
 
 bool MessageService::doJob(CPacket &packet, CResponse &resp) {
 
@@ -43,15 +44,16 @@ bool MessageService::doJob(CPacket &packet, CResponse &resp) {
     }
     case MSG_FINISH_TINY_GAME: {
         ret = finishTinyGame(packet, rf);
-        // format result
         break;
     }
     case MSG_QUERY_ROOMS_INFO: {
         ret = getRoomInfoInList(packet, rf);
         break;
     }
-    default:
+    case MSG_GET_CJ_REWARD:{
+        ret = getAchievementReward(packet, rf);
         break;
+    }
     }
     if (!ret) {
         rf.formatSimpleResult(false, "");
@@ -148,6 +150,23 @@ bool MessageService::getRoomInfoInList(CPacket &packet, ResultFormatter &rf) {
     }
     rf.formatRoomList(rooms);
     return true;
+}
+
+bool MessageService::getAchievementReward(CPacket &packet, ResultFormatter &rf) {
+    GET_INT32_PARAM_IN_PACKET(packet, slotconstants::sCjID, cjID);
+    std::string uid;
+    GET_PARAM(slotconstants::sUserID, uid, true);
+    GET_SLOT_USER(uid, user);
+    for (auto &cj:user->uCj) {
+        if (cjID == cj.aid && !cj.isRecvReward) {
+            cj.isRecvReward = true;
+            const auto &cjInfo = SlotsConfig::getInstance().cjConfig.getCjInfo(cjID);
+            user->uRes.incrFortune(cjInfo.rewardValue);
+            rf.formatSimpleResultWithFortune(user->uRes.fortune);
+            return true;
+        }
+    }
+    return false;
 }
 
 #undef GET_SLOT_USER

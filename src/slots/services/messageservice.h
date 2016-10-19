@@ -20,6 +20,7 @@ private:
     bool getCargoStatus(CPacket &packet);
     bool finishTinyGame(CPacket &packet, ResultFormatter &rf);
     bool getRoomInfoInList(CPacket &packet, ResultFormatter &rf);
+    bool getAchievementReward(CPacket &packet, ResultFormatter &rf);
 
     SlotsDataCenter &_dataCenter;
 };
