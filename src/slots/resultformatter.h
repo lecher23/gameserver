@@ -74,6 +74,7 @@ namespace ResultStr{
   const std::string sRatio = "rto";
   const std::string sGridsInfo = "gds";
   const std::string sFreeTimes = "ft";
+  const std::string sTinyGame = "tg";
 };
 
 typedef rapidjson::StringBuffer SBuf;

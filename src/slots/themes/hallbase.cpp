@@ -40,6 +40,16 @@ HallBase::~HallBase(){
         }                                                               \
     }
 
+#define EASY_REDIS_HGET(key, field, value)                              \
+    {                                                                   \
+        int ret = _client.Hget(key, field, &value);                      \
+        if (ret != RC_SUCCESS) {                                        \
+            CLOG(WARNING) << "set [" << key << "." << field             \
+                          << "] with ["<< value                         \
+                          << "] failed. code:" << ret;                  \
+        }                                                               \
+    }
+
 #define EASY_REDIS_HMSET(key, value)                                    \
     {                                                                   \
         int ret = _client.Hmset(key, value);                            \
@@ -65,7 +75,7 @@ bool HallBase::useRoom(int32_t hallID, int32_t userID, RoomInfo &targetRoom) {
         targetRoom.userID == BLANK_USER_ID ||
         isRoomDead(targetRoom, now))
     {
-        clearRoomUser(hallID, curRoomID);
+        clearRoomUser(hallID, curRoomID, userID);
         // update room last active time
         targetRoom.userID = userID;
         targetRoom.lastActive = now;
@@ -196,8 +206,8 @@ void HallBase::updateUserCurrentRoom(int32_t userID, int32_t hallID, int32_t roo
     EASY_REDIS_HSET(key, SlotCacheStr::sUserCurRoom, val);
 }
 
-void HallBase::clearRoomUser(int32_t hallID, int32_t roomID) {
-    if (roomID == BLANK_ROOM_ID) {
+void HallBase::clearRoomUser(int32_t hallID, int32_t roomID, int32_t userID) {
+    if (roomID == BLANK_ROOM_ID || userID != getRoomUser(hallID, roomID)) {
         return;
     }
     GENERATE_ROOM_KEY(hallID, roomID, key);
@@ -208,7 +218,18 @@ bool HallBase::isRoomDead(const RoomInfo &room, int64_t now) {
     return now - room.lastActive > ROOM_RESERVE_TIME;
 }
 
+int32_t HallBase::getRoomUser(int32_t hallID, int32_t roomID) {
+    GENERATE_ROOM_KEY(hallID, roomID, key);
+    std::string userIDStr;
+    EASY_REDIS_HGET(key, SlotCacheStr::sRoomUserID, userIDStr);
+    if (userIDStr.empty()) {
+        return BLANK_USER_ID;
+    }
+    return cgserver::StringUtil::StrToInt32WithDefault(userIDStr.data(), BLANK_USER_ID);
+}
+
 #undef EASY_REDIS_HSET
+#undef EASY_REDIS_HGET
 #undef EASY_REDIS_HMSET
 #undef EASY_REDIS_RESULT_CHECK
 #undef PARSE_CACHE_VAL_TO_INT

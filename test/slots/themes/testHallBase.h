@@ -41,14 +41,46 @@ public:
         ast_eq(1999, hb.incrHallPrize(1, 999));
     }
 
-    void test_operateHallPrize( void )
-    {
+#define SET_ROOM_INFO_TO_REDIS(key, userID, lastHB)                     \
+    ast_eq(RC_SUCCESS, client.Hset(key, SlotCacheStr::sRoomUserID, userID)); \
+    ast_eq(RC_SUCCESS, client.Hset(                                     \
+               key, SlotCacheStr::sRoomLastHeartBeat, StringUtil::toString(lastHB)));
+
+    void test_useRoom_cur_in_anoter_hall_target_using() {
+        // target hall:1, target room 1
+        // cur hall:2, cur room 2
+        auto now = cgserver::CTimeUtil::getCurrentTimeInSeconds();
         auto &client = RedisClientFactory::getClient();
-        ast_eq(RC_SUCCESS, client.Zadd("H:prz", 1000, "1"));
+        // set crrent info
+        ast_eq(RC_SUCCESS, client.Hset("10086", SlotCacheStr::sUserCurRoom, "2000002"));
+        // set target room info
+        SET_ROOM_INFO_TO_REDIS("1.1", "18", now);
+        // set cur room info
+        SET_ROOM_INFO_TO_REDIS("2.1", "23", now);
 
         HallBase hb;
-        ast_eq(1000, hb.getHallPrize(1));
-        ast_eq(1999, hb.incrHallPrize(1, 999));
+        RoomInfo rm;
+        rm.roomID = 1;
+        ast_true(!hb.useRoom(1, 23, rm));
+    }
+
+    void test_useRoom_cur_in_anoter_hall_target_expire() {
+        // target hall:1, target room 1
+        // cur hall:2, cur room 2
+        auto now = cgserver::CTimeUtil::getCurrentTimeInSeconds();
+        auto &client = RedisClientFactory::getClient();
+        // set crrent info
+        ast_eq(RC_SUCCESS, client.Hset("10086", SlotCacheStr::sUserCurRoom, "2000002"));
+        // set target room info
+        auto pre = now - 10000;
+        SET_ROOM_INFO_TO_REDIS("1.1", "18", pre);
+        // set cur room info
+        SET_ROOM_INFO_TO_REDIS("2.1", "23", now);
+
+        HallBase hb;
+        RoomInfo rm;
+        rm.roomID = 1;
+        ast_true(!hb.useRoom(1, 23, rm));
     }
 private:
     bool _inited;

@@ -138,6 +138,13 @@ void ResultFormatter::formatGameResult(GameContext &gc)
     }
     _writer.EndArray();
 
+    JSON_KEY(ResultStr::sTinyGame);
+    _writer.StartArray();
+    for (auto &item: gc.gameInfo.tinyResult) {
+        _writer.Int(item);
+    }
+    _writer.EndArray();
+
     _writer.EndObject();
 }
 

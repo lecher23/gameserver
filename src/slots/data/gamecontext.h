@@ -25,7 +25,6 @@ class EventInfo{
 
 struct GameContext{
   int32_t hallID{0};
-  int32_t roomID{0};
   int32_t uid;
   SlotsUserPtr user;
   GameResult gameInfo;

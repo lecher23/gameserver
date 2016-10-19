@@ -67,7 +67,7 @@ bool GameService::doTemplePrincess(CPacket &packet, ResultFormatter &rf)
         gc.gameInfo.gType = style;
         gc.uid = iUid;
         gc.hallID = hallID;
-        gc.roomID = roomID;
+        gc.room.roomID = roomID;
 
         if (!SlotsDataCenter::instance().slotsUserData->getByUid(uid, gc.user)) {
             break;

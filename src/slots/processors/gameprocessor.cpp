@@ -14,8 +14,8 @@ GameProcessor::~GameProcessor(){
 bool GameProcessor::process(GameContext &context) const {
     // by default, we can get hall from datacenter just by hallID
     auto hallID = context.hallID;
-    auto roomID = context.roomID;
-    auto &hall = SlotsDataCenter::instance().getHall(hallID);
+    auto roomID = context.room.roomID;
+    auto &hall = SlotsDataCenter::instance().hallOperator;
     auto &preGame = context.user->gSt;
     auto &preGameResult = preGame.getGameResult(hallID, roomID);
     auto &gameInfo = context.gameInfo;
@@ -32,7 +32,7 @@ bool GameProcessor::process(GameContext &context) const {
                       << "], bet[" << gameInfo.bet << "]";
         return false;
     }
-    if (!hall.useRoom(context.uid, roomID))
+    if (!hall.useRoom(hallID, context.uid, context.room))
     {
         CLOG(WARNING) << "User:"<< context.user->uInfo.uid
                       << " use room " << roomID << "failed.";

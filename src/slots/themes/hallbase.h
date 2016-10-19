@@ -66,6 +66,7 @@ protected:
     void updateUserCurrentRoom(int32_t userID, int32_t hallID, int32_t roomID);
     void clearRoomUser(int32_t hallID, int32_t roomID);
     bool isRoomDead(const RoomInfo &room, int64_t now);
+    int32_t getRoomUser(int32_t hallID, int32_t roomID, int32_t userID);
 
     CRedisClient &_client;
 };
