@@ -352,27 +352,6 @@ void ResultFormatter::formatRoomList(const RoomInfos &rooms) {
     _writer.EndObject();
 }
 
-void ResultFormatter::formatRoomsInfo(const TSRooms &rooms) {
-    _writer.StartObject();
-    JSON_KEY(ResultStr::sRoomList);
-    _writer.StartArray();
-    for(auto &item: rooms) {
-        _writer.StartObject();
-        auto &room = *(item.second);
-        JSON_KEY(ResultStr::sID);
-        _writer.Int(room.roomID);
-        JSON_KEY(ResultStr::sRoomPrize);
-        _writer.Int64(room.totalPrize);
-        JSON_KEY(ResultStr::sStatus);
-        _writer.Int(room.status);
-        _writer.EndObject();
-    }
-    _writer.EndArray();
-    JSON_KEY(ResultStr::sStatus);
-    JSON_STRING_VALUE(ResultStr::sStatusOK);
-    _writer.EndObject();
-}
-
 void ResultFormatter::formatFriendList(const FriendsList &friends) {
     // JSON_KEY(ResultStr::friends);
     // _writer.StartArray();

@@ -7,7 +7,6 @@
 #include <slots/data/sqlqueue.h>
 #include <slots/data/cjqueue.h>
 #include <slots/data/giftsdata.h>
-#include <slots/themes/tshall.h>
 #include <slots/themes/hallbase.h>
 #include <slots/config/slotsconfig.h>
 #include <util/timeutil.h>
@@ -40,9 +39,6 @@ public:
           return false;
         }
         auto &tsConfig = slotsConfig.themeConfig.tsConfig;
-        ret = ret && hall.init(tsConfig.getMinHallPrizePool(),
-                               tsConfig.getMinRoomPrizePool(),
-                               tsConfig.getRoomReserveTime());
 	return ret && _gifts->init();
     }
 
@@ -96,10 +92,6 @@ public:
 	return _persisThread.getUnusedGameRecord();
     }
 
-    TSHall &getHall(int32_t hallID) {
-      return hall;
-    }
-
     /* User data*/
     SlotsUserDataPtr slotsUserData;
     CjQueuePtr cjQueue;
@@ -136,8 +128,6 @@ private:
     /* Data */
     PersistenceThread _persisThread;
 
-    /* Hall */
-    TSHall hall;
 };
 END_NAMESPACE
 #endif

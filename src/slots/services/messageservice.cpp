@@ -19,8 +19,6 @@ MessageService::~MessageService(){
 
 #define MSG_RECV_DAILY_REWARD 1
 #define MSG_ENTER_ROOM 2
-#define MSG_QUERY_ROOM_PRIZE 3
-#define MSG_QUERY_HALL_STATUS 4
 #define MSG_FINISH_TINY_GAME 5
 #define MSG_QUERY_ROOMS_INFO 6
 
@@ -39,8 +37,8 @@ bool MessageService::doJob(CPacket &packet, CResponse &resp) {
         }
         break;
     }
-    case MSG_QUERY_HALL_STATUS:{
-        ret = queryAllRoomInHall(packet, rf);
+    case MSG_ENTER_ROOM: {
+        ret = enterRoom(packet, rf);
         break;
     }
     case MSG_FINISH_TINY_GAME: {
@@ -67,8 +65,10 @@ bool MessageService::enterRoom(CPacket &packet, ResultFormatter &rf) {
     GET_INT32_PARAM_IN_PACKET(packet, slotconstants::sHallID, hallID);
     GET_INT32_PARAM_IN_PACKET(packet, slotconstants::sRoomID, roomID);
     GET_INT32_PARAM_IN_PACKET(packet, slotconstants::sUserID, userID);
-    auto &hall = _dataCenter.getHall(hallID);
-    if (!hall.useRoom(userID, roomID))
+    auto &hall = _dataCenter.hallOperator;
+    RoomInfo room;
+    room.userID = userID;
+    if (!hall.useRoom(hallID, userID, room))
     {
         CLOG(WARNING) << "User:"<< userID << " enter room " <<
             roomID << " in "<< hallID << "failed.";
@@ -76,24 +76,6 @@ bool MessageService::enterRoom(CPacket &packet, ResultFormatter &rf) {
         return false;
     }
     // format result
-    return true;
-}
-
-bool MessageService::queryRoomPrize(CPacket &packet, ResultFormatter &rf) {
-    GET_INT32_PARAM_IN_PACKET(packet, slotconstants::sHallID, hallID);
-    GET_INT32_PARAM_IN_PACKET(packet, slotconstants::sRoomID, roomID);
-    auto &hall = _dataCenter.getHall(hallID);
-    auto prize = hall.getRoomPrize(roomID);
-    // format result.
-    return true;
-}
-
-bool MessageService::queryAllRoomInHall(CPacket &packet, ResultFormatter &rf) {
-    GET_INT32_PARAM_IN_PACKET(packet, slotconstants::sHallID, hallID);
-    auto &hall = _dataCenter.getHall(hallID);
-    const auto &rooms = hall.getRooms();
-    // format result;
-    rf.formatRoomsInfo(rooms);
     return true;
 }
 
