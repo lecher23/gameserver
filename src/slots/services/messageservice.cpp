@@ -22,6 +22,7 @@ MessageService::~MessageService(){
 #define MSG_FINISH_TINY_GAME 5
 #define MSG_QUERY_ROOMS_INFO 6
 #define MSG_GET_CJ_REWARD 7
+#define MSG_QUERY_HALL_INFO 10
 
 bool MessageService::doJob(CPacket &packet, CResponse &resp) {
 
@@ -52,6 +53,10 @@ bool MessageService::doJob(CPacket &packet, CResponse &resp) {
     }
     case MSG_GET_CJ_REWARD:{
         ret = getAchievementReward(packet, rf);
+        break;
+    }
+    case MSG_QUERY_HALL_INFO:{
+        ret = getHallInfoInList(packet,rf);
         break;
     }
     }
@@ -168,6 +173,31 @@ bool MessageService::getAchievementReward(CPacket &packet, ResultFormatter &rf) 
     }
     return false;
 }
+
+bool MessageService::getHallInfoInList(CPacket &packet, ResultFormatter &rf) {
+    std::string hallListStr;
+    GET_PARAM(slotconstants::sHallList, hallListStr, true);
+    std::vector<std::string> hallList;
+    cgserver::StringUtil::Split(hallListStr, ',', hallList);
+    if (hallList.empty()) {
+        return false;
+    }
+
+    std::vector<std::string> halls(hallList.size());
+    auto &hall = SlotsDataCenter::instance().hallOperator;
+    int32_t curHallIdx = 0;
+    for(auto &hallID: hallList) {
+        if (!hall.getHallPrize(hallID, halls[curHallIdx])) {
+            CLOG(WARNING) << "Get room list failed. room id: " << hallID;
+            return false;
+        }
+        halls[curHallIdx];
+        ++curHallIdx;
+    }
+    rf.formatHallList(hallList, halls);
+    return true;
+}
+
 
 #undef GET_SLOT_USER
 

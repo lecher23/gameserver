@@ -20,6 +20,8 @@ class StringUtil
 
     static std::vector<std::string> Split(const std::string& text, const char* sepStr);
     static std::vector<std::string> Split(const char * text, const char* sepStr);
+    static void Split(
+            const std::string &str, const char sepStr, std::vector<std::string> &vec);
 
     static void ToUpperCase(char* str);
     static bool StrToInt8(const char* str, int8_t& value);

@@ -57,8 +57,8 @@ class HallBase{
     void updateRoomResource(int32_t hallID, const RoomInfo &room);
     int64_t incrHallPrize(int32_t hallID, int64_t val);
     int32_t incrHallGameCount(int32_t hallID, int32_t incr = 1);
-    int64_t getHallPrize(int32_t hallID);
-    int32_t getHallGameCount(int32_t hallID);
+    bool getHallPrize(std::string &hallID, std::string &out);
+    bool getHallGameCount(int32_t hallID, std::string &out);
 
 protected:
     bool getCurrentRoomID(int32_t userID, int32_t hallID, int32_t &roomID);

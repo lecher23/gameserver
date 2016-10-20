@@ -28,6 +28,7 @@ namespace slots{
     const std::string sAvatar = "a";
     const std::string sCountry = "c";
     const std::string sRoomList = "rl";
+    const std::string sHallList = "rl";
     const std::string sCjID = "a";
   }
 

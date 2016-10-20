@@ -126,8 +126,8 @@ void HallBase::updateRoomResource(int32_t hallID, const RoomInfo &room) {
 
 int64_t HallBase::incrHallPrize(int32_t hallID, int64_t val){
     auto hallIDStr = cgserver::StringUtil::toString(hallID);
-    double newVal;
-    auto ret = _client.Zincrby(SlotCacheStr::sHallPrize, val, hallIDStr, &newVal);
+    int64_t newVal;
+    auto ret = _client.Hincrby(SlotCacheStr::sHallPrize, hallIDStr, val, &newVal);
     if (ret != RC_SUCCESS) {
         CLOG(WARNING) << "Incr hall[" << hallIDStr << "] prize with val:"
                       << val << " falied:" << ret;
@@ -138,8 +138,8 @@ int64_t HallBase::incrHallPrize(int32_t hallID, int64_t val){
 
 int32_t HallBase::incrHallGameCount(int32_t hallID, int32_t incr) {
     auto hallIDStr = cgserver::StringUtil::toString(hallID);
-    double newVal;
-    auto ret = _client.Zincrby(SlotCacheStr::sHallGameCount, incr, hallIDStr, &newVal);
+    int64_t newVal;
+    auto ret = _client.Hincrby(SlotCacheStr::sHallGameCount, hallIDStr, incr, &newVal);
     if (ret != RC_SUCCESS) {
         CLOG(WARNING) << "Incr hall[" << hallIDStr << "] game count with val:"
                       << incr << " falied:" << ret;
@@ -148,26 +148,24 @@ int32_t HallBase::incrHallGameCount(int32_t hallID, int32_t incr) {
     return newVal;
 }
 
-int64_t HallBase::getHallPrize(int32_t hallID) {
-    auto hallIDStr = cgserver::StringUtil::toString(hallID);
-    double newVal;
-    auto ret = _client.Zscore(SlotCacheStr::sHallPrize, hallIDStr, &newVal);
+bool HallBase::getHallPrize(std::string &hallIDStr, std::string &prize) {
+    prize.clear();
+    auto ret = _client.Hget(SlotCacheStr::sHallPrize, hallIDStr, &prize);
     if (ret != RC_SUCCESS) {
         CLOG(WARNING) << "get hall[" << hallIDStr << "] prize failed:" << ret;
-        return 0;
+        return false;
     }
-    return newVal;
+    return true;
 }
 
-int32_t HallBase::getHallGameCount(int32_t hallID) {
+bool HallBase::getHallGameCount(int32_t hallID, std::string &count) {
     auto hallIDStr = cgserver::StringUtil::toString(hallID);
-    double newVal;
-    auto ret = _client.Zscore(SlotCacheStr::sHallGameCount, hallIDStr, &newVal);
+    auto ret = _client.Hget(SlotCacheStr::sHallGameCount, hallIDStr, &count);
     if (ret != RC_SUCCESS) {
         CLOG(WARNING) << "get hall[" << hallIDStr << "] game count failed:" << ret;
-        return 0;
+        return false;
     }
-    return newVal;
+    return true;
 }
 
 bool HallBase::getCurrentRoomID(int32_t userID, int32_t hallID, int32_t &roomID) {

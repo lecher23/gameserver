@@ -352,6 +352,31 @@ void ResultFormatter::formatRoomList(const RoomInfos &rooms) {
     _writer.EndObject();
 }
 
+void ResultFormatter::formatHallList(
+    const std::vector<std::string> &hallIDList, const std::vector<std::string> &hallPrizeList){
+    if (hallIDList.size() != hallPrizeList.size()) {
+        CLOG(WARNING) << "Hall id list not euqal to hall prize list.";
+        return;
+    }
+    _writer.StartObject();
+    JSON_KEY(ResultStr::sRoomList);
+    int index = 0;
+    _writer.StartArray();
+    for(auto &hallID: hallIDList) {
+        _writer.StartObject();
+        JSON_KEY(ResultStr::sID);
+        JSON_STRING_VALUE(hallID);
+        JSON_KEY(ResultStr::sRoomPrize);
+        JSON_STRING_VALUE(hallPrizeList[index]);
+        ++index;
+        _writer.EndObject();
+    }
+    _writer.EndArray();
+    JSON_KEY(ResultStr::sStatus);
+    JSON_STRING_VALUE(ResultStr::sStatusOK);
+    _writer.EndObject();
+}
+
 void ResultFormatter::formatFriendList(const FriendsList &friends) {
     // JSON_KEY(ResultStr::friends);
     // _writer.StartArray();

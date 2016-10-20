@@ -151,6 +151,59 @@ public:
         ast_true(!lr.recved);
     }
 
+    void test_getHallInfoInList_hall_not_exist(){
+        CPacket packet;
+        packet.addParam(slotconstants::sType, "10");
+        packet.addParam(slotconstants::sHallList, "76, 98");
+        auto &client = RedisClientFactory::getClient();
+        ast_eq(0, client.Hset("H:prz", "76", "1000"));
+
+        MessageService ms;
+        SBuf bf;
+        ResultFormatter rf(bf);
+        int64_t out;
+        ast_true(ms.getHallInfoInList(packet, rf));
+        ast_eq("{\"rl\":[{\"id\":\"76\",\"pz\":\"1000\"},{\"id\":\" 98\",\"pz\":\"\"}],\"st\":\"OK\"}",
+               bf.GetString());
+        ast_eq(0, client.Hdel("H:prz", "76"));
+    }
+
+    void test_getHallInfoInList_with_abnormal_list(){
+        CPacket packet;
+        packet.addParam(slotconstants::sType, "10");
+        packet.addParam(slotconstants::sHallList, "76, 98, ,,");
+        auto &client = RedisClientFactory::getClient();
+        ast_eq(0, client.Hset("H:prz", "76", "1000"));
+        ast_eq(0, client.Hset("H:prz", "98", "399"));
+
+        MessageService ms;
+        SBuf bf;
+        ResultFormatter rf(bf);
+        int64_t out;
+        ast_true(ms.getHallInfoInList(packet, rf));
+        ast_eq("{\"rl\":[{\"id\":\"76\",\"pz\":\"1000\"},{\"id\":\" 98\",\"pz\":\"\"}],\"st\":\"OK\"}",
+               bf.GetString());
+        ast_eq(0, client.Hdel("H:prz", "76"));
+        ast_eq(0, client.Hdel("H:prz", "98"));
+    }
+    void test_getHallInfoInList(){
+        CPacket packet;
+        packet.addParam(slotconstants::sType, "10");
+        packet.addParam(slotconstants::sHallList, "76,98");
+        auto &client = RedisClientFactory::getClient();
+        ast_eq(0, client.Hset("H:prz", "76", "1000"));
+        ast_eq(0, client.Hset("H:prz", "98", "399"));
+
+        MessageService ms;
+        SBuf bf;
+        ResultFormatter rf(bf);
+        int64_t out;
+        ast_true(ms.getHallInfoInList(packet, rf));
+        ast_eq("{\"rl\":[{\"id\":\"76\",\"pz\":\"1000\"},{\"id\":\"98\",\"pz\":\"399\"}],\"st\":\"OK\"}",
+               bf.GetString());
+        ast_eq(0, client.Hdel("H:prz", "76"));
+        ast_eq(0, client.Hdel("H:prz", "98"));
+    }
 private:
     bool _inited;
 };

@@ -21,6 +21,7 @@ private:
     bool finishTinyGame(CPacket &packet, ResultFormatter &rf);
     bool getRoomInfoInList(CPacket &packet, ResultFormatter &rf);
     bool getAchievementReward(CPacket &packet, ResultFormatter &rf);
+    bool getHallInfoInList(CPacket &packet, ResultFormatter &rf);
 
     SlotsDataCenter &_dataCenter;
 };

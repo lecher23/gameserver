@@ -102,6 +102,8 @@ public:
       (const LeaderBoardRank &rank, int64_t uid, uint32_t start, uint32_t end);
   void formatUserAchievement(const Achievements &cj);
   void formatRoomList(const RoomInfos &rooms);
+  void formatHallList(const std::vector<std::string> &hallIDList,
+                      const std::vector<std::string> &hallPrizeList);
 
   void formatStatus(bool bOk);
   void formatMailsInfo(const UserMails &uMails);

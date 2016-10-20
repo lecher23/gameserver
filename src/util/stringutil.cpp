@@ -44,6 +44,24 @@ std::vector<std::string> StringUtil::Split(const std::string& text, const char* 
 	return StringUtil::Split(text.c_str(),sepStr);
 }
 
+void StringUtil::Split(
+    const std::string &str, const char sep, std::vector<std::string> &vec)
+{
+    size_t n = 0, old = 0;
+    while (n != std::string::npos)
+    {
+        n = str.find(sep,n);
+        if (n != std::string::npos)
+        {
+            if (n != old) 
+                vec.push_back(str.substr(old, n-old));
+            n += 1;
+            old = n;
+        }
+    }
+    vec.push_back(str.substr(old, str.length() - old));
+}
+
 std::vector<std::string> StringUtil::Split(const char * text, const char* sepStr)
 {
     std::vector<std::string> vec;
