@@ -127,6 +127,30 @@ public:
                bf.GetString());
     }
 
+    void test_getLoginReward(){
+        CPacket packet;
+        packet.addParam(slotconstants::sType, "1");
+        packet.addParam(slotconstants::sUserID, "12");
+        SlotsUserData sud;
+        LoginReward lr;
+        lr.recved = false;
+        lr.runnerReward = 300;
+        lr.dayReward = 400;
+        lr.vipExtra = 100;
+        sud.setDailyReward("12", lr);
+        SlotsUserPtr user(new SlotsUser);
+        user->uRes.fortune = 80;
+        CommonTools::add_slots_user("12", user);
+
+        MessageService ms;
+        SBuf bf;
+        ResultFormatter rf(bf);
+        int64_t out;
+        ast_true(ms.getLoginReward(packet, out));
+        ast_eq(880, out);
+        ast_true(!lr.recved);
+    }
+
 private:
     bool _inited;
 };

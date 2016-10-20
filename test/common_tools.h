@@ -91,8 +91,6 @@ public:
         auto &sdc = slots::SlotsDataCenter::instance();
         sdc.slotsUserData.reset(new SlotsUserData);
         sdc.cjQueue.reset(new CjQueue);
-        // hall pool, room pool, reserve time
-        sdc.getHall(1).init(10000, 5000, 1);
     }
 
     static void add_slots_user(const std::string &userID, SlotsUserPtr &user) {

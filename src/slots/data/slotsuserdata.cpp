@@ -57,7 +57,6 @@ void SlotsUserData::set(const std::string &uid, SlotsUserPtr &in) {
 
 void SlotsUserData::save2MySQL(uint64_t factor){
     MUTEX_GUARD(_lock);
-    CLOG(INFO) << "dump user info to db begin.";
     SlotUserSaver saver;
     auto &pool = cgserver::MysqlConnPool::getInstance();
     for (auto itr = _data.begin(); itr != _data.end(); ++itr) {
@@ -66,7 +65,6 @@ void SlotsUserData::save2MySQL(uint64_t factor){
             CLOG(WARNING) << "save user" << itr->second->uInfo.uid << " info falied.";
         }
     }
-    CLOG(INFO) << "dump user info to db end.";
 }
 
 #define GENERATE_LOGIN_KEY(key, uid) \

@@ -31,10 +31,11 @@ namespace slots{
     const std::string sCjID = "a";
   }
 
-#define GET_INT32_PARAM_IN_PACKET(pack, key, dest)      \
-    int32_t dest;                                       \
-    if(!pack.getParamValue(key, dest)) {                \
-        return false;                                   \
+#define GET_INT32_PARAM_IN_PACKET(pack, key, dest)              \
+    int32_t dest;                                               \
+    if(!pack.getParamValue(key, dest)) {                        \
+        CLOG(WARNING) << "Invalid value for key:"<< key;        \
+        return false;                                           \
     }
 
 
