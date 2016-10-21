@@ -78,6 +78,7 @@ namespace cgserver{
         const std::string sLoginCfg = "login_cfg";
         const std::string sCjCfg = "achievement_cfg";
         const std::string sVipCfg = "vip_cfg";
+        const std::string sOnlineCfg = "online_cfg";
 
 	config_t *tmp = parseConfigFile(configFilePath.c_str());
 	// only parse config success can change _cfg
@@ -125,6 +126,7 @@ namespace cgserver{
         GET_REQUIRED_STRING_VALUE(sGrpSlot, sLoginCfg, login_cfg_path);
         GET_REQUIRED_STRING_VALUE(sGrpSlot, sCjCfg, cj_cfg_path);
         GET_REQUIRED_STRING_VALUE(sGrpSlot, sVipCfg, vip_cfg_path);
+        GET_REQUIRED_STRING_VALUE(sGrpSlot, sOnlineCfg, online_cfg_path);
 
         return true;
     }

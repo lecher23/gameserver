@@ -167,8 +167,7 @@ int32_t SlotsUserData::incrOnlineTime(const std::string &userID, int32_t incrVal
 }
 
 bool SlotsUserData::getOnlineInfo(const std::string &userID, OnlineInfo &onlineInfo) {
-    static const std::vector<std::string> fields = {
-        SlotCacheStr::sOLTime, SlotCacheStr::sOLRecv,
+    static const std::vector<std::string> fields = {SlotCacheStr::sOLRecv,
         SlotCacheStr::sOLLevel, SlotCacheStr::sOLReward};
     std::vector<std::string> result;
     auto ret =
@@ -177,13 +176,11 @@ bool SlotsUserData::getOnlineInfo(const std::string &userID, OnlineInfo &onlineI
         CLOG(INFO) << "Invalid result for online info with userID:" << userID;
         return false;
     }
-    onlineInfo.onlineTime =
-        cgserver::StringUtil::StrToInt32WithDefault(result[0].data(), 0);
-    onlineInfo.recved = (result[1] == SlotCacheStr::sLRecvTrue); // yes|no
+    onlineInfo.recved = (result[0] != SlotCacheStr::sLRecvFalse);
     onlineInfo.rewardLevel =
+        cgserver::StringUtil::StrToInt32WithDefault(result[1].data(), 0);
+    onlineInfo.rewardValue =
         cgserver::StringUtil::StrToInt32WithDefault(result[2].data(), 0);
-    onlineInfo.rewardID =
-        cgserver::StringUtil::StrToInt32WithDefault(result[3].data(), 0);
     return true;
 }
 
@@ -195,7 +192,7 @@ bool SlotsUserData::setOnlineInfo(const std::string &userID, OnlineInfo &onlineI
     vals.push_back(
         onlineInfo.recved ? SlotCacheStr::sLRecvTrue: SlotCacheStr::sLRecvFalse);
     vals.push_back(cgserver::StringUtil::toString(onlineInfo.rewardLevel));
-    vals.push_back(cgserver::StringUtil::toString(onlineInfo.rewardID));
+    vals.push_back(cgserver::StringUtil::toString(onlineInfo.rewardValue));
     if (_redisClient.Hmset(key, fields, vals) != RC_SUCCESS) {
         CLOG(WARNING) << "Set online info for use:" << userID << " failed.";
         return false;

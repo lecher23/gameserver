@@ -22,10 +22,9 @@ namespace SlotCacheStr{
 };
 
 struct OnlineInfo{
-    int32_t onlineTime{0};
     int32_t rewardLevel{0};
     bool recved{true};
-    int32_t rewardID{0};
+    int64_t rewardValue{0};
 };
 
 class SlotsUserData: public PersistenceBase{

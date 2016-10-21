@@ -43,6 +43,7 @@ namespace cgserver{
         std::string getLoginConfigPath() {return login_cfg_path;}
         std::string getAchievementConfigPath() {return cj_cfg_path;}
         std::string getVipConfigPath() {return vip_cfg_path;}
+        std::string getOnlineConfigPath() {return online_cfg_path;}
 
     private:
 	Config();
@@ -81,6 +82,7 @@ namespace cgserver{
         std::string login_cfg_path;
         std::string cj_cfg_path;
         std::string vip_cfg_path;
+        std::string online_cfg_path;
     };
 
 }

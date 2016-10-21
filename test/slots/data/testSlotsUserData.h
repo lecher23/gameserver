@@ -61,9 +61,8 @@ public:
     void test_operate_online_info(){
         OnlineInfo oInfo;
         oInfo.recved = false;
-        oInfo.rewardID = 12;
+        oInfo.rewardValue = 12;
         oInfo.rewardLevel = 3;
-        oInfo.onlineTime = 100;
 
         SlotsUserData sud;
         ast_true(sud.setOnlineInfo("23", oInfo));
@@ -72,8 +71,7 @@ public:
 
         OnlineInfo oInfo1;
         ast_true(sud.getOnlineInfo("23", oInfo1));
-        ast_eq(99, oInfo1.onlineTime);
-        ast_eq(12, oInfo1.rewardID);
+        ast_eq(12, oInfo1.rewardValue);
         ast_eq(3, oInfo1.rewardLevel);
         ast_true(!oInfo1.recved);
 

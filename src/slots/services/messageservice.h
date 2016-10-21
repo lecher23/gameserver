@@ -22,6 +22,7 @@ private:
     bool getRoomInfoInList(CPacket &packet, ResultFormatter &rf);
     bool getAchievementReward(CPacket &packet, ResultFormatter &rf);
     bool getHallInfoInList(CPacket &packet, ResultFormatter &rf);
+    bool reportOnlineTime(CPacket &packet, ResultFormatter &rf);
 
     SlotsDataCenter &_dataCenter;
 };

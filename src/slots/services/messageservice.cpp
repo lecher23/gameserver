@@ -200,6 +200,41 @@ bool MessageService::getHallInfoInList(CPacket &packet, ResultFormatter &rf) {
     return true;
 }
 
+bool MessageService::reportOnlineTime(CPacket &packet, ResultFormatter &rf) {
+    GET_INT32_PARAM_IN_PACKET(packet, slotconstants::sOnlineTime, onlineTime);
+    std::string uid;
+    GET_PARAM(slotconstants::sUserID, uid, true);
+    auto &uData = *_dataCenter.slotsUserData;
+
+    OnlineInfo oInfo;
+    if (!uData.getOnlineInfo(uid, oInfo)) {
+        return false;
+    }
+    if (!oInfo.recved) {
+        // format reward info
+        return true;
+    }
+    auto curTimeSum = _dataCenter.slotsUserData->incrOnlineTime(uid, onlineTime);
+
+    int32_t extTimeNeed = 0;
+    int64_t reward = 0;
+    auto nextLevel =
+        SlotsConfig::getInstance().onlineConfig.nextLevel(
+            oInfo.rewardLevel, curTimeSum, extTimeNeed, reward);
+    if (nextLevel == oInfo.rewardLevel) {
+        // format reward info
+        return true;
+    }
+    oInfo.recved = (reward == 0);
+    oInfo.rewardLevel = nextLevel;
+    oInfo.rewardValue = reward;
+    if (!uData.setOnlineInfo(uid, oInfo)){
+        return false;
+    }
+    // format reward info
+    return true;
+}
+
 #undef GET_SLOT_USER
 
 END_NAMESPACE

@@ -13,6 +13,7 @@
 #include <slots/config/loginsetting.h>
 #include <slots/config/cjconfig.h>
 #include <slots/config/vipconfig.h>
+#include <slots/config/onlineconfig.h>
 
 BEGIN_NAMESPACE(slots)
 
@@ -33,6 +34,7 @@ class SlotsConfig{
     VipConfig vipSetting;
     LevelConfig levelConfig;
     ThemeConfig themeConfig;
+    OnlineConfig onlineConfig;
 
 private:
     SlotsConfig() {}

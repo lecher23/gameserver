@@ -27,6 +27,7 @@ bool SlotsConfig::init(){
     GET_CONFIG_FROM_JSON_FILE(cfg.getLoginConfigPath(), loginCfg);
     GET_CONFIG_FROM_JSON_FILE(cfg.getLevelConfigPath(), levelConfig);
     GET_CONFIG_FROM_JSON_FILE(cfg.getVipConfigPath(), vipSetting);
+    GET_CONFIG_FROM_JSON_FILE(cfg.getOnlineConfigPath(), onlineConfig);
 
     return true;
 }
