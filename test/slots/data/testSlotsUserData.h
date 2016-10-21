@@ -29,9 +29,11 @@ public:
     }
 
     virtual void tearDown() {
+        auto &client = RedisClientFactory::getClient();
+        ast_eq(RC_SUCCESS, client.Del("L23"));
     }
 
-    void test_main( void )
+    void test_operate_daily_reward( void )
     {
         LoginReward reward;
         reward.runnerIdx = 12;
@@ -40,23 +42,44 @@ public:
         reward.recved = false;
         reward.dayReward = 3000;
         SlotsUserData sud;
-        sud.setDailyReward("123", reward);
+        sud.setDailyReward("23", reward);
 
         LoginReward result;
-        ast_true(sud.getDailyReward("123", result));
+        ast_true(sud.getDailyReward("23", result));
         ast_eq(12, result.runnerIdx);
         ast_eq(1000, result.runnerReward);
         ast_eq(2000, result.vipExtra);
         ast_eq(3000, result.dayReward);
         ast_true(!result.recved);
 
-        sud.updateDailyReward("123", true);
-        ast_true(sud.getDailyReward("123", result));
+        sud.updateDailyReward("23", true);
+        ast_true(sud.getDailyReward("23", result));
         ast_eq(12, result.runnerIdx);
         ast_true(result.recved);
+    }
 
-        // anoter test
-        ast_true(sud.getDailyReward("999", result));
+    void test_operate_online_info(){
+        OnlineInfo oInfo;
+        oInfo.recved = false;
+        oInfo.rewardID = 12;
+        oInfo.rewardLevel = 3;
+        oInfo.onlineTime = 100;
+
+        SlotsUserData sud;
+        ast_true(sud.setOnlineInfo("23", oInfo));
+
+        ast_eq(99, sud.incrOnlineTime("23", 99));
+
+        OnlineInfo oInfo1;
+        ast_true(sud.getOnlineInfo("23", oInfo1));
+        ast_eq(99, oInfo1.onlineTime);
+        ast_eq(12, oInfo1.rewardID);
+        ast_eq(3, oInfo1.rewardLevel);
+        ast_true(!oInfo1.recved);
+
+        sud.recvGift("23", true);
+        ast_true(sud.getOnlineInfo("23", oInfo1));
+        ast_true(oInfo1.recved);
     }
 private:
     bool _inited;

@@ -15,6 +15,17 @@ namespace SlotCacheStr{
   const std::string sLDayKey = "dRwd";
   const std::string sLRecvTrue = "1";
   const std::string sLRecvFalse = "0";
+  const std::string sOLTime = "ol:time";
+  const std::string sOLLevel = "ol:level";
+  const std::string sOLRecv = "ol:recv";
+  const std::string sOLReward = "ol:rwd";
+};
+
+struct OnlineInfo{
+    int32_t onlineTime{0};
+    int32_t rewardLevel{0};
+    bool recved{true};
+    int32_t rewardID{0};
 };
 
 class SlotsUserData: public PersistenceBase{
@@ -31,6 +42,11 @@ class SlotsUserData: public PersistenceBase{
     void setDailyReward(const std::string &userID, const LoginReward &in);
     void updateDailyReward(const std::string &userID, bool recved);
     bool getDailyReward(const std::string &userID, LoginReward &out);
+
+    int32_t incrOnlineTime(const std::string &userID, int32_t incrVal);
+    bool getOnlineInfo(const std::string &userID, OnlineInfo &onlineInfo);
+    bool setOnlineInfo(const std::string &userID, OnlineInfo &onlineINfo);
+    void recvGift(const std::string &userID, bool recved);
 
 private:
     std::map<std::string, SlotsUserPtr> _data;

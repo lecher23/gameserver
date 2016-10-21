@@ -152,8 +152,64 @@ bool SlotsUserData::getDailyReward(
     PARSE_CACHE_VAL_TO_INT32(SlotCacheStr::sLDayKey, reward.dayReward);
     return true;
 }
-#undef PARSE_CACHE_VAL_TO_INT32
 
+int32_t SlotsUserData::incrOnlineTime(const std::string &userID, int32_t incrVal) {
+    int64_t curVal = 0;
+    auto ret = _redisClient.Hincrby(
+        SlotCacheStr::sDailyKeyPrefix + userID,
+        SlotCacheStr::sOLTime, incrVal, &curVal);
+    if (ret != RC_SUCCESS) {
+        CLOG(INFO) << "Incr online time for user:" << userID << " failed. IncrVal:"
+                   << incrVal <<", code:" << ret;
+        curVal = 0;
+    }
+    return curVal;
+}
+
+bool SlotsUserData::getOnlineInfo(const std::string &userID, OnlineInfo &onlineInfo) {
+    static const std::vector<std::string> fields = {
+        SlotCacheStr::sOLTime, SlotCacheStr::sOLRecv,
+        SlotCacheStr::sOLLevel, SlotCacheStr::sOLReward};
+    std::vector<std::string> result;
+    auto ret =
+        _redisClient.Hmget(SlotCacheStr::sDailyKeyPrefix + userID, fields, &result);
+    if (result.size() != fields.size() ) {
+        CLOG(INFO) << "Invalid result for online info with userID:" << userID;
+        return false;
+    }
+    onlineInfo.onlineTime =
+        cgserver::StringUtil::StrToInt32WithDefault(result[0].data(), 0);
+    onlineInfo.recved = (result[1] == SlotCacheStr::sLRecvTrue); // yes|no
+    onlineInfo.rewardLevel =
+        cgserver::StringUtil::StrToInt32WithDefault(result[2].data(), 0);
+    onlineInfo.rewardID =
+        cgserver::StringUtil::StrToInt32WithDefault(result[3].data(), 0);
+    return true;
+}
+
+bool SlotsUserData::setOnlineInfo(const std::string &userID, OnlineInfo &onlineInfo) {
+    GENERATE_LOGIN_KEY(key, userID);
+    static const std::vector<std::string> fields = {
+        SlotCacheStr::sOLRecv,SlotCacheStr::sOLLevel, SlotCacheStr::sOLReward};
+    std::vector<std::string> vals;
+    vals.push_back(
+        onlineInfo.recved ? SlotCacheStr::sLRecvTrue: SlotCacheStr::sLRecvFalse);
+    vals.push_back(cgserver::StringUtil::toString(onlineInfo.rewardLevel));
+    vals.push_back(cgserver::StringUtil::toString(onlineInfo.rewardID));
+    if (_redisClient.Hmset(key, fields, vals) != RC_SUCCESS) {
+        CLOG(WARNING) << "Set online info for use:" << userID << " failed.";
+        return false;
+    }
+    return true;
+}
+
+void SlotsUserData::recvGift(const std::string &userID, bool recved) {
+    GENERATE_LOGIN_KEY(key, userID);
+    REDIS_EASY_HSET(key, SlotCacheStr::sOLRecv,
+                    recved ? SlotCacheStr::sLRecvTrue: SlotCacheStr::sLRecvFalse);
+}
+
+#undef PARSE_CACHE_VAL_TO_INT32
 #undef GENERATE_LOGIN_KEY
 #undef REDIS_EASY_HSET
 #undef REDIS_EASY_EXPIREAT

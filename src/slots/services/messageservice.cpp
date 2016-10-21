@@ -22,6 +22,8 @@ MessageService::~MessageService(){
 #define MSG_FINISH_TINY_GAME 5
 #define MSG_QUERY_ROOMS_INFO 6
 #define MSG_GET_CJ_REWARD 7
+#define MSG_REPORT_ONLINE_TIME 8
+#define MSG_RECV_ONLINE_REWARD 9
 #define MSG_QUERY_HALL_INFO 10
 
 bool MessageService::doJob(CPacket &packet, CResponse &resp) {
@@ -197,7 +199,6 @@ bool MessageService::getHallInfoInList(CPacket &packet, ResultFormatter &rf) {
     rf.formatHallList(hallList, halls);
     return true;
 }
-
 
 #undef GET_SLOT_USER
 
