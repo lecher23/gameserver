@@ -1,6 +1,7 @@
 #include "cjconfig.h"
 
 BEGIN_NAMESPACE(slots)
+using namespace JsonConfigStr;
 
 CjConfig::CjConfig(){
 }
@@ -39,7 +40,6 @@ void CjConfig::getCjID(
 }
 
 bool CjConfig::parseJsonDoc(rapidjson::Document &doc) {
-    static const std::string sID = "ID";
     static const std::string sCjType = "TaTy";
     static const std::string sCjTarget = "TaC1";
     static const std::string sCjReward = "ReTy";

@@ -22,6 +22,13 @@ BEGIN_NAMESPACE(slots)
     return false;                                       \
   }
 
+namespace JsonConfigStr{
+  const std::string sID = "ID";
+  const std::string sWeight = "Weight";
+  const std::string sReward = "Reward";
+  const std::string sRewardType = "RewardType";
+};
+
 class JsonConfigBase{
 public:
   JsonConfigBase() {}

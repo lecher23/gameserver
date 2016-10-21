@@ -1,6 +1,7 @@
 #include "loginsetting.h"
 
 BEGIN_NAMESPACE(slots)
+using namespace JsonConfigStr;
 
 LoginSetting::LoginSetting():_random(cgserver::Random::getInstance()){
 }
@@ -35,10 +36,7 @@ const RunnerConfigItem &LoginSetting::getRunnerBonus() {
 bool LoginSetting::parseJsonDoc(rapidjson::Document &doc) {
     static const std::string sDayBonus = "DaysBonus";
     static const std::string sRunnerBonus = "RunnerBonus";
-    static const std::string sReward = "Reward";
     static const std::string sDate = "Date";
-    static const std::string sWeight = "Weight";
-    static const std::string sID = "ID";
 
     rapidjson::Value::MemberIterator itr;
     GET_MEMBER_IN_DOC(doc, itr, sDayBonus, dayBounds);

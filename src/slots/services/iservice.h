@@ -30,6 +30,7 @@ namespace slots{
     const std::string sRoomList = "rl";
     const std::string sHallList = "rl";
     const std::string sCjID = "a";
+    const std::string sOnlineTime = "ot";
   }
 
 #define GET_INT32_PARAM_IN_PACKET(pack, key, dest)              \
