@@ -10,34 +10,35 @@ OnlineConfig::OnlineConfig(){
 OnlineConfig::~OnlineConfig(){
 }
 
-#define NEXT_LEVEL_HELPER(curLevel)             \
-    const auto &curItem = _cfg[curLevel];       \
-    oTimeNeed = curItem.timeReq - curTime;      \
-    if (oTimeNeed > 0) {                        \
-        oReward = 0;                            \
-        return curLevel;                        \
-    }                                           \
-    if (curItem.type == EORT_RUNNER) {          \
-        oReward = runnerIt();                   \
-    } else if (curItem.type == EORT_NORMAL) {   \
-        oReward = curItem.value;                \
-    }
-
 // return: next level
 int32_t OnlineConfig::nextLevel(
     int32_t curLevel, int32_t curTime, int32_t &oTimeNeed, int64_t &oReward)
 {
-    if (curLevel < _cfg.size()) {
-        NEXT_LEVEL_HELPER(curLevel);
-        return curLevel + 1;
+    oReward = 0;
+    if (curLevel >= _cfg.size()) {
+        oTimeNeed = MAX_ONLINE_TIME;
+        return curLevel;
     }
-    if (_enableLoop) {
+    const auto &curItem = _cfg[curLevel];
+    oTimeNeed = curItem.timeReq - curTime;
+    if (oTimeNeed > 0) {
+        return curLevel;
+    }
+    if (curItem.type == EORT_RUNNER) {
+        oReward = runnerIt();
+    } else if (curItem.type == EORT_NORMAL) {
+        oReward = curItem.value;
+    }
+    if (++curLevel == _cfg.size()){
+        if (!_enableLoop){
+            oTimeNeed = MAX_ONLINE_TIME;
+            return curLevel;
+        }
         curLevel = 0;
-        NEXT_LEVEL_HELPER(curLevel);
     }
+    oTimeNeed = _cfg[curLevel].timeReq;
     return curLevel;
 }
-#undef NEXT_LEVEL_HELPER
 
 bool OnlineConfig::parseJsonDoc(rapidjson::Document &doc) {
     static const std::string sOnlineReward = "OnlineReward";

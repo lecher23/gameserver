@@ -1,11 +1,11 @@
 {
   "EnableLoop": true,
   "OnlineReward":[
-    {"ID":1,"Online":0,"RewardType":1,"Reward":500},
-    {"ID":2,"Online":1200,"RewardType":1,"Reward":500},
-    {"ID":3,"Online":3600,"RewardType":1,"Reward":800},
-    {"ID":4,"Online":3600,"RewardType":1,"Reward":1000},
-    {"ID":5,"Online":3600,"RewardType":2,"Reward":0}
+    {"ID":0,"Online":0,"RewardType":1,"Reward":500},
+    {"ID":1,"Online":1200,"RewardType":1,"Reward":500},
+    {"ID":2,"Online":3600,"RewardType":1,"Reward":800},
+    {"ID":3,"Online":3600,"RewardType":1,"Reward":1000},
+    {"ID":4,"Online":3600,"RewardType":2,"Reward":0}
   ],
   "OnlineWheel":[
     {"ID":1,"Reward":10000,"Weight":1},

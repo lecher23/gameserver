@@ -42,7 +42,7 @@ public:
         int32_t timeNeed = 0;
         int64_t reward = 0;
         ast_eq(1, oc.nextLevel(0, 0, timeNeed, reward));
-        ast_eq(0, timeNeed);
+        ast_eq(1200, timeNeed);
         ast_eq(500, reward);
     }
 
@@ -52,7 +52,7 @@ public:
         int32_t timeNeed = 0;
         int64_t reward = 0;
         ast_eq(2, oc.nextLevel(1, 1200, timeNeed, reward));
-        ast_eq(0, timeNeed);
+        ast_eq(3600, timeNeed);
         ast_eq(500, reward);
     }
 
@@ -71,8 +71,10 @@ public:
         ast_true(oc.initFromJsonFile("config_files/OnlineConfigTest.json"));
         int32_t timeNeed = 0;
         int64_t reward = 0;
-        ast_eq(5, oc.nextLevel(4, 3700, timeNeed, reward));
-        ast_eq(-100, timeNeed);
+        oc._enableLoop = false;
+        ast_eq(4, oc.nextLevel(3, 3700, timeNeed, reward));
+        ast_eq(3600, timeNeed);
+        ast_eq(1000, reward);
     }
 
     void test_next_level_end_no_loop() {
@@ -81,7 +83,8 @@ public:
         oc._enableLoop = false;
         int32_t timeNeed = 0;
         int64_t reward = 0;
-        ast_eq(5, oc.nextLevel(5, 3700, timeNeed, reward));
+        ast_eq(5, oc.nextLevel(4, 3700, timeNeed, reward));
+        ast_eq(86400, timeNeed);
     }
 
     void test_next_level_end_loop() {
@@ -90,9 +93,8 @@ public:
         oc._enableLoop = true;
         int32_t timeNeed = 0;
         int64_t reward = 0;
-        ast_eq(0, oc.nextLevel(5, 10, timeNeed, reward));
-        ast_eq(-10, timeNeed);
-        ast_eq(500, reward);
+        ast_eq(0, oc.nextLevel(4, 3700, timeNeed, reward));
+        ast_eq(0, timeNeed);
     }
 
 private:
