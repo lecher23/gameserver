@@ -61,6 +61,10 @@ bool MessageService::doJob(CPacket &packet, CResponse &resp) {
         ret = getHallInfoInList(packet,rf);
         break;
     }
+    case MSG_REPORT_ONLINE_TIME:{
+        ret = reportOnlineTime(packet, rf);
+        break;
+    }
     }
     if (!ret) {
         rf.formatSimpleResult(false, "");
@@ -205,24 +209,25 @@ bool MessageService::reportOnlineTime(CPacket &packet, ResultFormatter &rf) {
     std::string uid;
     GET_PARAM(slotconstants::sUserID, uid, true);
     auto &uData = *_dataCenter.slotsUserData;
+    auto &onlineConfig = SlotsConfig::getInstance().onlineConfig;
 
     OnlineInfo oInfo;
-    if (!uData.getOnlineInfo(uid, oInfo)) {
+    if (!uData.getOnlineInfo(uid, oInfo, onlineConfig.getDefaultReward())) {
         return false;
     }
+    auto curLevel = oInfo.rewardLevel;
     if (!oInfo.recved) {
-        // format reward info
+        rf.formatOnlineInfo(oInfo, curLevel, MAX_ONLINE_TIME);
         return true;
     }
     auto curTimeSum = _dataCenter.slotsUserData->incrOnlineTime(uid, onlineTime);
 
     int32_t extTimeNeed = 0;
     int64_t reward = 0;
-    auto nextLevel =
-        SlotsConfig::getInstance().onlineConfig.nextLevel(
-            oInfo.rewardLevel, curTimeSum, extTimeNeed, reward);
-    if (nextLevel == oInfo.rewardLevel) {
-        // format reward info
+    auto nextLevel = onlineConfig.nextLevel(
+        curLevel, curTimeSum, extTimeNeed, reward);
+    if (nextLevel == curLevel) {
+        rf.formatOnlineInfo(oInfo, curLevel, extTimeNeed);
         return true;
     }
     oInfo.recved = (reward == 0);
@@ -231,7 +236,7 @@ bool MessageService::reportOnlineTime(CPacket &packet, ResultFormatter &rf) {
     if (!uData.setOnlineInfo(uid, oInfo)){
         return false;
     }
-    // format reward info
+    rf.formatOnlineInfo(oInfo, curLevel, extTimeNeed);
     return true;
 }
 

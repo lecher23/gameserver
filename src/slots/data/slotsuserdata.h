@@ -22,7 +22,7 @@ namespace SlotCacheStr{
 };
 
 struct OnlineInfo{
-    int32_t rewardLevel{0};
+    int32_t rewardLevel{0};// target reward level
     bool recved{true};
     int64_t rewardValue{0};
 };
@@ -43,9 +43,10 @@ class SlotsUserData: public PersistenceBase{
     bool getDailyReward(const std::string &userID, LoginReward &out);
 
     int32_t incrOnlineTime(const std::string &userID, int32_t incrVal);
-    bool getOnlineInfo(const std::string &userID, OnlineInfo &onlineInfo);
+    bool getOnlineInfo(
+        const std::string &userID, OnlineInfo &onlineInfo, int64_t defaultReward);
     bool setOnlineInfo(const std::string &userID, OnlineInfo &onlineINfo);
-    void recvGift(const std::string &userID, bool recved);
+    void recvOnlineGift(const std::string &userID, bool recved);
 
 private:
     std::map<std::string, SlotsUserPtr> _data;

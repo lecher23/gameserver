@@ -40,6 +40,13 @@ int32_t OnlineConfig::nextLevel(
     return curLevel;
 }
 
+int64_t OnlineConfig::getDefaultReward() {
+    if (_cfg.empty()) {
+        return 0;
+    }
+    return _cfg[0].value;
+}
+
 bool OnlineConfig::parseJsonDoc(rapidjson::Document &doc) {
     static const std::string sOnlineReward = "OnlineReward";
     static const std::string sOnlineWheel = "OnlineWheel";

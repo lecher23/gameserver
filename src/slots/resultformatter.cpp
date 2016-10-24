@@ -377,6 +377,24 @@ void ResultFormatter::formatHallList(
     _writer.EndObject();
 }
 
+void ResultFormatter::formatOnlineInfo(
+    const OnlineInfo &oInfo, int32_t curLevel, int32_t timeNeed)
+{
+    _writer.StartObject();
+    formatStatus(true);
+    JSON_KEY(ResultStr::sCurLevel);
+    _writer.Int(curLevel);
+    JSON_KEY(ResultStr::sTargetLevel);
+    _writer.Int(oInfo.rewardLevel);
+    JSON_KEY(ResultStr::sRecvReward);
+    _writer.Bool(oInfo.recved);
+    JSON_KEY(ResultStr::sValue);
+    _writer.Int64(oInfo.rewardValue);
+    JSON_KEY(ResultStr::sTimeRequired);
+    _writer.Int(timeNeed);
+    _writer.EndObject();
+}
+
 void ResultFormatter::formatFriendList(const FriendsList &friends) {
     // JSON_KEY(ResultStr::friends);
     // _writer.StartArray();

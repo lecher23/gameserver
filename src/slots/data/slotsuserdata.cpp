@@ -166,7 +166,9 @@ int32_t SlotsUserData::incrOnlineTime(const std::string &userID, int32_t incrVal
     return curVal;
 }
 
-bool SlotsUserData::getOnlineInfo(const std::string &userID, OnlineInfo &onlineInfo) {
+bool SlotsUserData::getOnlineInfo(
+    const std::string &userID, OnlineInfo &onlineInfo, int64_t defaultReward)
+{
     static const std::vector<std::string> fields = {SlotCacheStr::sOLRecv,
         SlotCacheStr::sOLLevel, SlotCacheStr::sOLReward};
     std::vector<std::string> result;
@@ -176,19 +178,20 @@ bool SlotsUserData::getOnlineInfo(const std::string &userID, OnlineInfo &onlineI
         CLOG(INFO) << "Invalid result for online info with userID:" << userID;
         return false;
     }
-    onlineInfo.recved = (result[0] != SlotCacheStr::sLRecvFalse);
+    onlineInfo.recved = (result[0] == SlotCacheStr::sLRecvTrue);
     onlineInfo.rewardLevel =
         cgserver::StringUtil::StrToInt32WithDefault(result[1].data(), 0);
     onlineInfo.rewardValue =
-        cgserver::StringUtil::StrToInt32WithDefault(result[2].data(), 0);
+        cgserver::StringUtil::StrToInt32WithDefault(result[2].data(), defaultReward);
     return true;
 }
 
 bool SlotsUserData::setOnlineInfo(const std::string &userID, OnlineInfo &onlineInfo) {
     GENERATE_LOGIN_KEY(key, userID);
-    static const std::vector<std::string> fields = {
+    static const std::vector<std::string> fields = {SlotCacheStr::sOLTime,
         SlotCacheStr::sOLRecv,SlotCacheStr::sOLLevel, SlotCacheStr::sOLReward};
     std::vector<std::string> vals;
+    vals.push_back(SlotCacheStr::sLRecvFalse); // 0
     vals.push_back(
         onlineInfo.recved ? SlotCacheStr::sLRecvTrue: SlotCacheStr::sLRecvFalse);
     vals.push_back(cgserver::StringUtil::toString(onlineInfo.rewardLevel));
@@ -200,7 +203,7 @@ bool SlotsUserData::setOnlineInfo(const std::string &userID, OnlineInfo &onlineI
     return true;
 }
 
-void SlotsUserData::recvGift(const std::string &userID, bool recved) {
+void SlotsUserData::recvOnlineGift(const std::string &userID, bool recved) {
     GENERATE_LOGIN_KEY(key, userID);
     REDIS_EASY_HSET(key, SlotCacheStr::sOLRecv,
                     recved ? SlotCacheStr::sLRecvTrue: SlotCacheStr::sLRecvFalse);

@@ -38,6 +38,8 @@ public:
 
   int32_t nextLevel(int32_t curLevel, int32_t curTime,
                     int32_t &oTimeNeed, int64_t &oReward);
+  int64_t getDefaultReward();
+
 protected:
   virtual bool parseJsonDoc(rapidjson::Document &doc);
 
@@ -49,7 +51,7 @@ private:
 
   std::vector<OnlineRewardItem> _cfg;
   std::vector<OnlineRunnerItem> _runner;
-  bool _enableLoop;
+  bool _enableLoop{true};
   int32_t _runnerTotalWeight{0};
 };
 

@@ -34,6 +34,11 @@ namespace ResultStr{
   const std::string sGetMailAttchment = "gt";
   const std::string sDelMail = "dm";
 
+  // online info
+  const std::string sTargetLevel = "tl";
+  const std::string sTimeRequired = "tr";
+  const std::string sCurLevel = "cl";
+
   // status
   const std::string sStatusOK = "OK";
   const std::string sStatusError = "ER";
@@ -104,6 +109,7 @@ public:
   void formatRoomList(const RoomInfos &rooms);
   void formatHallList(const std::vector<std::string> &hallIDList,
                       const std::vector<std::string> &hallPrizeList);
+  void formatOnlineInfo(const OnlineInfo &oInfo, int32_t curLevel, int32_t timeNeed);
 
   void formatStatus(bool bOk);
   void formatMailsInfo(const UserMails &uMails);

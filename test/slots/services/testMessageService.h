@@ -23,15 +23,18 @@ class testMessageService: public CxxTest::TestSuite
 {
 public:
     testMessageService():_inited(false){
-        if (!_inited) {
-            ast_true(RedisClientFactory::getClient().Initialize(
-                         "127.0.0.1", 6379, 2, 3));
-            _inited = true;
-        }
     }
 
     virtual void setUp(){
         CommonTools::init_slots_data_center_data();
+        if (!_inited) {
+            ast_true(RedisClientFactory::getClient().Initialize(
+                         "127.0.0.1", 6379, 2, 3));
+            ast_true(SlotsConfig::getInstance().
+                     onlineConfig.initFromJsonFile(
+                             "config_files/OnlineConfigTest.json"));
+            _inited = true;
+        }
     }
 
     virtual void tearDown() {
@@ -204,6 +207,111 @@ public:
         ast_eq(0, client.Hdel("H:prz", "76"));
         ast_eq(0, client.Hdel("H:prz", "98"));
     }
+
+    void test_reportOnlineTime_not_recv_reward() {
+        CPacket packet;
+        packet.addParam(slotconstants::sType, "8");
+        packet.addParam(slotconstants::sUserID, "23");
+        packet.addParam(slotconstants::sOnlineTime, "10");
+        auto &client = RedisClientFactory::getClient();
+        ast_eq(0, client.Hset("L23", "ol:time", "100"));
+        ast_eq(0, client.Hset("L23", "ol:level", "1"));
+        ast_eq(0, client.Hset("L23", "ol:recv", "0"));
+        ast_eq(0, client.Hset("L23", "ol:rwd", "500"));
+
+        MessageService ms;
+        SBuf bf;
+        ResultFormatter rf(bf);
+        int64_t out;
+        ast_true(ms.reportOnlineTime(packet, rf));
+        ast_eq("{\"st\":\"OK\",\"cl\":1,\"tl\":1,\"r\":false,\"v\":500,\"tr\":86400}",
+               bf.GetString());
+        std::string tmp;
+        ast_eq(0, client.Hget("L23", "ol:level", &tmp));
+        ast_eq("1", tmp);
+        ast_eq(0, client.Hget("L23", "ol:time", &tmp));
+        ast_eq("100", tmp);
+        ast_eq(0, client.Hget("L23", "ol:rwd", &tmp));
+        ast_eq("500", tmp);
+        ast_eq(0, client.Hget("L23", "ol:recv", &tmp));
+        ast_eq("0", tmp);
+        ast_eq(0, client.Del("L23"));
+    }
+
+    void test_reportOnlineTime_recv_reward() {
+        CPacket packet;
+        packet.addParam(slotconstants::sType, "8");
+        packet.addParam(slotconstants::sUserID, "23");
+        packet.addParam(slotconstants::sOnlineTime, "10");
+        auto &client = RedisClientFactory::getClient();
+        ast_eq(0, client.Hset("L23", "ol:time", "1300"));
+        ast_eq(0, client.Hset("L23", "ol:level", "1"));
+        ast_eq(0, client.Hset("L23", "ol:recv", "1"));
+        ast_eq(0, client.Hset("L23", "ol:rwd", "500"));
+
+        MessageService ms;
+        SBuf bf;
+        ResultFormatter rf(bf);
+        int64_t out;
+        ast_true(ms.reportOnlineTime(packet, rf));
+        ast_eq("{\"st\":\"OK\",\"cl\":1,\"tl\":2,\"r\":false,\"v\":500,\"tr\":3600}",
+               bf.GetString());
+        std::string tmp;
+        ast_eq(0, client.Hget("L23", "ol:level", &tmp));
+        ast_eq("2", tmp);
+        ast_eq(0, client.Hget("L23", "ol:time", &tmp));
+        ast_eq("0", tmp);
+        ast_eq(0, client.Hget("L23", "ol:rwd", &tmp));
+        ast_eq("500", tmp);
+        ast_eq(0, client.Del("L23"));
+    }
+
+    void test_reportOnlineTime_user_not_exist() {
+        CPacket packet;
+        packet.addParam(slotconstants::sType, "8");
+        packet.addParam(slotconstants::sUserID, "23");
+        packet.addParam(slotconstants::sOnlineTime, "10");
+        auto &client = RedisClientFactory::getClient();
+        ast_eq(0, client.Del("L23"));
+
+        MessageService ms;
+        SBuf bf;
+        ResultFormatter rf(bf);
+        int64_t out;
+        ast_true(ms.reportOnlineTime(packet, rf));
+        ast_eq("{\"st\":\"OK\",\"cl\":0,\"tl\":0,\"r\":false,\"v\":500,\"tr\":86400}",
+               bf.GetString());
+        std::string tmp;
+        ast_eq(0, client.Del("L23"));
+    }
+
+    void test_reportOnlineTime_loop() {
+        CPacket packet;
+        packet.addParam(slotconstants::sType, "8");
+        packet.addParam(slotconstants::sUserID, "23");
+        packet.addParam(slotconstants::sOnlineTime, "400");
+        auto &client = RedisClientFactory::getClient();
+        ast_eq(0, client.Hset("L23", "ol:time", "3200"));
+        ast_eq(0, client.Hset("L23", "ol:level", "4"));
+        ast_eq(0, client.Hset("L23", "ol:recv", "1"));
+        ast_eq(0, client.Hset("L23", "ol:rwd", "500"));
+
+        MessageService ms;
+        SBuf bf;
+        ResultFormatter rf(bf);
+        int64_t out;
+        std::string tmp;
+        ast_true(ms.reportOnlineTime(packet, rf));
+        ast_eq(0, client.Hget("L23", "ol:rwd", &tmp));
+        ast_eq("{\"st\":\"OK\",\"cl\":4,\"tl\":0,\"r\":false,\"v\":" + tmp + ",\"tr\":0}",
+               bf.GetString());
+        ast_eq(0, client.Hget("L23", "ol:level", &tmp));
+        ast_eq("0", tmp);
+        ast_eq(0, client.Hget("L23", "ol:time", &tmp));
+        ast_eq("0", tmp);
+        ast_eq(0, client.Del("L23"));
+    }
+
 private:
     bool _inited;
 };
