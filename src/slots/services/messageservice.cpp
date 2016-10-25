@@ -101,14 +101,14 @@ bool MessageService::getLoginReward(CPacket &packet, int64_t &newFortune) {
         return false;
     }
     if (loginReward.recved) {
-        newFortune = user->uRes.fortune;
+        newFortune = user->uRes.fortune.val;
         return true;
     }
     int64_t total = loginReward.runnerReward +
         loginReward.dayReward + loginReward.vipExtra;
     user->uRes.incrFortune(total);
     loginReward.recved = true;
-    newFortune = user->uRes.fortune;
+    newFortune = user->uRes.fortune.val;
     SlotsDataCenter::instance().slotsUserData->updateDailyReward(uid, true);
     return true;
 }
@@ -131,7 +131,7 @@ bool MessageService::finishTinyGame(CPacket &packet, ResultFormatter &rf) {
     GET_SLOT_USER(uid, user);
     auto &gameStatus = user->gSt;
     user->uRes.incrFortune(gameStatus.tinyGameEarned());
-    rf.formatSimpleResultWithFortune(user->uRes.fortune);
+    rf.formatSimpleResultWithFortune(user->uRes.fortune.val);
     return true;
 }
 
@@ -173,7 +173,7 @@ bool MessageService::getAchievementReward(CPacket &packet, ResultFormatter &rf) 
             cj.isRecvReward = true;
             const auto &cjInfo = SlotsConfig::getInstance().cjConfig.getCjInfo(cjID);
             user->uRes.incrFortune(cjInfo.rewardValue);
-            rf.formatSimpleResultWithFortune(user->uRes.fortune);
+            rf.formatSimpleResultWithFortune(user->uRes.fortune.val);
             return true;
         }
     }

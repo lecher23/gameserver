@@ -70,15 +70,15 @@ struct SlotsUser{
     }
     uInfo.uid = row[0];
     uInfo.mid = row[1];
-    uInfo.fname = row[2];
-    uInfo.avatar = row[4];
-    uInfo.male = row[5];
-    uInfo.country = row[6];
+    uInfo.setFname(row[2]);
+    uInfo.setAvatar(row[4]);
+    uInfo.setMale(row[5]);
+    uInfo.setCountry(row[6]);
     uRes.uid = uInfo.uid;
-    bool ret = cgserver::StringUtil::StrToInt32(row[8].c_str(), uRes.level);
-    ret = ret && cgserver::StringUtil::StrToInt64(row[9].c_str(), uRes.exp);
-    ret = ret && cgserver::StringUtil::StrToInt64(row[10].c_str(), uRes.fortune);
-    ret = ret && cgserver::StringUtil::StrToInt32(row[11].c_str(), uRes.vipLevel);
+    bool ret = cgserver::StringUtil::StrToInt32(row[8].c_str(), uRes.level.val);
+    ret = ret && cgserver::StringUtil::StrToInt64(row[9].c_str(), uRes.exp.val);
+    ret = ret && cgserver::StringUtil::StrToInt64(row[10].c_str(), uRes.fortune.val);
+    ret = ret && cgserver::StringUtil::StrToInt32(row[11].c_str(), uRes.vipLevel.val);
     if(!ret) {
       CLOG(WARNING) << "Invalid number.";
     }

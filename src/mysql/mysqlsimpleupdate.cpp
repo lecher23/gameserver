@@ -17,14 +17,18 @@ bool MysqlSimpleUpdate::doOperation(MYSQL *conn) {
 void MysqlSimpleUpdate::setUpdateValue(
     const std::string &field, const std::string &value, bool quoteVal)
 {
-    _query += StrSet;
-    MAKE_COND_SENTENCE(field, value, quoteVal);
+    addUpdateValue(field, value, quoteVal);
 }
 
 void MysqlSimpleUpdate::addUpdateValue(
     const std::string &field, const std::string &value, bool quoteVal)
 {
-    _query += StrComma;
+    if (valueCount > 0) {
+        _query += StrComma;
+    } else {
+        _query += StrSet;
+    }
     MAKE_COND_SENTENCE(field, value, quoteVal);
+    ++valueCount;
 }
 END_NAMESPACE

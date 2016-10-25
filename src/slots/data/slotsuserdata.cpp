@@ -40,9 +40,6 @@ bool SlotsUserData::getByUid(const std::string &uid, SlotsUserPtr &out){
 	    CLOG(WARNING) << "Get user[" << uid << "] info failed.";
 	    return false;
 	}
-	out->uInfo.changed = false;
-	out->uRes.changed = false;
-	out->uHis.changed = false;
 	set(out->uInfo.uid, out);
 	return true;
     }

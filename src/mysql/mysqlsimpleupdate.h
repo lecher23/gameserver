@@ -12,6 +12,8 @@ namespace cgserver{
 
 	void setUpdateValue(const std::string &field, const std::string &value, bool quoteValue = true);
 	void addUpdateValue(const std::string &field, const std::string &value, bool quoteValue = true);
+    private:
+        int32_t valueCount{0};
     };
 }
 #endif

@@ -26,9 +26,9 @@ bool GameProcessor::process(GameContext &context) const {
         gameInfo.lineNumber = preGameResult.lineNumber;
         gameInfo.freeGameTimes = preGameResult.freeGameTimes;
     }
-    if (!gameInfo.bFreeGame && gameInfo.bet > context.user->uRes.fortune) {
+    if (!gameInfo.bFreeGame && gameInfo.bet > context.user->uRes.fortune.val) {
         CLOG(WARNING) << "User:"<< context.user->uInfo.uid
-                      << " has not enough money: cur[ " << context.user->uRes.fortune
+                      << " has not enough money: cur[ " << context.user->uRes.fortune.val
                       << "], bet[" << gameInfo.bet << "]";
         return false;
     }

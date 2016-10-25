@@ -1,6 +1,7 @@
 #ifndef USERRESOURCE_H
 #define USERRESOURCE_H
 
+#include "tablebase.h"
 #include <util/common_define.h>
 
 BEGIN_NAMESPACE(slots)
@@ -16,59 +17,72 @@ namespace UserResourceStr{
 };
 
 struct UserResource{
-  std::string uid{0};
-  int32_t level{0};
-  int64_t exp{0};
-  int64_t fortune{0};
-  int32_t vipLevel{0};
-  int64_t vipPoint{0};
-  int32_t tmpVipLevel{0};
-  int64_t tmpVipEndTime{0};
-  bool changed{false};
-
-    UserResource() {
+  std::string uid;
+  MutableField<int32_t> level;
+  MutableField<int64_t> exp;
+  MutableField<int64_t> fortune;
+  MutableField<int32_t> vipLevel;
+  MutableField<int64_t> vipPoint;
+  MutableField<int32_t> tmpVipLevel;
+  MutableField<int64_t> tmpVipEndTime;
+    void reset() {
+	level.val = 1;
+	exp.val = 0;
+	fortune.val = 0;
+	vipLevel.val = 0;
+	vipPoint.val = 0;
+	tmpVipLevel.val = 0;
+	tmpVipEndTime.val = 0;
+        resetFieldStatus();
     }
 
-    void reset() {
-	level = 1;
-	exp = 0;
-	fortune = 0;
-	vipLevel = 0;
-	vipPoint = 0;
-	tmpVipLevel = 0;
-	tmpVipEndTime = 0;
-	changed = false;
+    void resetFieldStatus() {
+        level.changed = false;
+        exp.changed = false;
+        fortune.changed = false;
+        vipLevel.changed = false;
+        vipPoint.changed =false;
+	tmpVipLevel.changed = false;
+	tmpVipEndTime.changed = false;
+        _changed = false;
     }
 
     void incrExp(int64_t input) {
 	if (input <= 0) return;
 	exp += input;
-	changed = true;
+        _changed =true;
     }
 
     void incrVipPoint(int64_t input) {
 	if (input == 0) return;
 	vipPoint += input;
-	changed = true;
+        _changed =true;
     }
 
     void levelUp() {
-	level ++;
-	changed = true;
+	level += 1;
+        _changed =true;
     }
 
     void vipLevelUp(){
-	vipLevel ++;
-	changed = true;
+	vipLevel += 1;
+        _changed =true;
     }
 
     void incrFortune(int64_t earned) {
 	if (earned == 0)
 	    return;
 	fortune += earned;
-	if (fortune < 0) fortune = 0;
-	changed = true;
+	if (fortune.val < 0) fortune.val = 0;
+        _changed =true;
     }
+
+    bool changed() {
+        return _changed;
+    }
+
+private:
+  bool _changed{false};
 };
 DF_SHARED_PTR(UserResource);
 

@@ -118,17 +118,8 @@ bool SlotsDB::addUser(const std::string &mid, std::string &uid) const
 }
 
 bool SlotsDB::update(SlotsUserPtr su) const {
-    bool ret;
-    if (su->uInfo.changed) {
-	ret = updateUserInfo(su->uInfo);
-    }
-    if (su->uRes.changed) {
-	ret = (updateUserResource(su->uRes) && ret);
-    }
-    if (su->uHis.changed) {
-	ret = (updateGameHistory(su->uHis) && ret);
-    }
-    return ret;
+    // Useless
+    return false;
 }
 
 bool SlotsDB::updateGameHistory(GameHistory &gh) const {
@@ -156,46 +147,6 @@ bool SlotsDB::updateGameHistory(GameHistory &gh) const {
     // important: if update success, it must flag to unchanged.
     // and update theme_history is required.
     gh.changed = false;
-    return true;
-}
-
-bool SlotsDB::updateUserResource(UserResource &ur) const {
-    MysqlSimpleUpdate msu;
-    msu.setTable(gUserResource);
-    msu.setUpdateValue("level", StringUtil::toString(ur.level));
-    msu.addUpdateValue("exp", StringUtil::toString(ur.exp));
-    msu.addUpdateValue("fortune", StringUtil::toString(ur.fortune));
-    msu.addUpdateValue("vip_level", StringUtil::toString(ur.vipLevel));
-    msu.setCondition("uid", ur.uid, true);
-    if (!_pool.doMysqlOperation((MysqlOperationBase *) &msu)) {
-	return false;
-    }
-    // important: if update success, it must flag to unchanged.
-    ur.changed = false;
-    return true;
-}
-
-bool SlotsDB::updateUserInfo(UserInfo &ui) const {
-    MysqlSimpleUpdate msu;
-    msu.setTable(gUserInfo);	
-    msu.setUpdateValue("uid", ui.uid, true);
-    if (!ui.fname.empty()) {
-	msu.addUpdateValue("fname", ui.fname, true);
-    }
-    if (!ui.avatar.empty()) {
-	msu.addUpdateValue("avatar", ui.avatar, true);
-    }
-    if (!ui.male.empty()) {
-	msu.addUpdateValue("male", ui.male, true);
-    }
-    if (!ui.country.empty()) {
-	msu.addUpdateValue("country", ui.country, true);
-    }
-    msu.setCondition("uid", ui.uid, true);
-    if (!_pool.doMysqlOperation((MysqlOperationBase *) &msu)) {
-	return false;
-    }
-    ui.changed = false;
     return true;
 }
 

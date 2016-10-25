@@ -33,40 +33,59 @@ bool SlotUserSaver::doOperation(MYSQL *conn) {
 }
 
 bool SlotUserSaver::saveUserInfo(MYSQL *conn, UserInfo &uInfo) {
+    if (!uInfo.changed()) {
+        return true;
+    }
     MysqlSimpleUpdate msu;
     msu.setTable(UserInfoStr::sTableName);
-    msu.setUpdateValue(UserInfoStr::sUid, uInfo.uid, true);
-    if (!uInfo.fname.empty()) {
-	msu.addUpdateValue("fname", uInfo.fname, true);
+    if (uInfo.fname.changed) {
+	msu.addUpdateValue("fname", uInfo.fname.val, true);
     }
-    if (!uInfo.avatar.empty()) {
-	msu.addUpdateValue("avatar", uInfo.avatar, true);
+    if (uInfo.avatar.changed) {
+	msu.addUpdateValue("avatar", uInfo.avatar.val, true);
     }
-    if (!uInfo.male.empty()) {
-	msu.addUpdateValue("male", uInfo.male, true);
+    if (uInfo.male.changed) {
+	msu.addUpdateValue("male", uInfo.male.val, true);
     }
-    if (!uInfo.country.empty()) {
-	msu.addUpdateValue("country", uInfo.country, true);
+    if (uInfo.country.changed) {
+	msu.addUpdateValue("country", uInfo.country.val, true);
     }
     msu.setCondition(UserInfoStr::sUid, uInfo.uid, true);
     bool ret = exeQuery(conn, msu.getQuery());
-    uInfo.changed = !ret;
+    uInfo.resetFieldStatus();
     return ret;
 }
 
 bool SlotUserSaver::saveUserResource(MYSQL *conn, UserResource &ur) {
+    if (!ur.changed()) {
+        return true;
+    }
     MysqlSimpleUpdate msu;
     msu.setTable(UserResourceStr::sTableName);
-    msu.setUpdateValue(UserResourceStr::sLevel, StringUtil::toString(ur.level));
-    msu.addUpdateValue(UserResourceStr::sExp, StringUtil::toString(ur.exp));
-    msu.addUpdateValue(UserResourceStr::sFortune, StringUtil::toString(ur.fortune));
-    msu.addUpdateValue(UserResourceStr::sVipLevel, StringUtil::toString(ur.vipLevel));
-    msu.addUpdateValue(UserResourceStr::sVipPoint, StringUtil::toString(ur.vipPoint));
+    if (ur.level.changed) {
+        msu.addUpdateValue(
+            UserResourceStr::sLevel, StringUtil::toString(ur.level.val));
+    }
+    if (ur.exp.changed) {
+        msu.addUpdateValue(
+            UserResourceStr::sExp, StringUtil::toString(ur.exp.val));
+    }
+    if (ur.fortune.changed){
+        msu.addUpdateValue(
+            UserResourceStr::sFortune, StringUtil::toString(ur.fortune.val));
+    }
+    if (ur.vipLevel.changed) {
+        msu.addUpdateValue(
+            UserResourceStr::sVipLevel, StringUtil::toString(ur.vipLevel.val));
+    }
+    if (ur.vipPoint.changed) {
+        msu.addUpdateValue(
+            UserResourceStr::sVipPoint, StringUtil::toString(ur.vipPoint.val));
+    }
     // TODO:tmp vip info should be saved!
     msu.setCondition(UserResourceStr::sUid, ur.uid, true);
-
     bool ret = exeQuery(conn, msu.getQuery());
-    ur.changed = !ret;
+    ur.resetFieldStatus();
     return ret;
 }
 

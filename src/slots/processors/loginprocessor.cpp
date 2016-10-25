@@ -30,11 +30,11 @@ bool LoginProcessor::process(GameContext &context) const {
     if (lastLogin < yesterday) {
         loginDays = 1;
         context.events.push_back(EventInfo(ECT_LOGIN_DAYS, loginDays));
-        processReward(loginDays, context.user->uRes.vipLevel, dailyReward);
+        processReward(loginDays, context.user->uRes.vipLevel.val, dailyReward);
     } else if (lastLogin >= yesterday && lastLogin < thisMorning) {
         ++loginDays;
         context.events.push_back(EventInfo(ECT_LOGIN_DAYS, loginDays));
-        processReward(loginDays, context.user->uRes.vipLevel, dailyReward);
+        processReward(loginDays, context.user->uRes.vipLevel.val, dailyReward);
     }
     uData->setDailyReward(uid, dailyReward);
     CLOG(INFO) << "User " << gHistory.uid << " login. Days:" << loginDays;

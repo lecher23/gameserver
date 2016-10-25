@@ -2,6 +2,7 @@
 #define USERINFO_H
 
 #include <util/common_define.h>
+#include "tablebase.h"
 
 BEGIN_NAMESPACE(slots)
 
@@ -13,30 +14,43 @@ namespace UserInfoStr{
 };
 
 struct UserInfo{
-UserInfo():changed(false) {}
     std::string uid;
     std::string mid;
-    std::string fname;
-    std::string avatar;
-    std::string male; // 0 or 1
-    std::string country;
-    bool changed;
+    MutableField<std::string> fname;
+    MutableField<std::string> avatar;
+    MutableField<std::string> male;
+    MutableField<std::string> country;
     void setFname(const std::string &in) {
-        fname = in;
-        changed = true;
+        fname.setVal(in);
+        _changed = true;
     }
     void setAvatar(const std::string &in) {
-        avatar = in;
-        changed = true;
+        avatar.setVal(in);
+        _changed = true;
     }
     void setMale(const std::string &in) {
-        male = in;
-        changed = true;
+        male.setVal(in);
+        _changed = true;
     }
     void setCountry(const std::string &in) {
-        country = in;
-        changed = true;
+        country.setVal(in);
+        _changed = true;
     }
+
+    void resetFieldStatus() {
+        fname.changed = false;
+        avatar.changed = false;
+        male.changed = false;
+        country.changed = false;
+        _changed = false;
+    }
+
+    bool changed() {
+        return _changed;
+    }
+
+private:
+    bool _changed{false};
 };
 DF_SHARED_PTR(UserInfo);
 

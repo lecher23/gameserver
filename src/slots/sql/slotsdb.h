@@ -66,8 +66,6 @@ public:
     bool add(const UserCJ &cj);
 
     bool updateGameHistory(GameHistory &gh) const;
-    bool updateUserInfo(UserInfo &ui) const;
-    bool updateUserResource(UserResource &ur) const;
     //bool updateUserHistory(UserHistory &uhis) const;
     bool update(SlotsUserPtr su) const;
     bool updateFHistory(const std::string &uid, const std::string &key,

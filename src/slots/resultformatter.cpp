@@ -105,7 +105,7 @@ void ResultFormatter::formatGameResult(GameContext &gc)
     auto &uRes = gc.user->uRes;
     auto &ret = gc.gameInfo;
     JSON_KEY(ResultStr::sFortune);
-    _writer.Int64(uRes.fortune);
+    _writer.Int64(uRes.fortune.val);
 
     JSON_KEY(ResultStr::sEarnedInfo);
     _writer.StartArray();
@@ -287,13 +287,13 @@ void ResultFormatter::formatUserInfo(const UserInfo &uInfo) {
     JSON_KEY(ResultStr::sUserMID);
     JSON_STRING_VALUE(uInfo.mid);
     JSON_KEY(ResultStr::sUserName);
-    JSON_STRING_VALUE(uInfo.fname);
+    JSON_STRING_VALUE(uInfo.fname.val);
     JSON_KEY(ResultStr::sUserAvatar);
-    JSON_STRING_VALUE(uInfo.avatar);
+    JSON_STRING_VALUE(uInfo.avatar.val);
     JSON_KEY(ResultStr::sUserGender);
-    JSON_STRING_VALUE(uInfo.male);
+    JSON_STRING_VALUE(uInfo.male.val);
     JSON_KEY(ResultStr::sUserCountry);
-    JSON_STRING_VALUE(uInfo.country);
+    JSON_STRING_VALUE(uInfo.country.val);
     _writer.EndObject();
 }
 
@@ -305,15 +305,15 @@ void ResultFormatter::formatUserResource(const UserResource &uRes) {
     JSON_KEY(ResultStr::sUserID);
     JSON_STRING_VALUE(uRes.uid);
     JSON_KEY(ResultStr::sLevel);
-    _writer.Uint(uRes.level);
+    _writer.Uint(uRes.level.val);
     JSON_KEY(ResultStr::sExp);
-    _writer.Uint64(uRes.exp);
+    _writer.Uint64(uRes.exp.val);
     JSON_KEY(ResultStr::sFortune);
-    _writer.Uint64(uRes.fortune);
+    _writer.Uint64(uRes.fortune.val);
     JSON_KEY(ResultStr::sVipLevel);
-    _writer.Uint(uRes.vipLevel);
+    _writer.Uint(uRes.vipLevel.val);
     JSON_KEY(ResultStr::sVipPoint);
-    _writer.Int64(uRes.vipPoint);
+    _writer.Int64(uRes.vipPoint.val);
     _writer.EndObject();
 }
 

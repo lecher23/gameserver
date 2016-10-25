@@ -122,14 +122,14 @@ bool GameService::doMultiple(CPacket &packet){
 	// reduce incr
 	UserResource &ur = sup->uRes;
 	ur.incrFortune(-incrVal);
-	CLOG(INFO) << "User[" << uid << "] new fortune:" << ur.fortune;
+	CLOG(INFO) << "User[" << uid << "] new fortune:" << ur.fortune.val;
 	break;
     }
     case 2:
     case 4:{
 	UserResource &ur = sup->uRes;
 	ur.incrFortune(incrVal * (dV -1));
-	CLOG(INFO) << "User[" << uid << "] new fortune:" << ur.fortune;
+	CLOG(INFO) << "User[" << uid << "] new fortune:" << ur.fortune.val;
 	break;
     }
     default:{

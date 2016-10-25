@@ -118,12 +118,12 @@ void GameResultProcessor::processExp(GameContext &context, GameResult &data) con
     uRes.incrExp(expGot);
     int64_t expNeed = 0;
     while(true) {
-        expNeed = slotsConfig.levelConfig.expNeedForNextLevel(uRes.level);
-        if (expNeed < 0 || expNeed > uRes.exp ) {
+        expNeed = slotsConfig.levelConfig.expNeedForNextLevel(uRes.level.val);
+        if (expNeed < 0 || expNeed > uRes.exp.val ) {
             return;
         }
         uRes.levelUp();
-        context.events.push_back(EventInfo(ECT_LEVEL, uRes.level));
+        context.events.push_back(EventInfo(ECT_LEVEL, uRes.level.val));
     }
 }
 
@@ -137,7 +137,7 @@ void GameResultProcessor::processMoney(GameContext &context, GameResult &data) c
     UserResource &uRes = context.user->uRes;
     uRes.incrFortune(actualEarned);
     // update max fortune
-    uHis.newFortune(uRes.fortune);
+    uHis.newFortune(uRes.fortune.val);
     // update max earned
     uHis.newEarned(data.earned.normal);
     // update earned (include this week and total)
