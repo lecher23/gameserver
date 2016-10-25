@@ -34,11 +34,11 @@ public:
     void test_operateHallPrize( void )
     {
         auto &client = RedisClientFactory::getClient();
-        ast_eq(RC_SUCCESS, client.Zadd("H:prz", 1000, "1"));
+        ast_eq(RC_SUCCESS, client.Hset("H:prz", "13", "1000"));
 
         HallBase hb;
-        ast_eq(1000, hb.getHallPrize(1));
-        ast_eq(1999, hb.incrHallPrize(1, 999));
+        ast_eq(1999, hb.incrHallPrize(13, 999));
+        ast_eq(RC_SUCCESS, client.Hdel("H:prz", "13"));
     }
 
 #define SET_ROOM_INFO_TO_REDIS(key, userID, lastHB)                     \
@@ -62,6 +62,7 @@ public:
         RoomInfo rm;
         rm.roomID = 1;
         ast_true(!hb.useRoom(1, 23, rm));
+        ast_eq(RC_SUCCESS, client.Del("10086"));
     }
 
     void test_useRoom_cur_in_anoter_hall_target_expire() {
@@ -69,18 +70,28 @@ public:
         // cur hall:2, cur room 2
         auto now = cgserver::CTimeUtil::getCurrentTimeInSeconds();
         auto &client = RedisClientFactory::getClient();
-        // set crrent info
+        // set crrent info: hall[2], room[2]
         ast_eq(RC_SUCCESS, client.Hset("10086", SlotCacheStr::sUserCurRoom, "2000002"));
-        // set target room info
+        // set target room info: hall[1], room[1]
         auto pre = now - 10000;
         SET_ROOM_INFO_TO_REDIS("1.1", "18", pre);
-        // set cur room info
-        SET_ROOM_INFO_TO_REDIS("2.1", "23", now);
+        // set cur room info: hall[2], room[2], used by 23
+        SET_ROOM_INFO_TO_REDIS("2.2", "23", now);
 
         HallBase hb;
         RoomInfo rm;
         rm.roomID = 1;
-        ast_true(!hb.useRoom(1, 23, rm));
+        auto ret = hb.useRoom(1, 23, rm);
+        ast_true(ret);
+        ast_eq(RC_SUCCESS, client.Del("10086"));
+    }
+
+    void test_incrHallPrize_hall_not_exist(){
+        HallBase hb;
+        auto &client = RedisClientFactory::getClient();
+        ast_eq(RC_SUCCESS, client.Hdel("H:prz", "13"));
+        ast_eq(100, hb.incrHallPrize(13, 100));
+        ast_eq(RC_SUCCESS, client.Hdel("H:prz", "13"));
     }
 private:
     bool _inited;

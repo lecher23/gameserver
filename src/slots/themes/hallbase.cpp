@@ -125,6 +125,7 @@ void HallBase::updateRoomResource(int32_t hallID, const RoomInfo &room) {
 }
 
 int64_t HallBase::incrHallPrize(int32_t hallID, int64_t val){
+    CLOG(INFO) << "Incr hall " << hallID << " with prize:" << val;
     auto hallIDStr = cgserver::StringUtil::toString(hallID);
     int64_t newVal;
     auto ret = _client.Hincrby(SlotCacheStr::sHallPrize, hallIDStr, val, &newVal);
@@ -137,6 +138,7 @@ int64_t HallBase::incrHallPrize(int32_t hallID, int64_t val){
 }
 
 int32_t HallBase::incrHallGameCount(int32_t hallID, int32_t incr) {
+    CLOG(INFO) << "Incr hall " << hallID << " with game count:" << incr;
     auto hallIDStr = cgserver::StringUtil::toString(hallID);
     int64_t newVal;
     auto ret = _client.Hincrby(SlotCacheStr::sHallGameCount, hallIDStr, incr, &newVal);

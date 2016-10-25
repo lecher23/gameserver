@@ -38,7 +38,6 @@ void GameResultProcessor::processHall(GameContext &context, GameResult &data) co
     auto curHallGameCount = hall.incrHallGameCount(context.hallID);
     context.room.incrSpin();
     context.room.incrPrize(cfg.getTax4Room(data.bet));
-    //hall.incrPrize(context.roomID, );
     if (!data.bJackpot2 && cfg.isForceWinHallPrize(curHallGameCount)) {
         data.bJackpot2 = true;
         data.earned.hallPrize = curHallPrize;
@@ -49,6 +48,7 @@ void GameResultProcessor::processHall(GameContext &context, GameResult &data) co
         data.earned.roomPrize = context.room.totalPrize;
         context.room.takePrize(cfg.getMinRoomPrizePool());
     }
+    hall.updateRoomResource(context.hallID, context.room);
 }
 
 #define INCR_TAG_VALUE(mThemeTag, mEvent, value)                        \
