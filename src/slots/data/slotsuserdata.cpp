@@ -175,7 +175,7 @@ bool SlotsUserData::getOnlineInfo(
         CLOG(INFO) << "Invalid result for online info with userID:" << userID;
         return false;
     }
-    onlineInfo.recved = (result[0] == SlotCacheStr::sLRecvTrue);
+    onlineInfo.recved = (result[0] != SlotCacheStr::sLRecvFalse);
     onlineInfo.rewardLevel =
         cgserver::StringUtil::StrToInt32WithDefault(result[1].data(), 0);
     onlineInfo.rewardValue =

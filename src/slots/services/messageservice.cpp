@@ -27,7 +27,6 @@ MessageService::~MessageService(){
 #define MSG_QUERY_HALL_INFO 10
 
 bool MessageService::doJob(CPacket &packet, CResponse &resp) {
-
     GET_INT32_PARAM_IN_PACKET(packet, slotconstants::sType, gType);
     SBuf bf;
     ResultFormatter rf(bf);
@@ -65,12 +64,16 @@ bool MessageService::doJob(CPacket &packet, CResponse &resp) {
         ret = reportOnlineTime(packet, rf);
         break;
     }
+    case MSG_RECV_ONLINE_REWARD: {
+        ret = recvOnlineReward(packet, rf);
+        break;
+    }
     }
     if (!ret) {
         rf.formatSimpleResult(false, "");
     }
     resp.setBody(bf.GetString());
-    return ret;
+    return true;
 }
 
 
@@ -100,15 +103,16 @@ bool MessageService::getLoginReward(CPacket &packet, int64_t &newFortune) {
     if (!SlotsDataCenter::instance().slotsUserData->getDailyReward(uid, loginReward)) {
         return false;
     }
+    auto &uRes = user->uRes;
     if (loginReward.recved) {
-        newFortune = user->uRes.fortune.val;
+        newFortune = uRes.fortune.val;
         return true;
     }
     int64_t total = loginReward.runnerReward +
         loginReward.dayReward + loginReward.vipExtra;
-    user->uRes.incrFortune(total);
+    uRes.incrFortune(total);
     loginReward.recved = true;
-    newFortune = user->uRes.fortune.val;
+    newFortune = uRes.fortune.val;
     SlotsDataCenter::instance().slotsUserData->updateDailyReward(uid, true);
     return true;
 }
@@ -225,7 +229,7 @@ bool MessageService::reportOnlineTime(CPacket &packet, ResultFormatter &rf) {
     int32_t extTimeNeed = 0;
     int64_t reward = 0;
     auto nextLevel = onlineConfig.nextLevel(
-        curLevel, curTimeSum, extTimeNeed, reward);
+         curLevel, curTimeSum, extTimeNeed, reward);
     if (nextLevel == curLevel) {
         rf.formatOnlineInfo(oInfo, curLevel, extTimeNeed);
         return true;
@@ -237,6 +241,28 @@ bool MessageService::reportOnlineTime(CPacket &packet, ResultFormatter &rf) {
         return false;
     }
     rf.formatOnlineInfo(oInfo, curLevel, extTimeNeed);
+    return true;
+}
+
+bool MessageService::recvOnlineReward(CPacket &packet, ResultFormatter &rf) {
+    std::string uid;
+    GET_PARAM(slotconstants::sUserID, uid, true);
+    auto &uData = *_dataCenter.slotsUserData;
+    GET_SLOT_USER(uid, user);
+    OnlineInfo oInfo;
+    if (!uData.getOnlineInfo(uid, oInfo, 0)) {
+        CLOG(WARNING) << "Get user reward info from redis failed.";
+        return false;
+    }
+    if (oInfo.recved) {
+        CLOG(WARNING) << "User reward has recved.";
+        return false;
+    }
+    auto &uRes = user->uRes;
+    uRes.incrFortune(oInfo.rewardValue);
+    user->uHis.newFortune(uRes.fortune.val);
+    uData.recvOnlineGift(uid, true);
+    rf.formatSimpleResultWithFortune(uRes.fortune.val);
     return true;
 }
 
