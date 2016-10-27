@@ -16,6 +16,14 @@ BEGIN_NAMESPACE(slots)
   }                                                     \
   rapidjson::Value &dest = itr->value;
 
+#define GET_INT32_MEMBER_IN_DOC(doc, itr, mem, dest)    \
+  itr = doc.FindMember(mem.c_str());                    \
+  if (itr == doc.MemberEnd()) {                         \
+    CLOG(ERROR) << "Member [" << mem << "] required.";  \
+    return false;                                       \
+  }                                                     \
+  dest = itr->value.GetInt();
+
 #define CHECK_MEMBER_IS_ARRAY(value, tag)               \
   if (!value.IsArray()) {                               \
     CLOG(ERROR) << "["<< tag <<"] should be array.";    \
