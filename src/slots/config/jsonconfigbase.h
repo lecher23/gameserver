@@ -35,6 +35,7 @@ namespace JsonConfigStr{
   const std::string sWeight = "Weight";
   const std::string sReward = "Reward";
   const std::string sRewardType = "RewardType";
+  const std::string sType = "Type";
 };
 
 class JsonConfigBase{

@@ -1,7 +1,7 @@
 #ifndef GRIDSCONFIG_H
 #define GRIDSCONFIG_H
 
-#include <slots/config/jsonconfigbase.h>
+#include "jsonconfigbase.h"
 
 BEGIN_NAMESPACE(slots)
 
