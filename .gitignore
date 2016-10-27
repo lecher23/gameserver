@@ -16,3 +16,4 @@ common.h
 .cgservertmp/
 logs/
 game/
+game_config/
