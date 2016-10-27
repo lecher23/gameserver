@@ -108,21 +108,26 @@ void GameResultProcessor::processLines(GameContext &context, GameResult &data) c
 
 void GameResultProcessor::processExp(GameContext &context, GameResult &data) const {
     auto &uRes = context.user->uRes;
+    auto &uHis = context.user->uHis;
     // if zero bet then exp will not change
     if (data.bFreeGame) {
 	return;
     }
-    auto &slotsConfig = SlotsConfig::getInstance();
+    auto &levelConfig = SlotsConfig::getInstance().levelConfig;
     // exp = bet;
     auto expGot = data.bet;
     uRes.incrExp(expGot);
     int64_t expNeed = 0;
     while(true) {
-        expNeed = slotsConfig.levelConfig.expNeedForNextLevel(uRes.level.val);
+        expNeed = levelConfig.expNeedForNextLevel(uRes.level.val);
         if (expNeed < 0 || expNeed > uRes.exp.val ) {
             return;
         }
         uRes.levelUp();
+        // get level reward.
+        auto reward = levelConfig.fortuneRewardForLevel(uRes.level.val);
+        uRes.incrFortune(reward);
+        uHis.newFortune(uRes.fortune.val);
         context.events.push_back(EventInfo(ECT_LEVEL, uRes.level.val));
     }
 }

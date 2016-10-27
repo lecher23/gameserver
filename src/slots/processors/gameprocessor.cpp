@@ -19,6 +19,7 @@ bool GameProcessor::process(GameContext &context) const {
     auto &preGame = context.user->gSt;
     auto &preGameResult = preGame.getGameResult(hallID, roomID);
     auto &gameInfo = context.gameInfo;
+    auto &levelConfig = SlotsConfig::getInstance().levelConfig;
     // if this time is free game
     if (preGameResult.freeGameTimes > 0) {
         gameInfo.bFreeGame = true;
@@ -26,7 +27,11 @@ bool GameProcessor::process(GameContext &context) const {
         gameInfo.lineNumber = preGameResult.lineNumber;
         gameInfo.freeGameTimes = preGameResult.freeGameTimes;
     }
-    if (!gameInfo.bFreeGame && gameInfo.bet > context.user->uRes.fortune.val) {
+    auto &uRes = context.user->uRes;
+    if (!gameInfo.bFreeGame &&
+        (gameInfo.bet > uRes.fortune.val ||
+         gameInfo.bet > levelConfig.maxBetForLevel(uRes.level.val)))
+    {
         CLOG(WARNING) << "User:"<< context.user->uInfo.uid
                       << " has not enough money: cur[ " << context.user->uRes.fortune.val
                       << "], bet[" << gameInfo.bet << "]";
