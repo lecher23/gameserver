@@ -30,7 +30,8 @@ bool GameProcessor::process(GameContext &context) const {
     auto &uRes = context.user->uRes;
     if (!gameInfo.bFreeGame &&
         (gameInfo.bet > uRes.fortune.val ||
-         gameInfo.bet > levelConfig.maxBetForLevel(uRes.level.val)))
+         gameInfo.bet > levelConfig.maxBetForLevel(uRes.level.val) ||
+         gameInfo.bet <= 0))
     {
         CLOG(WARNING) << "User:"<< context.user->uInfo.uid
                       << " has not enough money: cur[ " << context.user->uRes.fortune.val
