@@ -8,20 +8,20 @@
 
 BEGIN_NAMESPACE(slots)
 
-#define GET_MEMBER_IN_DOC(doc, itr, mem, dest)          \
+#define GET_MEMBER_ITR_IN_DOC(doc, itr, mem)            \
   itr = doc.FindMember(mem.c_str());                    \
   if (itr == doc.MemberEnd()) {                         \
     CLOG(ERROR) << "Member [" << mem << "] required.";  \
     return false;                                       \
-  }                                                     \
+  }
+
+
+#define GET_MEMBER_IN_DOC(doc, itr, mem, dest)          \
+  GET_MEMBER_ITR_IN_DOC(doc, itr, mem);                 \
   rapidjson::Value &dest = itr->value;
 
 #define GET_INT32_MEMBER_IN_DOC(doc, itr, mem, dest)    \
-  itr = doc.FindMember(mem.c_str());                    \
-  if (itr == doc.MemberEnd()) {                         \
-    CLOG(ERROR) << "Member [" << mem << "] required.";  \
-    return false;                                       \
-  }                                                     \
+  GET_MEMBER_ITR_IN_DOC(doc, itr, mem)                  \
   dest = itr->value.GetInt();
 
 #define CHECK_MEMBER_IS_ARRAY(value, tag)               \

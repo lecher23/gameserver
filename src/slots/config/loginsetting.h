@@ -1,8 +1,8 @@
 #ifndef LOGINSETTING_H
 #define LOGINSETTING_H
 
-#include <slots/config/jsonconfigbase.h>
-#include <util/random.h>
+#include "jsonconfigbase.h"
+#include "util/random.h"
 
 BEGIN_NAMESPACE(slots)
 
