@@ -34,8 +34,8 @@ bool GameProcessor::process(GameContext &context) const {
          gameInfo.bet <= 0))
     {
         CLOG(WARNING) << "User:"<< context.user->uInfo.uid
-                      << " has not enough money: cur[ " << context.user->uRes.fortune.val
-                      << "], bet[" << gameInfo.bet << "]";
+                      << " bet validate: cur[ " << context.user->uRes.fortune.val
+                      << "], bet[" << gameInfo.bet << "] failed.";
         return false;
     }
     if (!hall.useRoom(hallID, context.uid, context.room))

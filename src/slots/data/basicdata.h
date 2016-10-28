@@ -79,6 +79,7 @@ struct SlotsUser{
     ret = ret && cgserver::StringUtil::StrToInt64(row[9].c_str(), uRes.exp.val);
     ret = ret && cgserver::StringUtil::StrToInt64(row[10].c_str(), uRes.fortune.val);
     ret = ret && cgserver::StringUtil::StrToInt32(row[11].c_str(), uRes.vipLevel.val);
+    ret = ret && cgserver::StringUtil::StrToInt64(row[12].c_str(), uRes.vipPoint.val);
     if(!ret) {
       CLOG(WARNING) << "Invalid number.";
     }
