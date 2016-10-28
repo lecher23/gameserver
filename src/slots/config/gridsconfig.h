@@ -22,6 +22,8 @@ public:
 
   int32_t start();
   int32_t end();
+  int32_t getRowSize();
+  int32_t getColSize();
   const RawGridItem &getGrid(int32_t idx);
 protected:
   virtual bool parseJsonDoc(rapidjson::Document &doc);

@@ -1,0 +1,14 @@
+[
+{"ID":1001,"Name_Fruit":"theme_1_icon_1.png","Type":1,"Repeat":0,"Link2":0,"Link3":0,"Link4":0,"Link5":0},
+{"ID":1002,"Name_Fruit":"theme_1_icon_2.png","Type":2,"Repeat":0,"Link2":0,"Link3":0,"Link4":0,"Link5":0},
+{"ID":1003,"Name_Fruit":"theme_1_icon_3.png","Type":3,"Repeat":0,"Link2":0,"Link3":0,"Link4":0,"Link5":0},
+{"ID":1004,"Name_Fruit":"theme_1_icon_4.png","Type":0,"Repeat":1,"Link2":0,"Link3":5,"Link4":6,"Link5":20},
+{"ID":1005,"Name_Fruit":"theme_1_icon_5.png","Type":0,"Repeat":1,"Link2":0,"Link3":8,"Link4":10,"Link5":30},
+{"ID":1006,"Name_Fruit":"theme_1_icon_6.png","Type":0,"Repeat":1,"Link2":0,"Link3":8,"Link4":15,"Link5":50},
+{"ID":1007,"Name_Fruit":"theme_1_icon_7.png","Type":0,"Repeat":1,"Link2":0,"Link3":10,"Link4":25,"Link5":100},
+{"ID":1008,"Name_Fruit":"theme_1_icon_8.png","Type":0,"Repeat":1,"Link2":3,"Link3":15,"Link4":30,"Link5":200},
+{"ID":1009,"Name_Fruit":"theme_1_icon_9.png","Type":0,"Repeat":1,"Link2":5,"Link3":20,"Link4":60,"Link5":400},
+{"ID":1010,"Name_Fruit":"theme_1_icon_10.png","Type":0,"Repeat":1,"Link2":8,"Link3":30,"Link4":90,"Link5":600},
+{"ID":1011,"Name_Fruit":"theme_1_icon_11.png","Type":4,"Repeat":0,"Link2":0,"Link3":0,"Link4":0,"Link5":0},
+{"ID":1012,"Name_Fruit":"theme_1_icon_12.png","Type":5,"Repeat":0,"Link2":0,"Link3":0,"Link4":0,"Link5":0}
+]

@@ -16,6 +16,15 @@ int32_t GridsConfig::end() {
     return _cfg.size();
 }
 
+int32_t GridsConfig::getRowSize() {
+    return rowSize;
+}
+
+int32_t GridsConfig::getColSize() {
+    return colSize;
+}
+
+
 const RawGridItem &GridsConfig::getGrid(int32_t idx){
     return _cfg[idx];
 }
@@ -39,6 +48,9 @@ bool GridsConfig::parseJsonDoc(rapidjson::Document &doc) {
         _cfg.push_back(
             RawGridItem(col, row, eleValue.GetInt(), weightValue.GetInt()));
     }
+    // becase row and column is begin with 0, so we should add 1
+    ++rowSize;
+    ++colSize;
     return true;
 }
 

@@ -36,6 +36,28 @@ bool SlotEleConfig::parseJsonDoc(rapidjson::Document &doc) {
                 item.id = itr->value.GetInt();
             }else if (key == JsonConfigStr::sType) {
                 item.type = itr->value.GetInt();
+                switch (item.type) {
+                case 1:{
+                    wildEleID = item.id;
+                    break;
+                }
+                case 2:{
+                    tinyGameEleID = item.id;
+                    break;
+                }
+                case 3:{
+                    freeGameEleID = item.id;
+                    break;
+                }
+                case 4:{
+                    roomWinEleID = item.id;
+                    break;
+                }
+                case 5:{
+                    hallWinEleID = item.id;
+                    break;
+                }
+                }
             }else if (key.compare(0, sLinkPrefix.size(), sLinkPrefix) == 0) {
                 int32_t linkVal;
                 if (!cgserver::StringUtil::StrToInt32(

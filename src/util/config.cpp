@@ -60,6 +60,7 @@ namespace cgserver{
         const std::string sGrpDB = "db";
         const std::string sGrpRedis = "redis";
         const std::string sGrpSlot = "slot";
+        const std::string sGrpTemplePrincess = "slot_tp";
         const std::string sHost = "host";
         const std::string sThreadPoolSize = "thread_pool_size";
         const std::string sPort = "port";
@@ -79,6 +80,12 @@ namespace cgserver{
         const std::string sCjCfg = "achievement_cfg";
         const std::string sVipCfg = "vip_cfg";
         const std::string sOnlineCfg = "online_cfg";
+        const std::string sEleCfg = "ele_cfg";
+        const std::string sFreeGameCfg = "freegame_cfg";
+        const std::string sFreeGridsCfg = "freegame_grids_cfg";
+        const std::string sLinesCfg = "lines_cfg";
+        const std::string sGridsCfg = "grids_cfg";
+        const std::string sPrizePoolCfg = "prize_pool_cfg";
 
 	config_t *tmp = parseConfigFile(configFilePath.c_str());
 	// only parse config success can change _cfg
@@ -121,13 +128,19 @@ namespace cgserver{
         GET_REQUIRED_STRING_VALUE(sGrpRedis, sHost, redis_host);
         GET_REQUIRED_INT_VALUE(sGrpRedis, sPort, redis_port);
 
-        GET_REQUIRED_STRING_VALUE(sGrpSlot, sButterfly, butterfly_path);
         GET_REQUIRED_STRING_VALUE(sGrpSlot, sLevelCfg, level_cfg_path);
         GET_REQUIRED_STRING_VALUE(sGrpSlot, sLoginCfg, login_cfg_path);
         GET_REQUIRED_STRING_VALUE(sGrpSlot, sCjCfg, cj_cfg_path);
         GET_REQUIRED_STRING_VALUE(sGrpSlot, sVipCfg, vip_cfg_path);
         GET_REQUIRED_STRING_VALUE(sGrpSlot, sOnlineCfg, online_cfg_path);
 
+        GET_REQUIRED_STRING_VALUE(sGrpTemplePrincess, sButterfly, butterfly_path);
+        GET_REQUIRED_STRING_VALUE(sGrpTemplePrincess, sEleCfg, tp_ele_cfg_path);
+        GET_REQUIRED_STRING_VALUE(sGrpTemplePrincess, sFreeGameCfg, tp_freegame_cfg_path);
+        GET_REQUIRED_STRING_VALUE(sGrpTemplePrincess, sFreeGridsCfg, tp_freegame_grids_cfg_path);
+        GET_REQUIRED_STRING_VALUE(sGrpTemplePrincess, sLinesCfg, tp_lines_cfg_path);
+        GET_REQUIRED_STRING_VALUE(sGrpTemplePrincess, sGridsCfg, tp_grids_cfg_path);
+        GET_REQUIRED_STRING_VALUE(sGrpTemplePrincess, sPrizePoolCfg, tp_pool_cfg_path);
         return true;
     }
 

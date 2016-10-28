@@ -21,6 +21,11 @@ public:
   int32_t end();
   const RawElementItem &getElement(int index);
 
+  int32_t wildEleID{0};
+  int32_t tinyGameEleID{0};
+  int32_t freeGameEleID{0};
+  int32_t roomWinEleID{0};
+  int32_t hallWinEleID{0};
 protected:
   virtual bool parseJsonDoc(rapidjson::Document &doc);
 

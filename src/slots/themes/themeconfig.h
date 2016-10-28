@@ -1,34 +1,23 @@
 #ifndef THEMECONFIG_H
 #define THEMECONFIG_H
 
-#include <slots/themes/tsconfig.h>
-#include <slots/sql/slotsdb.h>
+#include "tsconfig.h"
+#include "slots/config/prizepoolconfig.h"
+#include "slots/config/freegameconfig.h"
+#include "slots/config/sloteleconfig.h"
+#include "slots/config/slotlinesconfig.h"
+#include "slots/config/gridsconfig.h"
+#include "slots/sql/slotsdb.h"
 
 BEGIN_NAMESPACE(slots)
 
 enum ThemeConfigCode{
-  ROOM_TAX_CODE = 10001,
-  ROOM_MIN_PRIZE_CODE,
-  ROOM_ROLL_ELE_CODE,
-  ROOM_ROLL_ELE_COUNT_CODE,
-  ROOM_ENABLE_REPEAT_ELE_CODE,
-  ROOM_RESERVE_TIME_CODE,
+  ROOM_RESERVE_TIME_CODE = 10006,
   ROOM_FORCE_WIN_CODE,
-  ROOM_MIN_BET_TO_ROLL_CODE,
   ROOM_CFG_END = 19999,
 
-  HALL_TAX_CODE = 20001,
-  HALL_MIN_PRIZE_CODE,
-  HALL_ROLL_ELE_CODE,
-  HALL_ROLL_ELE_COUNT_CODE,
-  HALL_FORCE_WIN_CODE,
+  HALL_FORCE_WIN_CODE = 20005,
   HALL_CFG_END = 29999,
-
-  FREE_GAME_ELE_CODE = 30000,
-  FREE_GAME_CFG_END = 39999,
-
-  TINY_GAME_ELE_CODE = 40000,
-  TINY_GAME_CFG_END = 49999,
 
   WIN_MEGA_CODE = 50001,
   WIN_BIG_CODE = 50002,
@@ -47,9 +36,11 @@ public:
 
 private:
     bool getTemplePrincessConfig();
-    bool getGridConfig(GridConfigs &gc, bool isFree);
-    bool getLinesConfig(LinesConfig &lc);
-    bool getElements(SlotElements &elements, ElementsConfig &cfg);
+    bool getGridConfig(GridsConfig &gc, bool isFree);
+    bool getLinesConfig(SlotLinesConfig &lc);
+    bool getElements(SlotEleConfig &cfg);
+    bool getFreeGameConfig(FreeGameConfig &cfg);
+    bool getPrizePoolConfig(PrizePoolConfig &cfg);
     bool getCommonConfig(ThemeCommonConfig &cfg);
 };
 

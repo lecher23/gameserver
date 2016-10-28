@@ -45,6 +45,13 @@ namespace cgserver{
         std::string getVipConfigPath() {return vip_cfg_path;}
         std::string getOnlineConfigPath() {return online_cfg_path;}
 
+        std::string getTpEleCfgPath() {return tp_ele_cfg_path;}
+        std::string getTpFreegameCfgPath() {return tp_freegame_cfg_path;}
+        std::string getTpFreegameGridsCfgPath() {return tp_freegame_grids_cfg_path;}
+        std::string getTpLinesCfgPath() {return tp_lines_cfg_path;}
+        std::string getTpGridsCfgPath() {return tp_grids_cfg_path;}
+        std::string getTpPrizepoolCfgPath() {return tp_pool_cfg_path;}
+
     private:
 	Config();
 	Config(Config &cfg);
@@ -83,6 +90,12 @@ namespace cgserver{
         std::string cj_cfg_path;
         std::string vip_cfg_path;
         std::string online_cfg_path;
+        std::string tp_ele_cfg_path;
+        std::string tp_freegame_cfg_path;
+        std::string tp_freegame_grids_cfg_path;
+        std::string tp_lines_cfg_path;
+        std::string tp_grids_cfg_path;
+        std::string tp_pool_cfg_path;
     };
 
 }

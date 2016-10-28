@@ -1,5 +1,5 @@
 #include "themeconfig.h"
-#include <util/config.h>
+#include "util/config.h"
 
 BEGIN_NAMESPACE(slots)
 
@@ -13,52 +13,27 @@ bool ThemeConfig::initConfig() {
     return getTemplePrincessConfig();
 }
 
+#define PARSE_JSON_CONFIG_HELPER(path, target)                          \
+    if (!target.initFromJsonFile(path)){                                \
+        CLOG(ERROR) << "parse json config:" << path << " failed.";      \
+        break;                                                          \
+    }
+
+#define PARSE_WARPPER(class_name, instance, path, func)                 \
+    class_name instance;                                                \
+    PARSE_JSON_CONFIG_HELPER(path, instance);                           \
+    if(!func(instance)) {                                               \
+        CLOG(ERROR) << "convert config from path " << path << " failed."; \
+        break;                                                          \
+    }
+
+
 bool ThemeConfig::getTemplePrincessConfig() {
+    auto &cfg = cgserver::Config::getInstance();
     auto &db = SlotsDB::getInstance();
     bool ret = false;
     do {
-        GridConfigs gc;
-        if (!db.getGridsConfig(gc)){
-            CLOG(ERROR) << "get grid config from db failed.";
-            break;
-        }
-        if(!getGridConfig(gc, false)) {
-            CLOG(ERROR) << "parse grid config from db failed.";
-            break;
-        }
-        // free game grid setting
-        GridConfigs fgc;
-        if (!db.getFreeGridsConfig(fgc)){
-            CLOG(ERROR) << "get grid config from db failed.";
-            break;
-        }
-        if(!getGridConfig(gc, true)) {
-            CLOG(ERROR) << "parse grid config from db failed.";
-            break;
-        }
-        LinesConfig lc;
-        if (!db.getLinesConfig(lc)){
-            CLOG(ERROR) << "get line config from db failed.";
-            break;
-        }
-        if(!getLinesConfig(lc)) {
-            CLOG(ERROR) << "parse line config from db failed.";
-            break;
-        }
-        ElementsConfig ec;
-        if (!db.getElementsConfig(ec)){
-            CLOG(ERROR) << "get element config from db failed.";
-            break;
-        }
-        SlotElements se;
-        if (!db.getSlotsElements(se)){
-            CLOG(ERROR) << "get element meta from db failed.";
-            break;
-        }
-        if(!getElements(se, ec)) {
-            CLOG(ERROR) << "parse element config from db failed.";
-            break;
-        }
+        // common config: some are in db.
         ThemeCommonConfig tcc;
         if (!db.getThemeCommonConfig(tcc)) {
             CLOG(ERROR) << "get theme config from db failed.";
@@ -68,28 +43,53 @@ bool ThemeConfig::getTemplePrincessConfig() {
             CLOG(ERROR) << "parse theme config failed.";
             break;
         }
-        auto &butterfly = tsConfig.getButterfly();
-        if (!butterfly.initFromJsonFile(
-                cgserver::Config::getInstance().getButterflyConfigPath()))
-        {
-            CLOG(ERROR) << "init tiny game for tp failed.";
+        // grids setting
+        GridsConfig gc;
+        PARSE_JSON_CONFIG_HELPER(cfg.getTpGridsCfgPath(), gc);
+        if(!getGridConfig(gc, false)) {
+            CLOG(ERROR) << "parse grid config from db failed.";
             break;
         }
+        // free game grid setting
+        GridsConfig fgc;
+        PARSE_JSON_CONFIG_HELPER(cfg.getTpFreegameGridsCfgPath(), fgc);
+        if(!getGridConfig(fgc, true)) {
+            CLOG(ERROR) << "convert free game grid config failed.";
+            break;
+        }
+        // lines config
+        PARSE_WARPPER(SlotLinesConfig, lineCfg, cfg.getTpLinesCfgPath(), getLinesConfig);
+        // element config
+        PARSE_WARPPER(SlotEleConfig, eleCfg, cfg.getTpEleCfgPath(), getElements);
+        // free game config
+        PARSE_WARPPER(FreeGameConfig, freeGameCfg, cfg.getTpFreegameCfgPath(), getFreeGameConfig);
+        // prize pool config
+        PARSE_WARPPER(PrizePoolConfig, prizePoolCfg, cfg.getTpPrizepoolCfgPath(), getPrizePoolConfig);
+        // butterfly config
+        auto &butterfly = tsConfig.getButterfly();
+        PARSE_JSON_CONFIG_HELPER(cfg.getButterflyConfigPath(), butterfly);
         ret = true;
     }while(false);
     return ret;
 }
 
-bool ThemeConfig::getGridConfig(GridConfigs &gc, bool isFree) {
-    tsConfig.setRowNumber(gc.rowNum);
-    tsConfig.setColumnNumber(gc.columnNum);
+#undef PARSE_WARPPER
+#undef PARSE_JSON_CONFIG_HELPER
+
+bool ThemeConfig::getGridConfig(GridsConfig &gc, bool isFree) {
+    if (!isFree) {
+        tsConfig.setRowNumber(gc.getRowSize());
+        tsConfig.setColumnNumber(gc.getColSize());
+        tsConfig.setJackpot1Count(gc.getColSize());
+        tsConfig.setJackpot2Count(gc.getColSize());
+    }
 
     std::map<int32_t, TSGrid> grids;
     int32_t index;
-    int len = gc.grids.size();
+    int len = gc.end();
     for (size_t i = 0; i < len; ++i) {
-        auto &item = gc.grids[i]; // row, colum, eleID, weight,
-        auto &grid = tsConfig.getGrid(item.row, item.column, isFree);
+        auto &item = gc.getGrid(i); // row, colum, eleID, weight,
+        auto &grid = tsConfig.getGrid(item.row, item.col, isFree);
         grid.addElement(item.eleID, item.weight);
     }
     // check
@@ -99,19 +99,46 @@ bool ThemeConfig::getGridConfig(GridConfigs &gc, bool isFree) {
     return true;
 }
 
-bool ThemeConfig::getLinesConfig(LinesConfig &lc) {
-    for (auto &line: lc) {
-        tsConfig.addLine(line.lineID, line.line);
+bool ThemeConfig::getLinesConfig(SlotLinesConfig &lc) {
+    for (int i = lc.begin(); i < lc.end(); ++i) {
+        tsConfig.addLine(i + 1, lc.getLine(i));
     }
     return true;
 }
 
-bool ThemeConfig::getElements(SlotElements &elements, ElementsConfig &cfg) {
-    for (auto &se: cfg) {
+bool ThemeConfig::getElements(SlotEleConfig &cfg) {
+    for (int i = cfg.begin(); i < cfg.end(); ++i) {
+        const auto &ele = cfg.getElement(i);
         tsConfig.addElement(
-            se.eleID, elements[se.eleID].type, elements[se.eleID].bRepeat);
-        tsConfig.setElementRatio(se.eleID, se.lineNum, se.value);
+            ele.id, ele.type, ele.repeatable);
+        for (const auto &item: ele.reward) {
+            tsConfig.setElementRatio(ele.id, item.first, item.second);
+        }
     }
+    tsConfig.getFreeGameConfig().setElementId(cfg.freeGameEleID);
+    tsConfig.getTinyGameConfig().setElementId(cfg.tinyGameEleID);
+    tsConfig.setJackpot1EleID(cfg.roomWinEleID);
+    tsConfig.setJackpot2EleID(cfg.hallWinEleID);
+    return true;
+}
+
+bool ThemeConfig::getFreeGameConfig(FreeGameConfig &cfg) {
+    for (int i = cfg.begin(); i < cfg.end(); ++i) {
+        const auto &item = cfg.getItem(i);
+        tsConfig.getFreeGameConfig().addConfig(item.first, item.second);
+    }
+    return true;
+}
+
+bool ThemeConfig::getPrizePoolConfig(PrizePoolConfig &cfg) {
+    const auto &hallCfg = cfg.getHallConfig();
+    tsConfig.setTax4Hall(hallCfg.tax);
+    tsConfig.setMinHallPrizePool(hallCfg.base);
+    tsConfig.setJackpot2Limit(hallCfg.minBet);
+    const auto &roomCfg = cfg.getRoomConfig();
+    tsConfig.setTax4Room(roomCfg.tax);
+    tsConfig.setMinRoomPrizePool(roomCfg.base);
+    tsConfig.setJackpot1Limit(roomCfg.minBet);
     return true;
 }
 
@@ -122,22 +149,6 @@ bool ThemeConfig::getCommonConfig(ThemeCommonConfig &cfg) {
         code = sCfg.code;
         if (code < ROOM_CFG_END) {
             switch(code) {
-            case ROOM_TAX_CODE: {
-                tsConfig.setTax4Room(sCfg.value);
-                break;
-            }
-            case ROOM_MIN_PRIZE_CODE: {
-                tsConfig.setMinRoomPrizePool(sCfg.value);
-                break;
-            }
-            case ROOM_ROLL_ELE_CODE: {
-                tsConfig.setJackpot1EleID(sCfg.value);
-                break;
-            }
-            case ROOM_ROLL_ELE_COUNT_CODE: {
-                tsConfig.setJackpot1Count(sCfg.value);
-                break;
-            }
             case ROOM_RESERVE_TIME_CODE:{
                 tsConfig.setRoomReserveTime(sCfg.value);
                 break;
@@ -146,49 +157,15 @@ bool ThemeConfig::getCommonConfig(ThemeCommonConfig &cfg) {
                 tsConfig.setForceWinRoomPrize(sCfg.value);
                 break;
             }
-            case ROOM_MIN_BET_TO_ROLL_CODE:{
-                tsConfig.setJackpot1Limit(sCfg.value);
-                break;
-            }
             }
         }
         else if (code < HALL_CFG_END) {
             switch(code) {
-            case HALL_TAX_CODE: {
-                tsConfig.setTax4Hall(sCfg.value);
-                break;
-            }
-            case HALL_MIN_PRIZE_CODE: {
-                tsConfig.setMinHallPrizePool(sCfg.value);
-                break;
-            }
-            case HALL_ROLL_ELE_CODE: {
-                tsConfig.setJackpot2EleID(sCfg.value);
-                break;
-            }
-            case HALL_ROLL_ELE_COUNT_CODE: {
-                tsConfig.setJackpot2Count(sCfg.value);
-                break;
-            }
             case HALL_FORCE_WIN_CODE: {
                 tsConfig.setForceWinHallPrize(sCfg.value);
                 break;
             }
             }
-        } else if (code < FREE_GAME_CFG_END) {
-            if (code == FREE_GAME_ELE_CODE) {
-                tsConfig.getFreeGameConfig().setElementId(sCfg.value);
-                continue;
-            }
-            int32_t count = code - FREE_GAME_ELE_CODE;
-            tsConfig.getFreeGameConfig().addConfig(count, sCfg.value);
-        } else if (code < TINY_GAME_CFG_END) {
-            if (code == TINY_GAME_ELE_CODE) {
-                tsConfig.getTinyGameConfig().setElementId(sCfg.value);
-                continue;
-            }
-            int32_t count = code - TINY_GAME_ELE_CODE;
-            tsConfig.getTinyGameConfig().addConfig(count, sCfg.value);
         } else if (code < WIN_CFG_END) {
             if (code == WIN_MEGA_CODE) {
                 tsConfig.setMegawin(sCfg.value);
