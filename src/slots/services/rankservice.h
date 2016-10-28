@@ -11,7 +11,7 @@ namespace slots{
 
 	virtual bool doJob(CPacket &packet, CResponse &resp);
     private:
-	int32_t getRankValue(LeaderBoardRank &rank, int64_t id);	
+	int32_t getRankValue(LeaderBoardRank &rank, int64_t id);
     };
 }
 #endif

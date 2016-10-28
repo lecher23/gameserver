@@ -5,7 +5,7 @@ using namespace cgserver;
 namespace slots{
     RankService::RankService(){
     }
-    
+
     RankService::~RankService(){
     }
 
@@ -17,7 +17,7 @@ namespace slots{
 	    CLOG(WARNING) << "Invalid type:" << rTypeStr;
 	    return false;
 	}
-	RankType rType = RankType(iType);	
+	RankType rType = RankType(iType);
 	int64_t uid;
 	if (!getIntVal(packet, "uid", uid)) {
 	    return false;
@@ -30,7 +30,7 @@ namespace slots{
 	    pageSize = 10;
 	}
 	pageSize = pageSize > 50 ? 50 : pageSize;
-	
+
 	auto &dc = SlotsDataCenter::instance();
 	auto &rank = dc.getLeaderBoardData(rType);
 	SBuf buf;

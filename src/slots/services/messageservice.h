@@ -2,7 +2,7 @@
 #define MESSAGESERVICE_H
 
 #include "iservice.h"
-#include <slots/data/slotsdatacenter.h>
+#include "slots/data/slotsdatacenter.h"
 
 BEGIN_NAMESPACE(slots)
 
@@ -16,14 +16,10 @@ private:
     bool enterRoom(CPacket &packet, ResultFormatter &rf);
     bool queryRoomPrize(CPacket &packet, ResultFormatter &rf);
     bool queryAllRoomInHall(CPacket &packet, ResultFormatter &rf);
-    bool getLoginReward(CPacket &packet, int64_t &newFortune);
     bool getCargoStatus(CPacket &packet);
-    bool finishTinyGame(CPacket &packet, ResultFormatter &rf);
     bool getRoomInfoInList(CPacket &packet, ResultFormatter &rf);
-    bool getAchievementReward(CPacket &packet, ResultFormatter &rf);
     bool getHallInfoInList(CPacket &packet, ResultFormatter &rf);
     bool reportOnlineTime(CPacket &packet, ResultFormatter &rf);
-    bool recvOnlineReward(CPacket &packet, ResultFormatter &rf);
 
     SlotsDataCenter &_dataCenter;
 };

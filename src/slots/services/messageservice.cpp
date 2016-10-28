@@ -5,25 +5,16 @@
 
 BEGIN_NAMESPACE(slots)
 
-MessageService::MessageService(): _dataCenter(SlotsDataCenter::instance()){
+MessageService::MessageService():_dataCenter(SlotsDataCenter::instance()){
 }
 
 MessageService::~MessageService(){
 }
 
-#define GET_SLOT_USER(uid, user)                                \
-    SlotsUserPtr user;                                          \
-    if (!_dataCenter.slotsUserData->getByUid(uid, user)) {      \
-        return false;                                           \
-    }
 
-#define MSG_RECV_DAILY_REWARD 1
 #define MSG_ENTER_ROOM 2
-#define MSG_FINISH_TINY_GAME 5
 #define MSG_QUERY_ROOMS_INFO 6
-#define MSG_GET_CJ_REWARD 7
 #define MSG_REPORT_ONLINE_TIME 8
-#define MSG_RECV_ONLINE_REWARD 9
 #define MSG_QUERY_HALL_INFO 10
 
 bool MessageService::doJob(CPacket &packet, CResponse &resp) {
@@ -32,40 +23,20 @@ bool MessageService::doJob(CPacket &packet, CResponse &resp) {
     ResultFormatter rf(bf);
     bool ret = false;
     switch(gType){
-    case MSG_RECV_DAILY_REWARD:{
-        int64_t newFortune;
-        ret = getLoginReward(packet, newFortune);
-        if (ret) {
-            rf.formatSimpleResultWithFortune(newFortune);
-        }
-        break;
-    }
     case MSG_ENTER_ROOM: {
         ret = enterRoom(packet, rf);
-        break;
-    }
-    case MSG_FINISH_TINY_GAME: {
-        ret = finishTinyGame(packet, rf);
         break;
     }
     case MSG_QUERY_ROOMS_INFO: {
         ret = getRoomInfoInList(packet, rf);
         break;
     }
-    case MSG_GET_CJ_REWARD:{
-        ret = getAchievementReward(packet, rf);
-        break;
-    }
     case MSG_QUERY_HALL_INFO:{
         ret = getHallInfoInList(packet,rf);
         break;
     }
-    case MSG_REPORT_ONLINE_TIME:{
+    case MSG_REPORT_ONLINE_TIME: {
         ret = reportOnlineTime(packet, rf);
-        break;
-    }
-    case MSG_RECV_ONLINE_REWARD: {
-        ret = recvOnlineReward(packet, rf);
         break;
     }
     }
@@ -95,27 +66,6 @@ bool MessageService::enterRoom(CPacket &packet, ResultFormatter &rf) {
     return true;
 }
 
-bool MessageService::getLoginReward(CPacket &packet, int64_t &newFortune) {
-    std::string uid;
-    GET_PARAM(slotconstants::sUserID, uid, true);
-    GET_SLOT_USER(uid, user);
-    LoginReward loginReward;
-    if (!SlotsDataCenter::instance().slotsUserData->getDailyReward(uid, loginReward)) {
-        return false;
-    }
-    auto &uRes = user->uRes;
-    if (loginReward.recved) {
-        newFortune = uRes.fortune.val;
-        return true;
-    }
-    int64_t total = loginReward.runnerReward +
-        loginReward.dayReward + loginReward.vipExtra;
-    uRes.incrFortune(total);
-    loginReward.recved = true;
-    newFortune = uRes.fortune.val;
-    SlotsDataCenter::instance().slotsUserData->updateDailyReward(uid, true);
-    return true;
-}
 
 bool MessageService::getCargoStatus(CPacket &packet) {
     std::string uid;
@@ -127,16 +77,6 @@ bool MessageService::getCargoStatus(CPacket &packet) {
     // if no record, async request server
     // if has record, return value
     return false;
-}
-
-bool MessageService::finishTinyGame(CPacket &packet, ResultFormatter &rf) {
-    std::string uid;
-    GET_PARAM(slotconstants::sUserID, uid, true);
-    GET_SLOT_USER(uid, user);
-    auto &gameStatus = user->gSt;
-    user->uRes.incrFortune(gameStatus.tinyGameEarned());
-    rf.formatSimpleResultWithFortune(user->uRes.fortune.val);
-    return true;
 }
 
 bool MessageService::getRoomInfoInList(CPacket &packet, ResultFormatter &rf) {
@@ -165,23 +105,6 @@ bool MessageService::getRoomInfoInList(CPacket &packet, ResultFormatter &rf) {
     }
     rf.formatRoomList(rooms);
     return true;
-}
-
-bool MessageService::getAchievementReward(CPacket &packet, ResultFormatter &rf) {
-    GET_INT32_PARAM_IN_PACKET(packet, slotconstants::sCjID, cjID);
-    std::string uid;
-    GET_PARAM(slotconstants::sUserID, uid, true);
-    GET_SLOT_USER(uid, user);
-    for (auto &cj:user->uCj) {
-        if (cjID == cj.aid && !cj.isRecvReward) {
-            cj.isRecvReward = true;
-            const auto &cjInfo = SlotsConfig::getInstance().cjConfig.getCjInfo(cjID);
-            user->uRes.incrFortune(cjInfo.rewardValue);
-            rf.formatSimpleResultWithFortune(user->uRes.fortune.val);
-            return true;
-        }
-    }
-    return false;
 }
 
 bool MessageService::getHallInfoInList(CPacket &packet, ResultFormatter &rf) {
@@ -224,7 +147,7 @@ bool MessageService::reportOnlineTime(CPacket &packet, ResultFormatter &rf) {
         rf.formatOnlineInfo(oInfo, curLevel, MAX_ONLINE_TIME);
         return true;
     }
-    auto curTimeSum = _dataCenter.slotsUserData->incrOnlineTime(uid, onlineTime);
+    auto curTimeSum = uData.incrOnlineTime(uid, onlineTime);
 
     int32_t extTimeNeed = 0;
     int64_t reward = 0;
@@ -244,28 +167,10 @@ bool MessageService::reportOnlineTime(CPacket &packet, ResultFormatter &rf) {
     return true;
 }
 
-bool MessageService::recvOnlineReward(CPacket &packet, ResultFormatter &rf) {
-    std::string uid;
-    GET_PARAM(slotconstants::sUserID, uid, true);
-    auto &uData = *_dataCenter.slotsUserData;
-    GET_SLOT_USER(uid, user);
-    OnlineInfo oInfo;
-    if (!uData.getOnlineInfo(uid, oInfo, 0)) {
-        CLOG(WARNING) << "Get user reward info from redis failed.";
-        return false;
-    }
-    if (oInfo.recved) {
-        CLOG(WARNING) << "User reward has recved.";
-        return false;
-    }
-    auto &uRes = user->uRes;
-    uRes.incrFortune(oInfo.rewardValue);
-    user->uHis.newFortune(uRes.fortune.val);
-    uData.recvOnlineGift(uid, true);
-    rf.formatSimpleResultWithFortune(uRes.fortune.val);
-    return true;
-}
-
 #undef GET_SLOT_USER
+#undef MSG_ENTER_ROOM
+#undef MSG_QUERY_ROOMS_INFO
+#undef MSG_REPORT_ONLINE_TIME
+#undef MSG_QUERY_HALL_INFO
 
 END_NAMESPACE

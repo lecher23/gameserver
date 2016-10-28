@@ -7,7 +7,7 @@
 BEGIN_NAMESPACE(slots)
 
 namespace SlotCacheStr{
-  const std::string sDailyKeyPrefix = "L";
+  const std::string sDailyKeyPrefix = "L:";
   const std::string sLRunnerIdKey = "rID";
   const std::string sLRunnerRewardKey = "rRwd";
   const std::string sLRecvKey = "recv";
