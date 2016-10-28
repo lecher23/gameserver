@@ -6,9 +6,6 @@
 #include <mysql/mysqlconnpool.h>
 #include <mysql/mysqloperationbase.h>
 #include <slots/data/basicdata.h>
-#include <slots/model/gridconfig.h>
-#include <slots/model/lineconfig.h>
-#include <slots/model/elementsconfig.h>
 #include <slots/model/themecommonconfig.h>
 
 BEGIN_NAMESPACE(slots)
@@ -21,11 +18,6 @@ const std::string gUserMails = "user_mails";
 const std::string gMailDetail = "mail_detail";
 
 const std::string gCargoInfo = "cargo_config";
-const std::string gLineConfig = "line_config";
-const std::string gGridConfig = "grid_config";
-const std::string gFreeGridConfig = "free_grid_config";
-const std::string gSloteElement = "ele_info";
-const std::string gElementConfig = "ele_config";
 const std::string gThemeCommonConfig = "theme_common_cfg";
 
 const std::string gFriendHistory = "friend_history";
@@ -55,11 +47,6 @@ public:
     bool getUserAchievement(const std::string &uid, Achievements &out) const;
     bool getUserAchievement(const std::string &uid, const std::string &cjID, UserCJ &out);
     bool getCargoInfo(CargoInfos &out) const;
-    bool getGridsConfig(GridConfigs &out) const;
-    bool getFreeGridsConfig(GridConfigs &out) const;
-    bool getLinesConfig(LinesConfig &out) const;
-    bool getElementsConfig(ElementsConfig &out) const;
-    bool getSlotsElements(SlotElements &out) const;
     bool getThemeCommonConfig(ThemeCommonConfig &out) const;
 
     bool addUser(const std::string &mid, std::string &uid)const ;
