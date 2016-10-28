@@ -11,7 +11,7 @@ namespace slots{
 
     bool RankService::doJob(CPacket &packet, CResponse &resp) {
 	std::string rTypeStr;
-	GET_PARAM("type", rTypeStr, true);
+	GET_PARAM(slotconstants::sType, rTypeStr, true);
 	uint32_t iType;
 	if (!StringUtil::StrToUInt32(rTypeStr.c_str(), iType) || iType > ERT_END) {
 	    CLOG(WARNING) << "Invalid type:" << rTypeStr;
@@ -19,14 +19,14 @@ namespace slots{
 	}
 	RankType rType = RankType(iType);
 	int64_t uid;
-	if (!getIntVal(packet, "uid", uid)) {
+	if (!getIntVal(packet, slotconstants::sUserID, uid)) {
 	    return false;
 	}
 	uint32_t page, pageSize = 0;
-	if (!getIntVal(packet, "page", page)) {
+	if (!getIntVal(packet, slotconstants::sPage, page)) {
 	    page = 0;
 	}
-	if (!getIntVal(packet, "pagesize", pageSize)) {
+	if (!getIntVal(packet, slotconstants::sPageSize, pageSize)) {
 	    pageSize = 10;
 	}
 	pageSize = pageSize > 50 ? 50 : pageSize;
