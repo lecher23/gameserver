@@ -8,6 +8,7 @@ BEGIN_NAMESPACE(slots)
 
 namespace SlotCacheStr{
   const std::string sDailyKeyPrefix = "L:";
+  const std::string sMachineIDPrefix = "M:";
   const std::string sLRunnerIdKey = "rID";
   const std::string sLRunnerRewardKey = "rRwd";
   const std::string sLRecvKey = "recv";
@@ -19,6 +20,37 @@ namespace SlotCacheStr{
   const std::string sOLLevel = "ol:level";
   const std::string sOLRecv = "ol:recv";
   const std::string sOLReward = "ol:rwd";
+  const std::string sName = "name";
+  const std::string sCountry = "country";
+  const std::string sAvatar = "avatar";
+  const std::string sSex = "sex";
+  const std::string sLevel = "level";
+  const std::string sExp = "exp";
+  const std::string sMoney = "money";
+  const std::string sVip = "vip";
+  const std::string sVipPoint = "vpoint";
+  const std::string sFreeGameTimes = "fgt";
+  const std::string sTinyGameEarned = "tg:prz";
+  const std::string sLastBet = "bet";
+  const std::string sLastLines = "lines";
+  const std::string sLastHall = "hall:id";
+};
+
+struct UserUnion{
+  std::string name;
+  std::string avatar;
+  std::string country;
+  bool gender;// 1: male
+  int32_t level;
+  int32_t vipLevel;
+  int32_t vipPoint;
+  int32_t freeGameTimes;
+  int32_t lastLines;
+  int32_t lastHallID;
+  int64_t lastBet;
+  int64_t tinyGameEarned;
+  int64_t fortune;
+  int64_t exp;
 };
 
 struct OnlineInfo{
@@ -48,7 +80,12 @@ class SlotsUserData: public PersistenceBase{
     bool setOnlineInfo(const std::string &userID, OnlineInfo &onlineINfo);
     void recvOnlineGift(const std::string &userID, bool recved);
 
+    bool getUserInCache(std::string &uid, UserUnion &user);
+
 private:
+    bool getUidByMid(const std::string &mid, std::string &uid);
+    void setUidWithMid(const std::string &mid, std::string &uid);
+
     std::map<std::string, SlotsUserPtr> _data;
     std::mutex _lock;
 

@@ -20,15 +20,25 @@ bool SlotsUserData::needSave(uint64_t factor) {
 
 bool SlotsUserData::getByMid(const std::string &mid, SlotsUserPtr &out) {
     std::string uid;
+    //get uid from cache
+    if (getUidByMid(mid, uid)) {
+        return getByUid(uid, out);
+    }
     SlotsDB &db = SlotsDB::getInstance();
     // this user exist
     if(db.getUserIdByMachineId(mid, uid)) {
+        setUidWithMid(mid, uid);
         return getByUid(uid, out);
     }
     if (out.get() == nullptr) {
         out.reset(new SlotsUser);
     }
-    return db.getUserInfoByMachineId(mid, *out);
+    // init new user
+    if (db.getUserInfoByMachineId(mid, *out)) {
+        setUidWithMid(mid, out->uInfo.uid);
+        return true;
+    }
+    return false;
 }
 
 bool SlotsUserData::getByUid(const std::string &uid, SlotsUserPtr &out){
@@ -66,6 +76,9 @@ void SlotsUserData::save2MySQL(uint64_t factor){
 
 #define GENERATE_LOGIN_KEY(key, uid) \
     std::string key = SlotCacheStr::sDailyKeyPrefix + uid;
+
+#define GENERATE_MID_KEY(key, mid) \
+    std::string key = SlotCacheStr::sMachineIDPrefix + mid;
 
 #define REDIS_EASY_HSET(key, param, value)                      \
     {                                                           \
@@ -206,8 +219,66 @@ void SlotsUserData::recvOnlineGift(const std::string &userID, bool recved) {
                     recved ? SlotCacheStr::sLRecvTrue: SlotCacheStr::sLRecvFalse);
 }
 
+bool SlotsUserData::getUserInCache(std::string &uid, UserUnion &user) {
+    // uid is key
+    static const std::vector<std::string> fields = {
+        SlotCacheStr::sName, // 0
+        SlotCacheStr::sCountry,// 1
+        SlotCacheStr::sAvatar,// 2
+        SlotCacheStr::sSex,// 3
+        SlotCacheStr::sLevel,// 4
+        SlotCacheStr::sExp,// 5
+        SlotCacheStr::sMoney,// 6
+        SlotCacheStr::sVip,// 7
+        SlotCacheStr::sVipPoint,// 8
+        SlotCacheStr::sFreeGameTimes,// 9
+        SlotCacheStr::sTinyGameEarned,// 10
+        SlotCacheStr::sLastBet,// 11
+        SlotCacheStr::sLastLines,// 12
+        SlotCacheStr::sLastHall// 13
+    };
+    std::vector<std::string> result;
+    auto ret =
+        _redisClient.Hmget(uid, fields, &result);
+    if (result.size() != fields.size() ) {
+        CLOG(INFO) << "Invalid result for user info with userID:" << uid;
+        return false;
+    }
+    user.name = result[0];
+    user.country = result[1];
+    user.avatar = result[2];
+    user.gender = (result[3] == "1");
+    user.level = cgserver::StringUtil::StrToInt32WithDefault(result[4].data(), 0);
+    user.exp = cgserver::StringUtil::StrToInt64WithDefault(result[5].data(), 0);
+    user.fortune = cgserver::StringUtil::StrToInt64WithDefault(result[6].data(), 0);
+    user.vipLevel = cgserver::StringUtil::StrToInt32WithDefault(result[7].data(), 0);
+    user.vipPoint = cgserver::StringUtil::StrToInt32WithDefault(result[8].data(), 0);
+    user.freeGameTimes = cgserver::StringUtil::StrToInt32WithDefault(result[9].data(), 0);
+    user.tinyGameEarned = cgserver::StringUtil::StrToInt64WithDefault(result[10].data(), 0);
+    user.lastBet = cgserver::StringUtil::StrToInt64WithDefault(result[11].data(), 0);
+    user.lastLines = cgserver::StringUtil::StrToInt32WithDefault(result[12].data(), 0);
+    user.lastHallID = cgserver::StringUtil::StrToInt32WithDefault(result[13].data(), 0);
+    return true;
+}
+
+bool SlotsUserData::getUidByMid(const std::string &mid, std::string &uid) {
+    GENERATE_MID_KEY(key, mid);
+    if (_redisClient.Get(key, &uid) != RC_SUCCESS) {
+        return false;
+    }
+    return !uid.empty();
+}
+
+void SlotsUserData::setUidWithMid(const std::string &mid, std::string &uid) {
+    GENERATE_MID_KEY(key, mid);
+    if (_redisClient.Set(key, uid) != RC_SUCCESS) {
+        CLOG(WARNING) << "save user mid:" << mid << " with uid:" << uid << " failed.";
+    }
+}
+
 #undef PARSE_CACHE_VAL_TO_INT32
 #undef GENERATE_LOGIN_KEY
+#undef GENERATE_MID_KEY
 #undef REDIS_EASY_HSET
 #undef REDIS_EASY_EXPIREAT
 
