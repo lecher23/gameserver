@@ -30,6 +30,7 @@ class SlotsDB{
 public:
     ~SlotsDB();
 
+    bool initNewUser(const std::string &mid, UserUnion &user) const;
     bool getUserInfo(cgserver::MysqlOperationBase *mob, SlotsUser &su) const ;
     bool getUserInfoByMachineId(const std::string &mid, SlotsUser &su) const ;
     bool getUserIdByMachineId(const std::string &mid, std::string &uid) const ;

@@ -70,11 +70,12 @@ bool SlotsUserData::getUserByMid(const std::string &mid, UserUnion &out) {
         setUidWithMid(mid, out.uid);
         return getUserByUid(out);
     }
-    // init new user
-    // if (db.getUserInfoByMachineId(mid, *out)) {
-    //     setUidWithMid(mid, out->uInfo.uid);
-    //     return true;
-    // }
+    //init new user
+    if (db.initNewUser(mid, out)) {
+        setUidWithMid(mid, out.uid);
+        setUserToCache(out);
+        return true;
+    }
     return false;
 }
 

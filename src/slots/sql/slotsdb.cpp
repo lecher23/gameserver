@@ -25,6 +25,14 @@ SlotsDB &SlotsDB::getInstance(){
     return instance;
 }
 
+bool SlotsDB::initNewUser(const std::string &mid, UserUnion &user) const {
+    if (!addUser(mid, user.uid)) {
+        CLOG(WARNING) << "Init new user info failed.\n";
+        return false;
+    }
+    return true;
+}
+
 bool SlotsDB::getUserInfo(MysqlOperationBase * mob, SlotsUser &su) const {
     UserInfo &ui = su.uInfo;
     UserResource &ur = su.uRes;

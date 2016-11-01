@@ -62,16 +62,16 @@ struct UserUnion{
   std::string avatar;
   std::string country;
   bool isMale;
-  int32_t level;
-  int32_t vipLevel;
-  int32_t vipPoint;
-  int32_t freeGameTimes;
-  int32_t lastLines;
-  int32_t lastHallID;
-  int64_t lastBet;
-  int64_t tinyGameEarned;
-  int64_t fortune;
-  int64_t exp;
+  int32_t level{0};
+  int32_t vipLevel{0};
+  int32_t vipPoint{0};
+  int32_t freeGameTimes{0};
+  int32_t lastLines{0};
+  int32_t lastHallID{0};
+  int64_t lastBet{0};
+  int64_t tinyGameEarned{0};
+  int64_t fortune{0};
+  int64_t exp{0};
 };
 
 struct SlotsUser{
