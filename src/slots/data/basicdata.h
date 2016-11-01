@@ -56,6 +56,24 @@ struct LoginReward {
     int32_t dayN{0};
 };
 
+struct UserUnion{
+  std::string uid;
+  std::string name;
+  std::string avatar;
+  std::string country;
+  bool isMale;
+  int32_t level;
+  int32_t vipLevel;
+  int32_t vipPoint;
+  int32_t freeGameTimes;
+  int32_t lastLines;
+  int32_t lastHallID;
+  int64_t lastBet;
+  int64_t tinyGameEarned;
+  int64_t fortune;
+  int64_t exp;
+};
+
 struct SlotsUser{
   UserInfo uInfo;
   UserResource uRes;

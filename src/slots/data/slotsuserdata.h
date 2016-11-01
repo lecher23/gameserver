@@ -36,23 +36,6 @@ namespace SlotCacheStr{
   const std::string sLastHall = "hall:id";
 };
 
-struct UserUnion{
-  std::string name;
-  std::string avatar;
-  std::string country;
-  bool gender;// 1: male
-  int32_t level;
-  int32_t vipLevel;
-  int32_t vipPoint;
-  int32_t freeGameTimes;
-  int32_t lastLines;
-  int32_t lastHallID;
-  int64_t lastBet;
-  int64_t tinyGameEarned;
-  int64_t fortune;
-  int64_t exp;
-};
-
 struct OnlineInfo{
     int32_t rewardLevel{0};// target reward level
     bool recved{true};
@@ -66,8 +49,10 @@ class SlotsUserData: public PersistenceBase{
     virtual void save2MySQL(uint64_t factor);
     virtual bool needSave(uint64_t factor);
 
-    bool getByUid(const std::string &uid, SlotsUserPtr &out);
     bool getByMid(const std::string &mid, SlotsUserPtr &out);
+    bool getUserByMid(const std::string &mid, UserUnion &out);
+    bool getUserByUid(UserUnion &out);
+    bool getByUid(const std::string &uid, SlotsUserPtr &out);
     void set(const std::string &uid, SlotsUserPtr &in);
 
     void setDailyReward(const std::string &userID, const LoginReward &in);
@@ -80,16 +65,18 @@ class SlotsUserData: public PersistenceBase{
     bool setOnlineInfo(const std::string &userID, OnlineInfo &onlineINfo);
     void recvOnlineGift(const std::string &userID, bool recved);
 
-    bool getUserInCache(std::string &uid, UserUnion &user);
+    bool getUserInCache(UserUnion &user);
+    bool setUserToCache(UserUnion &user);
+    bool getUidByMid(const std::string &mid, std::string &uid);
 
 private:
-    bool getUidByMid(const std::string &mid, std::string &uid);
     void setUidWithMid(const std::string &mid, std::string &uid);
 
     std::map<std::string, SlotsUserPtr> _data;
     std::mutex _lock;
-
     CRedisClient &_redisClient;
+
+    static const std::vector<std::string> UserInRedisFields;
 };
 
 DF_SHARED_PTR(SlotsUserData);
