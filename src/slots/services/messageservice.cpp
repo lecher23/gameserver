@@ -63,6 +63,7 @@ bool MessageService::enterRoom(CPacket &packet, ResultFormatter &rf) {
         return false;
     }
     // format result
+    rf.formatSimpleResult(true, "");
     return true;
 }
 
