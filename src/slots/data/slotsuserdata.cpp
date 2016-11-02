@@ -202,6 +202,51 @@ bool SlotsUserData::updateLoginInfo(const std::string &uid, int64_t loginTimesta
     return true;
 }
 
+bool SlotsUserData::setUserToCache(GameContext &user) {
+    std::vector<std::string> fields(
+        RedisLoginInfoKeys.begin(), RedisLoginInfoKeys.end());
+    std::vector<std::string> result;
+    SET_USER_RESOURCE_TO_VEC();
+    SET_GAME_HISTORY_TO_VEC();
+    result.push_back(user.uInfo.fname.val);
+    result.push_back(user.uInfo.country.val);
+    result.push_back(user.uInfo.avatar.val);
+    result.push_back(user.uInfo.male.val);
+    auto &t = user.allTHis;
+    for (int i = t.getThemeStart(); i < t.getThemeCount(); ++i) {
+        std::string sI = StringUtil::toString(i);
+
+        int32_t tmp = t.getTagValue(i, BIG_WIN_TAG);
+        fields.push_back(SlotCacheStr::sBigWin + sI);
+        result.push_back(StringUtil::toString(tmp));
+
+        tmp = t.getTagValue(i, MEGA_WIN_TAG);
+        fields.push_back(SlotCacheStr::sMegaWin + sI);
+        result.push_back(StringUtil::toString(tmp));
+
+        tmp = t.getTagValue(i, SUPER_WIN_TAG);
+        fields.push_back(SlotCacheStr::sSuperWin + sI);
+        result.push_back(StringUtil::toString(tmp));
+
+        tmp = t.getTagValue(i, NORMAL_GAME_TAG);
+        fields.push_back(SlotCacheStr::sGameCount + sI);
+        result.push_back(StringUtil::toString(tmp));
+
+        tmp = t.getTagValue(i, FREE_GAME_TAG);
+        fields.push_back(SlotCacheStr::sFreeGameTimes + sI);
+        result.push_back(StringUtil::toString(tmp));
+
+        tmp = t.getTagValue(i, TINY_GAME_TAG);
+        fields.push_back(SlotCacheStr::sTinyGameCount + sI);
+        result.push_back(StringUtil::toString(tmp));
+
+        tmp = t.getTagValue(i, SIX_LINK_TAG);
+        fields.push_back(SlotCacheStr::sLink + sI);
+        result.push_back(StringUtil::toString(tmp));
+    }
+    return _redisClient.Hmset(user.uid, fields, result) == RC_SUCCESS;
+}
+
 #undef GET_INT_VAL_FROM_VEC
 #undef MAKE_GAME_CONTEXT_FIELDS
 
@@ -405,11 +450,6 @@ void SlotsUserData::recvOnlineGift(const std::string &userID, bool recved) {
     GENERATE_LOGIN_KEY(key, userID);
     REDIS_EASY_HSET(key, SlotCacheStr::sOLRecv,
                     recved ? SlotCacheStr::sLRecvTrue: SlotCacheStr::sLRecvFalse);
-}
-
-bool SlotsUserData::setUserToCache(GameContext &user) {
-    // uid is key
-    return false;
 }
 
 bool SlotsUserData::addUserFortuneInCache(

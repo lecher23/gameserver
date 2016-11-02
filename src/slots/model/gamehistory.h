@@ -61,6 +61,10 @@ class ThemeHistory {
     }
   }
 
+  int32_t getThemeStart() {
+    return ESS_TEMPLE_PRINCESS;
+  }
+
   int32_t getThemeCount() {
     return THEME_TYPES;
   }

@@ -79,6 +79,8 @@ class SlotsUserData: public PersistenceBase{
     bool getUserByUid(GameContext &out);
     int64_t getTinyGameReward(const std::string &uid);
     bool checkAchievement(const std::string &uid, const std::string &cjID);
+    bool setUserToCache(GameContext &user); // rewrite it
+
     void setDailyReward(const std::string &userID, const LoginReward &in);
     void updateDailyReward(const std::string &userID, bool recved);
     bool getDailyReward(const std::string &userID, LoginReward &out);
@@ -89,7 +91,6 @@ class SlotsUserData: public PersistenceBase{
     bool setOnlineInfo(const std::string &userID, OnlineInfo &onlineINfo);
     void recvOnlineGift(const std::string &userID, bool recved);
 
-    bool setUserToCache(GameContext &user); // rewrite it
     bool addUserFortuneInCache(const std::string &uid, int64_t incr, int64_t &res);
     bool getUidByMid(const std::string &mid, std::string &uid);
 
