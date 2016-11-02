@@ -77,42 +77,49 @@ bool SlotsUserData::needSave(uint64_t factor) {
     out.push_back(SlotCacheStr::sLink + hallID);
 
 #define GET_INT_VAL_FROM_VEC(sec, attr, bit, index)                     \
+    if (result[index].empty()) {                                        \
+        CLOG(WARNING) << "data at index:" << index << " not set";       \
+        return false;                                                   \
+    }                                                                   \
+    user.sec.attr = StringUtil::StrToInt##bit##WithDefault(result[index].data(), 0);
+
+#define GET_INT_VAL_FROM_VEC_NO_CHECK(sec, attr, bit, index)            \
     user.sec.attr = StringUtil::StrToInt##bit##WithDefault(result[index].data(), 0);
 
 #define PUSH_INT_VAL_TO_VEC(sec, attr)                         \
     result.push_back(StringUtil::toString(user.sec.attr));
 
 #define GET_USER_RESOURCE_FROM_VEC(start)                               \
-    user.uRes.level = StringUtil::StrToInt32WithDefault(result[start].data(), 0); \
-    user.uRes.exp = StringUtil::StrToInt64WithDefault(result[start + 1].data(), 0); \
-    user.uRes.fortune = StringUtil::StrToInt64WithDefault(result[start + 2].data(), 0); \
-    user.uRes.vipLevel = StringUtil::StrToInt32WithDefault(result[start + 3].data(), 0); \
-    user.uRes.vipPoint = StringUtil::StrToInt32WithDefault(result[start + 4].data(), 0);
+    GET_INT_VAL_FROM_VEC(uRes, level, 32, start);                       \
+    GET_INT_VAL_FROM_VEC(uRes, exp, 64, start + 1);                     \
+    GET_INT_VAL_FROM_VEC(uRes, fortune, 64, start + 2);                 \
+    GET_INT_VAL_FROM_VEC(uRes, vipLevel, 32, start + 3);                \
+    GET_INT_VAL_FROM_VEC(uRes, vipPoint, 32, start + 4);
 
-#define GET_GAME_HISTORY_FROM_VEC(start)                                \
-    user.gHis.maxFortune = StringUtil::StrToInt64WithDefault(result[start].data(), 0); \
-    user.gHis.maxEarned = StringUtil::StrToInt64WithDefault(result[start + 1].data(), 0); \
-    user.gHis.totalEarned = StringUtil::StrToInt64WithDefault(result[start + 2].data(), 0); \
-    user.gHis.totalBet = StringUtil::StrToInt64WithDefault(result[start + 3].data(), 0); \
-    user.gHis.lastLogin = StringUtil::StrToInt64WithDefault(result[start + 4].data(), 0); \
-    user.gHis.loginDays = StringUtil::StrToInt32WithDefault(result[start + 5].data(), 0); \
-    user.gHis.jackpot = StringUtil::StrToInt32WithDefault(result[start + 5].data(), 0);
+#define GET_GAME_HISTORY_FROM_VEC(start)                        \
+    GET_INT_VAL_FROM_VEC(gHis, maxFortune, 64, start);          \
+    GET_INT_VAL_FROM_VEC(gHis, maxEarned, 64, start + 1);       \
+    GET_INT_VAL_FROM_VEC(gHis, totalEarned, 64, start + 2);     \
+    GET_INT_VAL_FROM_VEC(gHis, totalBet, 64, start + 3);        \
+    GET_INT_VAL_FROM_VEC(gHis, lastLogin, 64, start + 4);       \
+    GET_INT_VAL_FROM_VEC(gHis, loginDays, 32, start + 5);       \
+    GET_INT_VAL_FROM_VEC(gHis, jackpot, 32, start + 6);
 
 #define GET_PRE_GAME_INFO_FROM_VEC(start)                               \
-    GET_INT_VAL_FROM_VEC(preGameInfo, freeGameTimes, 32, start);        \
-    GET_INT_VAL_FROM_VEC(preGameInfo, tinyGameEarned, 64, start + 1);   \
-    GET_INT_VAL_FROM_VEC(preGameInfo, lastBet, 64, start + 2);          \
-    GET_INT_VAL_FROM_VEC(preGameInfo, lastLines, 32, start + 3);        \
-    GET_INT_VAL_FROM_VEC(preGameInfo, lastHallID, 32, start + 4);
+    GET_INT_VAL_FROM_VEC_NO_CHECK(preGameInfo, freeGameTimes, 32, start);        \
+    GET_INT_VAL_FROM_VEC_NO_CHECK(preGameInfo, tinyGameEarned, 64, start + 1);   \
+    GET_INT_VAL_FROM_VEC_NO_CHECK(preGameInfo, lastBet, 64, start + 2);          \
+    GET_INT_VAL_FROM_VEC_NO_CHECK(preGameInfo, lastLines, 32, start + 3);        \
+    GET_INT_VAL_FROM_VEC_NO_CHECK(preGameInfo, lastHallID, 32, start + 4);
 
 #define GET_THEME_HISTORY_FROM_VEC(start)                       \
-    GET_INT_VAL_FROM_VEC(tHis, bigWinCount, 32, start);         \
-    GET_INT_VAL_FROM_VEC(tHis, megaWinCount, 32, start + 1);    \
-    GET_INT_VAL_FROM_VEC(tHis, superWinCount, 32, start + 2);   \
-    GET_INT_VAL_FROM_VEC(tHis, spinCount, 32, start + 3);       \
-    GET_INT_VAL_FROM_VEC(tHis, freeGameCount, 32, start + 4);   \
-    GET_INT_VAL_FROM_VEC(tHis, tinyGameCount, 32, start + 5);   \
-    GET_INT_VAL_FROM_VEC(tHis, maxLinkCount, 32, start + 6);
+    GET_INT_VAL_FROM_VEC_NO_CHECK(tHis, bigWinCount, 32, start);         \
+    GET_INT_VAL_FROM_VEC_NO_CHECK(tHis, megaWinCount, 32, start + 1);    \
+    GET_INT_VAL_FROM_VEC_NO_CHECK(tHis, superWinCount, 32, start + 2);   \
+    GET_INT_VAL_FROM_VEC_NO_CHECK(tHis, spinCount, 32, start + 3);       \
+    GET_INT_VAL_FROM_VEC_NO_CHECK(tHis, freeGameCount, 32, start + 4);   \
+    GET_INT_VAL_FROM_VEC_NO_CHECK(tHis, tinyGameCount, 32, start + 5);   \
+    GET_INT_VAL_FROM_VEC_NO_CHECK(tHis, maxLinkCount, 32, start + 6);
 
 #define SET_USER_RESOURCE_TO_VEC()                                      \
     result.push_back(StringUtil::toString(user.uRes.level.val));        \

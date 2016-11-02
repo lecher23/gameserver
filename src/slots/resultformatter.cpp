@@ -17,6 +17,9 @@ void ResultFormatter::formatMailList(const UserMails &uMails)  {
 }
 
 void ResultFormatter::formatUser(const GameContext &ctx) {
+    JSON_KEY(ResultStr::sID);
+    JSON_STRING_VALUE(ctx.uid);
+
     JSON_KEY(ResultStr::sUserInfo);
     formatUserInfo(ctx.uInfo);
 
@@ -24,7 +27,7 @@ void ResultFormatter::formatUser(const GameContext &ctx) {
     formatUserResource(ctx.uRes);
 
     JSON_KEY(ResultStr::sUserAchievement);
-    formatUserAchievement(ctx.newCj);
+    formatUserAchievement(ctx.oldCj, ctx.newCj);
 }
 
 void ResultFormatter::formatResultWithCj(const GameContext &context) {
@@ -281,10 +284,6 @@ void ResultFormatter::formatMail(const UserMail &uMail) {
 */
 void ResultFormatter::formatUserInfo(const UserInfo &uInfo) {
     _writer.StartObject();
-    JSON_KEY(ResultStr::sUserID);
-    JSON_STRING_VALUE(uInfo.uid);
-    JSON_KEY(ResultStr::sUserMID);
-    JSON_STRING_VALUE(uInfo.mid);
     JSON_KEY(ResultStr::sUserName);
     JSON_STRING_VALUE(uInfo.fname.val);
     JSON_KEY(ResultStr::sUserAvatar);
@@ -301,8 +300,6 @@ void ResultFormatter::formatUserInfo(const UserInfo &uInfo) {
 */
 void ResultFormatter::formatUserResource(const UserResource &uRes) {
     _writer.StartObject();
-    JSON_KEY(ResultStr::sUserID);
-    JSON_STRING_VALUE(uRes.uid);
     JSON_KEY(ResultStr::sLevel);
     _writer.Uint(uRes.level.val);
     JSON_KEY(ResultStr::sExp);
@@ -316,9 +313,19 @@ void ResultFormatter::formatUserResource(const UserResource &uRes) {
     _writer.EndObject();
 }
 
-void ResultFormatter::formatUserAchievement(const Achievements &cj) {
+void ResultFormatter::formatUserAchievement(const Achievements &o, const Achievements &n) {
     _writer.StartArray();
-    for (auto &iCj: cj) {
+    for (auto &iCj: o) {
+	_writer.StartObject();
+	JSON_KEY(ResultStr::sAchievementID);
+	_writer.Int(iCj.aid);
+	JSON_KEY(ResultStr::sRecvReward);
+	_writer.Bool(iCj.isRecvReward);
+	JSON_KEY(ResultStr::sCreateTime);
+	_writer.Int64(iCj.time);
+	_writer.EndObject();
+    }
+    for (auto &iCj: n) {
 	_writer.StartObject();
 	JSON_KEY(ResultStr::sAchievementID);
 	_writer.Int(iCj.aid);

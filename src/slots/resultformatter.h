@@ -105,7 +105,7 @@ public:
   void formatGiftsInfo(const Gifts &gifts, int64_t giftsVal);
   void formatRankResult
       (const LeaderBoardRank &rank, int64_t uid, uint32_t start, uint32_t end);
-  void formatUserAchievement(const Achievements &cj);
+  void formatUserAchievement(const Achievements &cj, const Achievements &cj2);
   void formatRoomList(const RoomInfos &rooms);
   void formatHallList(const std::vector<std::string> &hallIDList,
                       const std::vector<std::string> &hallPrizeList);
