@@ -49,6 +49,15 @@ struct UserInfo{
         return _changed;
     }
 
+    bool deserialize(const std::vector<std::string> &vec) {
+        if (vec.size() < 6) return false;
+        fname = vec[2];
+        avatar = vec[3];
+        male = vec[4];
+        country = vec[5];
+        return true;
+    }
+
 private:
     bool _changed{false};
 };

@@ -54,6 +54,8 @@ namespace SlotCacheStr{
   const std::string sLastBet = "g:bet";
   const std::string sLastLines = "g:lines";
   const std::string sLastHall = "g:hid";
+
+  const std::string sCjPrefix = "a:";
 };
 
 struct OnlineInfo{
@@ -77,7 +79,6 @@ class SlotsUserData: public PersistenceBase{
     bool getUserByUid(GameContext &out);
     int64_t getTinyGameReward(const std::string &uid);
     bool checkAchievement(const std::string &uid, const std::string &cjID);
-
     void setDailyReward(const std::string &userID, const LoginReward &in);
     void updateDailyReward(const std::string &userID, bool recved);
     bool getDailyReward(const std::string &userID, LoginReward &out);

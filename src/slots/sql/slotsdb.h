@@ -6,6 +6,7 @@
 #include <mysql/mysqlconnpool.h>
 #include <mysql/mysqloperationbase.h>
 #include <slots/data/basicdata.h>
+#include <slots/data/gamecontext.h>
 #include <slots/model/themecommonconfig.h>
 
 BEGIN_NAMESPACE(slots)
@@ -30,7 +31,8 @@ class SlotsDB{
 public:
     ~SlotsDB();
 
-    bool initNewUser(const std::string &mid, UserUnion &user) const;
+    bool getUserData(GameContext &out) const;
+    bool initNewUser(const std::string &mid, GameContext &user) const;
     bool getUserInfo(cgserver::MysqlOperationBase *mob, SlotsUser &su) const ;
     bool getUserInfoByMachineId(const std::string &mid, SlotsUser &su) const ;
     bool getUserIdByMachineId(const std::string &mid, std::string &uid) const ;

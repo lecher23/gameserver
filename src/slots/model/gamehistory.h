@@ -156,10 +156,9 @@ struct GameHistory{
     themeHistory.reset();
   }
 
-  bool deserialize(std::vector<std::string> &row) {
+  bool deserialize(const std::vector<std::string> &row) {
     if (row.size() < 8) return false;
-    bool ret = cgserver::StringUtil::StrToInt32(row[0].c_str(), uid);
-    ret = ret && cgserver::StringUtil::StrToInt64(row[1].c_str(), maxFortune);
+    bool ret = cgserver::StringUtil::StrToInt64(row[1].c_str(), maxFortune);
     ret = ret && cgserver::StringUtil::StrToInt64(row[2].c_str(), maxEarned);
     ret = ret && cgserver::StringUtil::StrToInt64(row[3].c_str(), totalEarned);
     ret = ret && cgserver::StringUtil::StrToInt64(row[4].c_str(), totalBet);

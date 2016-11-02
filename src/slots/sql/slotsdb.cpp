@@ -25,11 +25,47 @@ SlotsDB &SlotsDB::getInstance(){
     return instance;
 }
 
-bool SlotsDB::initNewUser(const std::string &mid, UserUnion &user) const {
+#define EASY_SELECT(mss, table, key, val)                               \
+    MysqlSimpleSelect mss;                                              \
+    mss.setField("*");                                                  \
+    mss.setTable(table);                                                \
+    mss.setCondition(key, val, false);                                  \
+    if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss) || mss.result.empty()) { \
+        CLOG(WARNING) << "get table " << table << " failed, uid:" << out.uid; \
+        return false;                                                   \
+    }
+
+
+#define EASY_GET_TABLE(table, key, val, attr)                           \
+    {                                                                   \
+        EASY_SELECT(mss, table, key, val);                              \
+        if (!out.attr.deserialize(mss.result[0])) {                     \
+            CLOG(WARNING) << "parse table "<< table<< " failed, id:" << out.uid; \
+            return false;                                               \
+        }                                                               \
+    }
+
+bool SlotsDB::getUserData(GameContext &out) const {
+    EASY_GET_TABLE(UserInfoStr::sTableName, UserInfoStr::sUid, out.uid, uInfo);
+    EASY_GET_TABLE(UserResourceStr::sTableName, UserResourceStr::sUid, out.uid, uRes);
+    EASY_GET_TABLE(GameHistoryStr::sTableName, GameHistoryStr::sPriKey, out.uid, gHis);
+    EASY_SELECT(ms, ThemeHistoryStr::sTableName, ThemeHistoryStr::sPriKey1, out.uid);
+    if (!out.allTHis.deserialize(ms.result)) {
+        return false;
+    }
+    return getUserAchievement(out.uid, out.oldCj);
+}
+
+#undef EASY_SELECT
+#undef EASY_GET_TABLE
+
+bool SlotsDB::initNewUser(const std::string &mid, GameContext &user) const {
     if (!addUser(mid, user.uid)) {
         CLOG(WARNING) << "Init new user info failed.\n";
         return false;
     }
+    user.uRes.reset();
+    user.gHis.reset();
     return true;
 }
 

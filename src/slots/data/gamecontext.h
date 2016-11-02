@@ -34,6 +34,7 @@ struct UserContext {
   Achievements oldCj;
   LoginReward dailyReward;
 
+  ThemeHistory allTHis;
   RoomInfo room;
   GameResultHistory preGameInfo;
   GameResult gameInfo;

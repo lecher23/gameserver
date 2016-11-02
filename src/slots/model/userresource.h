@@ -3,6 +3,7 @@
 
 #include "tablebase.h"
 #include <util/common_define.h>
+#include <util/stringutil.h>
 
 BEGIN_NAMESPACE(slots)
 
@@ -25,6 +26,17 @@ struct UserResource{
   MutableField<int64_t> vipPoint;
   MutableField<int32_t> tmpVipLevel;
   MutableField<int64_t> tmpVipEndTime;
+
+    bool deserialize(const std::vector<std::string> &vec) {
+        if (vec.size() < 8) return false;
+        bool ret = cgserver::StringUtil::StrToInt32(vec[1].data(), level.val);
+        ret = ret && cgserver::StringUtil::StrToInt64(vec[2].data(), exp.val);
+        ret = ret && cgserver::StringUtil::StrToInt64(vec[3].data(), fortune.val);
+        ret = ret && cgserver::StringUtil::StrToInt32(vec[4].data(), vipLevel.val);
+        ret = ret && cgserver::StringUtil::StrToInt64(vec[5].data(), vipPoint.val);
+        return ret;
+    }
+
     void reset() {
 	level.val = 1;
 	exp.val = 0;

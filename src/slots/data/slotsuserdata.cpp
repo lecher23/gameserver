@@ -218,11 +218,11 @@ bool SlotsUserData::getUserByMid(const std::string &mid, GameContext &out) {
         return getUserByUid(out);
     }
     /**init new user**/
-    // if (db.initNewUser(mid, out)) {
-    //     setUidWithMid(mid, out.uid);
-    //     setUserToCache(out);
-    //     return true;
-    // }
+    if (db.initNewUser(mid, out)) {
+        setUidWithMid(mid, out.uid);
+        setUserToCache(out);
+        return true;
+    }
     return false;
 }
 
@@ -230,8 +230,7 @@ bool SlotsUserData::getUserByMid(const std::string &mid, GameContext &out) {
 bool SlotsUserData::getUserByUid(GameContext &out){
     if (!getContextForLogin(out)) {
 	SlotsDB &db = SlotsDB::getInstance();
-        bool ret = false;
-	//bool ret = db.getSlotsUserByUid(out);
+	bool ret = db.getUserData(out);
 	if (!ret) {
 	    CLOG(WARNING) << "Get user[" << out.uid << "] info failed.";
 	    return false;
@@ -243,16 +242,24 @@ bool SlotsUserData::getUserByUid(GameContext &out){
     return true;
 }
 
-void SlotsUserData::save2MySQL(uint64_t factor){
-    MUTEX_GUARD(_lock);
-    SlotUserSaver saver;
-    auto &pool = cgserver::MysqlConnPool::getInstance();
-    for (auto itr = _data.begin(); itr != _data.end(); ++itr) {
-        saver.setUser(itr->second);
-        if (!pool.doMysqlOperation((cgserver::MysqlOperationBase *) &saver)) {
-            CLOG(WARNING) << "save user" << itr->second->uInfo.uid << " info falied.";
-        }
+int64_t SlotsUserData::getTinyGameReward(const std::string &uid) {
+    std::string result;
+    if (_redisClient.Hget(uid, SlotCacheStr::sTinyGameEarned, &result)) {
+        return 0;
     }
+    return StringUtil::StrToInt64WithDefault(result.data(), 0);
+}
+
+bool SlotsUserData::checkAchievement(const std::string &uid, const std::string &cjID) {
+    std::string st;
+    if (_redisClient.Hget(uid, SlotCacheStr::sCjPrefix + cjID, &st)) {
+        return false;
+    }
+    return st == SlotCacheStr::sLRecvTrue;
+}
+
+void SlotsUserData::save2MySQL(uint64_t factor){
+    ;// do noting;
 }
 
 #define GENERATE_LOGIN_KEY(key, uid) \
