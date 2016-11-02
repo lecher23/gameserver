@@ -72,7 +72,7 @@ bool SlotsUserData::needSave(uint64_t factor) {
     out.push_back(SlotCacheStr::sMegaWin + hallID);                    \
     out.push_back(SlotCacheStr::sSuperWin + hallID);                   \
     out.push_back(SlotCacheStr::sGameCount + hallID);                  \
-    out.push_back(SlotCacheStr::sFreeGameTimes + hallID);              \
+    out.push_back(SlotCacheStr::sFreeGameCount + hallID);              \
     out.push_back(SlotCacheStr::sTinyGameCount + hallID);              \
     out.push_back(SlotCacheStr::sLink + hallID);
 
@@ -240,7 +240,7 @@ bool SlotsUserData::setUserToCache(GameContext &user) {
         result.push_back(StringUtil::toString(tmp));
 
         tmp = t.getTagValue(i, FREE_GAME_TAG);
-        fields.push_back(SlotCacheStr::sFreeGameTimes + sI);
+        fields.push_back(SlotCacheStr::sFreeGameCount + sI);
         result.push_back(StringUtil::toString(tmp));
 
         tmp = t.getTagValue(i, TINY_GAME_TAG);
