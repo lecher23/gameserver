@@ -18,7 +18,7 @@ private:
   bool recvOnlineReward(CPacket &packet, ResultFormatter &rf);
   bool finishTinyGame(CPacket &packet, ResultFormatter &rf);
 
-  SlotsDataCenter &_dataCenter;
+  SlotsUserData &_userData;
 };
 
 END_NAMESPACE

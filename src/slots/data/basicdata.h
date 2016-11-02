@@ -75,11 +75,14 @@ struct UserUnion{
 };
 
 struct SlotsUser{
+  std::string uid;
+  int32_t hallID{0};
   UserInfo uInfo;
   UserResource uRes;
   GameHistory uHis;
-  Achievements uCj;
-  GameStatus gSt;
+  GameResult gameInfo;
+  Achievements uCj; // new cj
+  //GameStatus gSt;
 
   bool deserialize(const std::vector<std::string> &row) {
     if (row.size() < 15) {
@@ -89,15 +92,15 @@ struct SlotsUser{
     uInfo.uid = row[0];
     uInfo.mid = row[1];
     uInfo.setFname(row[2]);
-    uInfo.setAvatar(row[4]);
-    uInfo.setMale(row[5]);
-    uInfo.setCountry(row[6]);
+    uInfo.setAvatar(row[3]);
+    uInfo.setMale(row[4]);
+    uInfo.setCountry(row[5]);
     uRes.uid = uInfo.uid;
-    bool ret = cgserver::StringUtil::StrToInt32(row[8].c_str(), uRes.level.val);
-    ret = ret && cgserver::StringUtil::StrToInt64(row[9].c_str(), uRes.exp.val);
-    ret = ret && cgserver::StringUtil::StrToInt64(row[10].c_str(), uRes.fortune.val);
-    ret = ret && cgserver::StringUtil::StrToInt32(row[11].c_str(), uRes.vipLevel.val);
-    ret = ret && cgserver::StringUtil::StrToInt64(row[12].c_str(), uRes.vipPoint.val);
+    bool ret = cgserver::StringUtil::StrToInt32(row[7].c_str(), uRes.level.val);
+    ret = ret && cgserver::StringUtil::StrToInt64(row[8].c_str(), uRes.exp.val);
+    ret = ret && cgserver::StringUtil::StrToInt64(row[9].c_str(), uRes.fortune.val);
+    ret = ret && cgserver::StringUtil::StrToInt32(row[10].c_str(), uRes.vipLevel.val);
+    ret = ret && cgserver::StringUtil::StrToInt64(row[11].c_str(), uRes.vipPoint.val);
     if(!ret) {
       CLOG(WARNING) << "Invalid number.";
     }

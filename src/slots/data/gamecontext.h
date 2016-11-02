@@ -23,16 +23,26 @@ class EventInfo{
     }
 };
 
-struct GameContext{
+struct UserContext {
   int32_t hallID{0};
-  int32_t uid;
-  SlotsUserPtr user;
-  GameResult gameInfo;
-  Achievements userCj;
+  std::string uid;
+
+  UserInfo uInfo;
+  UserResource uRes;
+  GameHistory gHis;
+  ThemeHistoryItem tHis;
+  Achievements oldCj;
   LoginReward dailyReward;
+
   RoomInfo room;
-  // to save all game event during game.
+  GameResultHistory preGameInfo;
+  GameResult gameInfo;
+  Achievements newCj;
+
   std::vector<EventInfo> events;
 };
+
+typedef UserContext GameContext;
+
 END_NAMESPACE
 #endif

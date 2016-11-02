@@ -60,55 +60,21 @@ public:
 
 class GameResultHistory{
 public:
-    int32_t lineNumber{0};
+    int32_t lastLines{0};
+    int32_t lastHallID{0};
     int32_t freeGameTimes{0};
-    int32_t totalRatio{0};
-    TinyGame tinyGame;
-    Profit earned;
-    int64_t bet{0};
+    int64_t lastBet{0};
+    int64_t tinyGameEarned{0};
     GameResultHistory &operator = (const GameResult &right) {
-        lineNumber = right.lineNumber;
+        lastLines = right.lineNumber;
         freeGameTimes = right.freeGameTimes;
-        totalRatio = right.totalRatio;
-        tinyGame = right.tinyGame;
-        earned = right.earned;
-        bet = right.bet;
+        tinyGameEarned = right.earned.tinyGame;
+        lastBet = right.bet;
         return *this;
-    }
-
-    void reset() {
-      totalRatio = freeGameTimes = lineNumber = 0;
-      tinyGame.reset();
-      earned.reset();
-      bet = 0;
     }
 };
 
 typedef GameResult TSResult;
-
-class GameStatus {
-public:
-  GameResultHistory &getGameResult(int32_t hall_id, int32_t room_id) {
-    if (hallID != hall_id || roomID != room_id) {
-      hallID = hall_id;
-      roomID = room_id;
-      result.reset();
-    }
-    return result;
-  }
-
-  int64_t tinyGameEarned() {
-    if (!result.tinyGame.enable) {
-      return 0;
-    }
-    return result.earned.tinyGame;
-  }
-
-private:
-  int32_t hallID{0};
-  int32_t roomID{0};
-  GameResultHistory result;
-};
 
 END_NAMESPACE
 #endif

@@ -9,13 +9,11 @@ namespace slots{
 
     bool LoginService::doJob(CPacket &packet, CResponse &resp){
 	bool pOk = false;
-	SlotsUserPtr sUser;
         GameContext context;
 	do {
-	    if (!getUserInfo(packet, sUser)){
+	    if (!getUserInfo(packet, context)){
 		break;
 	    }
-            context.user = sUser;
             _lProcessor.process(context);
             _aProcessor.process(context);
             pOk = true;
@@ -34,13 +32,13 @@ namespace slots{
     }
 
     bool LoginService::getUserInfo(
-        CPacket &packet, SlotsUserPtr &su) const
+        CPacket &packet, GameContext &user) const
     {
 	std::string mid;
 	if (!packet.getParamValue(slotconstants::sMachineID, mid)) {
 	    return false;
 	}
-	return SlotsDataCenter::instance().slotsUserData->getByMid(mid, su);
+	return SlotsDataCenter::instance().slotsUserData->getUserByMid(mid, user);
     }
 
 }

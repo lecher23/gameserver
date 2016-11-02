@@ -16,23 +16,22 @@ void ResultFormatter::formatMailList(const UserMails &uMails)  {
     _writer.EndObject();
 }
 
-void ResultFormatter::formatUser(const SlotsUser &su) {
-    formatStatus(true);
+void ResultFormatter::formatUser(const GameContext &ctx) {
     JSON_KEY(ResultStr::sUserInfo);
-    formatUserInfo(su.uInfo);
+    formatUserInfo(ctx.uInfo);
 
     JSON_KEY(ResultStr::sUserResource);
-    formatUserResource(su.uRes);
+    formatUserResource(ctx.uRes);
 
     JSON_KEY(ResultStr::sUserAchievement);
-    formatUserAchievement(su.uCj);
+    formatUserAchievement(ctx.newCj);
 }
 
 void ResultFormatter::formatResultWithCj(const GameContext &context) {
     _writer.StartObject();
     formatStatus(true);
 
-    formatUser(*context.user);
+    formatUser(context);
 
     JSON_KEY(ResultStr::sLoginInfo);
     formatLoginInfo(context);
@@ -102,7 +101,7 @@ void ResultFormatter::formatGameResult(GameContext &gc)
     _writer.StartObject();
     formatStatus(true);
 
-    auto &uRes = gc.user->uRes;
+    auto &uRes = gc.uRes;
     auto &ret = gc.gameInfo;
     JSON_KEY(ResultStr::sFortune);
     _writer.Int64(uRes.fortune.val);
@@ -133,7 +132,7 @@ void ResultFormatter::formatGameResult(GameContext &gc)
 
     JSON_KEY(ResultStr::sUserAchievement);
     _writer.StartArray();
-    for (auto &item: gc.userCj) {
+    for (auto &item: gc.newCj) {
         _writer.Int(item.aid);
     }
     _writer.EndArray();
@@ -416,7 +415,7 @@ void ResultFormatter::formatFriendList(const FriendsList &friends) {
 void ResultFormatter::formatLoginInfo(const GameContext &context) {
     _writer.StartObject();
     JSON_KEY(ResultStr::sDayn);
-    _writer.Int(context.user->uHis.loginDays);
+    _writer.Int(context.gHis.loginDays);
     JSON_KEY(ResultStr::sRecvReward);
     _writer.Bool(context.dailyReward.recved);
     JSON_KEY(ResultStr::sVipReward);

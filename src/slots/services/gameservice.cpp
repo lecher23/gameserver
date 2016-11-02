@@ -17,9 +17,6 @@ bool GameService::doJob(CPacket &packet, CResponse &resp) {
     bool ret = false;
     if (gType == "2"){
 	ret = doTemplePrincess(packet, rf);
-    }else if (gType == "1"){
-	ret = doMultiple(packet);
-	rf.formatSimpleResult(ret, "");
     }
     resp.setBody(bf.GetString());
     return ret;
@@ -65,11 +62,11 @@ bool GameService::doTemplePrincess(CPacket &packet, ResultFormatter &rf)
 	gc.gameInfo.bet = bet;
         gc.gameInfo.lineNumber = lineNumber;
         gc.gameInfo.gType = style;
-        gc.uid = iUid;
+        gc.uid = uid;
         gc.hallID = hallID;
         gc.room.roomID = roomID;
 
-        if (!SlotsDataCenter::instance().slotsUserData->getByUid(uid, gc.user)) {
+        if (!SlotsDataCenter::instance().slotsUserData->getContextForGame(gc)) {
             break;
         }
 	if (!_gProcessor.process(gc)) {
@@ -92,53 +89,5 @@ bool GameService::doTemplePrincess(CPacket &packet, ResultFormatter &rf)
     }
     return ret;
 }
-
-bool GameService::doMultiple(CPacket &packet){
-    std::string incr;
-    std::string multiple;
-    std::string uid;
-    GET_PARAM("incr", incr, true);
-    GET_PARAM("uid", uid, true);
-    GET_PARAM("multiple", multiple, true);
-    int64_t incrVal;
-    if (!cgserver::StringUtil::StrToInt64(incr.c_str(), incrVal) ||
-	incrVal < 0) {
-	CLOG(WARNING) << "Invalid incr value: " << incr;
-	return false;
-    }
-    uint32_t dV;
-    if (!cgserver::StringUtil::StrToUInt32(multiple.c_str(), dV)) {
-	CLOG(WARNING) << "Invalid multiple value: " << multiple;
-	return false;
-    }
-
-    SlotsUserPtr sup;
-    if (!SlotsDataCenter::instance().slotsUserData->getByUid(uid, sup)) {
-	return false;
-    }
-
-    switch (dV) {
-    case 0:{
-	// reduce incr
-	UserResource &ur = sup->uRes;
-	ur.incrFortune(-incrVal);
-	CLOG(INFO) << "User[" << uid << "] new fortune:" << ur.fortune.val;
-	break;
-    }
-    case 2:
-    case 4:{
-	UserResource &ur = sup->uRes;
-	ur.incrFortune(incrVal * (dV -1));
-	CLOG(INFO) << "User[" << uid << "] new fortune:" << ur.fortune.val;
-	break;
-    }
-    default:{
-	CLOG(WARNING) << "Invalid multiple value: " << dV;
-	return false;
-    }
-    }
-    return true;
-}
-
 #undef GET_SLOTS_USER_WITH_RETURN
 END_NAMESPACE

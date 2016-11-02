@@ -18,19 +18,18 @@ bool AchievementProcessor::process(GameContext &context) const {
     }
     // save achievement
     auto &cjQueue = SlotsDataCenter::instance().cjQueue;
-    cjQueue->addCj(context.userCj);
-    // add new achievement to suercj
-    auto &userCj = context.user->uCj;
-    userCj.insert(userCj.begin(), context.userCj.begin(), context.userCj.end());
+    cjQueue->addCj(context.newCj);
+    // TODO: add new achievement to cache
     return true;
 }
 
 void AchievementProcessor::processRangeCj(GameContext &context, const EventInfo &e) const {
     std::vector<int32_t> ret;
     _config.getCjID(e.e, context.hallID, e.preData, e.curData, ret);
+    // todo: check if this cj is got from cache
     for (auto item: ret) {
-        context.userCj.push_back(
-            UserCJ(context.user->uInfo.uid, item,
+        context.newCj.push_back(
+            UserCJ(context.uid, item,
                false, cgserver::CTimeUtil::getCurrentTimeInSeconds()));
     }
 }

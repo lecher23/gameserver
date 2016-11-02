@@ -12,17 +12,17 @@ LoginProcessor::~LoginProcessor(){
 }
 
 bool LoginProcessor::process(GameContext &context) const {
-    auto &uData = SlotsDataCenter::instance().slotsUserData;
+    auto &uData = *SlotsDataCenter::instance().slotsUserData;
     auto &dailyReward = context.dailyReward;
-    auto &uid = context.user->uInfo.uid;
+    auto &uid = context.uid;
 
-    if (uData->getDailyReward(uid, dailyReward)) {
+    if (uData.getDailyReward(uid, dailyReward)) {
         return true;
     }
     CLOG(INFO) << "User first login:"<< uid;
 
     auto thisMorning = cgserver::CTimeUtil::getMorningTime();
-    auto &gHistory = context.user->uHis;
+    auto &gHistory = context.gHis;
     auto now = cgserver::CTimeUtil::getCurrentTimeInSeconds();
     int64_t yesterday = cgserver::CTimeUtil::getYesterdayMorning();
     auto &lastLogin = gHistory.lastLogin;
@@ -30,14 +30,14 @@ bool LoginProcessor::process(GameContext &context) const {
     if (lastLogin < yesterday) {
         loginDays = 1;
         context.events.push_back(EventInfo(ECT_LOGIN_DAYS, loginDays));
-        processReward(loginDays, context.user->uRes.vipLevel.val, dailyReward);
+        processReward(loginDays, context.uRes.vipLevel.val, dailyReward);
     } else if (lastLogin >= yesterday && lastLogin < thisMorning) {
         ++loginDays;
         context.events.push_back(EventInfo(ECT_LOGIN_DAYS, loginDays));
-        processReward(loginDays, context.user->uRes.vipLevel.val, dailyReward);
+        processReward(loginDays, context.uRes.vipLevel.val, dailyReward);
     }
-    uData->setDailyReward(uid, dailyReward);
-    CLOG(INFO) << "User " << gHistory.uid << " login. Days:" << loginDays;
+    uData.setDailyReward(uid, dailyReward);
+    CLOG(INFO) << "User " << uid << " login. Days:" << loginDays;
     lastLogin = now;
     gHistory.changed = true;
     return true;

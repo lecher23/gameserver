@@ -123,6 +123,16 @@ class ThemeHistory {
   bool changed{false};
 };
 
+struct ThemeHistoryItem{
+  int32_t bigWinCount{0};
+  int32_t megaWinCount{0};
+  int32_t superWinCount{0};
+  int32_t spinCount{0};
+  int32_t freeGameCount{0};
+  int32_t tinyGameCount{0};
+  int32_t maxLinkCount{0};
+};
+
 struct GameHistory{
   int32_t uid{0};
   int64_t maxFortune{0};

@@ -2,18 +2,12 @@
 
 BEGIN_NAMESPACE(slots)
 
-RewardService::RewardService():_dataCenter(SlotsDataCenter::instance()){
+RewardService::RewardService():_userData(*SlotsDataCenter::instance().slotsUserData){
 }
 
 RewardService::~RewardService(){
 }
 
-
-#define GET_SLOT_USER(uid, user)                                \
-    SlotsUserPtr user;                                          \
-    if (!_dataCenter.slotsUserData->getByUid(uid, user)) {      \
-        return false;                                           \
-    }
 
 #define MSG_RECV_DAILY_REWARD 1
 #define MSG_FINISH_TINY_GAME 5
@@ -57,59 +51,57 @@ bool RewardService::doJob(CPacket &packet, CResponse &resp) {
 bool RewardService::getLoginReward(CPacket &packet, int64_t &newFortune) {
     std::string uid;
     GET_PARAM(slotconstants::sUserID, uid, true);
-    GET_SLOT_USER(uid, user);
     LoginReward loginReward;
-    if (!SlotsDataCenter::instance().slotsUserData->getDailyReward(uid, loginReward)) {
+    if (!_userData.getDailyReward(uid, loginReward) || loginReward.recved) {
         return false;
-    }
-    auto &uRes = user->uRes;
-    if (loginReward.recved) {
-        newFortune = uRes.fortune.val;
-        return true;
     }
     int64_t total = loginReward.runnerReward +
         loginReward.dayReward + loginReward.vipExtra;
-    uRes.incrFortune(total);
-    loginReward.recved = true;
-    newFortune = uRes.fortune.val;
-    SlotsDataCenter::instance().slotsUserData->updateDailyReward(uid, true);
+    if (!_userData.addUserFortuneInCache(uid, total, newFortune)) {
+        return false;
+    }
+    _userData.updateDailyReward(uid, true);
     return true;
 }
 
 bool RewardService::finishTinyGame(CPacket &packet, ResultFormatter &rf) {
     std::string uid;
     GET_PARAM(slotconstants::sUserID, uid, true);
-    GET_SLOT_USER(uid, user);
-    auto &gameStatus = user->gSt;
-    user->uRes.incrFortune(gameStatus.tinyGameEarned());
-    rf.formatSimpleResultWithFortune(user->uRes.fortune.val);
+    auto reward = _userData.getTinyGameReward(uid);
+    if (reward == 0) {
+        return false;
+    }
+    int64_t fortune;
+    if (!_userData.addUserFortuneInCache(uid, reward, fortune)) {
+        return false;
+    }
+    rf.formatSimpleResultWithFortune(fortune);
     return true;
 }
 
 bool RewardService::getAchievementReward(CPacket &packet, ResultFormatter &rf) {
-    GET_INT32_PARAM_IN_PACKET(packet, slotconstants::sCjID, cjID);
     std::string uid;
+    std::string cjID;
     GET_PARAM(slotconstants::sUserID, uid, true);
-    GET_SLOT_USER(uid, user);
-    for (auto &cj:user->uCj) {
-        if (cjID == cj.aid && !cj.isRecvReward) {
-            cj.isRecvReward = true;
-            const auto &cjInfo = SlotsConfig::getInstance().cjConfig.getCjInfo(cjID);
-            user->uRes.incrFortune(cjInfo.rewardValue);
-            rf.formatSimpleResultWithFortune(user->uRes.fortune.val);
-            return true;
-        }
+    GET_PARAM(slotconstants::sCjID, cjID, true);
+    bool cjOK = _userData.checkAchievement(uid, cjID);
+    if (cjOK) {
+        const auto &cjInfo =
+            SlotsConfig::getInstance().cjConfig.getCjInfo(
+                cgserver::StringUtil::StrToInt32WithDefault(cjID.data(), 0));
+        // TODO
+        // add fortune in cache
+        // set cj to recved.
+        // formate result.
     }
-    return false;
+    return cjOK;
 }
 
 bool RewardService::recvOnlineReward(CPacket &packet, ResultFormatter &rf) {
     std::string uid;
     GET_PARAM(slotconstants::sUserID, uid, true);
-    auto &uData = *_dataCenter.slotsUserData;
-    GET_SLOT_USER(uid, user);
     OnlineInfo oInfo;
-    if (!uData.getOnlineInfo(uid, oInfo, 0)) {
+    if (!_userData.getOnlineInfo(uid, oInfo, 0)) {
         CLOG(WARNING) << "Get user reward info from redis failed.";
         return false;
     }
@@ -117,11 +109,12 @@ bool RewardService::recvOnlineReward(CPacket &packet, ResultFormatter &rf) {
         CLOG(WARNING) << "User reward has recved.";
         return false;
     }
-    auto &uRes = user->uRes;
-    uRes.incrFortune(oInfo.rewardValue);
-    user->uHis.newFortune(uRes.fortune.val);
-    uData.recvOnlineGift(uid, true);
-    rf.formatSimpleResultWithFortune(uRes.fortune.val);
+    int64_t fortune;
+    if (!_userData.addUserFortuneInCache(uid, oInfo.rewardValue, fortune)) {
+        return false;
+    }
+    rf.formatSimpleResultWithFortune(fortune);
+    _userData.recvOnlineGift(uid, true);
     return true;
 }
 

@@ -91,7 +91,7 @@ public:
   ~ResultFormatter();
 
   void formatMailList(const UserMails &uMails);
-  void formatUser(const SlotsUser &su);
+  void formatUser(const GameContext &su);
   void formatResultWithCj(const GameContext &context);
   void formatSimpleResult(bool ok, const std::string &err);
   void formatSimpleResult(bool ok, const std::string &key, int64_t value);

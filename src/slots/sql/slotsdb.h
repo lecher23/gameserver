@@ -47,6 +47,7 @@ public:
     bool getGameHistory(const std::string &uid, GameHistory &gd) const;
     bool getUserAchievement(const std::string &uid, Achievements &out) const;
     bool getUserAchievement(const std::string &uid, const std::string &cjID, UserCJ &out);
+    bool recvCjReward(const std::string &uid, const std::string &cjID);
     bool getCargoInfo(CargoInfos &out) const;
     bool getThemeCommonConfig(ThemeCommonConfig &out) const;
 

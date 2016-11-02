@@ -10,7 +10,6 @@ user_info = [
     ('uid', 'INT AUTO_INCREMENT PRIMARY KEY'),
     ('mid', 'CHAR(48) NOT NULL'),
     ('fname', 'CHAR(24)'),
-    ('lname', 'CHAR(24)'),
     ('avatar', 'INT DEFAULT 0'),
     ('male', 'BOOL DEFAULT 1'),
     ('country', 'INT DEFAULT 86'),

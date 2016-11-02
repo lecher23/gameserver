@@ -2,6 +2,7 @@
 #define SLOTSUSERDATA_H
 
 #include <slots/sql/slotsdb.h>
+#include <slots/data/gamecontext.h>
 #include <cache/redisclientfactory.h>
 
 BEGIN_NAMESPACE(slots)
@@ -20,20 +21,39 @@ namespace SlotCacheStr{
   const std::string sOLLevel = "ol:level";
   const std::string sOLRecv = "ol:recv";
   const std::string sOLReward = "ol:rwd";
-  const std::string sName = "name";
-  const std::string sCountry = "country";
-  const std::string sAvatar = "avatar";
-  const std::string sSex = "sex";
-  const std::string sLevel = "level";
-  const std::string sExp = "exp";
-  const std::string sMoney = "money";
-  const std::string sVip = "vip";
-  const std::string sVipPoint = "vpoint";
-  const std::string sFreeGameTimes = "fgt";
-  const std::string sTinyGameEarned = "tg:prz";
-  const std::string sLastBet = "bet";
-  const std::string sLastLines = "lines";
-  const std::string sLastHall = "hall:id";
+
+  const std::string sName = "i:nm";
+  const std::string sCountry = "i:cty";
+  const std::string sAvatar = "i:avt";
+  const std::string sSex = "i:male";
+
+  const std::string sLevel = "r:level";
+  const std::string sExp = "r:exp";
+  const std::string sMoney = "r:money";
+  const std::string sVip = "r:vip";
+  const std::string sVipPoint = "r:vpt";
+
+  const std::string sMaxFortune = "h:mf";
+  const std::string sMaxEarned = "h:me";
+  const std::string sTotalEarned = "h:te";
+  const std::string sTotalBet = "h:tb";
+  const std::string sLastLogin = "h:ll";
+  const std::string sLoginDays = "h:ld";
+  const std::string sJackpot = "h:jp";
+
+  const std::string sBigWin = "t:bw:";
+  const std::string sMegaWin = "t:mw:";
+  const std::string sSuperWin = "t:sw:";
+  const std::string sGameCount = "t:gt:";
+  const std::string sFreeGameCount = "t:fg:";
+  const std::string sTinyGameCount = "t:tg:";
+  const std::string sLink = "t:lk:";
+
+  const std::string sFreeGameTimes = "g:fgt";
+  const std::string sTinyGameEarned = "g:prz";
+  const std::string sLastBet = "g:bet";
+  const std::string sLastLines = "g:lines";
+  const std::string sLastHall = "g:hid";
 };
 
 struct OnlineInfo{
@@ -49,11 +69,14 @@ class SlotsUserData: public PersistenceBase{
     virtual void save2MySQL(uint64_t factor);
     virtual bool needSave(uint64_t factor);
 
-    bool getByMid(const std::string &mid, SlotsUserPtr &out);
-    bool getUserByMid(const std::string &mid, UserUnion &out);
-    bool getUserByUid(UserUnion &out);
-    bool getByUid(const std::string &uid, SlotsUserPtr &out);
-    void set(const std::string &uid, SlotsUserPtr &in);
+    bool getContextForGame(GameContext &user);
+    bool setContextForGame(GameContext &user);
+    bool getContextForLogin(GameContext &user);
+    bool updateLoginInfo(const std::string &uid, int64_t ts);
+    bool getUserByMid(const std::string &mid, GameContext &out);
+    bool getUserByUid(GameContext &out);
+    int64_t getTinyGameReward(const std::string &uid);
+    bool checkAchievement(const std::string &uid, const std::string &cjID);
 
     void setDailyReward(const std::string &userID, const LoginReward &in);
     void updateDailyReward(const std::string &userID, bool recved);
@@ -65,8 +88,8 @@ class SlotsUserData: public PersistenceBase{
     bool setOnlineInfo(const std::string &userID, OnlineInfo &onlineINfo);
     void recvOnlineGift(const std::string &userID, bool recved);
 
-    bool getUserInCache(UserUnion &user);
-    bool setUserToCache(UserUnion &user);
+    bool setUserToCache(GameContext &user); // rewrite it
+    bool addUserFortuneInCache(const std::string &uid, int64_t incr, int64_t &res);
     bool getUidByMid(const std::string &mid, std::string &uid);
 
 private:
@@ -76,7 +99,8 @@ private:
     std::mutex _lock;
     CRedisClient &_redisClient;
 
-    static const std::vector<std::string> UserInRedisFields;
+    static const std::vector<std::string> RedisGameInfoKeys;
+    static const std::vector<std::string> RedisLoginInfoKeys;
 };
 
 DF_SHARED_PTR(SlotsUserData);

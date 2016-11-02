@@ -27,7 +27,7 @@ bool GameResultProcessor::process(GameContext &context) const {
     // update user exp&level
     processExp(context, gInfo);
     // save this result to history
-    context.user->gSt.getGameResult(context.hallID, context.room.roomID) = gInfo;
+    context.preGameInfo = gInfo;
     return true;
 }
 
@@ -51,64 +51,59 @@ void GameResultProcessor::processHall(GameContext &context, GameResult &data) co
     hall.updateRoomResource(context.hallID, context.room);
 }
 
-#define INCR_TAG_VALUE(mThemeTag, mEvent, value)                        \
-    tHis.incrTagValue(gType, mThemeTag, 1);                              \
+#define INCR_TAG_VALUE(mEvent, value)                                   \
     context.events.push_back(                                           \
-        EventInfo(mEvent, TO_GAME_CJ_VALUE(                             \
-                      gType, tHis.getTagValue(gType, mThemeTag))));
+        EventInfo(mEvent, TO_GAME_CJ_VALUE(gType, value)));
 
 
 void GameResultProcessor::processGameDetail(
     GameContext &context, GameResult &data) const
 {
-    auto &tHis = context.user->uHis.themeHistory;
+    auto &tHis = context.tHis;
     auto gType = data.gType;
     // incr game times
-    INCR_TAG_VALUE(NORMAL_GAME_TAG, ECT_GAME_TIMES, 1);
+    
+    INCR_TAG_VALUE(ECT_GAME_TIMES, ++tHis.spinCount);
     if(data.bBigwin) {
-        INCR_TAG_VALUE(BIG_WIN_TAG, ECT_BIGWIN, 1);
+        INCR_TAG_VALUE(ECT_BIGWIN, ++tHis.bigWinCount);
     }
     if(data.bMegawin) {
-        INCR_TAG_VALUE(MEGA_WIN_TAG, ECT_MEGAWIN, 1);
+        INCR_TAG_VALUE(ECT_MEGAWIN, ++tHis.megaWinCount);
     }
     if(data.bSuperwin) {
-        INCR_TAG_VALUE(SUPER_WIN_TAG, ECT_SUPERWIN, 1);
+        INCR_TAG_VALUE(ECT_SUPERWIN, ++tHis.superWinCount);
     }
     // bug: if both jackpot trigger, it will jump one number.
     if(data.bJackpot1) {
-        INCR_TAG_VALUE(JACKPOT_TAG, ECT_JACKPOT, 1);
-        ++context.user->uHis.jackpot;
+        INCR_TAG_VALUE(ECT_JACKPOT, ++context.gHis.jackpot);
     }
     if(data.bJackpot2) {
-        INCR_TAG_VALUE(JACKPOT_TAG, ECT_JACKPOT, 1);
-        ++context.user->uHis.jackpot;
+        INCR_TAG_VALUE(ECT_JACKPOT, ++context.gHis.jackpot);
     }
     if (data.tinyGame.enable) {
-        INCR_TAG_VALUE(TINY_GAME_TAG, ECT_TINY_GAME, 1);
+        INCR_TAG_VALUE(ECT_TINY_GAME, ++tHis.tinyGameCount);
     }
     if (data.bFreeGame) {
-        tHis.incrTagValue(gType, ECT_FREE_TIMES, 1);
+        ++tHis.freeGameCount;
     }
-    context.user->uHis.changed = true;
 }
 
 void GameResultProcessor::processLines(GameContext &context, GameResult &data) const {
-    auto &tHis = context.user->uHis.themeHistory;
-    auto gType = data.gType;
-    auto pre = tHis.getTagValue(gType, SIX_LINK_TAG);
+    auto pre = context.tHis.maxLinkCount;
     for (auto &line: data.lines){
-        // six link
-        if (line.count == 6) {
-            tHis.incrTagValue(gType, SIX_LINK_TAG, 1);
+        if (line.count == 5) {
+            ++context.tHis.maxLinkCount;
         }
     }
+    if (pre == context.tHis.maxLinkCount)
+        return ;
     context.events.push_back(
-        EventInfo(ECT_SIX_LINK, pre, tHis.getTagValue(gType, SIX_LINK_TAG)));
+        EventInfo(ECT_SIX_LINK, pre, context.tHis.maxLinkCount));
 }
 
 void GameResultProcessor::processExp(GameContext &context, GameResult &data) const {
-    auto &uRes = context.user->uRes;
-    auto &uHis = context.user->uHis;
+    auto &uRes = context.uRes;
+    auto &uHis = context.gHis;
     // if zero bet then exp will not change
     if (data.bFreeGame) {
 	return;
@@ -133,13 +128,13 @@ void GameResultProcessor::processExp(GameContext &context, GameResult &data) con
 }
 
 void GameResultProcessor::processMoney(GameContext &context, GameResult &data) const {
-    auto &uHis = context.user->uHis;
+    auto &uHis = context.gHis;
     uHis.incrBet(data.bet);
     int64_t actualEarned = data.earned.sum() - (data.bFreeGame ? 0: data.bet);
     if (actualEarned == 0) {
 	return;
     }
-    UserResource &uRes = context.user->uRes;
+    UserResource &uRes = context.uRes;
     uRes.incrFortune(actualEarned);
     // update max fortune
     uHis.newFortune(uRes.fortune.val);

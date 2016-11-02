@@ -465,7 +465,7 @@ bool SlotsDB::getUserAchievement(
     const std::string &uid, const std::string &cjID, UserCJ &out)
 {
     MysqlSimpleSelect mss;
-    mss.setField("*");
+    mss.setField("is_recv_reward");
     mss.setTable(gAchievement);
     mss.setCondition("uid", uid, false);
     mss.addCondition("uaid", cjID, true, false);
@@ -473,11 +473,27 @@ bool SlotsDB::getUserAchievement(
 	CLOG(WARNING) << "Get achievement from mysql failed.";
 	return false;
     }
-    if (mss.result.size() == 0) {
+    if (mss.result.empty()) {
 	return false;
     }
-    return out.deserialize(mss.result[0]);
+    out.isRecvReward = (mss.result[0][0] == "1");
+    return true;
 }
+
+bool SlotsDB::recvCjReward(const std::string &uid, const std::string &cjID) {
+    MysqlSimpleUpdate msu;
+    msu.setTable(gAchievement);
+    msu.setUpdateValue("is_recv_reward", "1", true);
+    msu.setCondition("uid", uid, false);
+    msu.addCondition("uaid", cjID, true, false);
+    if (!_pool.doMysqlOperation((MysqlOperationBase *) &msu)) {
+	CLOG(WARNING) << "set user recv achievement failed: uid:" << uid
+                      << " cjid:" << cjID;
+	return false;
+    }
+    return true;
+}
+
 
 bool SlotsDB::collectAchievements(const MysqlRows &result, Achievements &out) const{
     for (auto &row: result) {

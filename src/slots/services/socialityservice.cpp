@@ -174,12 +174,13 @@ namespace slots{
 	    return false;
 	}
 	// add gold to user.
-	SlotsUserPtr user;
-	if (!dc.slotsUserData->getByUid(uidStr, user)) {
+        int64_t fortune;
+	if (!dc.slotsUserData->addUserFortuneInCache(
+                uidStr, (int64_t)gData->getGiftValue(), fortune))
+        {
 	    return false;
 	}
-	user->uRes.incrFortune((int64_t)gData->getGiftValue());
-	//rf.formatResult(*user);
+	rf.formatSimpleResultWithFortune(fortune);
 	return true;
     }
 
@@ -215,7 +216,6 @@ namespace slots{
 	    }
 	    gData->sendGift(uid, id);
 	}
-	
 	rf.formatSimpleResult(true, "");
 	return true;	
     }
@@ -229,12 +229,13 @@ namespace slots{
 	    CLOG(WARNING) << "Operate db reward failed." ;
 	    return false;
 	}
-	SlotsUserPtr user;
-	if(!SlotsDataCenter::instance().slotsUserData->getByUid(uid, user)) {
+	int64_t fortune;
+	if(!SlotsDataCenter::instance().slotsUserData->addUserFortuneInCache(
+               uid, res.rewardRemain, fortune))
+        {
 	    return false;
 	}
-	user->uRes.incrFortune(res.rewardRemain);
-	rf.formatSimpleResult(true, "");
+	rf.formatSimpleResultWithFortune(fortune);
 	return true;
     }
 
@@ -262,12 +263,13 @@ namespace slots{
 	GiftsDataPtr gData = dc.getGiftsData();
 	int64_t sum = gData->getGiftSum(uid);
 	// add gold to user.
-	SlotsUserPtr user;
-	if (!dc.slotsUserData->getByUid(uidStr, user)) {
+        int64_t fortune;
+	if(!SlotsDataCenter::instance().slotsUserData->addUserFortuneInCache(
+               uidStr, sum, fortune))
+        {
 	    return false;
 	}
-	user->uRes.incrFortune(sum);
-	rf.formatSimpleResult(true, "");
+	rf.formatSimpleResultWithFortune(fortune);
 	return true;
     }
 

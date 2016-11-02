@@ -16,31 +16,32 @@ bool GameProcessor::process(GameContext &context) const {
     auto hallID = context.hallID;
     auto roomID = context.room.roomID;
     auto &hall = SlotsDataCenter::instance().hallOperator;
-    auto &preGame = context.user->gSt;
-    auto &preGameResult = preGame.getGameResult(hallID, roomID);
+    auto &preGameResult = context.preGameInfo;
     auto &gameInfo = context.gameInfo;
     auto &levelConfig = SlotsConfig::getInstance().levelConfig;
     // if this time is free game
     if (preGameResult.freeGameTimes > 0) {
         gameInfo.bFreeGame = true;
-        gameInfo.bet = preGameResult.bet;
-        gameInfo.lineNumber = preGameResult.lineNumber;
+        gameInfo.bet = preGameResult.lastBet;
+        gameInfo.lineNumber = preGameResult.lastLines;
         gameInfo.freeGameTimes = preGameResult.freeGameTimes;
     }
-    auto &uRes = context.user->uRes;
+    auto &uRes = context.uRes;
     if (!gameInfo.bFreeGame &&
         (gameInfo.bet > uRes.fortune.val ||
-         gameInfo.bet > levelConfig.maxBetForLevel(uRes.level.val) ||
+         gameInfo.bet > gameInfo.lineNumber * levelConfig.maxBetForLevel(uRes.level.val) ||
          gameInfo.bet <= 0))
     {
-        CLOG(WARNING) << "User:"<< context.user->uInfo.uid
-                      << " bet validate: cur[ " << context.user->uRes.fortune.val
+        CLOG(WARNING) << "User:"<< context.uid
+                      << " bet validate: cur[ " << uRes.fortune.val
                       << "], bet[" << gameInfo.bet << "] failed.";
         return false;
     }
-    if (!hall.useRoom(hallID, context.uid, context.room))
+    if (!hall.useRoom(
+            hallID, cgserver::StringUtil::StrToInt32WithDefault(
+                context.uid.data(), 0), context.room))
     {
-        CLOG(WARNING) << "User:"<< context.user->uInfo.uid
+        CLOG(WARNING) << "User:"<< context.uid
                       << " use room " << roomID << "failed.";
         return false;
     }
