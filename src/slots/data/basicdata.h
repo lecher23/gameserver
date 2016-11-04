@@ -89,16 +89,13 @@ struct SlotsUser{
       CLOG(WARNING) << "Ivalid colum number.";
       return false;
     }
-    uInfo.uid = row[0];
-    uInfo.mid = row[1];
-    uInfo.setFname(row[2]);
-    uInfo.setAvatar(row[3]);
-    uInfo.setMale(row[4]);
-    uInfo.setCountry(row[5]);
-    uRes.uid = uInfo.uid;
-    bool ret = cgserver::StringUtil::StrToInt32(row[7].c_str(), uRes.level.val);
-    ret = ret && cgserver::StringUtil::StrToInt64(row[8].c_str(), uRes.exp.val);
-    ret = ret && cgserver::StringUtil::StrToInt64(row[9].c_str(), uRes.fortune.val);
+    uInfo.fname = row[2];
+    uInfo.avatar = (row[3]);
+    uInfo.male = (row[4]);
+    uInfo.country = (row[5]);
+    bool ret = cgserver::StringUtil::StrToInt32(row[7].c_str(), uRes.level);
+    ret = ret && cgserver::StringUtil::StrToInt64(row[8].c_str(), uRes.exp);
+    ret = ret && cgserver::StringUtil::StrToInt64(row[9].c_str(), uRes.fortune);
     ret = ret && cgserver::StringUtil::StrToInt32(row[10].c_str(), uRes.vipLevel.val);
     ret = ret && cgserver::StringUtil::StrToInt64(row[11].c_str(), uRes.vipPoint.val);
     if(!ret) {

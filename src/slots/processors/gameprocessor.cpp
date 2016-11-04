@@ -28,12 +28,12 @@ bool GameProcessor::process(GameContext &context) const {
     }
     auto &uRes = context.uRes;
     if (!gameInfo.bFreeGame &&
-        (gameInfo.bet > uRes.fortune.val ||
-         gameInfo.bet > gameInfo.lineNumber * levelConfig.maxBetForLevel(uRes.level.val) ||
+        (gameInfo.bet > uRes.fortune ||
+         gameInfo.bet > gameInfo.lineNumber * levelConfig.maxBetForLevel(uRes.level) ||
          gameInfo.bet <= 0))
     {
         CLOG(WARNING) << "User:"<< context.uid
-                      << " bet validate: cur[ " << uRes.fortune.val
+                      << " bet validate: cur[ " << uRes.fortune
                       << "], bet[" << gameInfo.bet << "] failed.";
         return false;
     }

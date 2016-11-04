@@ -11,43 +11,18 @@ namespace UserInfoStr{
     const std::string sCreateUserProcedure = "create_user";
     const std::string sUid = "uid";
     const std::string sMid = "mid";
+    const std::string sName = "fname";
+    const std::string sGender = "male";
+    const std::string sCountry = "country";
 };
 
 struct UserInfo{
     std::string uid;
     std::string mid;
-    MutableField<std::string> fname;
-    MutableField<std::string> avatar;
-    MutableField<std::string> male;
-    MutableField<std::string> country;
-    void setFname(const std::string &in) {
-        fname.setVal(in);
-        _changed = true;
-    }
-    void setAvatar(const std::string &in) {
-        avatar.setVal(in);
-        _changed = true;
-    }
-    void setMale(const std::string &in) {
-        male.setVal(in);
-        _changed = true;
-    }
-    void setCountry(const std::string &in) {
-        country.setVal(in);
-        _changed = true;
-    }
-
-    void resetFieldStatus() {
-        fname.changed = false;
-        avatar.changed = false;
-        male.changed = false;
-        country.changed = false;
-        _changed = false;
-    }
-
-    bool changed() {
-        return _changed;
-    }
+    std::string fname;
+    std::string avatar;
+    std::string male;
+    std::string country;
 
     bool deserialize(const std::vector<std::string> &vec) {
         if (vec.size() < 6) return false;
@@ -57,9 +32,6 @@ struct UserInfo{
         country = vec[5];
         return true;
     }
-
-private:
-    bool _changed{false};
 };
 DF_SHARED_PTR(UserInfo);
 

@@ -4,6 +4,7 @@
 #include "tablebase.h"
 #include <util/common_define.h>
 #include <util/stringutil.h>
+#include "mysql/mysqlsimpleupdate.h"
 
 BEGIN_NAMESPACE(slots)
 
@@ -18,29 +19,49 @@ namespace UserResourceStr{
 };
 
 struct UserResource{
-  std::string uid;
-  MutableField<int32_t> level;
-  MutableField<int64_t> exp;
-  MutableField<int64_t> fortune;
-  MutableField<int32_t> vipLevel;
-  MutableField<int64_t> vipPoint;
-  MutableField<int32_t> tmpVipLevel;
-  MutableField<int64_t> tmpVipEndTime;
+    int32_t level{0};
+    int64_t exp{0};
+    int64_t fortune{0};
+    MutableField<int32_t> vipLevel;
+    MutableField<int64_t> vipPoint;
+    MutableField<int32_t> tmpVipLevel;
+    MutableField<int64_t> tmpVipEndTime;
+
+#define EZ_INT(target)                          \
+    cgserver::StringUtil::toString(target)
 
     bool deserialize(const std::vector<std::string> &vec) {
         if (vec.size() < 8) return false;
-        bool ret = cgserver::StringUtil::StrToInt32(vec[1].data(), level.val);
-        ret = ret && cgserver::StringUtil::StrToInt64(vec[2].data(), exp.val);
-        ret = ret && cgserver::StringUtil::StrToInt64(vec[3].data(), fortune.val);
+        bool ret = cgserver::StringUtil::StrToInt32(vec[1].data(), level);
+        ret = ret && cgserver::StringUtil::StrToInt64(vec[2].data(), exp);
+        ret = ret && cgserver::StringUtil::StrToInt64(vec[3].data(), fortune);
         ret = ret && cgserver::StringUtil::StrToInt32(vec[4].data(), vipLevel.val);
         ret = ret && cgserver::StringUtil::StrToInt64(vec[5].data(), vipPoint.val);
         return ret;
     }
 
+    std::string updateAll(const std::string &uid) {
+        cgserver::MysqlSimpleUpdate msu;
+        msu.setTable(UserResourceStr::sTableName);
+        msu.addUpdateValue(UserResourceStr::sLevel, EZ_INT(level), false);
+        msu.addUpdateValue(UserResourceStr::sExp, EZ_INT(exp), false);
+        msu.addUpdateValue(UserResourceStr::sFortune, EZ_INT(fortune), false);
+        if (vipLevel.changed) {
+            msu.addUpdateValue(
+                UserResourceStr::sVipLevel, EZ_INT(vipLevel.val), false);
+        }
+        if (vipPoint.changed) {
+            msu.addUpdateValue(
+                UserResourceStr::sVipPoint, EZ_INT(vipPoint.val), false);
+        }
+        msu.setCondition(UserResourceStr::sUid, uid, false);
+        return msu.getQuery();
+    }
+
     void reset() {
-	level.val = 1;
-	exp.val = 0;
-	fortune.val = 0;
+	level = 0;
+	exp = 0;
+	fortune = 0;
 	vipLevel.val = 0;
 	vipPoint.val = 0;
 	tmpVipLevel.val = 0;
@@ -49,9 +70,6 @@ struct UserResource{
     }
 
     void resetFieldStatus() {
-        level.changed = false;
-        exp.changed = false;
-        fortune.changed = false;
         vipLevel.changed = false;
         vipPoint.changed =false;
 	tmpVipLevel.changed = false;
@@ -85,7 +103,7 @@ struct UserResource{
 	if (earned == 0)
 	    return;
 	fortune += earned;
-	if (fortune.val < 0) fortune.val = 0;
+	if (fortune < 0) fortune = 0;
         _changed =true;
     }
 

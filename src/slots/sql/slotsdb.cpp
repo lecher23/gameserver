@@ -85,7 +85,6 @@ bool SlotsDB::getUserInfo(MysqlOperationBase * mob, SlotsUser &su) const {
 	    return false;
 	}
 	ur.reset();
-	ur.uid = ui.uid;
 	uh.reset();
 	//uh.uid = ui.uid;
 	uh.uid = cgserver::StringUtil::StrToInt32WithDefault(ui.uid.c_str(), 0);

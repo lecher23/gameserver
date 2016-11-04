@@ -122,9 +122,9 @@ bool SlotsUserData::needSave(uint64_t factor) {
     GET_INT_VAL_FROM_VEC_NO_CHECK(tHis, maxLinkCount, 32, start + 6);
 
 #define SET_USER_RESOURCE_TO_VEC()                                      \
-    result.push_back(StringUtil::toString(user.uRes.level.val));        \
-    result.push_back(StringUtil::toString(user.uRes.exp.val));          \
-    result.push_back(StringUtil::toString(user.uRes.fortune.val));      \
+    result.push_back(StringUtil::toString(user.uRes.level));            \
+    result.push_back(StringUtil::toString(user.uRes.exp));              \
+    result.push_back(StringUtil::toString(user.uRes.fortune));          \
     result.push_back(StringUtil::toString(user.uRes.vipLevel.val));     \
     result.push_back(StringUtil::toString(user.uRes.vipPoint.val));
 
@@ -215,10 +215,10 @@ bool SlotsUserData::setUserToCache(GameContext &user) {
     std::vector<std::string> result;
     SET_USER_RESOURCE_TO_VEC();
     SET_GAME_HISTORY_TO_VEC();
-    result.push_back(user.uInfo.fname.val);
-    result.push_back(user.uInfo.country.val);
-    result.push_back(user.uInfo.avatar.val);
-    result.push_back(user.uInfo.male.val);
+    result.push_back(user.uInfo.fname);
+    result.push_back(user.uInfo.country);
+    result.push_back(user.uInfo.avatar);
+    result.push_back(user.uInfo.male);
     auto &t = user.allTHis;
     for (int i = t.getThemeStart(); i < t.getThemeCount(); ++i) {
         std::string sI = StringUtil::toString(i);

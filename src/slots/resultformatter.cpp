@@ -107,7 +107,7 @@ void ResultFormatter::formatGameResult(GameContext &gc)
     auto &uRes = gc.uRes;
     auto &ret = gc.gameInfo;
     JSON_KEY(ResultStr::sFortune);
-    _writer.Int64(uRes.fortune.val);
+    _writer.Int64(uRes.fortune);
 
     JSON_KEY(ResultStr::sEarnedInfo);
     _writer.StartArray();
@@ -285,13 +285,13 @@ void ResultFormatter::formatMail(const UserMail &uMail) {
 void ResultFormatter::formatUserInfo(const UserInfo &uInfo) {
     _writer.StartObject();
     JSON_KEY(ResultStr::sUserName);
-    JSON_STRING_VALUE(uInfo.fname.val);
+    JSON_STRING_VALUE(uInfo.fname);
     JSON_KEY(ResultStr::sUserAvatar);
-    JSON_STRING_VALUE(uInfo.avatar.val);
+    JSON_STRING_VALUE(uInfo.avatar);
     JSON_KEY(ResultStr::sUserGender);
-    JSON_STRING_VALUE(uInfo.male.val);
+    JSON_STRING_VALUE(uInfo.male);
     JSON_KEY(ResultStr::sUserCountry);
-    JSON_STRING_VALUE(uInfo.country.val);
+    JSON_STRING_VALUE(uInfo.country);
     _writer.EndObject();
 }
 
@@ -301,11 +301,11 @@ void ResultFormatter::formatUserInfo(const UserInfo &uInfo) {
 void ResultFormatter::formatUserResource(const UserResource &uRes) {
     _writer.StartObject();
     JSON_KEY(ResultStr::sLevel);
-    _writer.Uint(uRes.level.val);
+    _writer.Uint(uRes.level);
     JSON_KEY(ResultStr::sExp);
-    _writer.Uint64(uRes.exp.val);
+    _writer.Uint64(uRes.exp);
     JSON_KEY(ResultStr::sFortune);
-    _writer.Uint64(uRes.fortune.val);
+    _writer.Uint64(uRes.fortune);
     JSON_KEY(ResultStr::sVipLevel);
     _writer.Uint(uRes.vipLevel.val);
     JSON_KEY(ResultStr::sVipPoint);

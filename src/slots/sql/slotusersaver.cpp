@@ -33,26 +33,14 @@ bool SlotUserSaver::doOperation(MYSQL *conn) {
 }
 
 bool SlotUserSaver::saveUserInfo(MYSQL *conn, UserInfo &uInfo) {
-    if (!uInfo.changed()) {
-        return true;
-    }
     MysqlSimpleUpdate msu;
     msu.setTable(UserInfoStr::sTableName);
-    if (uInfo.fname.changed) {
-	msu.addUpdateValue("fname", uInfo.fname.val, true);
-    }
-    if (uInfo.avatar.changed) {
-	msu.addUpdateValue("avatar", uInfo.avatar.val, true);
-    }
-    if (uInfo.male.changed) {
-	msu.addUpdateValue("male", uInfo.male.val, true);
-    }
-    if (uInfo.country.changed) {
-	msu.addUpdateValue("country", uInfo.country.val, true);
-    }
-    msu.setCondition(UserInfoStr::sUid, uInfo.uid, true);
+    msu.addUpdateValue("fname", uInfo.fname, true);
+    msu.addUpdateValue("avatar", uInfo.avatar, true);
+    msu.addUpdateValue("male", uInfo.male, true);
+    msu.addUpdateValue("country", uInfo.country, true);
+    msu.setCondition(UserInfoStr::sUid, user->uid, true);
     bool ret = exeQuery(conn, msu.getQuery());
-    uInfo.resetFieldStatus();
     return ret;
 }
 
@@ -62,18 +50,12 @@ bool SlotUserSaver::saveUserResource(MYSQL *conn, UserResource &ur) {
     }
     MysqlSimpleUpdate msu;
     msu.setTable(UserResourceStr::sTableName);
-    if (ur.level.changed) {
-        msu.addUpdateValue(
-            UserResourceStr::sLevel, StringUtil::toString(ur.level.val));
-    }
-    if (ur.exp.changed) {
-        msu.addUpdateValue(
-            UserResourceStr::sExp, StringUtil::toString(ur.exp.val));
-    }
-    if (ur.fortune.changed){
-        msu.addUpdateValue(
-            UserResourceStr::sFortune, StringUtil::toString(ur.fortune.val));
-    }
+    msu.addUpdateValue(
+        UserResourceStr::sLevel, StringUtil::toString(ur.level));
+    msu.addUpdateValue(
+        UserResourceStr::sExp, StringUtil::toString(ur.exp));
+    msu.addUpdateValue(
+        UserResourceStr::sFortune, StringUtil::toString(ur.fortune));
     if (ur.vipLevel.changed) {
         msu.addUpdateValue(
             UserResourceStr::sVipLevel, StringUtil::toString(ur.vipLevel.val));
@@ -83,7 +65,7 @@ bool SlotUserSaver::saveUserResource(MYSQL *conn, UserResource &ur) {
             UserResourceStr::sVipPoint, StringUtil::toString(ur.vipPoint.val));
     }
     // TODO:tmp vip info should be saved!
-    msu.setCondition(UserResourceStr::sUid, ur.uid, true);
+    msu.setCondition(UserResourceStr::sUid, user->uid, true);
     bool ret = exeQuery(conn, msu.getQuery());
     ur.resetFieldStatus();
     return ret;
