@@ -89,11 +89,11 @@ public:
 #undef INIT_ELEMENT
     static void init_slots_data_center_data() {
         auto &sdc = slots::SlotsDataCenter::instance();
-        sdc.slotsUserData.reset(new SlotsUserData);
+        //sdc.slotsUserData.reset(new SlotsUserData);
         sdc.cjQueue.reset(new CjQueue);
     }
 
     static void add_slots_user(const std::string &userID, SlotsUserPtr &user) {
-        slots::SlotsDataCenter::instance().slotsUserData->set(userID, user);
+            //slots::SlotsDataCenter::instance().slotsUserData->set(userID, user);
     }
 };

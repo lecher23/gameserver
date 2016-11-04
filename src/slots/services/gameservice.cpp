@@ -22,12 +22,6 @@ bool GameService::doJob(CPacket &packet, CResponse &resp) {
     return ret;
 }
 
-#define GET_SLOTS_USER_WITH_BREAK(uid, dest)                            \
-    if (!SlotsDataCenter::instance().slotsUserData->getByUid(uid, dest)) { \
-	break;                                                          \
-    }
-
-
 bool GameService::doTemplePrincess(CPacket &packet, ResultFormatter &rf)
 {
     const static ThemeTypes style = ESS_TEMPLE_PRINCESS;

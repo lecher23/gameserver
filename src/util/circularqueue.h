@@ -26,32 +26,27 @@ private:
     CircularQueue& operator = (const CircularQueue &);
 public:
     inline void push_front(const T &t) {
-        assert(_size < _capacity);
         if (_size == 0) {
             _front = 0;
             _back = 0;
-        } else {
-            if (--_front == -1) {
-                _front = _capacity - 1;
-            }
+        } else if (--_front == -1) {
+            _front = _capacity - 1;
         }
         ++_size;
         _items[_front] = t;
     }
-    
+
     inline void push_back(const T &t) {
         if (_size == 0) {
             _front = 0;
             _back = 0;
-        } else {
-            if (++_back == _capacity) {
-                _back = 0;
-            }
+        } else if (++_back == _capacity) {
+            _back = 0;
         }
         ++_size;
         _items[_back] = t;
     }
-    
+
     inline void pop_front() {
         assert(_size);
         if (++_front == _capacity) {
@@ -59,7 +54,7 @@ public:
         }
         --_size;
     }
-    
+
     inline void pop_back() {
         assert(_size);
         if (--_back == -1) {
