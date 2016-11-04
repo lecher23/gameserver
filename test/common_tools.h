@@ -87,6 +87,7 @@ public:
 #undef INIT_GRID
 #undef INIT_LINE
 #undef INIT_ELEMENT
+
     static void init_slots_data_center_data() {
         auto &sdc = slots::SlotsDataCenter::instance();
         //sdc.slotsUserData.reset(new SlotsUserData);

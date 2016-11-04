@@ -10,6 +10,7 @@
 #include <slots/themes/hallbase.h>
 #include <slots/config/slotsconfig.h>
 #include <util/timeutil.h>
+#include "util/producerconsumerqueue.h"
 
 BEGIN_NAMESPACE(slots)
 #define MAX_CACHE_NUMBER 4096
@@ -96,6 +97,7 @@ public:
     SlotsUserDataPtr slotsUserData;
     CjQueuePtr cjQueue;
     HallBase hallOperator;
+    cgserver::ProducerConsumerQueue<std::string> backupQueue;
 
 private:
     bool rankDataExpired(int64_t ts) {

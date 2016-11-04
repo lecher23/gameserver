@@ -53,6 +53,13 @@ namespace cgserver{
 	    return false;
 	}
 	bool ret = op->doOperation(conn);
+        if (!ret) {
+            // if failed, check is connection well?
+            // if reconnect success, auto_commit will reset.
+            mysql_ping(conn);
+            // do it again
+            ret = op->doOperation(conn);
+        }
 	returnConnect(conn);
 	return ret;
     }

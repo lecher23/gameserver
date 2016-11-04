@@ -28,7 +28,7 @@ public:
         _dataReady.notify_all();
     }
 
-    const T &consumer() {
+    const T &consume() {
         std::unique_lock<std::mutex> lock(_queueLock);
         while (_queue.empty()) {
             _dataReady.wait(lock);
@@ -37,6 +37,15 @@ public:
         _queue.pop_front();
         lock.unlock();
         return data;
+    }
+
+    bool empty() {
+        MUTEX_GUARD(_queueLock);
+        return _queue.empty();
+    }
+
+    bool size() {
+        return _queue.size();
     }
 
 private:
