@@ -33,6 +33,10 @@ struct MutableField{
     return val;
   }
 
+  bool operator == (const MutableField &right) {
+    return val == right.val;
+  }
+
   bool operator > (const T&t) const {
     return val > t;
   }

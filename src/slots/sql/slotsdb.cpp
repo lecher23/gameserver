@@ -179,7 +179,7 @@ bool SlotsDB::updateGameHistory(GameHistory &gh) const {
     msu.addUpdateValue(
         GameHistoryStr::sLastLogin, StringUtil::toString(gh.lastLogin));
     msu.addUpdateValue(
-        GameHistoryStr::sLoingDays, StringUtil::toString(gh.loginDays));
+        GameHistoryStr::sLoginDays, StringUtil::toString(gh.loginDays));
     msu.addUpdateValue(
         GameHistoryStr::sJackpot, StringUtil::toString(gh.jackpot));
     msu.setCondition("uid", StringUtil::toString(gh.uid), false);

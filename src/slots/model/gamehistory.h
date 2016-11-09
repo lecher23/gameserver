@@ -1,7 +1,11 @@
 #ifndef GAMEHISTORY_H
 #define GAMEHISTORY_H
 
-#include <util/common_define.h>
+#include "util/common_define.h"
+#include "util/stringutil.h"
+#include "mysql/mysqlsimpleupdate.h"
+#include "mysql/mysqlsimpleinsert.h"
+#include "tablebase.h"
 
 BEGIN_NAMESPACE(slots)
 
@@ -11,6 +15,7 @@ namespace ThemeHistoryStr{
   const std::string sPriKey2 = "theme_id";
   const std::string sPriKey3 = "tag";
   const std::string sValue = "value";
+  const std::string sEmpty = "";
 }
 
 namespace GameHistoryStr{
@@ -21,7 +26,7 @@ namespace GameHistoryStr{
   const std::string sTotalEarned = "total_earned";
   const std::string sTotalBet = "total_bet";
   const std::string sLastLogin = "last_login";
-  const std::string sLoingDays = "login_days";
+  const std::string sLoginDays = "login_days";
   const std::string sJackpot = "jackpot";
 };
 
@@ -128,13 +133,63 @@ class ThemeHistory {
 };
 
 struct ThemeHistoryItem{
-  int32_t bigWinCount{0};
-  int32_t megaWinCount{0};
-  int32_t superWinCount{0};
-  int32_t spinCount{0};
-  int32_t freeGameCount{0};
-  int32_t tinyGameCount{0};
-  int32_t maxLinkCount{0};
+  MutableField<int32_t> bigWinCount;
+  MutableField<int32_t> megaWinCount;
+  MutableField<int32_t> superWinCount;
+  MutableField<int32_t> spinCount;
+  MutableField<int32_t> freeGameCount;
+  MutableField<int32_t> tinyGameCount;
+  MutableField<int32_t> maxLinkCount;
+
+  static int32_t tagBegin() {
+    return BIG_WIN_TAG;
+  }
+
+  static int32_t tagEnd() {
+    return JACKPOT_TAG;
+  }
+
+#define EZ_CASE(tag, tar)                               \
+  case tag:                                             \
+  {                                                     \
+    if (!tar.changed) {                                 \
+      return ThemeHistoryStr::sEmpty;                   \
+    }                                                   \
+    valueStr = cgserver::StringUtil::toString(tar.val); \
+    break;                                              \
+  }
+
+  std::string updateOne(
+      const std::string &uid, const std::string &theme_id, int32_t tag)
+  {
+    std::string valueStr;
+    switch (tag)
+    {
+      EZ_CASE(BIG_WIN_TAG, bigWinCount)
+      EZ_CASE(MEGA_WIN_TAG, megaWinCount)
+      EZ_CASE(SUPER_WIN_TAG, superWinCount)
+      EZ_CASE(NORMAL_GAME_TAG, spinCount)
+      EZ_CASE(FREE_GAME_TAG, freeGameCount)
+      EZ_CASE(TINY_GAME_TAG, tinyGameCount)
+      EZ_CASE(SIX_LINK_TAG, maxLinkCount)
+      default:
+      return ThemeHistoryStr::sEmpty;
+    }
+    cgserver::MysqlSimpleInsert msi;
+    msi.setTable(ThemeHistoryStr::sTableName);
+    msi.setField(ThemeHistoryStr::sPriKey1);
+    msi.addField(ThemeHistoryStr::sPriKey2);
+    msi.addField(ThemeHistoryStr::sPriKey3);
+    msi.addField(ThemeHistoryStr::sValue);
+    msi.setValue(uid);
+    msi.addValue(theme_id);
+    msi.addValue(cgserver::StringUtil::toString(tag));
+    msi.addValue(valueStr);
+    msi.updateIfExist();
+    msi.setFieldValue(ThemeHistoryStr::sValue, valueStr);
+    return msi.getQuery();
+  }
+#undef EZ_CASE
 };
 
 struct GameHistory{
@@ -159,6 +214,24 @@ struct GameHistory{
     jackpot = 0;
     themeHistory.reset();
   }
+
+#define EZ_UPDATE(field, val)\
+  msu.addUpdateValue(GameHistoryStr::field, cgserver::StringUtil::toString(val));
+
+  std::string updateAll(const std::string &uid) {
+    cgserver::MysqlSimpleUpdate msu;
+    msu.setTable(GameHistoryStr::sTableName);
+    EZ_UPDATE(sMaxFortune, maxFortune);
+    EZ_UPDATE(sMaxEarned, maxEarned);
+    EZ_UPDATE(sTotalEarned, totalEarned);
+    EZ_UPDATE(sTotalBet, totalBet);
+    EZ_UPDATE(sLastLogin, lastLogin);
+    EZ_UPDATE(sLoginDays, loginDays);
+    EZ_UPDATE(sJackpot, jackpot);
+    msu.setCondition(GameHistoryStr::sPriKey, uid, false);
+    return msu.getQuery();
+  }
+#undef EZ_UPDATE
 
   bool deserialize(const std::vector<std::string> &row) {
     if (row.size() < 8) return false;

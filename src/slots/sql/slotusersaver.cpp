@@ -45,9 +45,7 @@ bool SlotUserSaver::saveUserInfo(MYSQL *conn, UserInfo &uInfo) {
 }
 
 bool SlotUserSaver::saveUserResource(MYSQL *conn, UserResource &ur) {
-    if (!ur.changed()) {
-        return true;
-    }
+    CLOG(WARNING) << "It is no used.";
     MysqlSimpleUpdate msu;
     msu.setTable(UserResourceStr::sTableName);
     msu.addUpdateValue(
@@ -86,7 +84,7 @@ bool SlotUserSaver::saveUserHistory(MYSQL *conn, GameHistory &gh) {
     msu.addUpdateValue(
         GameHistoryStr::sLastLogin, StringUtil::toString(gh.lastLogin));
     msu.addUpdateValue(
-        GameHistoryStr::sLoingDays, StringUtil::toString(gh.loginDays));
+        GameHistoryStr::sLoginDays, StringUtil::toString(gh.loginDays));
     msu.addUpdateValue(
         GameHistoryStr::sJackpot, StringUtil::toString(gh.jackpot));
     msu.setCondition(GameHistoryStr::sPriKey, uidStr, false);

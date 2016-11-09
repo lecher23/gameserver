@@ -62,16 +62,19 @@ void GameResultProcessor::processGameDetail(
     auto &tHis = context.tHis;
     auto gType = data.gType;
     // incr game times
-    
-    INCR_TAG_VALUE(ECT_GAME_TIMES, ++tHis.spinCount);
+    tHis.spinCount += 1;
+    INCR_TAG_VALUE(ECT_GAME_TIMES, tHis.spinCount.val);
     if(data.bBigwin) {
-        INCR_TAG_VALUE(ECT_BIGWIN, ++tHis.bigWinCount);
+        tHis.bigWinCount += 1;
+        INCR_TAG_VALUE(ECT_BIGWIN, tHis.bigWinCount.val);
     }
     if(data.bMegawin) {
-        INCR_TAG_VALUE(ECT_MEGAWIN, ++tHis.megaWinCount);
+        tHis.megaWinCount += 1;
+        INCR_TAG_VALUE(ECT_MEGAWIN, tHis.megaWinCount.val);
     }
     if(data.bSuperwin) {
-        INCR_TAG_VALUE(ECT_SUPERWIN, ++tHis.superWinCount);
+        tHis.superWinCount += 1;
+        INCR_TAG_VALUE(ECT_SUPERWIN, tHis.superWinCount.val);
     }
     // bug: if both jackpot trigger, it will jump one number.
     if(data.bJackpot1) {
@@ -81,24 +84,26 @@ void GameResultProcessor::processGameDetail(
         INCR_TAG_VALUE(ECT_JACKPOT, ++context.gHis.jackpot);
     }
     if (data.tinyGame.enable) {
-        INCR_TAG_VALUE(ECT_TINY_GAME, ++tHis.tinyGameCount);
+        tHis.tinyGameCount += 1;
+        INCR_TAG_VALUE(ECT_TINY_GAME, tHis.tinyGameCount.val);
     }
     if (data.bFreeGame) {
-        ++tHis.freeGameCount;
+        tHis.freeGameCount += 1;
     }
 }
 
 void GameResultProcessor::processLines(GameContext &context, GameResult &data) const {
-    auto pre = context.tHis.maxLinkCount;
+    auto &tHis = context.tHis;
+    auto pre = tHis.maxLinkCount.val;
     for (auto &line: data.lines){
         if (line.count == 5) {
-            ++context.tHis.maxLinkCount;
+            tHis.maxLinkCount += 1;
         }
     }
-    if (pre == context.tHis.maxLinkCount)
-        return ;
-    context.events.push_back(
-        EventInfo(ECT_SIX_LINK, pre, context.tHis.maxLinkCount));
+    if (pre != tHis.maxLinkCount.val) {
+        context.events.push_back(
+            EventInfo(ECT_SIX_LINK, pre, tHis.maxLinkCount.val));
+    }
 }
 
 void GameResultProcessor::processExp(GameContext &context, GameResult &data) const {

@@ -2,8 +2,8 @@
 #define USERRESOURCE_H
 
 #include "tablebase.h"
-#include <util/common_define.h>
-#include <util/stringutil.h>
+#include "util/common_define.h"
+#include "util/stringutil.h"
 #include "mysql/mysqlsimpleupdate.h"
 
 BEGIN_NAMESPACE(slots)
@@ -57,7 +57,7 @@ struct UserResource{
         msu.setCondition(UserResourceStr::sUid, uid, false);
         return msu.getQuery();
     }
-
+#undef EZ_INT
     void reset() {
 	level = 0;
 	exp = 0;
@@ -74,45 +74,33 @@ struct UserResource{
         vipPoint.changed =false;
 	tmpVipLevel.changed = false;
 	tmpVipEndTime.changed = false;
-        _changed = false;
     }
 
     void incrExp(int64_t input) {
 	if (input <= 0) return;
 	exp += input;
-        _changed =true;
     }
 
     void incrVipPoint(int64_t input) {
 	if (input == 0) return;
 	vipPoint += input;
-        _changed =true;
     }
 
     void levelUp() {
 	level += 1;
-        _changed =true;
     }
 
     void vipLevelUp(){
 	vipLevel += 1;
-        _changed =true;
     }
 
     void incrFortune(int64_t earned) {
 	if (earned == 0)
 	    return;
 	fortune += earned;
-	if (fortune < 0) fortune = 0;
-        _changed =true;
+	if (fortune < 0)
+            fortune = 0;
     }
-
-    bool changed() {
-        return _changed;
-    }
-
-private:
-  bool _changed{false};
 };
 DF_SHARED_PTR(UserResource);
 

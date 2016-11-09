@@ -146,14 +146,14 @@ bool SlotsUserData::needSave(uint64_t factor) {
     PUSH_INT_VAL_TO_VEC(preGameInfo, lastLines);         \
     PUSH_INT_VAL_TO_VEC(preGameInfo, lastHallID);
 
-#define SET_THEME_HISTORY_TO_VEC()              \
-    PUSH_INT_VAL_TO_VEC(tHis, bigWinCount);      \
-    PUSH_INT_VAL_TO_VEC(tHis, megaWinCount);     \
-    PUSH_INT_VAL_TO_VEC(tHis, superWinCount);    \
-    PUSH_INT_VAL_TO_VEC(tHis, spinCount);        \
-    PUSH_INT_VAL_TO_VEC(tHis, freeGameCount);    \
-    PUSH_INT_VAL_TO_VEC(tHis, tinyGameCount);    \
-    PUSH_INT_VAL_TO_VEC(tHis, maxLinkCount);
+#define SET_THEME_HISTORY_TO_VEC()                      \
+    PUSH_INT_VAL_TO_VEC(tHis, bigWinCount.val);         \
+    PUSH_INT_VAL_TO_VEC(tHis, megaWinCount.val);        \
+    PUSH_INT_VAL_TO_VEC(tHis, superWinCount.val);       \
+    PUSH_INT_VAL_TO_VEC(tHis, spinCount.val);           \
+    PUSH_INT_VAL_TO_VEC(tHis, freeGameCount.val);       \
+    PUSH_INT_VAL_TO_VEC(tHis, tinyGameCount.val);       \
+    PUSH_INT_VAL_TO_VEC(tHis, maxLinkCount.val);
 
 
 bool SlotsUserData::getContextForGame(GameContext &user) {
@@ -181,6 +181,17 @@ bool SlotsUserData::setContextForGame(GameContext &user) {
     if (_redisClient.Hmset(user.uid, fields, result) != RC_SUCCESS) {
         CLOG(WARNING) << "Set game context faile with user id:" << user.uid;
         return false;
+    }
+    _backupQueue.produce(user.uRes.updateAll(user.uid));
+    _backupQueue.produce(user.gHis.updateAll(user.uid));
+    auto hId = cgserver::StringUtil::toString(user.hallID);
+    for (int32_t i = ThemeHistoryItem::tagBegin();
+         i < ThemeHistoryItem::tagEnd(); ++i)
+    {
+        auto tmp = user.tHis.updateOne(user.uid, hId, i);
+        if (!tmp.empty()) {
+            _backupQueue.produce(tmp);
+        }
     }
     return true;
 }
