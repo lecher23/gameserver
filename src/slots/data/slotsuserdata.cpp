@@ -209,6 +209,10 @@ bool SlotsUserData::getContextForLogin(GameContext &user) {
     user.uInfo.country = result[13];
     user.uInfo.avatar = result[14];
     user.uInfo.male = result[15];
+    // get achievement from db
+    if (!SlotsDB::getInstance().getUserAchievement(user.uid, user.oldCj)) {
+        CLOG(WARNING) << "Get user:" << user.uid << " cj failed when login.";
+    }
     return true;
 }
 
