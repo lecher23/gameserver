@@ -11,6 +11,7 @@
 #include <slots/config/slotsconfig.h>
 #include <util/timeutil.h>
 #include "util/producerconsumerqueue.h"
+#include "backupconsumer.h"
 
 BEGIN_NAMESPACE(slots)
 #define MAX_CACHE_NUMBER 4096
@@ -25,22 +26,15 @@ public:
 
     bool init (bool needDump = true, int dumpInterval = DUMP_INTERVAL){
 	_gifts.reset(new GiftsData(999));
-	bool ret = _persisThread.init();
-	if (!ret) {
-	    return false;
-	}
-	slotsUserData.reset(new SlotsUserData);
-        cjQueue.reset(new CjQueue);
-	// add slots user data.
-	_persisThread.addData(slotsUserData);
-        _persisThread.addData(cjQueue);
+
+	slotsUserData.reset(new SlotsUserData(backupQueue));
+
         auto &slotsConfig = SlotsConfig::getInstance();
         if(!slotsConfig.init()){
           CLOG(ERROR) << "Init game config failed.";
           return false;
         }
-        auto &tsConfig = slotsConfig.themeConfig.tsConfig;
-	return ret && _gifts->init();
+	return sqlConsumer.start() &&  _gifts->init();
     }
 
     static SlotsDataCenter &instance(){
@@ -53,7 +47,7 @@ public:
     }
 
     void release(){
-	_persisThread.stop();
+        sqlConsumer.stop();
     }
 
     LeaderBoardRank &getLeaderBoardData(RankType rType) {
@@ -89,15 +83,12 @@ public:
 	return ret;
     }
 
-    GameRecord &getGameRecord () {
-	return _persisThread.getUnusedGameRecord();
-    }
-
     /* User data*/
-    SlotsUserDataPtr slotsUserData;
-    CjQueuePtr cjQueue;
-    HallBase hallOperator;
     cgserver::ProducerConsumerQueue<std::string> backupQueue;
+    SlotsUserDataPtr slotsUserData;
+    BackupConsumer sqlConsumer;
+
+    HallBase hallOperator;
 
 private:
     bool rankDataExpired(int64_t ts) {
@@ -113,7 +104,7 @@ private:
 	}
     }
 
-    SlotsDataCenter(){}
+    SlotsDataCenter():backupQueue(),sqlConsumer(backupQueue){}
     SlotsDataCenter(const SlotsDataCenter &);
 
     /* Rank data*/
@@ -126,10 +117,6 @@ private:
 
     /* Mail data*/
     std::map<int32_t, AttachmentPtr> _attachInfo;
-
-    /* Data */
-    PersistenceThread _persisThread;
-
 };
 END_NAMESPACE
 #endif

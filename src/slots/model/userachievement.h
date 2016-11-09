@@ -21,18 +21,14 @@ enum CJStatus {
 };
 
 struct UserAchievement{
-    int32_t uid;
     int32_t aid;
     bool isRecvReward;
-    CJStatus status;
     int64_t time;
 
-    UserAchievement(const std::string &uid_, int32_t aid_, bool recv, int64_t time_) {
-        cgserver::StringUtil::StrToInt32(uid_.c_str(), uid);
+    UserAchievement(int32_t aid_, bool recv, int64_t time_) {
         aid = aid_;
         isRecvReward = recv;
         time = time_;
-        status = CJS_NEW;
     }
 
     UserAchievement(){}
@@ -43,9 +39,6 @@ struct UserAchievement{
 
     void recvReward() {
         isRecvReward = true;
-        if (status == CJS_SAVED) {
-            status = CJS_CHANGED;
-        }
     }
 
     bool deserialize(const std::vector<std::string> &row) {
@@ -53,11 +46,9 @@ struct UserAchievement{
             CLOG(WARNING) << "Invalid colum number.";
             return false;
         }
-        bool ret = cgserver::StringUtil::StrToInt32(row[0].c_str(), uid);
-        ret = ret && cgserver::StringUtil::StrToInt32(row[1].c_str(), aid);
+        bool ret = cgserver::StringUtil::StrToInt32(row[1].c_str(), aid);
         isRecvReward = (row[2] != "0");
         ret = ret && cgserver::StringUtil::StrToInt64(row[3].c_str(), time);
-        status = CJS_SAVED;
         return ret;
     }
 };

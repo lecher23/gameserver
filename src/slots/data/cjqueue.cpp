@@ -38,21 +38,17 @@ void CjQueue::getSqls(std::vector<std::string> &sqls) {
   auto &q = _queue[_curRead];
   while(!q.empty()) {
     auto &i = q.front();
-    if (i.status != CJS_SAVED) {
-        MysqlSimpleInsert msi;
-        msi.setTable(UserCJStr::sTableName);
-        msi.setField(UserCJStr::sUid);
-        msi.addField(UserCJStr::sAid);
-        msi.addField(UserCJStr::sRecv);
-        msi.addField(UserCJStr::sTime);
-        msi.setValue(StringUtil::toString(i.uid));
-        msi.addValue(StringUtil::toString(i.aid));
-        msi.addValue(i.isRecvReward ? sMysqlTrue : sMysqlFalse);
-        msi.addValue(StringUtil::toString(i.time));
-        msi.updateIfExist();
-        msi.setFieldValue(UserCJStr::sRecv, i.isRecvReward ? sMysqlTrue : sMysqlFalse);
-        sqls.push_back(msi.getQuery());
-    }
+    MysqlSimpleInsert msi;
+    msi.setTable(UserCJStr::sTableName);
+    msi.addField(UserCJStr::sAid);
+    msi.addField(UserCJStr::sRecv);
+    msi.addField(UserCJStr::sTime);
+    msi.addValue(StringUtil::toString(i.aid));
+    msi.addValue(i.isRecvReward ? sMysqlTrue : sMysqlFalse);
+    msi.addValue(StringUtil::toString(i.time));
+    msi.updateIfExist();
+    msi.setFieldValue(UserCJStr::sRecv, i.isRecvReward ? sMysqlTrue : sMysqlFalse);
+    sqls.push_back(msi.getQuery());
     q.pop();
   }
 }

@@ -49,8 +49,8 @@ bool SlotsDB::getUserData(GameContext &out) const {
     EASY_GET_TABLE(UserInfoStr::sTableName, UserInfoStr::sUid, out.uid, uInfo);
     EASY_GET_TABLE(UserResourceStr::sTableName, UserResourceStr::sUid, out.uid, uRes);
     EASY_GET_TABLE(GameHistoryStr::sTableName, GameHistoryStr::sPriKey, out.uid, gHis);
-    EASY_SELECT(ms, ThemeHistoryStr::sTableName, ThemeHistoryStr::sPriKey1, out.uid);
-    if (!out.allTHis.deserialize(ms.result)) {
+    EASY_SELECT(ms1, ThemeHistoryStr::sTableName, ThemeHistoryStr::sPriKey1, out.uid);
+    if (!out.allTHis.deserialize(ms1.result)) {
         return false;
     }
     return getUserAchievement(out.uid, out.oldCj);
@@ -487,7 +487,6 @@ bool SlotsDB::getUserAchievement(const std::string &uid, Achievements &out) cons
     MysqlSimpleSelect mss;
     mss.setField("*");
     mss.setTable(gAchievement);
-    //mss.innerJoin(gAchievement, gAchievementDetail, "uaid", "aiid");
     mss.setCondition(UserCJStr::sUid, uid, false);
     if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss)) {
 	CLOG(WARNING) << "Get achievement from mysql failed.";

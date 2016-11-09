@@ -58,6 +58,8 @@ bool RewardService::getLoginReward(CPacket &packet, int64_t &newFortune) {
     int64_t total = loginReward.runnerReward +
         loginReward.dayReward + loginReward.vipExtra;
     if (!_userData.addUserFortuneInCache(uid, total, newFortune)) {
+        CLOG(WARNING) << "User:" << uid << " recv login reward:"
+                      << total << " failed:set redis fortune failed.";
         return false;
     }
     _userData.updateDailyReward(uid, true);
@@ -73,6 +75,8 @@ bool RewardService::finishTinyGame(CPacket &packet, ResultFormatter &rf) {
     }
     int64_t fortune;
     if (!_userData.addUserFortuneInCache(uid, reward, fortune)) {
+        CLOG(WARNING) << "User:" << uid << " finsh tiny game with reward:"
+                      << reward << " failed:set redis fortune failed.";
         return false;
     }
     rf.formatSimpleResultWithFortune(fortune);
@@ -89,10 +93,13 @@ bool RewardService::getAchievementReward(CPacket &packet, ResultFormatter &rf) {
         const auto &cjInfo =
             SlotsConfig::getInstance().cjConfig.getCjInfo(
                 cgserver::StringUtil::StrToInt32WithDefault(cjID.data(), 0));
-        // TODO
-        // add fortune in cache
-        // set cj to recved.
-        // formate result.
+        int64_t fortune = 0;
+        if (!_userData.addUserFortuneInCache(uid, cjInfo.rewardValue, fortune)) {
+            CLOG(WARNING) << "User:" << uid << " recv cj:" << cjID << " failed:set redis fortune failed.";
+            return false;
+        }
+        _userData.setAchievement(uid, cjID, true);
+        rf.formatSimpleResultWithFortune(fortune);
     }
     return cjOK;
 }
@@ -111,6 +118,8 @@ bool RewardService::recvOnlineReward(CPacket &packet, ResultFormatter &rf) {
     }
     int64_t fortune;
     if (!_userData.addUserFortuneInCache(uid, oInfo.rewardValue, fortune)) {
+        CLOG(WARNING) << "User:" << uid << " recv online reward:"
+                      << oInfo.rewardValue << " failed:set redis fortune failed.";
         return false;
     }
     rf.formatSimpleResultWithFortune(fortune);

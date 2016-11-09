@@ -3,6 +3,7 @@
 #include <slots/sql/slotusersaver.h>
 #include <util/stringutil.h>
 #include <util/timeutil.h>
+#include "slots/model/commonsql.h"
 
 BEGIN_NAMESPACE(slots)
 
@@ -52,8 +53,9 @@ const std::vector<std::string> SlotsUserData::RedisLoginInfoKeys = {
 };
 
 
-SlotsUserData::SlotsUserData()
-:_redisClient(cgserver::RedisClientFactory::getClient())
+SlotsUserData::SlotsUserData(cgserver::ProducerConsumerQueue<std::string> &queue)
+    :_redisClient(cgserver::RedisClientFactory::getClient()),
+     _backupQueue(queue)
 {
 }
 
@@ -251,6 +253,12 @@ bool SlotsUserData::setUserToCache(GameContext &user) {
         fields.push_back(SlotCacheStr::sLink + sI);
         result.push_back(StringUtil::toString(tmp));
     }
+    for (auto &cj: user.oldCj){
+        fields.push_back(SlotCacheStr::sCjPrefix
+                         + cgserver::StringUtil::toString(cj.aid));
+        result.push_back(cj.isRecvReward?
+                         SlotCacheStr::sLRecvTrue: SlotCacheStr::sLRecvFalse);
+    }
     return _redisClient.Hmset(user.uid, fields, result) == RC_SUCCESS;
 }
 
@@ -287,7 +295,6 @@ bool SlotsUserData::getUserByUid(GameContext &out){
 	    CLOG(WARNING) << "Get user[" << out.uid << "] info failed.";
 	    return false;
 	}
-        // todo: set all info to db.
         setUserToCache(out);
 	return true;
     }
@@ -302,12 +309,34 @@ int64_t SlotsUserData::getTinyGameReward(const std::string &uid) {
     return StringUtil::StrToInt64WithDefault(result.data(), 0);
 }
 
+bool SlotsUserData::isAchievementExist(const std::string &uid, const std::string &cjID) {
+    std::string st;
+    if (_redisClient.Hget(uid, SlotCacheStr::sCjPrefix + cjID, &st) != RC_SUCCESS) {
+        return false;
+    }
+    return !st.empty();
+}
+
 bool SlotsUserData::checkAchievement(const std::string &uid, const std::string &cjID) {
     std::string st;
-    if (_redisClient.Hget(uid, SlotCacheStr::sCjPrefix + cjID, &st)) {
+    if (_redisClient.Hget(uid, SlotCacheStr::sCjPrefix + cjID, &st) != RC_SUCCESS) {
         return false;
     }
     return st == SlotCacheStr::sLRecvTrue;
+}
+
+bool SlotsUserData::setAchievement(
+    const std::string &uid, const std::string &cjID, bool recved)
+{
+    if (_redisClient.Hset(uid, SlotCacheStr::sCjPrefix + cjID,
+                          recved? SlotCacheStr::sLRecvTrue: SlotCacheStr::sLRecvFalse)
+        != RC_SUCCESS)
+    {
+        CLOG(WARNING) << "User:" << uid << " achievement :" << cjID << " operate failed.";
+        return false;
+    }
+    _backupQueue.produce(CommonSQL::updateUserAchievement(uid, cjID, recved));
+    return true;
 }
 
 void SlotsUserData::save2MySQL(uint64_t factor){
@@ -462,7 +491,13 @@ void SlotsUserData::recvOnlineGift(const std::string &userID, bool recved) {
 bool SlotsUserData::addUserFortuneInCache(
     const std::string &uid, int64_t incr, int64_t &res)
 {
-    return _redisClient.Hincrby(uid, SlotCacheStr::sMoney, incr, &res) == RC_SUCCESS;
+    if (_redisClient.Hincrby(uid, SlotCacheStr::sMoney, incr, &res) != RC_SUCCESS) {
+        CLOG(WARNING) << "Incr user:" << uid << " fortune:" << incr << " failed.";
+        return false;
+    }
+    // save to db
+    _backupQueue.produce(CommonSQL::updateUserFortune(uid, res));
+    return true;
 }
 
 bool SlotsUserData::getUidByMid(const std::string &mid, std::string &uid) {

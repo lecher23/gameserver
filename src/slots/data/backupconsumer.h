@@ -44,11 +44,10 @@ public:
     }
 
     void backupLoop() {
-        // we must stop after _queue is empty
-        // bug: at last time, no product, then this thread will wait forever
         _looping = true;
         while(!_stopped or !_queue.empty()) {
-            const auto &sql = _queue.consume();
+            const auto sql = _queue.consume();
+            _executor.setQuery(sql);
             if (!_pool.doMysqlOperation(_pExecutor)) {
                 CLOG(WARNING) << "backup sql:" << sql << " exe failed.";
             }

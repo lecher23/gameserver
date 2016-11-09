@@ -4,6 +4,7 @@
 #include <slots/sql/slotsdb.h>
 #include <slots/data/gamecontext.h>
 #include <cache/redisclientfactory.h>
+#include "util/producerconsumerqueue.h"
 
 BEGIN_NAMESPACE(slots)
 
@@ -66,7 +67,7 @@ struct OnlineInfo{
 
 class SlotsUserData: public PersistenceBase{
  public:
-    SlotsUserData();
+    SlotsUserData(cgserver::ProducerConsumerQueue<std::string> &queue);
     virtual ~SlotsUserData();
     virtual void save2MySQL(uint64_t factor);
     virtual bool needSave(uint64_t factor);
@@ -78,7 +79,9 @@ class SlotsUserData: public PersistenceBase{
     bool getUserByMid(const std::string &mid, GameContext &out);
     bool getUserByUid(GameContext &out);
     int64_t getTinyGameReward(const std::string &uid);
+    bool isAchievementExist(const std::string &uid, const std::string &cjID);
     bool checkAchievement(const std::string &uid, const std::string &cjID);
+    bool setAchievement(const std::string &uid, const std::string &cjID, bool recved);
     bool setUserToCache(GameContext &user); // rewrite it
 
     void setDailyReward(const std::string &userID, const LoginReward &in);
@@ -100,6 +103,7 @@ private:
     std::map<std::string, SlotsUserPtr> _data;
     std::mutex _lock;
     CRedisClient &_redisClient;
+    cgserver::ProducerConsumerQueue<std::string> &_backupQueue;
 
     static const std::vector<std::string> RedisGameInfoKeys;
     static const std::vector<std::string> RedisLoginInfoKeys;

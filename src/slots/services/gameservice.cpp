@@ -60,7 +60,10 @@ bool GameService::doTemplePrincess(CPacket &packet, ResultFormatter &rf)
         gc.hallID = hallID;
         gc.room.roomID = roomID;
 
-        if (!SlotsDataCenter::instance().slotsUserData->getContextForGame(gc)) {
+        auto &uData = *SlotsDataCenter::instance().slotsUserData;
+
+        if (!uData.getContextForGame(gc)) {
+            CLOG(WARNING) << "get user:" << gc.uid << " game context failed.";
             break;
         }
 	if (!_gProcessor.process(gc)) {
@@ -75,6 +78,10 @@ bool GameService::doTemplePrincess(CPacket &packet, ResultFormatter &rf)
             CLOG(WARNING) << "process achivement failed";
 	    break;
 	}
+        if (!uData.setContextForGame(gc)) {
+            CLOG(WARNING) << "set user:" << gc.uid << " game context to game failed.";
+            break;
+        }
 	ret = true;
 	rf.formatGameResult(gc);
     } while (false);
