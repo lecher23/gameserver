@@ -2,7 +2,6 @@
 #define USERINFO_H
 
 #include <util/common_define.h>
-#include "tablebase.h"
 
 BEGIN_NAMESPACE(slots)
 
@@ -14,6 +13,7 @@ namespace UserInfoStr{
     const std::string sName = "fname";
     const std::string sGender = "male";
     const std::string sCountry = "country";
+    const std::string sAvatar = "avatar";
 };
 
 struct UserInfo{

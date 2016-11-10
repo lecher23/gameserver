@@ -72,6 +72,8 @@ class SlotsUserData: public PersistenceBase{
     virtual void save2MySQL(uint64_t factor);
     virtual bool needSave(uint64_t factor);
 
+    bool isUserExist(const std::string &uid);
+    bool updateUser(const std::string &uid, const UserInfo &uInfo);
     bool getContextForGame(GameContext &user);
     bool setContextForGame(GameContext &user);
     bool getContextForLogin(GameContext &user);

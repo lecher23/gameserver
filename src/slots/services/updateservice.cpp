@@ -33,10 +33,10 @@ bool UpdateService::updateUserInfo(CPacket &packet) {
     std::string uid;
     GET_PARAM(slotconstants::sUserID, uid, true);
 
-    //SlotsUserPtr user;
-    // if(!SlotsDataCenter::instance().slotsUserData->getByUid(uid, user)) {
-    //     return false;
-    // }
+    auto &uData = *SlotsDataCenter::instance().slotsUserData;
+    if (!uData.isUserExist(uid)) {
+        return false;
+    }
 
     UserInfo uInfo;
     std::string tmp;
@@ -44,7 +44,7 @@ bool UpdateService::updateUserInfo(CPacket &packet) {
     SET_USER_INFO_ATTR(tmp, slotconstants::sCountry, uInfo.country);
     SET_USER_INFO_ATTR(tmp, slotconstants::sName, uInfo.fname);
     SET_USER_INFO_ATTR(tmp, slotconstants::sAvatar, uInfo.avatar);
-    return true;
+    return uData.updateUser(uid, uInfo);
 }
 #undef SET_USER_INFO_ATTR
 

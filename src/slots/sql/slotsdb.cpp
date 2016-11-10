@@ -69,6 +69,18 @@ bool SlotsDB::initNewUser(const std::string &mid, GameContext &user) const {
     return true;
 }
 
+bool SlotsDB::isUserExist(const std::string &uid) const {
+    MysqlSimpleSelect msi;
+    msi.setField(UserInfoStr::sName);
+    msi.setTable(UserInfoStr::sTableName);
+    msi.setCondition(UserInfoStr::sUid, uid, false);
+    if (!_pool.doMysqlOperation((MysqlOperationBase *) &msi)) {
+        CLOG(INFO) << "Check user info from db failed.";
+        return false;
+    }
+    return !msi.result.empty();
+}
+
 bool SlotsDB::getUserInfo(MysqlOperationBase * mob, SlotsUser &su) const {
     UserInfo &ui = su.uInfo;
     UserResource &ur = su.uRes;

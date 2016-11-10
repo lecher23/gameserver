@@ -33,6 +33,7 @@ public:
 
     bool getUserData(GameContext &out) const;
     bool initNewUser(const std::string &mid, GameContext &user) const;
+    bool isUserExist(const std::string &uid) const;
     bool getUserInfo(cgserver::MysqlOperationBase *mob, SlotsUser &su) const ;
     bool getUserInfoByMachineId(const std::string &mid, SlotsUser &su) const ;
     bool getUserIdByMachineId(const std::string &mid, std::string &uid) const ;

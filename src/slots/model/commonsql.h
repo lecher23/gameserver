@@ -24,6 +24,23 @@ class CommonSQL{
         return msu.getQuery();
     }
 
+#define PROCESS_UNEMPTY_INFO(attr, field)                               \
+    if (!uInfo.attr.empty()) {                                          \
+        msu.addUpdateValue(UserInfoStr::field, uInfo.attr, true);       \
+    }
+
+    static std::string updateUserInfo(const std::string &uid, const UserInfo &uInfo) {
+        cgserver::MysqlSimpleUpdate msu;
+        msu.setTable(UserInfoStr::sTableName);
+        PROCESS_UNEMPTY_INFO(fname, sName);
+        PROCESS_UNEMPTY_INFO(country, sCountry);
+        PROCESS_UNEMPTY_INFO(avatar, sAvatar);
+        PROCESS_UNEMPTY_INFO(male, sGender);
+        msu.setCondition(UserInfoStr::sUid, uid, false);
+        return msu.getQuery();
+    }
+#undef PROCESS_UNEMPTY_INFO
+
 #define EZ_UPDATE(nameSpace, out, field, value)                 \
     cgserver::MysqlSimpleUpdate out;                            \
     out.setTable(nameSpace::sTableName);                        \

@@ -155,6 +155,30 @@ bool SlotsUserData::needSave(uint64_t factor) {
     PUSH_INT_VAL_TO_VEC(tHis, tinyGameCount.val);       \
     PUSH_INT_VAL_TO_VEC(tHis, maxLinkCount.val);
 
+bool SlotsUserData::isUserExist(const std::string &uid) {
+    return SlotsDB::getInstance().isUserExist(uid);
+}
+
+#define PROCESS_UNEMPTY_INFO(attr, field)               \
+    if (!uInfo.attr.empty()) {                          \
+        infos[SlotCacheStr::field] = uInfo.attr;        \
+    }
+
+bool SlotsUserData::updateUser(const std::string &uid, const UserInfo &uInfo) {
+    std::map<std::string, std::string> infos;
+    PROCESS_UNEMPTY_INFO(fname, sName);
+    PROCESS_UNEMPTY_INFO(country, sCountry);
+    PROCESS_UNEMPTY_INFO(avatar, sAvatar);
+    PROCESS_UNEMPTY_INFO(male, sSex);
+    if (_redisClient.Hmset(uid, infos) != RC_SUCCESS) {
+        CLOG(WARNING) << "Update user:"<< uid << " to redis failed.";
+        return false;
+    }
+    _backupQueue.produce(CommonSQL::updateUserInfo(uid, uInfo));
+    return true;
+}
+
+#undef PROCESS_UNEMPTY_INFO
 
 bool SlotsUserData::getContextForGame(GameContext &user) {
     MAKE_GAME_CONTEXT_FIELDS(fields);
