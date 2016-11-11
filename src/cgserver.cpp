@@ -22,7 +22,6 @@ namespace cgserver{
 
     void CgServer::stop() {
 	_server.stopServer();
-	// close logger
 	google::ShutdownGoogleLogging();
     }
 
@@ -40,20 +39,16 @@ namespace cgserver{
     }
 
     void CgServer::initGLog() {
-	/*Init Logger*/
 	google::InitGoogleLogging("CgServer");
 	/*Level can be INFO(0)/WARNNING(1)/ERROR(2)/FATAL(3).*/
 	int level = Config::getInstance().getLogLevel();
 	for (int i = 0; i < 4; ++i) {
-	    // close link function
 	    google::SetLogSymlink(i, "");
 	}
 	google::SetStderrLogging(4); 
-	//error will flush to file
-	google::FlushLogFiles(2);
+	google::FlushLogFiles(1);
         auto logDir = Config::getInstance().getLogDir();
         std::string logFilePrefix = logDir;
-        // set log min level.
         if (logDir[logDir.size() - 1] == '/') {
             logFilePrefix.append("log");
         }else {

@@ -120,6 +120,17 @@ def resolve_mysql_client():
     exe_cmd("cp -r %s/include/*  %s" %
             (os.path.join(TMP_DIR, fname.replace(".tar.gz", "")), INCLUDE_DIR))
 
+def resolve_cpp_netlib():
+    tgz = "http://downloads.cpp-netlib.org/0.12.0/cpp-netlib-0.12.0-final.tar.gz"
+    fname = os.path.basename(tgz)
+    exe_cmd_with_retry("cd %s && wget %s" % (TMP_DIR, tgz))
+    exe_cmd("cd %s && tar -zxf %s" % (TMP_DIR, fname))
+    path = os.path.join(TMP_DIR, fname.replace(".tar.gz", ""))
+    exe_cmd("cd %s && sed -i 's/make test//g' build.sh &&./build.sh" % path)
+    exe_cmd("cp -r %s/boost/* %s/boost/" % (path, INCLUDE_DIR))
+    exe_cmd("cp -r %s/deps/asio/asio/include/asio %s" % (path, INCLUDE_DIR))
+    exe_cmd("cp %s/build/libs/network/src/*.a %s" % (path, LIB_DIR))
+
 def create_dir():
     os.system("mkdir -p %s" % os.path.join(CUR, "build/obj"))
     os.system("mkdir -p %s" % os.path.join(CUR, "build/bin"))
@@ -148,6 +159,7 @@ if __name__ == "__main__":
         "rapidjson": resolve_rapid_json,
         "glog": resolve_glog_dependency,
         "redis": resolve_redis_client,
+        "netlib": resolve_cpp_netlib,
     }
 
     parser = OptionParser()
