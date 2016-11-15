@@ -135,13 +135,15 @@ bool SlotsDB::getUserIdByMachineId(const std::string &mid, std::string &uid) con
     mss.setField("uid");
     mss.setTable(gUserInfo);
     mss.setCondition("mid", mid, true);
-    if (_pool.doMysqlOperation((MysqlOperationBase *) &mss)
-        && mss.result.size() > 0 && mss.result[0].size() > 0)
+    if (!_pool.doMysqlOperation((MysqlOperationBase *) &mss)) {
+        return false;
+    }
+    uid.clear();
+    if (mss.result.size() > 0 && mss.result[0].size() > 0)
     {
         uid = mss.result[0][0];
-        return true;
     }
-    return false;
+    return true;
 }
 
 bool SlotsDB::getCargoInfo(CargoInfos &out) const {

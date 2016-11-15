@@ -36,6 +36,7 @@ namespace slots{
     {
 	std::string mid;
 	if (!packet.getParamValue(slotconstants::sMachineID, mid)) {
+            CLOG(WARNING) << "get mid failed.";
 	    return false;
 	}
 	return SlotsDataCenter::instance().slotsUserData->getUserByMid(mid, user);

@@ -221,6 +221,7 @@ bool SlotsUserData::setContextForGame(GameContext &user) {
 }
 
 bool SlotsUserData::getContextForLogin(GameContext &user) {
+    CLOG(INFO) << "get user" << user.uid << " info for login.";
     std::vector<std::string> result;
     auto ret = _redisClient.Hmget(user.uid, RedisLoginInfoKeys, &result);
     if (result.size() != RedisLoginInfoKeys.size()) {
@@ -251,6 +252,7 @@ bool SlotsUserData::updateLoginInfo(const std::string &uid, int64_t loginTimesta
 }
 
 bool SlotsUserData::setUserToCache(GameContext &user) {
+    CLOG(INFO)<<"set user data to cache.";
     std::vector<std::string> fields(
         RedisLoginInfoKeys.begin(), RedisLoginInfoKeys.end());
     std::vector<std::string> result;
@@ -305,6 +307,7 @@ bool SlotsUserData::setUserToCache(GameContext &user) {
 #undef MAKE_GAME_CONTEXT_FIELDS
 
 bool SlotsUserData::getUserByMid(const std::string &mid, GameContext &out) {
+    CLOG(INFO) << "get user by mid:" << mid;
     //get uid from cache
     if (getUidByMid(mid, out.uid)) {
         return getUserByUid(out);
@@ -312,15 +315,19 @@ bool SlotsUserData::getUserByMid(const std::string &mid, GameContext &out) {
     // get uid from db
     SlotsDB &db = SlotsDB::getInstance();
     if(db.getUserIdByMachineId(mid, out.uid)) {
-        // user exist, save to redis
-        setUidWithMid(mid, out.uid);
-        return getUserByUid(out);
-    }
-    /**init new user**/
-    if (db.initNewUser(mid, out)) {
-        setUidWithMid(mid, out.uid);
-        setUserToCache(out);
-        return true;
+        if (out.uid.empty()) {
+            if (db.initNewUser(mid, out)) {
+                /**init new user**/
+                setUidWithMid(mid, out.uid);
+                setUserToCache(out);
+                return true;
+            }
+            return false;
+        }else{
+            // user exist, save to redis
+            setUidWithMid(mid, out.uid);
+            return getUserByUid(out);
+        }
     }
     return false;
 }
@@ -540,10 +547,13 @@ bool SlotsUserData::addUserFortuneInCache(
 }
 
 bool SlotsUserData::getUidByMid(const std::string &mid, std::string &uid) {
+    CLOG(INFO) << "get user id by mid:" << mid;
     GENERATE_MID_KEY(key, mid);
     if (_redisClient.Get(key, &uid) != RC_SUCCESS) {
+        CLOG(INFO) << "get user id by mid from cache failed:" << mid;
         return false;
     }
+    CLOG(INFO) << "key:" << key <<  ", mid:" << mid<< ", uid:" << uid;
     return !uid.empty();
 }
 

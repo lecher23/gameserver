@@ -6,7 +6,7 @@
 #include <arpa/inet.h>
 #include <error.h>
 #include <sstream>
-#include <server/tcpserver.h>
+#include <server/httpserver.h>
 
 namespace cgserver{
     class CgServer{
@@ -19,7 +19,7 @@ namespace cgserver{
         void initGLog();
 
 	static const std::string ConfigFilePath;
-	TcpServer _server;
+        std::shared_ptr<HttpServer> _httpServerPtr;
   };
 }
 #endif

@@ -9,6 +9,8 @@
 #include <memory>
 #include <thread>
 #include <mutex>
+#include "boost/network.hpp"
+#include "boost/network/protocol/http/server.hpp"
 #include <boost/asio.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include "glog/logging.h"

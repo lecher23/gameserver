@@ -21,7 +21,7 @@ namespace cgserver{
     }
 
     void CgServer::stop() {
-	_server.stopServer();
+	_httpServerPtr->stopServer();
 	google::ShutdownGoogleLogging();
     }
 
@@ -35,7 +35,8 @@ namespace cgserver{
         initGLog();
         int port = cfg.getServerPort();
 	CLOG(INFO) << "Starting server on port["<< port <<"]" ;
-	_server.startServer(port);
+        _httpServerPtr = std::make_shared<HttpServer> ("0.0.0.0", "9876");
+        _httpServerPtr->startServer();
     }
 
     void CgServer::initGLog() {

@@ -20,7 +20,8 @@ typedef boost::network::http::server<handler> http_server;
 struct handler{
     void operator() (http_server::request const &request,
                      http_server::connection_ptr conn) {
-        std::cout << "hello" << std::endl;
+        std::cout << request.destination<< std::endl;
+        std::cout << request.body<< std::endl;
         std::string out="hello";
         conn->write(out);
     }
@@ -47,7 +48,7 @@ public:
         handler handler_;
         http_server::options options(handler_);
         http_server server_(
-            options.address("0.0.0.0").port("9877"));
+            options.address("0.0.0.0").port("34667"));
         server_.run();
     }
 private:
