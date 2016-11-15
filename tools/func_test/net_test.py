@@ -4,7 +4,7 @@ import threading
 
 buf_size = 2048
 host = "localhost"
-port = 9876
+port = 9888
 
 def do_test():
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -12,11 +12,14 @@ def do_test():
     time.sleep(10000)
 
 def do_send(client):
-    msg = ["000312", "30004123400", "011"]
+    msg = ["0\0a312", "30004123400", "011"]
     for item in msg:
         client.send(item)
         print "send %s over." % item
         time.sleep(2)
+    for i in range(0, 97):
+        client.send('6')
+        time.sleep(0.1)
 
 def do_recv(client):
     for i in range(0, 10):

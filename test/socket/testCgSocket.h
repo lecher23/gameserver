@@ -2,7 +2,6 @@
 #include <string>
 #include <string.h>
 #include <stdlib.h>
-#include "/home/licheng/workspace/CgServerPlus/test/common.h"
 #include <socket/cgsocket.h>
 #include <boost/bind.hpp>
 
@@ -11,9 +10,6 @@
 
 using namespace cgserver;
 // using namespace slots;
-
-const std::string lua_file = cxx::lua_file;
-const std::string cfg_file = cxx::cfg_file;
 
 class testCgSocket: public CxxTest::TestSuite 
 {
