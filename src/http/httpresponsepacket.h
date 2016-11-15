@@ -75,7 +75,7 @@ private:
     char *_body;                    // 返回的内容
     int _bodyLen;                   // 返回内容找长度
     STRING_MAP _headerMap;          // 返回其他头信息
-    bool _isKeepAlive;              // 是否keepalive
+    bool _isKeepAlive{true};              // 是否keepalive
 };
 
 }

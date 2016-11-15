@@ -20,7 +20,6 @@ void HttpHandler::operator() (const HttpRequest &req, HttpConnPtr conn) {
     resp.encode(&buff);
     std::string out(buff.getData(), buff.getDataLen());
     conn->write(out);
-    CLOG(INFO) << "write over:" << out;
 }
 
 bool HttpHandler::parseURI(const std::string &uri, HTTPPacket &packet) {
@@ -43,14 +42,15 @@ bool HttpHandler::parseURI(const std::string &uri, HTTPPacket &packet) {
 
 bool HttpHandler::parseParam(const char *paramStr, int strLen, HTTPPacket &packet){
     if (strLen <= 0) return true;
-    int prev = 0;
+    int remain = strLen;
     int pos;
     while((pos = locateChar(paramStr, '&')) >= 0){
 	parseKV(paramStr, pos, packet);
 	paramStr += pos + 1;
+        remain -= (pos + 1);
     }
     if (*paramStr != '\0') {
-	parseKV(paramStr, strLen - pos, packet);
+	parseKV(paramStr, remain, packet);
     }
     return true;
 }
