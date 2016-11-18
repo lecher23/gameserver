@@ -2,7 +2,7 @@
 #include <string>
 #include <string.h>
 #include <stdlib.h>
-#include <socket/cgsocket.h>
+#include <socket/future.h>
 #include <boost/bind.hpp>
 
 #define ast_eq(x, y) TS_ASSERT_EQUALS(x, y);
@@ -22,15 +22,18 @@ public:
     virtual void tearDown() {
     }
 
-    void handleAccept(std::shared_ptr<CgSocket> s, const asio_error &err) {
-            s->start();
+    void handleAccept(std::shared_ptr<ConnPub> s, const asio_error &err) {
+            s->readDataOnce();
     }
 
     void test_main( void )
     {
         //code
         asio_service service;
-        std::shared_ptr<CgSocket> socket(new CgSocket(service));
+        std::shared_ptr<ConnPub> socket(new ConnPub(service));
+        std::shared_ptr<ConnCreateSub<ConnPub>> suber(new ConnCreateSub<ConnPub>());
+        auto idx = socket->addWatcher(suber);
+        suber->setIndex(idx);
         boost::asio::ip::tcp::acceptor
             acceptor(service, boost::asio::ip::tcp::endpoint(
                          boost::asio::ip::tcp::v4(), 9888), true);

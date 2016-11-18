@@ -2,7 +2,6 @@
 #define PROCESSORFACTORY_H
 
 #include "iprocessor.h"
-#include "../socket/socketprocessor.h"
 
 namespace cgserver{
     class ProcessorFactory{
@@ -11,7 +10,7 @@ namespace cgserver{
         ~ProcessorFactory();
 
 	static IProcessorPtr getProcessor() {
-	    return IProcessorPtr((IProcessor *)new SocketProcessor);
+            return IProcessorPtr(nullptr);
 	}
     };
 }

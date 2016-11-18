@@ -17,6 +17,7 @@ public:
     }
 
     int32_t empty() {
+        MUTEX_GUARD(_lock);
         return _start == _end;
     }
 
@@ -36,6 +37,7 @@ public:
     }
 
     void pop() {
+        MUTEX_GUARD(_lock);
         CIRCULAR_INCR(_start, _capacity);
     }
 

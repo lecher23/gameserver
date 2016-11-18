@@ -11,21 +11,31 @@ def do_test():
     client.connect((host, port))
     time.sleep(10000)
 
+def make_packet(packet_type, packet_msg):
+    msg_bytes = ""
+    msg_bytes += chr(packet_type)
+    msg_bytes += chr(len(packet_msg) >> 8 & 0xff)
+    msg_bytes += chr(len(packet_msg) & 0xff)
+    msg_bytes += packet_msg
+    return msg_bytes
+
 def do_send(client):
-    msg = ["0\0a312", "30004123400", "011"]
-    for item in msg:
-        client.send(item)
-        print "send %s over." % item
-        time.sleep(2)
-    for i in range(0, 97):
-        client.send('6')
-        time.sleep(0.1)
+    out = make_packet(1, 'hello')
+    client.send(out)
+    time.sleep(1)
+    out = make_packet(1, 'sdhello')
+    client.send(out)
+    out = make_packet(1, 'hedllo')
+    client.send(out)
+    out = make_packet(1, 'exit')
+    client.send(out)
+    time.sleep(1)
 
 def do_recv(client):
     for i in range(0, 10):
         data = client.recv(1024)
         print "read_data: %s" % data
-        time.sleep(1)
+        time.sleep(0.2)
 
 def test_tcp():
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

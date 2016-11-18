@@ -4,6 +4,7 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include "../util/common_define.h"
+#include "future.h"
 
 #define UNIX_PATH_MAX 108
 
