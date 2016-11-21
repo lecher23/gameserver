@@ -36,7 +36,7 @@ namespace slots{
 	SBuf buf;
 	ResultFormatter rf(buf);
 	rf.formatRankResult(rank, uid, page, page + pageSize);
-	resp.setBody(buf.GetString());
+	resp.setBody(buf.GetString(), buf.GetSize());
 	return true;
     }
 

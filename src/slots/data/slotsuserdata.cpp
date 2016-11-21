@@ -347,6 +347,41 @@ bool SlotsUserData::getUserByUid(GameContext &out){
     return true;
 }
 
+bool SlotsUserData::setLastResponse(
+    const std::string &uid, const std::string &key, const std::string &resp)
+{
+    static const std::vector<std::string> fields = {
+        SlotCacheStr::sLastResponseKey,
+        SlotCacheStr::sLastResponse
+    };
+
+    std::vector<std::string> val = {key, resp};
+    if (_redisClient.Hmset(uid, fields, val) != RC_SUCCESS) {
+        CLOG(WARNING) << "set last response failed:" << resp << " with uid:" << uid;
+        return false;
+    }
+    return true;
+}
+
+bool SlotsUserData::getLastResponse(
+    const std::string &uid, std::string &key, std::string &resp)
+{
+    static const std::vector<std::string> fields = {
+        SlotCacheStr::sLastResponseKey,
+        SlotCacheStr::sLastResponse
+    };
+
+    std::vector<std::string> ret;
+    _redisClient.Hmget(uid, fields, &ret);
+    if (ret.size() != fields.size()) {
+        CLOG(WARNING) << "get last response failed with uid:" << uid;
+        return false;
+    }
+    key = ret[0];
+    resp = ret[1];
+    return true;
+}
+
 int64_t SlotsUserData::getTinyGameReward(const std::string &uid) {
     std::string result;
     if (_redisClient.Hget(uid, SlotCacheStr::sTinyGameEarned, &result)) {

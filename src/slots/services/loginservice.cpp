@@ -27,7 +27,7 @@ namespace slots{
 	    rf.formatSimpleResult(pOk, "");
 	}
 
-	resp.setBody(buf.GetString());
+	resp.setBody(buf.GetString(), buf.GetSize());
 	return pOk;
     }
 

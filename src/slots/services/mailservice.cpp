@@ -47,7 +47,7 @@ namespace slots{
 	    }
             ret = true;
 	}while(false);
-	resp.setBody(bf.GetString());
+	resp.setBody(bf.GetString(), bf.GetSize());
 	return ret;
     }
 }

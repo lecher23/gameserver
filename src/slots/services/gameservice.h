@@ -13,7 +13,8 @@ namespace slots{
 	virtual bool doJob(CPacket &packet, CResponse &resp);
 
     private:
-	bool doTemplePrincess(CPacket &packet, ResultFormatter &rf);
+	bool doTemplePrincess(
+                CPacket &packet, ResultFormatter &rf, const std::string &uid);
 	bool doMultiple(CPacket &packet);
 
         GameProcessor _gProcessor;

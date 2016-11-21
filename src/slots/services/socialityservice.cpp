@@ -73,7 +73,7 @@ namespace slots{
 	if (!ret) {
 	    rf.formatSimpleResult(false, "");
 	}
-	resp.setBody(bf.GetString());
+	resp.setBody(bf.GetString(), bf.GetSize());
 	return false;
     }
 

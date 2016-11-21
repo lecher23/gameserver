@@ -17,8 +17,8 @@ bool UpdateService::doJob(CPacket &packet, CResponse &resp){
     if (type == "1" ) {
         auto ret = updateUserInfo(packet);
         rf.formatSimpleResult(ret, "");
-        resp.setBody(buf.GetString());
     }
+    resp.setBody(buf.GetString(), buf.GetSize());
     return true;
 }
 

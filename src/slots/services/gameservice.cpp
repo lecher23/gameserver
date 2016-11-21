@@ -11,29 +11,31 @@ GameService::~GameService(){
 bool GameService::doJob(CPacket &packet, CResponse &resp) {
     std::string gType;
     GET_PARAM(slotconstants::sType, gType, true);
+    std::string sequence;
+    GET_PARAM(slotconstants::sSequence, sequence, true);
+    std::string uid;
+    GET_PARAM(slotconstants::sUserID, uid, true);
+    if (hasBeenProcessed(uid, sequence, resp)) {
+        return true;
+    }
     SBuf bf;
     ResultFormatter rf(bf);
 
     bool ret = false;
     if (gType == "2"){
-	ret = doTemplePrincess(packet, rf);
+	ret = doTemplePrincess(packet, rf, uid);
     }
-    resp.setBody(bf.GetString());
+    setResponse(uid, sequence, bf, resp);
     return ret;
 }
 
-bool GameService::doTemplePrincess(CPacket &packet, ResultFormatter &rf)
+bool GameService::doTemplePrincess(
+    CPacket &packet, ResultFormatter &rf, const std::string &uid)
 {
     const static ThemeTypes style = ESS_TEMPLE_PRINCESS;
     std::string detail;
     bool ret = false;
     do {
-	std::string uid;
-        int32_t iUid;
-        GET_PARAM_WITH_BREAK(slotconstants::sUserID, uid, true);
-        if (!cgserver::StringUtil::StrToInt32(uid.c_str(), iUid)) {
-            break;
-        }
         int64_t bet;
         if (!getIntVal(packet, slotconstants::sTotalBet, bet)) {
             break;

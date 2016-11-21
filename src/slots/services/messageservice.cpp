@@ -43,7 +43,7 @@ bool MessageService::doJob(CPacket &packet, CResponse &resp) {
     if (!ret) {
         rf.formatSimpleResult(false, "");
     }
-    resp.setBody(bf.GetString());
+    resp.setBody(bf.GetString(), bf.GetSize());
     return true;
 }
 

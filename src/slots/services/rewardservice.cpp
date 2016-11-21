@@ -16,41 +16,48 @@ RewardService::~RewardService(){
 
 bool RewardService::doJob(CPacket &packet, CResponse &resp) {
     GET_INT32_PARAM_IN_PACKET(packet, slotconstants::sType, gType);
+    std::string uid;
+    GET_PARAM(slotconstants::sUserID, uid, true);
+    std::string sequence;
+    GET_PARAM(slotconstants::sSequence, sequence, true);
+    if (hasBeenProcessed(uid, sequence, resp)) {
+        return true;
+    }
     SBuf bf;
     ResultFormatter rf(bf);
     bool ret = false;
     switch(gType){
     case MSG_RECV_DAILY_REWARD:{
         int64_t newFortune;
-        ret = getLoginReward(packet, newFortune);
+        ret = getLoginReward(packet, newFortune, uid);
         if (ret) {
             rf.formatSimpleResultWithFortune(newFortune);
         }
         break;
     }
     case MSG_FINISH_TINY_GAME: {
-        ret = finishTinyGame(packet, rf);
+        ret = finishTinyGame(packet, rf, uid);
         break;
     }
     case MSG_GET_CJ_REWARD:{
-        ret = getAchievementReward(packet, rf);
+        ret = getAchievementReward(packet, rf, uid);
         break;
     }
     case MSG_RECV_ONLINE_REWARD: {
-        ret = recvOnlineReward(packet, rf);
+        ret = recvOnlineReward(packet, rf, uid);
         break;
     }
     }
     if (!ret) {
         rf.formatSimpleResult(false, "");
     }
-    resp.setBody(bf.GetString());
+    setResponse(uid, sequence, bf, resp);
     return true;
 }
 
-bool RewardService::getLoginReward(CPacket &packet, int64_t &newFortune) {
-    std::string uid;
-    GET_PARAM(slotconstants::sUserID, uid, true);
+bool RewardService::getLoginReward(
+    CPacket &packet, int64_t &newFortune, const std::string &uid)
+{
     LoginReward loginReward;
     if (!_userData.getDailyReward(uid, loginReward) || loginReward.recved) {
         return false;
@@ -66,9 +73,9 @@ bool RewardService::getLoginReward(CPacket &packet, int64_t &newFortune) {
     return true;
 }
 
-bool RewardService::finishTinyGame(CPacket &packet, ResultFormatter &rf) {
-    std::string uid;
-    GET_PARAM(slotconstants::sUserID, uid, true);
+bool RewardService::finishTinyGame(
+    CPacket &packet, ResultFormatter &rf, const std::string &uid)
+{
     auto reward = _userData.getTinyGameReward(uid);
     if (reward == 0) {
         return false;
@@ -83,10 +90,10 @@ bool RewardService::finishTinyGame(CPacket &packet, ResultFormatter &rf) {
     return true;
 }
 
-bool RewardService::getAchievementReward(CPacket &packet, ResultFormatter &rf) {
-    std::string uid;
+bool RewardService::getAchievementReward(
+    CPacket &packet, ResultFormatter &rf, const std::string &uid)
+{
     std::string cjID;
-    GET_PARAM(slotconstants::sUserID, uid, true);
     GET_PARAM(slotconstants::sCjID, cjID, true);
     bool cjOK = _userData.checkAchievement(uid, cjID);
     if (cjOK) {
@@ -104,9 +111,9 @@ bool RewardService::getAchievementReward(CPacket &packet, ResultFormatter &rf) {
     return cjOK;
 }
 
-bool RewardService::recvOnlineReward(CPacket &packet, ResultFormatter &rf) {
-    std::string uid;
-    GET_PARAM(slotconstants::sUserID, uid, true);
+bool RewardService::recvOnlineReward(
+    CPacket &packet, ResultFormatter &rf, const std::string &uid)
+{
     OnlineInfo oInfo;
     if (!_userData.getOnlineInfo(uid, oInfo, 0)) {
         CLOG(WARNING) << "Get user reward info from redis failed.";

@@ -32,6 +32,7 @@ namespace slots{
     const std::string sCjID = "a";
     const std::string sOnlineTime = "ot";
     const std::string sOnlineRewardLevel = "l";
+    const std::string sSequence = "sq";
   }
 
 #define GET_INT32_PARAM_IN_PACKET(pack, key, dest)              \
@@ -71,6 +72,33 @@ namespace slots{
    public:
       virtual ~IService() {}
       virtual bool doJob(CPacket &packet,CResponse &resp) =0;
+
+    bool hasBeenProcessed(const std::string &uid, const std::string &key, CResponse &resp) {
+      static const std::string sSimpleResult = "{\"st\":\"FAIL\"}";
+      std::string keyInCache;
+      std::string rspInCache;
+      if (!SlotsDataCenter::instance().slotsUserData->getLastResponse(
+              uid, keyInCache, rspInCache))
+      {
+        resp.setBody(sSimpleResult.data(), sSimpleResult.size());
+        return true;
+      }
+      if (keyInCache != key) {
+        return false;
+      }
+      CLOG(INFO) << "Resend response.";
+      resp.setBody(rspInCache.data(), rspInCache.size());
+      return true;
+    }
+
+    void setResponse(const std::string &uid, const std::string &key,
+                     SBuf &bf, CResponse &resp)
+    {
+      std::string body(bf.GetString(), bf.GetSize());
+      resp.setBody(body.data(), body.size());
+      SlotsDataCenter::instance().slotsUserData->setLastResponse(
+          uid, key, body);
+    }
 
       bool getIntVal(CPacket &packet, const std::string &key, uint32_t &val) {
         std::string strVal;
