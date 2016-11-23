@@ -23,7 +23,11 @@ public:
     }
 
     void handleAccept(std::shared_ptr<ConnPub> s, const asio_error &err) {
-            s->readDataOnce();
+            s->start();
+    }
+
+    void callback(int32_t x, ConnPubPtr y) {
+        std::cout << x << std::endl;
     }
 
     void test_main( void )
@@ -31,9 +35,10 @@ public:
         //code
         asio_service service;
         std::shared_ptr<ConnPub> socket(new ConnPub(service));
-        std::shared_ptr<ConnCreateSub<ConnPub>> suber(new ConnCreateSub<ConnPub>());
-        auto idx = socket->addWatcher(suber);
-        suber->setIndex(idx);
+        std::shared_ptr<SyncWatcher<ConnPub>> sync(new SyncWatcher<ConnPub>());
+        std::shared_ptr<UploadWatcher<ConnPub>> upload(new UploadWatcher<ConnPub>());
+        socket->addWatcher(upload, sync);
+        socket->setEstablishCallback(std::bind(&testCgSocket::callback, this, std::placeholders::_1, std::placeholders::_2));
         boost::asio::ip::tcp::acceptor
             acceptor(service, boost::asio::ip::tcp::endpoint(
                          boost::asio::ip::tcp::v4(), 9888), true);

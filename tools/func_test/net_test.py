@@ -13,21 +13,23 @@ def do_test():
 
 def make_packet(packet_type, packet_msg):
     msg_bytes = ""
-    msg_bytes += chr(packet_type)
+    msg_bytes += packet_type
     msg_bytes += chr(len(packet_msg) >> 8 & 0xff)
     msg_bytes += chr(len(packet_msg) & 0xff)
     msg_bytes += packet_msg
     return msg_bytes
 
 def do_send(client):
-    out = make_packet(1, 'hello')
+    time.sleep(3)
+    out = make_packet('s', 'hi')
     client.send(out)
-    time.sleep(1)
-    out = make_packet(1, 'sdhello')
+    time.sleep(4)
+    out = make_packet('u', 'sdhello')
     client.send(out)
-    out = make_packet(1, 'hedllo')
+    time.sleep(5)
+    out = make_packet('u', 'hedllo')
     client.send(out)
-    out = make_packet(1, 'exit')
+    out = make_packet('s', 'exit')
     client.send(out)
     time.sleep(1)
 

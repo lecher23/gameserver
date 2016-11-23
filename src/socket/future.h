@@ -9,8 +9,12 @@
 
 BEGIN_NAMESPACE(cgserver)
 
-#define MAX_ALIVE_TIME 30
+#define MAX_ALIVE_TIME 5
 #define MAX_SOCKET_BUFFER_SIZE 30
+
+class ConnPub;
+
+DF_SHARED_PTR(ConnPub);
 
 class ConnPub: public std::enable_shared_from_this<ConnPub> {
 public:
@@ -23,13 +27,30 @@ public:
 
     asio_socket &getSocket() {return _socket;}
 
-    size_t addWatcher(ConnSubPtr suber) {
-        _subscribers.push_back(suber);
-        return _subscribers.size() - 1;
+    void addWatcher(ConnSubPtr upload, ConnSubPtr sync) {
+        _uploadWatcher = upload;
+        _syncWatcher = sync;
     }
 
-    void removeWatcher(size_t index) {
-        _subscribers.erase(_subscribers.begin() + index);
+    bool connEstablished() {
+        return _connEstablished;
+    }
+
+    bool establishConn(int32_t id) {
+        _connEstablished = true;
+        _establishCallback(id, shared_from_this());
+    }
+
+    void setEstablishCallback(std::function<void(int32_t, ConnPubPtr)> func) {
+        _establishCallback = func;
+    }
+
+    void start() {
+        _timer.reset(new asio_deadline_timer(_service, asio_seconds(MAX_ALIVE_TIME)));
+        _timer->async_wait(
+            boost::bind(&ConnPub::timeoutCheck, shared_from_this(),
+                        asio_placeholders::error));
+        readDataOnce();
     }
 
     void writeData(const std::string &data) {
@@ -79,7 +100,6 @@ public:
 
 private:
     void handleReadType(ConnPacketPtr packet, const asio_error &err, size_t readLen){
-        CLOG(INFO)<< "read type over:" << std::string(packet->sType, 1);
         if (!_connected) {
             return ;
         }
@@ -88,6 +108,7 @@ private:
             closeSocket();
             return;
         }
+        CLOG(INFO)<< "read type over:" << std::string(packet->sType, 1);
         boost::asio::async_read(
             _socket, asio_buffer(packet->sData, TCP_PACKET_DATA_LEN_SIZE),
             boost::bind(&ConnPub::handleReadDataLen, shared_from_this(), packet,
@@ -176,23 +197,46 @@ private:
         _lastHeartBeat = CTimeUtil::getCurrentTimeInSeconds();
         CLOG(INFO) << "Get packet:[" << packet->data << "]";
         if (_connected) {
-            for (auto &item: _subscribers) {
-                item->update(shared_from_this(), packet);
+            if (packet->sType[0] == 'u') {
+                _uploadWatcher->update(shared_from_this(), packet);
+            }else if (packet->sType[0] == 's') {
+                _syncWatcher->update(shared_from_this(), packet);
+            }else {
+                closeSocket();
             }
         }
     }
 
+    void timeoutCheck(const asio_error &err) {
+        CLOG(INFO) << "timeout check.";
+        int64_t now = CTimeUtil::getCurrentTimeInSeconds();
+        if (now - _lastHeartBeat > MAX_ALIVE_TIME) {
+            closeSocket();
+            return;
+        }
+        _timer->expires_at(_timer->expires_at() + asio_seconds(MAX_ALIVE_TIME));
+        _timer->async_wait(
+            boost::bind(&ConnPub::timeoutCheck, shared_from_this(),
+                        asio_placeholders::error));
+    }
+
     asio_service &_service;
     asio_socket _socket;
-    std::vector<ConnSubPtr> _subscribers;
+    asio_deadline_timer_ptr _timer;
+
+    ConnSubPtr _uploadWatcher;
+    ConnSubPtr _syncWatcher;
+
     bool _loopRead{false};
     bool _writing{false};
     bool _connected{true};
+    bool _connEstablished{false};
+
     std::queue<std::string> _buffer;
     std::mutex _lock;
     int64_t _lastHeartBeat{0};
+    std::function<void(int32_t, ConnPubPtr)> _establishCallback;
 };
-DF_SHARED_PTR(ConnPub);
 
 END_NAMESPACE
 #endif
