@@ -33,12 +33,37 @@ bool HttpHandler::parseURI(const std::string &uri, HTTPPacket &packet) {
         return false;
     }
     packet.setPath(uri.data(), qFlag);
-    if(!parseParam(uri.data() + qFlag + 1, uriLen - qFlag -1, packet)){
+    if(!parseParam(uri.begin() + qFlag + 1, uri.end(), packet)){
 	CLOG(WARNING) << "parse param from uri [" << uri << "] failed.";
 	return false;
     }
     return true;
 }
+
+#define str_itr std::string::const_iterator
+bool HttpHandler::parseParam(str_itr begin, str_itr end, HTTPPacket &packet){
+    if (begin == end) return true;
+    auto cur = begin;
+    while((cur = locateChar(begin, end, '&'))!= end) {
+        parseKV(begin, cur, packet);
+        ++cur;
+        begin = cur;
+    }
+    if (begin != end) {
+        parseKV(begin, end, packet);
+    }
+    return true;
+}
+
+bool HttpHandler::parseKV(str_itr begin, str_itr end, HTTPPacket &packet) {
+    if (begin == end) return true;
+    auto pos = locateChar(begin, end, '=');
+    if (pos != begin && pos != end) {
+        packet.addParam(std::string(begin, pos), std::string(pos + 1, end));
+    }
+    return true;
+}
+#undef str_itr
 
 bool HttpHandler::parseParam(const char *paramStr, int strLen, HTTPPacket &packet){
     if (strLen <= 0) return true;
@@ -65,6 +90,16 @@ void HttpHandler::parseKV(const char *begin, int kvLen, HTTPPacket &packet) {
 	packet.addParam(std::string(begin, kvLen), "");
     else
 	packet.addParam(std::string(begin, pos), std::string(begin + pos + 1, kvLen - pos -1));
+}
+
+std::string::const_iterator HttpHandler::locateChar(
+    std::string::const_iterator begin, std::string::const_iterator end, char ch)
+{
+    while(begin != end) {
+        if (*begin == ch) return begin;
+        ++begin;
+    }
+    return end;
 }
 
 int HttpHandler::locateChar(const char *dest, char tar) {

@@ -25,8 +25,13 @@ struct HttpHandler {
  private:
   bool parseURI(const std::string &uri, HTTPPacket &packet);
   bool parseParam(const char *paramStr, int strLen, HTTPPacket &packet);
+  bool parseParam(std::string::const_iterator begin, std::string::const_iterator end, HTTPPacket &packet);
   void parseKV(const char *begin, int kvLen, HTTPPacket &packet);
+  bool parseKV(std::string::const_iterator begin, std::string::const_iterator end, HTTPPacket &packet);
   int locateChar(const char *dest, char tar);
+  std::string::const_iterator locateChar(
+      std::string::const_iterator begin, std::string::const_iterator end, char ch);
+
 
   IHandler *_handler{nullptr};
 };
